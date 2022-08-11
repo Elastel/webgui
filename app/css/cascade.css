@@ -1,0 +1,245 @@
+.cbi-section{
+    font-family: inherit;
+    font-weight: 400;
+    font-style: normal;
+    line-height: normal;
+    min-width: inherit;
+    border: 0;
+    border-radius: 0;
+    background-color: #fff;
+    box-shadow: 0 2px 2px 0 rgb(0 0 0 / 16%), 0 0 2px 0 rgb(0 0 0 / 12%);
+    margin: 1rem 0 0;
+    padding: 1rem;
+}
+
+.cbi-value {
+  display: inline-block;
+  width: 100%;
+  padding: 0.35rem 1rem 0.2rem;
+}
+.cbi-tabmenu {
+  border: thin solid #d4d4d4;
+  border-bottom: 0;
+  background-color: #d4d4d4;
+}
+.cbi-input-radio {
+  margin-left:0rem;
+}
+.cbi-value-title {
+  width: 15rem;
+  text-align:right;
+  margin-right:0.5rem;
+}
+.cbi-input-text {
+  min-width: 15rem;
+  height: calc(1.5em + 0.75rem);
+  color: #6e707e;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #d1d3e2;
+  border-radius: 0.35rem;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.cbi-input-checkbox {
+  text-align:left;
+}
+.cbi-value-description {
+    font-size: small;
+    padding-top: 0.4rem;
+    opacity: 0.5;
+}
+
+.cbi-page-actions {
+  padding-top: 1rem;
+  text-align: right;
+}
+
+.cbi-input-select {
+  min-width: 15rem;
+  height: calc(1.5em + 0.75rem);
+  color: #6e707e;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #d1d3e2;
+  border-radius: 0.35rem;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.cbi-section-table .cbi-section-table-titles .cbi-section-table-cell {
+	width: auto !important;
+}
+
+.cbi-section-table {
+  max-width: auto;
+}
+
+.cbi-section-table-titles {
+  color:black;
+}
+
+.cbi-section-table-cell {
+  line-height: 1.1;
+  font-size:0.5rem;
+  text-align:center;
+}
+
+.cbi-section-table-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .16), 0 0 2px 0 rgba(0, 0, 0, .12);
+  text-align: center;
+}
+
+.cbi-section-create {
+	display: inline-flex;
+	align-items: center;
+	margin: .5rem -3px;
+}
+
+.cbi-button-add{
+  font-size: 1rem;
+  margin-top: 2rem;
+  text-transform: uppercase;
+  border-radius: 0.2rem;
+  font-weight: 400;
+  color: #fff;
+  border: thin solid #3392CC;
+  background-color: #3392CC;
+}
+
+#popLayer {
+  display: none;
+  background-color: #B3B3B3;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  -moz-opacity: 0.8;
+  opacity:.80;
+  filter: alpha(opacity=80);
+}
+
+#popBox {
+  display: none;
+  background-color: #FFFFFF;
+  z-index: 11;
+  width: 85%;
+  height: 85%;
+  position:fixed;
+  top:0rem;
+  right:0;
+  left:0;
+  bottom:0;
+  padding: 1em;
+  margin: 3em auto;
+}
+
+#popBox .close{
+  text-align: right;
+  margin-right: 5px;
+  background-color: #F8F8F8;
+}
+
+#popBox .close a {
+  text-decoration: none;
+  color: #2D2C3B;
+}
+
+.right,
+.right::before {
+  margin-top: 1rem;
+	text-align: right !important;
+}
+
+/* button style */
+.cbi-button,
+.item::after {
+	font-size: 1rem;
+	display: inline-block;
+	width: auto !important;
+	padding: 0 .8rem;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	transition: all .2s ease-in-out;
+	text-align: center;
+	vertical-align: middle;
+	white-space: nowrap;
+	text-decoration: none;
+	text-transform: uppercase;
+	color: rgba(0, 0, 0, .87);
+	border: 0;
+	border-radius: .2rem;
+	background-color: #f0f0f0;
+	background-image: none;
+	-webkit-appearance: none;
+	-ms-touch-action: manipulation;
+	touch-action: manipulation;
+}
+
+.cbi-button-up,
+.cbi-button-down {
+	font-size: 1.2rem;
+	display: inline-block;
+	min-width: 0;
+	padding: .2rem .3rem;
+	color: transparent !important;
+	background: url(./icons/arrow.svg) no-repeat center;
+	background-size: 12px 20px;
+}
+
+.cbi-button-up {
+	transform: scaleY(-1);
+}
+
+.cbi-button-positive {
+	font-weight: normal;
+	color: #fff;
+	border: thin solid #3392CC;
+	background-color: #3392CC;
+}
+
+.cbi-file-lable{
+  position: relative;
+}
+.cbi-file {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+.cbi-file-btn{
+  margin-right: 5px;
+}
+
+.cbi-model {
+  font-size:2.5rem;
+  padding-top: 0.5rem;
+}
+
+.load {
+  display: none;
+  border: 4px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 4px solid #3392CC;
+  border-bottom: 4px solid #3392CC;
+  width: 30px;
+  height: 30px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}  
+@-webkit-keyframes spin {
+  0% {-webkit-transform: rotate(0deg);}
+  100% {-webkit-transform: rotate(360deg);}
+}
+
+@keyframes spin {
+  0% {transform: rotate(0deg);}
+  100% {transform: rotate(360deg);}
+}

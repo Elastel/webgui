@@ -1,0 +1,42 @@
+#! /bin/sh
+
+PROG=/usr/sbin/dctd
+
+do_start()
+{
+	local enabled hour_enabled day_enabled
+
+	enabled=$(uci get dct.basic.enabled)
+	[ "$enabled" = "1" ] || return
+
+	$PROG &
+}
+
+do_stop()
+{
+	killall -q dctd
+	sleep 1
+	[ -n "$(pgrep dctd)" ] && {
+		sleep 1
+		kill -9 $(pgrep dctd)
+	}
+}
+
+case "$1" in
+  start)
+	do_start
+	;;
+  stop)
+	do_stop
+	;;
+  restart|force-reload)
+	$0 stop
+	$0 start
+	;;
+  *)
+	echo "Usage: $SCRIPTNAME {start|stop|restart}" >&2
+	exit 3
+	;;
+esac
+
+:

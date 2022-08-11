@@ -1,0 +1,61 @@
+<div class="tab-pane fade" id="lte">
+  <h4 class="mt-3"><?php echo _("LTE settings") ;?></h4>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label for="cbxinterface"><?php echo _("Interface") ;?></label>
+      <?php
+        SelectorOptions('interface', $lte_interface, $arrConfig['interface'], 'cbxinterface');
+      ?>
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label for="txtapn"><?php echo _("APN"); ?></label>
+      <input type="text" id="txtapn" class="form-control" name="apn" value="<?php echo htmlspecialchars($arrConfig['apn'], ENT_QUOTES); ?>" />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label for="txtpin"><?php echo _("PIN"); ?></label>
+      <input type="text" id="txtpin" class="form-control" name="pin" value="<?php echo htmlspecialchars($arrConfig['pin'], ENT_QUOTES); ?>" />
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label for="cbxtype"><?php echo _("Authentication Type"); ?></label>
+      <select type="select" id="auth_type" class="form-control" name="auth_type" onchange="authTypeChange()">
+        <option value="pap/chap">PAP/CHAP</option>
+        <option value="pap">PAP</option>
+        <option value="chap">CHAP</option>
+        <option value="none" selected>NONE</option>
+      </select>
+    </div>
+  </div>
+  <div class="row">
+    <div id="username" class="form-group col-md-6">
+      <label for="txtusername"><?php echo _("PAP/CHAP username"); ?></label>
+      <input type="text" id="txtusername" class="form-control" name="username" value="<?php echo htmlspecialchars($arrConfig['username'], ENT_QUOTES); ?>" />
+    </div>
+  </div>
+
+  <div class="row">
+    <div id="password" class="form-group col-md-6">
+      <label for="txtpassword"><?php echo _("PAP/CHAP password"); ?></label>
+      <input type="text" id="txtpassword" class="form-control" name="password" value="<?php echo htmlspecialchars($arrConfig['password'], ENT_QUOTES); ?>" />
+    </div>
+  </div>
+</div><!-- /.tab-pane | basic tab -->
+<script type="text/javascript">
+    function authTypeChange(){
+      var objS = document.getElementById("auth_type");
+      var value = objS.value;
+      if (value == "none") {
+        document.getElementById("username").style.display="none";
+        document.getElementById("password").style.display="none";
+      } else {
+        document.getElementById("username").style.display="inline";
+        document.getElementById("password").style.display="inline";
+      }
+    }
+</script>
