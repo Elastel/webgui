@@ -1,19 +1,24 @@
 #! /bin/sh
 
-PROG=/usr/sbin/failoverd
+PROG=/usr/sbin/dctd
 
 do_start()
 {
+	local enabled hour_enabled day_enabled
+
+	enabled=$(uci get dct.basic.enabled)
+	[ "$enabled" = "1" ] || return
+
 	$PROG &
 }
 
 do_stop()
 {
-  	killall -q failoverd
+	killall -q dctd
 	sleep 1
-	[ -n "$(pgrep failoverd)" ] && {
+	[ -n "$(pgrep dctd)" ] && {
 		sleep 1
-		kill -9 $(pgrep failoverd)
+		kill -9 $(pgrep dctd)
 	}
 }
 
@@ -35,4 +40,3 @@ case "$1" in
 esac
 
 :
-

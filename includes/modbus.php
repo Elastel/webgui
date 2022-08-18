@@ -34,10 +34,10 @@ function saveModbusConfig($status)
     "Signed 32Bits ABCD", "Signed 32Bits BADC", "Signed 32Bits CDAB", "Signed 32Bits DCBA",
     "Float ABCD", "Float BADC", "Float CDAB", "Float DCBA");
 
-    exec("sudo /usr/local/bin/uci get dct.basic.modbus_count", $modbus_count);
+    exec("sudo /usr/sbin/uci_get_count modbus", $count);
 
-    if ($modbus_count[0] == null || strlen($modbus_count[0]) <= 0) {
-        $modbus_count[0] = 0;
+    if ($count[0] == null || strlen($count[0]) <= 0) {
+        $count[0] = 0;
     }
 
     foreach ($arr as $list=>$things) {
@@ -55,20 +55,18 @@ function saveModbusConfig($status)
                         exec("sudo /usr/local/bin/uci set dct.@modbus[$i].$key=0");
                     }
                 } else {
-                    exec("sudo /usr/local/bin/uci set dct.@modbus[$i].$key=$val");
+                    exec("sudo /usr/local/bin/uci set dct.@modbus[$i].$key='$val'");
                 }  
             }
         }
         $i++;
     }
 
-    if (number_format($modbus_count[0]) > $i) {
-        for ($j = $i; $j < number_format($modbus_count[0]); $j++) {
-            exec("sudo /usr/local/bin/uci delete dct.@modbus[$j]");
+    if (number_format($count[0]) > $i) {
+        for ($j = $i; $j < number_format($count[0]); $j++) {
+            exec("sudo /usr/local/bin/uci delete dct.@modbus[$i]");
         }
     }
-
-    exec("sudo /usr/local/bin/uci set dct.basic.modbus_count=$i");
 
     exec('sudo /usr/local/bin/uci commit dct');
 

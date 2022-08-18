@@ -53,13 +53,13 @@
               <div id="page_basic" name="page_basic">
                 <div class="cbi-value">
                   <label class="cbi-value-title"><?php echo _("Collect Period"); ?></label>
-                  <input type="text" class="cbi-input-text" name="collect_period" id="collect_period"" />
+                  <input type="text" class="cbi-input-text" name="collect_period" id="collect_period" value="5" />
                   <label class="cbi-value-description"><?php echo _("Seconds"); ?></label>
                 </div> 
 
                 <div class="cbi-value">
                   <label class="cbi-value-title"><?php echo _("Report Period"); ?></label>
-                  <input type="text" class="cbi-input-text" name="report_period" id="report_period" />
+                  <input type="text" class="cbi-input-text" name="report_period" id="report_period" value="10" />
                   <label class="cbi-value-description"><?php echo _("Seconds"); ?></label>
                 </div>
 
@@ -106,7 +106,9 @@
 <script type="text/javascript">
   function enableBasic(state) {
       if (state) {
-        $('#page_basic').show(); 
+        $('#page_basic').show();
+        enableCache(document.getElementById('cache_enabled'));
+        enableMinuteData(document.getElementById('minute_enabled'));
       } else {
         $('#page_basic').hide();
       }

@@ -52,13 +52,13 @@
 
       <div class="cbi-value">
         <label class="cbi-value-title"><?php echo _("Frame Interval"); ?></label>
-        <input type="text" class="cbi-input-text" name="com_frame_interval3" id="com_frame_interval3" />
+        <input type="text" class="cbi-input-text" name="com_frame_interval3" id="com_frame_interval3" value="200" />
         <label class="cbi-value-description"><?php echo _("ms"); ?></label>
       </div>
 
       <div class="cbi-value">
         <label class="cbi-value-title"><?php echo _("Protocol"); ?></label>
-        <select id="com_protocol3" name="com_protocol3" class="cbi-input-select" onchange="protocolChange3(this)">
+        <select id="com_proto3" name="com_proto3" class="cbi-input-select" onchange="protocolChange3(this)">
           <option value="0" selected="">Modbus</option>
           <option value="1">Transparent</option>
         </select>
@@ -66,13 +66,13 @@
 
       <div class="cbi-value" id="com_page_protocol_modbus3" name="com_page_protocol_modbus3">
         <label class="cbi-value-title"><?php echo _("Command Interval"); ?></label>
-        <input type="text" class="cbi-input-text" name="com_command_interval3" id="com_command_interval3" />
+        <input type="text" class="cbi-input-text" name="com_cmd_interval3" id="com_cmd_interval3" value="2" />
         <label class="cbi-value-description"><?php echo _("ms"); ?></label>
       </div>
 
       <div class="cbi-value" id="com_page_protocol_transparent3" name="com_page_protocol_transparent3">
         <label class="cbi-value-title"><?php echo _("Reporting Center"); ?></label>
-        <input type="text" class="cbi-input-text" name="com_reporting_center3" id="com_reporting_center3" />
+        <input type="text" class="cbi-input-text" name="com_report_center3" id="com_report_center3" />
         <label class="cbi-value-description"><?php echo _("1-2-3-4-5"); ?></label>
       </div>
     </div><!-- /.page_com -->
@@ -90,7 +90,7 @@
   }
 
   function protocolChange3(that) {
-    var protocol = document.getElementById("com_protocol3").value;
+    var protocol = document.getElementById("com_proto3").value;
 
     if (protocol == "0") {
       $('#com_page_protocol_modbus3').show();

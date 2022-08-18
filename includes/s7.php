@@ -33,10 +33,10 @@ function saveS7Config($status)
     $reg_type_value = array("I", "Q", "M", "DB", "V", "C", "T");
     $word_len_value = array("Bit", "Byte", "Word", "DWord", "Real", "Counter", "Timer");
 
-    exec("sudo /usr/local/bin/uci get dct.basic.s7_count", $s7_count);
+    exec("sudo /usr/sbin/uci_get_count s7", $count);
 
-    if ($s7_count[0] == null || strlen($s7_count[0]) <= 0) {
-        $s7_count[0] = 0;
+    if ($count[0] == null || strlen($count[0]) <= 0) {
+        $count[0] = 0;
     }
 
     foreach ($arr as $list=>$things) {
@@ -57,20 +57,18 @@ function saveS7Config($status)
                         exec("sudo /usr/local/bin/uci set dct.@s7[$i].$key=0");
                     }
                 } else {
-                    exec("sudo /usr/local/bin/uci set dct.@s7[$i].$key=$val");
+                    exec("sudo /usr/local/bin/uci set dct.@s7[$i].$key='$val'");
                 }  
             }
         }
         $i++;
     }
 
-    if (number_format($s7_count[0]) > $i) {
-        for ($j = $i; $j < number_format($s7_count[0]); $j++) {
-            exec("sudo /usr/local/bin/uci delete dct.@s7[$j]");
+    if (number_format($count[0]) > $i) {
+        for ($j = $i; $j < number_format($count[0]); $j++) {
+            exec("sudo /usr/local/bin/uci delete dct.@s7[$i]");
         }
     }
-
-    exec("sudo /usr/local/bin/uci set dct.basic.s7_count=$i");
 
     exec('sudo /usr/local/bin/uci commit dct');
 

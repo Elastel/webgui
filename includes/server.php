@@ -109,36 +109,48 @@ function saveServerConfig($status)
                     exec('sudo /usr/local/bin/uci set dct.server.mqtt_key' . $i . '=' . $_FILES['private_key' . $i]['name']);
                 }
             }
-            
-            exec('sudo /usr/local/bin/uci set dct.server.protocol' . $i . '=' .$_POST['protocol' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.encap_type' . $i . '=' .$_POST['encap' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.server_addr' . $i . '=' .$_POST['server_address' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.http_url' . $i . '=' .$_POST['http_url' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.server_port' . $i . '=' .$_POST['server_port' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.cache_enabled' . $i . '=' .$_POST['cache_enabled' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.register_packet' . $i . '=' .$_POST['register_packet' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.register_packet_hex' . $i . '=' .$_POST['register_packet_hex' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.heartbeat_packet' . $i . '=' .$_POST['heartbeat_packet' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.heartbeat_packet_hex' . $i . '=' .$_POST['heartbeat_packet_hex' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.heartbeat_interval' . $i . '=' .$_POST['heartbeat_interval' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.mqtt_heartbeat_interval' . $i . '=' .$_POST['mqtt_heartbeat_interval' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.mqtt_pub_topic' . $i . '=' .$_POST['mqtt_public_topic' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.mqtt_sub_topic' . $i . '=' .$_POST['mqtt_subscribe_topic' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.mqtt_username' . $i . '=' .$_POST['mqtt_username' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.mqtt_password' . $i . '=' .$_POST['mqtt_password' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.mqtt_client_id' . $i . '=' .$_POST['client_id' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.mqtt_tls_enabled' . $i . '=' .$_POST['mqtt_tls_enabled' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.certificate_type' . $i . '=' .$_POST['certificate_type' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.self_define_var' . $i . '=' .$_POST['self_define_var' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.var_name1_' . $i . '=' .$_POST['var_name1_' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.var_value1_' . $i . '=' .$_POST['var_value1_' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.var_name2_' . $i . '=' .$_POST['var_name2_' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.var_value2_' . $i . '=' .$_POST['var_value2_' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.var_name3_' . $i . '=' .$_POST['var_name3_' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.var_value3_' . $i . '=' .$_POST['var_value3_' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.mn' . $i . '=' .$_POST['mn' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.st' . $i . '=' .$_POST['st' . $i]);
-            exec('sudo /usr/local/bin/uci set dct.server.pw' . $i . '=' .$_POST['password' . $i]);
+            $serverInfo = array("proto", "encap_type", "server_addr", "http_url", "server_port", "cache_enabled", 
+                "register_packet", "register_packet_hex", "heartbeat_packet", "heartbeat_packet_hex", "heartbeat_interval",
+                "mqtt_heartbeat_interval", "mqtt_pub_topic", "mqtt_sub_topic", "mqtt_username", "mqtt_password", 
+                "mqtt_client_id", "mqtt_tls_enabled", "certificate_type", "mqtt_ca", "mqtt_cert", "mqtt_key", 
+                "self_define_var", "var_name1_", "var_value1_", "var_name2_", "var_value2_", "var_name3_", "var_value3_", 
+                "mn", "st", "pw");
+
+            foreach ($serverInfo as $info) {
+                if ($info != "mqtt_ca" && $info != "mqtt_cert" && $info != "mqtt_key") {
+                    exec('sudo /usr/local/bin/uci set dct.server.' . $info . $i . '=' .$_POST[$info . $i]);
+                } 
+            }
+
+            // exec('sudo /usr/local/bin/uci set dct.server.proto' . $i . '=' .$_POST['protocol' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.encap_type' . $i . '=' .$_POST['encap' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.server_addr' . $i . '=' .$_POST['server_address' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.http_url' . $i . '=' .$_POST['http_url' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.server_port' . $i . '=' .$_POST['server_port' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.cache_enabled' . $i . '=' .$_POST['cache_enabled' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.register_packet' . $i . '=' .$_POST['register_packet' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.register_packet_hex' . $i . '=' .$_POST['register_packet_hex' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.heartbeat_packet' . $i . '=' .$_POST['heartbeat_packet' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.heartbeat_packet_hex' . $i . '=' .$_POST['heartbeat_packet_hex' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.heartbeat_interval' . $i . '=' .$_POST['heartbeat_interval' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.mqtt_heartbeat_interval' . $i . '=' .$_POST['mqtt_heartbeat_interval' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.mqtt_pub_topic' . $i . '=' .$_POST['mqtt_public_topic' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.mqtt_sub_topic' . $i . '=' .$_POST['mqtt_subscribe_topic' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.mqtt_username' . $i . '=' .$_POST['mqtt_username' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.mqtt_password' . $i . '=' .$_POST['mqtt_password' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.mqtt_client_id' . $i . '=' .$_POST['client_id' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.mqtt_tls_enabled' . $i . '=' .$_POST['mqtt_tls_enabled' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.certificate_type' . $i . '=' .$_POST['certificate_type' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.self_define_var' . $i . '=' .$_POST['self_define_var' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.var_name1_' . $i . '=' .$_POST['var_name1_' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.var_value1_' . $i . '=' .$_POST['var_value1_' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.var_name2_' . $i . '=' .$_POST['var_name2_' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.var_value2_' . $i . '=' .$_POST['var_value2_' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.var_name3_' . $i . '=' .$_POST['var_name3_' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.var_value3_' . $i . '=' .$_POST['var_value3_' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.mn' . $i . '=' .$_POST['mn' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.st' . $i . '=' .$_POST['st' . $i]);
+            // exec('sudo /usr/local/bin/uci set dct.server.pw' . $i . '=' .$_POST['password' . $i]);
         }
     }
 

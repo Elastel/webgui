@@ -73,3 +73,4 @@ www-data ALL=(ALL) NOPASSWD:/bin/cp /var/www/html/config/dhcpcd.conf /etc/dhcpcd
 www-data ALL=(ALL) NOPASSWD:/bin/rm /etc/systemd/network/raspap-br0-member-eth0.network
 www-data ALL=(ALL) NOPASSWD:/usr/sbin/dhcpcd_restart
 www-data ALL=(ALL) NOPASSWD:/bin/systemctl restart systemd-networkd.service
+www-data ALL=(ALL) NOPASSWD:/usr/sbin/uci_get_count *

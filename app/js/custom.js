@@ -178,6 +178,11 @@ function contentLoaded() {
         case "s7_conf":
             loadS7Config();
             break;
+        case "io_conf":
+            loadADCConfig();
+            loadDIConfig();
+            loadDOConfig();
+            break;
         case "server_conf":
             loadServerConfig();
             break;
@@ -307,34 +312,41 @@ function loadBasicConfig() {
     $('#loading').show();
     $.get('ajax/dct/get_dctcfg.php?type=basic',function(data){
         jsonData = JSON.parse(data);
-        $('#enabled').val(jsonData.enabled);
-        $('#collect_period').val(jsonData.collect_period);
-        $('#report_period').val(jsonData.report_period);
-        $('#cache_enabled').prop('checked', (jsonData.cache_enabled == '1') ? true:false);
-        $('#cache_day').val(jsonData.cache_day);
-        $('#minute_enabled').prop('checked', (jsonData.minute_enabled == '1') ? true:false);
-        $('#minute_period').val(jsonData.minute_period);
-        $('#hour_enabled').prop('checked', (jsonData.hour_enabled == '1') ? true:false);
-        $('#day_enabled').prop('checked', (jsonData.day_enabled == '1') ? true:false);
+        var arr = ['collect_period', 'report_period', 'cache_enabled', 'cache_day', 'minute_enabled',
+        'minute_period', 'hour_enabled', 'day_enabled'];
 
+        $('#enabled').val(jsonData.enabled);
         if (jsonData.enabled == '1') {
             $('#page_basic').show();
             $('#basic_enable').prop('checked', true);
+
+            arr.forEach(function (info) {
+                if (info == null) {
+                    return true;    // continue: return true; break: return false
+                }
+    
+                if (info == 'cache_enabled' || info == 'minute_enabled' || info == 'hour_enabled' || 
+                    info == 'day_enabled') {
+                    $('#' + info).prop('checked', (jsonData[info] == '1') ? true:false);
+                } else {
+                    $('#' + info).val(jsonData[info]);
+                }
+            })
+            
+            if (jsonData.cache_enabled == '1') {
+                $('#page_cache_days').show();
+            } else {
+                $('#page_cache_days').hide();
+            }
+
+            if (jsonData.minute_enabled == '1') {
+                $('#page_minute_data').show();
+            } else {
+                $('#page_minute_data').hide();
+            }
         } else {
             $('#page_basic').hide(); 
             $('#basic_disable').prop('checked', true);
-        }
-
-        if (jsonData.cache_enabled == '1') {
-            $('#page_cache_days').show();
-        } else {
-            $('#page_cache_days').hide();
-        }
-
-        if (jsonData.minute_enabled == '1') {
-            $('#page_minute_data').show();
-        } else {
-            $('#page_minute_data').hide();
         }
 
         $('#loading').hide();
@@ -345,27 +357,31 @@ function loadInterfacesConfig() {
     $('#loading').show();
     $.get('ajax/dct/get_dctcfg.php?type=interfaces',function(data){
         jsonData = JSON.parse(data);
+        var arrCom = ['baudrate', 'databit', 'stopbit', 'parity', 'com_frame_interval',
+                    'com_proto', 'com_cmd_interval', 'com_report_center'];
 
         for (var i = 1; i <= 4; i++) {
             $('#com_enabled' + i).val(jsonData.com_enabled[i]);
             if (jsonData.com_enabled[i] == '1') {
                 $('#page_com' + i).show();
                 $('#com_enable' + i).prop('checked', true);
-                $('#baudrate' + i).val(jsonData.baudrate[i]);
-                $('#databit' + i).val(jsonData.databit[i]);
-                $('#stopbit' + i).val(jsonData.stopbit[i]);
-                $('#parity' + i).val(jsonData.parity[i]);
-                $('#com_frame_interval' + i).val(jsonData.com_frame_interval[i]);
-                $('#com_protocol' + i).val(jsonData.com_protocol[i]);   
 
-                if (jsonData.com_protocol[i] == '0') {
-                    $('#com_command_interval' + i).val(jsonData.com_command_interval[i]);
-                    $('#com_page_protocol_modbus' + i).show();
-                    $('#com_page_protocol_transparent' + i).hide();
-                } else {
-                    $('#com_reporting_center' + i).val(jsonData.com_reporting_center[i]);
+                arrCom.forEach(function (info) {
+                    if (jsonData[info][i] == null) {
+                        return true;    // continue: return true; break: return false
+                    }
+
+                    $('#' + info + i).val(jsonData[info][i]);
+                })
+
+                if (jsonData.com_proto[i] == '1') {
+                    //$('#com_report_center' + i).val(jsonData.com_report_center[i]);
                     $('#com_page_protocol_modbus' + i).hide();
                     $('#com_page_protocol_transparent' + i).show();
+                } else {
+                    //$('#com_cmd_interval' + i).val(jsonData.com_cmd_interval[i]);
+                    $('#com_page_protocol_modbus' + i).show();
+                    $('#com_page_protocol_transparent' + i).hide();
                 }
             } else {
                 $('#page_com' + i).hide(); 
@@ -373,33 +389,39 @@ function loadInterfacesConfig() {
             }
         }
 
+        var arrTcp = ['server_addr', 'server_port', 'tcp_frame_interval', 'tcp_proto', 'tcp_cmd_interval', 
+                    'tcp_report_center', 'rack', 'slot'];
+
         for (var i = 1; i <= 5; i++) {
             $('#tcp_enabled' + i).val(jsonData.tcp_enabled[i]);
             if (jsonData.tcp_enabled[i] == '1') {
                 $('#page_tcp' + i).show();
                 $('#tcp_enable' + i).prop('checked', true);
 
-                $('#server_address' + i).val(jsonData.server_address[i]);
-                $('#server_port' + i).val(jsonData.server_port[i]);
-                $('#tcp_frame_interval' + i).val(jsonData.tcp_frame_interval[i]);
-                $('#tcp_protocol' + i).val(jsonData.tcp_protocol[i]);
-                   
-                if (jsonData.tcp_protocol[i] == '0') {
-                    $('#tcp_command_interval' + i).val(jsonData.tcp_command_interval[i]);
-                    $('#tcp_page_protocol_modbus' + i).show();
+                arrTcp.forEach(function (info) {
+                    if (jsonData[info][i] == null) {
+                        return true;    // continue: return true; break: return false
+                    }
+
+                    $('#' + info + i).val(jsonData[info][i]);
+                })
+
+                if (jsonData.tcp_proto[i] == '2') {
+                    //$('#rack' + i).val(jsonData.rack[i]);
+                    //$('#slot' + i).val(jsonData.slot[i]);
+                    $('#tcp_page_protocol_modbus' + i).hide();
                     $('#tcp_page_protocol_transparent' + i).hide(); 
-                    $('#tcp_page_protocol_s7' + i).hide(); 
-                } else if (jsonData.tcp_protocol[i] == '1') {
-                    $('#tcp_reporting_center' + i).val(jsonData.tcp_reporting_center[i]);
+                    $('#tcp_page_protocol_s7' + i).show(); 
+                } else if (jsonData.tcp_proto[i] == '1') {
+                    //$('#tcp_report_center' + i).val(jsonData.tcp_report_center[i]);
                     $('#tcp_page_protocol_modbus' + i).hide();
                     $('#tcp_page_protocol_transparent' + i).show(); 
                     $('#tcp_page_protocol_s7' + i).hide(); 
                 } else {
-                    $('#rack' + i).val(jsonData.rack[i]);
-                    $('#slot' + i).val(jsonData.slot[i]);
-                    $('#tcp_page_protocol_modbus' + i).hide();
+                    //$('#tcp_cmd_interval' + i).val(jsonData.tcp_cmd_interval[i]);
+                    $('#tcp_page_protocol_modbus' + i).show();
                     $('#tcp_page_protocol_transparent' + i).hide(); 
-                    $('#tcp_page_protocol_s7' + i).show(); 
+                    $('#tcp_page_protocol_s7' + i).hide(); 
                 }
             } else {
                 $('#page_tcp' + i).hide(); 
@@ -415,26 +437,26 @@ function loadModbusConfig() {
     $('#loading').show();
     $.get('ajax/dct/get_dctcfg.php?type=modbus',function(data){
         jsonData = JSON.parse(data);
-        for (var i = 0; i < Number(jsonData.modbus_count); i++) {
+        for (var i = 0; i < Number(jsonData.count); i++) {
             var table = document.getElementsByTagName("table")[0];
             table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='order'>"+ (jsonData.order[i].length > 0 ? jsonData.order[i] : "-") + "</td>\n" +
-                "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i].length > 0 ? jsonData.device_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='belonged_com'>"+ (jsonData.belonged_com[i].length > 0 ? jsonData.belonged_com[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i].length > 0 ? jsonData.factor_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='device_id'>"+ (jsonData.device_id[i].length > 0 ? jsonData.device_id[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='function_code'>"+ (jsonData.function_code[i].length > 0 ? jsonData.function_code[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_addr'>"+ (jsonData.reg_addr[i].length > 0 ? jsonData.reg_addr[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_count'>"+ (jsonData.reg_count[i].length > 0 ? jsonData.reg_count[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='order'>"+ (jsonData.order[i] != null ? jsonData.order[i] : "-") + "</td>\n" +
+                "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='belonged_com'>"+ (jsonData.belonged_com[i] != null ? jsonData.belonged_com[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='device_id'>"+ (jsonData.device_id[i] != null ? jsonData.device_id[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='function_code'>"+ (jsonData.function_code[i] != null ? jsonData.function_code[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='reg_addr'>"+ (jsonData.reg_addr[i] != null ? jsonData.reg_addr[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='reg_count'>"+ (jsonData.reg_count[i] != null ? jsonData.reg_count[i] : "-") +"</td>\n" +
                 "        <td style='text-align:center' name='data_type'>"+ jsonData.data_type[i] +"</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i].length > 0 ? jsonData.server_center[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
                 "        <td style='display:none' name='operator'>"+ jsonData.operator[i] +"</td>\n" +
-                "        <td style='display:none' name='operand'>"+ (jsonData.operand[i].length > 0 ? jsonData.operand[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='ex'>"+ (jsonData.ex[i].length > 0 ? jsonData.ex[i] : "-") +"</td>\n" +
+                "        <td style='display:none' name='operand'>"+ (jsonData.operand[i] != null ? jsonData.operand[i] : "-") +"</td>\n" +
+                "        <td style='display:none' name='ex'>"+ (jsonData.ex[i] != null ? jsonData.ex[i] : "-") +"</td>\n" +
                 "        <td style='display:none' name='accuracy'>"+ jsonData.accuracy[i] +"</td>\n" +
                 "        <td style='text-align:center' name='enabled'>"+ jsonData.enabled[i] +"</td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"editDate(this);\" >Edit</a></td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"delDate(this);\" >Del</a></td>\n" +
+                "        <td><a href=\"javascript:void(0);\" onclick=\"editData(this);\" >Edit</a></td>\n" +
+                "        <td><a href=\"javascript:void(0);\" onclick=\"delData(this);\" >Del</a></td>\n" +
                 "    </tr>";
         }
 
@@ -452,25 +474,25 @@ function loadS7Config() {
         jsonData = JSON.parse(data);
         $.get('ajax/dct/get_dctcfg.php?type=s7',function(data){
             jsonData = JSON.parse(data);
-            for (var i = 0; i < Number(jsonData.s7_count); i++) {
+            for (var i = 0; i < Number(jsonData.count); i++) {
                 var table = document.getElementsByTagName("table")[0];
                 table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                    "        <td style='text-align:center' name='order'>"+ (jsonData.order[i].length > 0 ? jsonData.order[i] : "-") + "</td>\n" +
-                    "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i].length > 0 ? jsonData.device_name[i] : "-") +"</td>\n" +
-                    "        <td style='text-align:center' name='belonged_com'>"+ (jsonData.belonged_com[i].length > 0 ? jsonData.belonged_com[i] : "-") +"</td>\n" +
-                    "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i].length > 0 ? jsonData.factor_name[i] : "-") +"</td>\n" +
-                    "        <td style='text-align:center' name='reg_type'>"+ (jsonData.reg_type[i].length > 0 ? jsonData.reg_type[i] : "-") +"</td>\n" +
-                    "        <td style='text-align:center' name='reg_addr'>"+ (jsonData.reg_addr[i].length > 0 ? jsonData.reg_addr[i] : "-") +"</td>\n" +
-                    "        <td style='text-align:center' name='reg_count'>"+ (jsonData.reg_count[i].length > 0 ? jsonData.reg_count[i] : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='order'>"+ (jsonData.order[i] != null ? jsonData.order[i] : "-") + "</td>\n" +
+                    "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='belonged_com'>"+ (jsonData.belonged_com[i] != null ? jsonData.belonged_com[i] : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='reg_type'>"+ (jsonData.reg_type[i] != null ? jsonData.reg_type[i] : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='reg_addr'>"+ (jsonData.reg_addr[i] != null ? jsonData.reg_addr[i] : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='reg_count'>"+ (jsonData.reg_count[i] != null ? jsonData.reg_count[i] : "-") +"</td>\n" +
                     "        <td style='text-align:center' name='word_len'>"+ jsonData.word_len[i] +"</td>\n" +
-                    "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i].length > 0 ? jsonData.server_center[i] : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
                     "        <td style='display:none' name='operator'>"+ jsonData.operator[i] +"</td>\n" +
-                    "        <td style='display:none' name='operand'>"+ (jsonData.operand[i].length > 0 ? jsonData.operand[i] : "-") +"</td>\n" +
-                    "        <td style='display:none' name='ex'>"+ (jsonData.ex[i].length > 0 ? jsonData.ex[i] : "-") +"</td>\n" +
+                    "        <td style='display:none' name='operand'>"+ (jsonData.operand[i] != null ? jsonData.operand[i] : "-") +"</td>\n" +
+                    "        <td style='display:none' name='ex'>"+ (jsonData.ex[i] != null ? jsonData.ex[i] : "-") +"</td>\n" +
                     "        <td style='display:none' name='accuracy'>"+ jsonData.accuracy[i] +"</td>\n" +
                     "        <td style='text-align:center' name='enabled'>"+ jsonData.enabled[i] +"</td>\n" +
-                    "        <td><a href=\"javascript:void(0);\" onclick=\"editS7Date(this);\" >Edit</a></td>\n" +
-                    "        <td><a href=\"javascript:void(0);\" onclick=\"delS7Date(this);\" >Del</a></td>\n" +
+                    "        <td><a href=\"javascript:void(0);\" onclick=\"editS7Data(this);\" >Edit</a></td>\n" +
+                    "        <td><a href=\"javascript:void(0);\" onclick=\"delS7Data(this);\" >Del</a></td>\n" +
                     "    </tr>";
             }
 
@@ -483,66 +505,142 @@ function loadS7Config() {
     });
 }
 
+function loadADCConfig() {
+    $('#loading').show();
+    $.get('ajax/dct/get_dctcfg.php?type=adc',function(data){
+        jsonData = JSON.parse(data);
+        for (var i = 0; i < Number(jsonData.count); i++) {
+            var table = document.getElementsByTagName("table")[0];
+            table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
+                "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='index'>"+ jsonData.index[i] + "</td>\n" +
+                "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='cap_type'>"+ jsonData.cap_type[i] + "</td>\n" +
+                "        <td style='text-align:center' name='range_down'>"+ (jsonData.range_down[i] != null ? jsonData.range_down[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='range_up'>"+ (jsonData.range_up[i] != null ? jsonData.range_up[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
+                "        <td style='display:none' name='operator'>"+ jsonData.operator[i] +"</td>\n" +
+                "        <td style='display:none' name='operand'>"+ (jsonData.operand[i] != null ? jsonData.operand[i] : "-") +"</td>\n" +
+                "        <td style='display:none' name='ex'>"+ (jsonData.ex[i] != null ? jsonData.ex[i] : "-") +"</td>\n" +
+                "        <td style='display:none' name='accuracy'>"+ jsonData.accuracy[i] +"</td>\n" +
+                "        <td style='text-align:center' name='enabled'>"+ jsonData.enabled[i] +"</td>\n" +
+                "        <td><a href=\"javascript:void(0);\" onclick=\"editDataADC(this);\" >Edit</a></td>\n" +
+                "        <td><a href=\"javascript:void(0);\" onclick=\"delDataADC(this);\" >Del</a></td>\n" +
+                "    </tr>";
+        }
+
+        var result = getTableDataADC();
+        var json_data = JSON.stringify(result);
+        $('#hidTDADC').val(json_data);
+
+        $('#loading').hide();
+    });
+}
+
+function loadDIConfig() {
+    $('#loading').show();
+    $.get('ajax/dct/get_dctcfg.php?type=di',function(data){
+        jsonData = JSON.parse(data);
+        for (var i = 0; i < Number(jsonData.count); i++) {
+            var table = document.getElementsByTagName("table")[1];
+            table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
+                "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='index'>"+ jsonData.index[i] +"</td>\n" +
+                "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='mode'>"+ jsonData.mode[i] +"</td>\n" +
+                "        <td style='text-align:center' name='count_method'>" + jsonData.count_method[i] + "</td>\n" +
+                "        <td style='text-align:center' name='debounce_interval'>"+ (jsonData.debounce_interval[i] != null ? jsonData.debounce_interval[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
+                "        <td style='display:none' name='operator'>"+ jsonData.operator[i] +"</td>\n" +
+                "        <td style='display:none' name='operand'>"+ (jsonData.operand[i] != null ? jsonData.operand[i] : "-") +"</td>\n" +
+                "        <td style='display:none' name='ex'>"+ (jsonData.ex[i] != null ? jsonData.ex[i] : "-") +"</td>\n" +
+                "        <td style='display:none' name='accuracy'>"+ jsonData.accuracy[i] +"</td>\n" +
+                "        <td style='text-align:center' name='enabled'>"+ jsonData.enabled[i] +"</td>\n" +
+                "        <td><a href=\"javascript:void(0);\" onclick=\"editDataDI(this);\" >Edit</a></td>\n" +
+                "        <td><a href=\"javascript:void(0);\" onclick=\"delDataDI(this);\" >Del</a></td>\n" +
+                "    </tr>";
+        }
+
+        var result = getTableDataDI();
+        var json_data = JSON.stringify(result);
+        $('#hidTDDI').val(json_data);
+
+        $('#loading').hide();
+    });
+}
+
+function loadDOConfig() {
+    $('#loading').show();
+    $.get('ajax/dct/get_dctcfg.php?type=do',function(data){
+        jsonData = JSON.parse(data);
+        for (var i = 0; i < Number(jsonData.count); i++) {
+            var table = document.getElementsByTagName("table")[2];
+            table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
+                "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='index'>"+ jsonData.index[i] + "</td>\n" +
+                "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='init_status'>"+ jsonData.init_status[i] + "</td>\n" +
+                "        <td style='text-align:center' name='cur_status'>"+ jsonData.cur_status[i] + "</td>\n" +
+                "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
+                "        <td style='display:none' name='operator'>"+ jsonData.operator[i] +"</td>\n" +
+                "        <td style='display:none' name='operand'>"+ (jsonData.operand[i] != null ? jsonData.operand[i] : "-") +"</td>\n" +
+                "        <td style='display:none' name='ex'>"+ (jsonData.ex[i] != null ? jsonData.ex[i] : "-") +"</td>\n" +
+                "        <td style='display:none' name='accuracy'>"+ jsonData.accuracy[i] +"</td>\n" +
+                "        <td style='text-align:center' name='enabled'>"+ jsonData.enabled[i] +"</td>\n" +
+                "        <td><a href=\"javascript:void(0);\" onclick=\"editDataDO(this);\" >Edit</a></td>\n" +
+                "        <td><a href=\"javascript:void(0);\" onclick=\"delDataDO(this);\" >Del</a></td>\n" +
+                "    </tr>";
+        }
+
+        var result = getTableDataDO();
+        var json_data = JSON.stringify(result);
+        $('#hidTDDO').val(json_data);
+
+        $('#loading').hide();
+    });
+}
+
 function loadServerConfig() {
     $('#loading').show();
     $.get('ajax/dct/get_dctcfg.php?type=server',function(data){
         jsonData = JSON.parse(data);
+
+        var arr = ["proto", "encap_type", "server_addr", "http_url", "server_port", "cache_enabled", 
+        "register_packet", "register_packet_hex", "heartbeat_packet", "heartbeat_packet_hex", "heartbeat_interval",
+        "mqtt_heartbeat_interval", "mqtt_pub_topic", "mqtt_sub_topic", "mqtt_username", "mqtt_password", 
+        "mqtt_client_id", "mqtt_tls_enabled", "certificate_type", "mqtt_ca", "mqtt_cert", "mqtt_key", 
+        "self_define_var", "var_name1_", "var_value1_", "var_name2_", "var_value2_", "var_name3_", "var_value3_", 
+        "mn", "st", "pw"];
 
         for (var i = 1; i <= 5; i++) {
             $('#enabled' + i).val(jsonData.enabled[i]);
             if (jsonData.enabled[i] == '1') {
                 $('#page_server' + i).show();
                 $('#enable' + i).prop('checked', true);
-
-                $('#protocol' + i).val(jsonData.protocol[i]);
-                $('#encap' + i).val(jsonData.encap[i]);
-                $('#server_address' + i).val(jsonData.server_address[i]);
-                $('#http_url' + i).val(jsonData.http_url[i]);
-                $('#server_port' + i).val(jsonData.server_port[i]);
-                $('#cache_enabled' + i).prop('checked', (jsonData.cache_enabled[i] == '1') ? true:false);
-                $('#register_packet' + i).val(jsonData.register_packet[i]);
-                $('#register_packet_hex' + i).prop('checked', (jsonData.register_packet_hex[i] == '1') ? true:false);
-                $('#heartbeat_packet' + i).val(jsonData.heartbeat_packet[i]);  
-                $('#heartbeat_packet_hex' + i).prop('checked', (jsonData.heartbeat_packet_hex[i] == '1') ? true:false);
-                $('#heartbeat_interval' + i).val(jsonData.heartbeat_interval[i]);
-                $('#mqtt_heartbeat_interval' + i).val(jsonData.mqtt_heartbeat_interval[i]);
-                $('#mqtt_public_topic' + i).val(jsonData.mqtt_public_topic[i]);
-                $('#mqtt_subscribe_topic' + i).val(jsonData.mqtt_subscribe_topic[i]);
-                $('#mqtt_username' + i).val(jsonData.mqtt_username[i]);
-                $('#mqtt_password' + i).val(jsonData.mqtt_password[i]);
-                $('#client_id' + i).val(jsonData.client_id[i]);
-                $('#mqtt_tls_enabled' + i).prop('checked', (jsonData.mqtt_tls_enabled[i] == '1') ? true:false);
-                $('#certificate_type' + i).val(jsonData.certificate_type[i]);
-                // $('#ca_file' + i).val(jsonData.ca_file[i]);
-                // $('#pubulic_cer' + i).val(jsonData.pubulic_cer[i]);
-                // $('#private_key' + i).val(jsonData.private_key[i]);
-                $('#self_define_var' + i).prop('checked', (jsonData.self_define_var[i] == '1') ? true:false);
-                $('#var_name1_' + i).val(jsonData.var_name1[i]);
-                $('#var_value1_' + i).val(jsonData.var_value1[i]);
-                $('#var_name2_' + i).val(jsonData.var_name2[i]);
-                $('#var_value2_' + i).val(jsonData.var_value2[i]);
-                $('#var_name3_' + i).val(jsonData.var_name3[i]);
-                $('#var_value3_' + i).val(jsonData.var_value3[i]);
-                $('#mn' + i).val(jsonData.mn[i]);
-                $('#st' + i).val(jsonData.st[i]);
-                $('#password' + i).val(jsonData.password[i]);
-                protocolChange(i);
-
-                if (jsonData.ca_file_exists[i] == '1') {
-                    $('#ca_text' + i).val('1');
-                    $('#ca_text' + i).html(jsonData.ca_file[i]);
-                }
-
-                if (jsonData.cer_file_exists[i] == '1') {
-                    $('#cer_text' + i).val('1');
-                    $('#cer_text' + i).html(jsonData.pubulic_cer[i]);
-                }
-
-                if (jsonData.key_file_exists[i] == '1') {
-                    $('#key_text' + i).val('1');
-                    $('#key_text' + i).html(jsonData.private_key[i]);
-                }
-                
+                arr.forEach(function (info) {
+                    if (info == "cache_enabled" || info == "register_packet_hex" || info == "heartbeat_packet_hex" ||
+                        info == "mqtt_tls_enabled" ||  info == "self_define_var") {
+                        $('#' + info + i).prop('checked', (jsonData[info][i] == '1') ? true:false);
+                    } else if (info == "mqtt_ca") {
+                        if (jsonData.ca_file_exists[i] == '1') {
+                            $('#' + info + i).val('1');
+                            $('#' + info + i).html(jsonData.mqtt_ca[i]);
+                        }
+                    } else if (info == "mqtt_cert") {
+                        if (jsonData.cer_file_exists[i] == '1') {
+                            $('#' + info + i).val('1');
+                            $('#' + info + i).html(jsonData.mqtt_cert[i]);
+                        }
+                    } else if (info == "mqtt_key") {
+                        if (jsonData.key_file_exists[i] == '1') {
+                            $('#' + info + i).val('1');
+                            $('#' + info + i).html(jsonData.mqtt_key[i]);
+                        }
+                    } else {
+                        $('#' + info + i).val(jsonData[info][i]);
+                    }
+                    protocolChange(i);
+                });           
             } else {
                 $('#page_server' + i).hide(); 
                 $('#disable' + i).prop('checked', true);
@@ -868,7 +966,7 @@ function enableServer(state, num) {
 }
 
 function protocolChange(num) {
-    var protocol = document.getElementById('protocol' + num).value;
+    var protocol = document.getElementById('proto' + num).value;
 
     enableTls(num);
     cerChange(num);
@@ -917,7 +1015,7 @@ function protocolChange(num) {
 }
 
 function encapChange(num) {
-    var encap_type = document.getElementById('encap' + num).value;
+    var encap_type = document.getElementById('encap_type' + num).value;
 
     if (encap_type == 0) {
         $('#page_json' + num).hide();
@@ -967,21 +1065,21 @@ function cerChange(num) {
 }
 
 function caFileChange(num) {
-    $('#ca_text' + num).html($('#ca_file' + num)[0].files[0].name);
+    $('#ca_text' + num).html($('#mqtt_ca' + num)[0].files[0].name);
 }
 
 function cerFileChange(num) {
-    $('#cer_text' + num).html($('#pubulic_cer' + num)[0].files[0].name);
+    $('#cer_text' + num).html($('#mqtt_cert' + num)[0].files[0].name);
 }
 
 function keyFileChange(num) {
-    $('#key_text' + num).html($('#private_key' + num)[0].files[0].name);
+    $('#key_text' + num).html($('#mqtt_key' + num)[0].files[0].name);
 }
 
 function openBox() {
     $('#popBox').show();
     $('#popLayer').show();
-
+    document.getElementById("popBox").scrollTop = 0;
     selectOperator();
 };
 
@@ -1089,8 +1187,8 @@ function saveData() {
             "        <td style='display:none' name='ex'>"+ (ex.length > 0 ? ex : "-") +"</td>\n" +
             "        <td style='display:none' name='accuracy'>"+ accuracy +"</td>\n" +
             "        <td style='text-align:center' name='enabled'>"+ enabled +"</td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"editDate(this);\" >Edit</a></td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"delDate(this);\" >Del</a></td>\n" +
+            "        <td><a href=\"javascript:void(0);\" onclick=\"editData(this);\" >Edit</a></td>\n" +
+            "        <td><a href=\"javascript:void(0);\" onclick=\"delData(this);\" >Del</a></td>\n" +
             "    </tr>";
     } else {
         var table = document.getElementById("table_modbus");
@@ -1118,7 +1216,7 @@ function saveData() {
     closeBox();
 }
 
-function delDate(object) {
+function delData(object) {
     var table = object.parentNode.parentNode.parentNode;
     var tr = object.parentNode.parentNode;
     table.removeChild(tr);
@@ -1128,7 +1226,7 @@ function delDate(object) {
     $('#hidTD').val(json_data);
 }
 
-function editDate(object) {
+function editData(object) {
     var row = $(object).parent().parent().parent().prevAll().length + 1;
     document.getElementById("page_type").value = row;
     var num = 0;
@@ -1200,7 +1298,7 @@ function get_table_data_s7() {
     return result;
 }
   
-function delS7Date(object) {
+function delS7Data(object) {
     var table = object.parentNode.parentNode.parentNode;
     var tr = object.parentNode.parentNode;
     table.removeChild(tr);
@@ -1257,8 +1355,8 @@ function saveS7Data() {
             "        <td style='display:none'>"+ (ex.length > 0 ? ex : "-") +"</td>\n" +
             "        <td style='display:none'>"+ accuracy +"</td>\n" +
             "        <td style='text-align:center'>"+ enabled +"</td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"editS7Date(this);\" >Edit</a></td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"delS7Date(this);\" >Del</a></td>\n" +
+            "        <td><a href=\"javascript:void(0);\" onclick=\"editS7Data(this);\" >Edit</a></td>\n" +
+            "        <td><a href=\"javascript:void(0);\" onclick=\"delS7Data(this);\" >Del</a></td>\n" +
             "    </tr>";
     } else {
         var table = document.getElementById("table_s7");
@@ -1285,7 +1383,7 @@ function saveS7Data() {
     closeBox();
 }
   
-function editS7Date(object) {
+function editS7Data(object) {
     var row = $(object).parent().parent().parent().prevAll().length + 1;
     var num = 0;
     document.getElementById("page_type").value = row;
@@ -1327,3 +1425,482 @@ function editS7Date(object) {
 
     openBox();
 }
+
+function selectMode() {
+    var mode = document.getElementById("widget.mode").value;
+
+    if (mode == "0") {
+      $('#pageCount').show();
+    } else {
+      $('#pageCount').hide();
+    }
+  }
+
+  function switchPage(name) {
+    if (name == "btnADC") {
+        document.getElementById("popBoxTitle").innerHTML="ADC Setting";
+        document.getElementById("page_name").value = "0"; /* 0 is ADC. 1 is DI, 2 is DO */
+        $('#pageIndexADC').show();
+        $('#pageIndexDI').hide();
+        $('#pageIndexDO').hide();
+        $('#pageADCMod').show();
+        $('#pageDIMod').hide();
+        $('#pageDOMod').hide();
+
+      } else if (name == "btnDI") {
+        document.getElementById("popBoxTitle").innerHTML="DI Setting";
+        document.getElementById("page_name").value = "1";
+        $('#pageIndexADC').hide();
+        $('#pageIndexDI').show();
+        $('#pageIndexDO').hide();
+        $('#pageADCMod').hide();
+        $('#pageDIMod').show();
+        $('#pageDOMod').hide();
+        selectMode();
+      } else if (name == "btnDO") {
+        document.getElementById("popBoxTitle").innerHTML="DO Setting";
+        document.getElementById("page_name").value = "2";
+        $('#pageIndexADC').hide();
+        $('#pageIndexDI').hide();
+        $('#pageIndexDO').show();
+        $('#pageADCMod').hide();
+        $('#pageDIMod').hide();
+        $('#pageDOMod').show();
+      }
+  }
+
+  function addDataIO(object) {
+      openBox();
+      document.getElementById("page_type").value = "0"; /* 0 is add. other is edit */
+      var name = object.name;
+      switchPage(name);
+  }
+
+  function getTableDataADC() {
+    var tr = $("#tableADC tr");
+    var result = [];
+    var num = 0;
+
+    for (var i = 2; i < tr.length; i++) {
+        var tds = $(tr[i]).find("td");
+        if (tds.length > 0) {
+        result.push({
+            'device_name':$(tds[num++]).html(),
+            'index':$(tds[num++]).html(),
+            'factor_name':$(tds[num++]).html(),
+            'cap_type':$(tds[num++]).html(),
+            'range_down':$(tds[num++]).html(),
+            'range_up':$(tds[num++]).html(),
+            'server_center':$(tds[num++]).html(),
+            'operator':$(tds[num++]).html(),
+            'operand':$(tds[num++]).html(),
+            'ex':$(tds[num++]).html(),
+            'accuracy':$(tds[num++]).html(),
+            'enabled':$(tds[num++]).html()
+        });
+        }
+    }
+
+    return result;
+  }
+
+  function getTableDataDI() {
+    var tr = $("#tableDI tr");
+    var result = [];
+    var num = 0;
+
+    for (var i = 2; i < tr.length; i++) {
+        var tds = $(tr[i]).find("td");
+        if (tds.length > 0) {
+        result.push({
+            'device_name':$(tds[num++]).html(),
+            'index':$(tds[num++]).html(),
+            'factor_name':$(tds[num++]).html(),
+            'mode':$(tds[num++]).html(),
+            'count_method':$(tds[num++]).html(),
+            'debounce_interval':$(tds[num++]).html(),
+            'server_center':$(tds[num++]).html(),
+            'operator':$(tds[num++]).html(),
+            'operand':$(tds[num++]).html(),
+            'ex':$(tds[num++]).html(),
+            'accuracy':$(tds[num++]).html(),
+            'enabled':$(tds[num++]).html()
+        });
+        }
+    }
+
+    return result;
+  }
+
+  function getTableDataDO() {
+    var tr = $("#tableDO tr");
+    var result = [];
+    var num = 0;
+
+    for (var i = 2; i < tr.length; i++) {
+        var tds = $(tr[i]).find("td");
+        if (tds.length > 0) {
+        result.push({
+            'device_name':$(tds[num++]).html(),
+            'index':$(tds[num++]).html(),
+            'factor_name':$(tds[num++]).html(),
+            'init_status':$(tds[num++]).html(),
+            'cur_status':$(tds[num++]).html(),
+            'server_center':$(tds[num++]).html(),
+            'operator':$(tds[num++]).html(),
+            'operand':$(tds[num++]).html(),
+            'ex':$(tds[num++]).html(),
+            'accuracy':$(tds[num++]).html(),
+            'enabled':$(tds[num++]).html()
+        });
+        }
+    }
+
+    return result;
+  }
+
+  function saveDateADC() {
+    var result = [];
+    var device_name = document.getElementById("widget.device_name").value;
+    var index = document.getElementById("widget.index.adc").value;
+    var factor_name = document.getElementById("widget.factor_name").value;
+    var cap_type = document.getElementById("widget.cap_type").value;
+    var range_down = document.getElementById("widget.range_down").value;
+    var range_up = document.getElementById("widget.range_up").value;
+    var server_center = document.getElementById("widget.server_center").value;
+    var operator = document.getElementById("widget.operator").value;
+    var operand = document.getElementById("widget.operand").value;
+    var ex = document.getElementById("widget.ex").value;
+    var accuracy = document.getElementById("widget.accuracy").value;
+    var enabled = document.getElementById("widget.enabled").checked;
+    var page_type = document.getElementById("page_type").value;
+    var cap_type_value = new Array("4-20mA", "0-10V");
+
+    var cap_type_num = Number(cap_type);
+    cap_type = cap_type_value[cap_type_num];
+
+    if (page_type == "0") {
+        var table = document.getElementsByTagName("table")[0];
+        table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
+            "        <td style='text-align:center' name='device_name'>"+ (device_name.length > 0 ? device_name : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='index'>"+ (index.length > 0 ? index : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='factor_name'>"+ (factor_name.length > 0 ? factor_name : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='cap_type'>"+ (cap_type.length > 0 ? cap_type : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='range_down'>"+ (range_down.length > 0 ? range_down : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='range_up'>"+ (range_up.length > 0 ? range_up : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='server_center'>"+ (server_center.length > 0 ? server_center : "-") +"</td>\n" +
+            "        <td style='display:none' name='operator'>"+ operator +"</td>\n" +
+            "        <td style='display:none' name='operand'>"+ (operand.length > 0 ? operand : "-") +"</td>\n" +
+            "        <td style='display:none' name='ex'>"+ (ex.length > 0 ? ex : "-") +"</td>\n" +
+            "        <td style='display:none' name='accuracy'>"+ accuracy +"</td>\n" +
+            "        <td style='text-align:center' name='enabled'>"+ enabled +"</td>\n" +
+            "        <td><a href=\"javascript:void(0);\" onclick=\"editDataADC(this);\" >Edit</a></td>\n" +
+            "        <td><a href=\"javascript:void(0);\" onclick=\"delDataADC(this);\" >Del</a></td>\n" +
+            "    </tr>";
+    } else {
+        var table = document.getElementById("tableADC");
+        var num = 0;
+        table.rows[Number(page_type)].cells[num++].innerHTML = (device_name.length > 0 ? device_name : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (index.length > 0 ? index : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (factor_name.length > 0 ? factor_name : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (cap_type.length > 0 ? cap_type : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (range_down.length > 0 ? range_down : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (range_up.length > 0 ? range_up : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (server_center.length > 0 ? server_center : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = operator;
+        table.rows[Number(page_type)].cells[num++].innerHTML = (operand.length > 0 ? operand : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (ex.length > 0 ? ex : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = accuracy;
+        table.rows[Number(page_type)].cells[num++].innerHTML = enabled;
+    }
+
+    result = getTableDataADC();
+    var json_data = JSON.stringify(result);
+    $('#hidTDADC').val(json_data);
+  }
+
+  function saveDateDI() {
+    var result = [];
+    var device_name = document.getElementById("widget.device_name").value;
+    var index = document.getElementById("widget.index.di").value;
+    var factor_name = document.getElementById("widget.factor_name").value;
+    var mode = document.getElementById("widget.mode").value;
+    var count_method = document.getElementById("widget.count_method").value;
+    var debounce_interval = document.getElementById("widget.debounce_interval").value;
+    var server_center = document.getElementById("widget.server_center").value;
+    var operator = document.getElementById("widget.operator").value;
+    var operand = document.getElementById("widget.operand").value;
+    var ex = document.getElementById("widget.ex").value;
+    var accuracy = document.getElementById("widget.accuracy").value;
+    var enabled = document.getElementById("widget.enabled").checked;
+    var page_type = document.getElementById("page_type").value;
+    var mode_value = new Array("Counting Mode", "Status Mode");
+    var mode_num = Number(mode);
+
+    var method_value = new Array("Rising Edge", "Falling Edge");
+    var method_num = Number(count_method);
+
+    if (mode == "1") {
+      count_method = "-";
+      debounce_interval = "-";
+    } else {
+      count_method = method_value[method_num];
+    }
+
+    mode = mode_value[mode_num];
+
+    if (page_type == "0") {
+        var table = document.getElementsByTagName("table")[1];
+        table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
+            "        <td style='text-align:center' name='device_name'>"+ (device_name.length > 0 ? device_name : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='index'>"+ (index.length > 0 ? index : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='factor_name'>"+ (factor_name.length > 0 ? factor_name : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='mode'>"+ (mode.length > 0 ? mode : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='count_method'>"+ (count_method.length > 0 ? count_method : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='debounce_interval'>"+ (debounce_interval.length > 0 ? debounce_interval : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='server_center'>"+ (server_center.length > 0 ? server_center : "-") +"</td>\n" +
+            "        <td style='display:none' name='operator'>"+ operator +"</td>\n" +
+            "        <td style='display:none' name='operand'>"+ (operand.length > 0 ? operand : "-") +"</td>\n" +
+            "        <td style='display:none' name='ex'>"+ (ex.length > 0 ? ex : "-") +"</td>\n" +
+            "        <td style='display:none' name='accuracy'>"+ accuracy +"</td>\n" +
+            "        <td style='text-align:center' name='enabled'>"+ enabled +"</td>\n" +
+            "        <td><a href=\"javascript:void(0);\" onclick=\"editDataDI(this);\" >Edit</a></td>\n" +
+            "        <td><a href=\"javascript:void(0);\" onclick=\"delDataDI(this);\" >Del</a></td>\n" +
+            "    </tr>";
+    } else {
+        var table = document.getElementById("tableDI");
+        var num = 0;
+        table.rows[Number(page_type)].cells[num++].innerHTML = (device_name.length > 0 ? device_name : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (index.length > 0 ? index : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (factor_name.length > 0 ? factor_name : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (mode.length > 0 ? mode : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (count_method.length > 0 ? count_method : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (debounce_interval.length > 0 ? debounce_interval : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (server_center.length > 0 ? server_center : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = operator;
+        table.rows[Number(page_type)].cells[num++].innerHTML = (operand.length > 0 ? operand : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (ex.length > 0 ? ex : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = accuracy;
+        table.rows[Number(page_type)].cells[num++].innerHTML = enabled;
+    }
+
+    result = getTableDataDI();
+    var json_data = JSON.stringify(result);
+    $('#hidTDDI').val(json_data);
+  }
+
+  function saveDateDO() {
+    var result = [];
+    var device_name = document.getElementById("widget.device_name").value;
+    var index = document.getElementById("widget.index.do").value;
+    var factor_name = document.getElementById("widget.factor_name").value;
+    var init_status = document.getElementById("widget.init_status").value;
+    var cur_status = document.getElementById("widget.cur_status").innerHTML;
+    var server_center = document.getElementById("widget.server_center").value;
+    var operator = document.getElementById("widget.operator").value;
+    var operand = document.getElementById("widget.operand").value;
+    var ex = document.getElementById("widget.ex").value;
+    var accuracy = document.getElementById("widget.accuracy").value;
+    var enabled = document.getElementById("widget.enabled").checked;
+    var page_type = document.getElementById("page_type").value;
+    var status_value = new Array("Open", "Close");
+    var status_num = Number(init_status);
+
+    init_status = status_value[status_num];
+
+    if (page_type == "0") {
+        var table = document.getElementsByTagName("table")[2];
+        table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
+            "        <td style='text-align:center' name='device_name'>"+ (device_name.length > 0 ? device_name : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='index'>"+ (index.length > 0 ? index : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='factor_name'>"+ (factor_name.length > 0 ? factor_name : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='init_status'>"+ (init_status.length > 0 ? init_status : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='cur_status'>"+ (cur_status.length > 0 ? cur_status : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='server_center'>"+ (server_center.length > 0 ? server_center : "-") +"</td>\n" +
+            "        <td style='display:none' name='operator'>"+ operator +"</td>\n" +
+            "        <td style='display:none' name='operand'>"+ (operand.length > 0 ? operand : "-") +"</td>\n" +
+            "        <td style='display:none' name='ex'>"+ (ex.length > 0 ? ex : "-") +"</td>\n" +
+            "        <td style='display:none' name='accuracy'>"+ accuracy +"</td>\n" +
+            "        <td style='text-align:center' name='enabled'>"+ enabled +"</td>\n" +
+            "        <td><a href=\"javascript:void(0);\" onclick=\"editDataDO(this);\" >Edit</a></td>\n" +
+            "        <td><a href=\"javascript:void(0);\" onclick=\"delDataDO(this);\" >Del</a></td>\n" +
+            "    </tr>";
+    } else {
+        var table = document.getElementById("tableDO");
+        var num = 0;
+        table.rows[Number(page_type)].cells[num++].innerHTML = (device_name.length > 0 ? device_name : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (index.length > 0 ? index : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (factor_name.length > 0 ? factor_name : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (init_status.length > 0 ? init_status : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (cur_status.length > 0 ? cur_status : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (server_center.length > 0 ? server_center : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = operator;
+        table.rows[Number(page_type)].cells[num++].innerHTML = (operand.length > 0 ? operand : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (ex.length > 0 ? ex : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = accuracy;
+        table.rows[Number(page_type)].cells[num++].innerHTML = enabled;
+    }
+
+    result = getTableDataDO();
+    var json_data = JSON.stringify(result);
+    $('#hidTDDO').val(json_data); 
+  }
+
+  function saveDataIO() {
+    var page_name = document.getElementById("page_name").value;
+
+    if (page_name == "0") {
+      saveDateADC();
+    } else if (page_name == "1") {
+      saveDateDI();
+    } else {
+      saveDateDO();
+    }
+
+    closeBox();
+  }
+
+  function delDataADC(object) {
+    var table = object.parentNode.parentNode.parentNode;
+    var tr = object.parentNode.parentNode;
+    table.removeChild(tr);
+
+    var result = getTableDataADC();
+    var json_data = JSON.stringify(result);
+    $('#hidTDADC').val(json_data);
+  }
+
+  function delDataDI(object) {
+    var table = object.parentNode.parentNode.parentNode;
+    var tr = object.parentNode.parentNode;
+    table.removeChild(tr);
+
+    var result = getTableDataDI();
+    var json_data = JSON.stringify(result);
+    $('#hidTDDI').val(json_data);
+  }
+
+  function delDataDO(object) {
+    var table = object.parentNode.parentNode.parentNode;
+    var tr = object.parentNode.parentNode;
+    table.removeChild(tr);
+
+    var result = getTableDataDO();
+    var json_data = JSON.stringify(result);
+    $('#hidTDDO').val(json_data);
+  }
+
+  function editDataADC(object) {
+      var row = $(object).parent().parent().parent().prevAll().length + 1;
+      document.getElementById("page_type").value = row;
+      var num = 0;
+      var value = $(object).parent().parent().find("td");
+      var device_name = value.eq(num++).text();
+      var index = value.eq(num++).text();
+      var factor_name = value.eq(num++).text();
+      var cap_type = value.eq(num++).text();
+      var range_down = value.eq(num++).text();
+      var range_up = value.eq(num++).text();
+      var server_center = value.eq(num++).text();
+      var operator = value.eq(num++).text();
+      var operand = value.eq(num++).text();
+      var ex = value.eq(num++).text();
+      var accuracy = value.eq(num++).text();
+      var enabled = value.eq(num++).text();
+
+      document.getElementById("widget.device_name").value = device_name;
+      document.getElementById("widget.index.adc").value = index;
+      document.getElementById("widget.factor_name").value = factor_name;
+      document.getElementById("widget.cap_type").text = cap_type;
+      document.getElementById("widget.range_down").value = range_down;
+      document.getElementById("widget.range_up").value = range_up;
+      document.getElementById("widget.server_center").value = server_center;
+      document.getElementById("widget.operator").value = operator;
+      document.getElementById("widget.operand").value = operand;
+      document.getElementById("widget.ex").value = ex;
+      document.getElementById("widget.accuracy").value = accuracy;
+      if (enabled == "true") {
+          document.getElementById("widget.enabled").checked = true;
+      } else {
+          document.getElementById("widget.enabled").checked = false;
+      }
+
+      openBox();
+      switchPage("btnADC");
+  }
+
+  function editDataDI(object) {
+      var row = $(object).parent().parent().parent().prevAll().length + 1;
+      document.getElementById("page_type").value = row;
+      var num = 0;
+      var value = $(object).parent().parent().find("td");
+      var device_name = value.eq(num++).text();
+      var index = value.eq(num++).text();
+      var factor_name = value.eq(num++).text();
+      var mode = value.eq(num++).text();
+      var count_method = value.eq(num++).text();
+      var debounce_interval = value.eq(num++).text();
+      var server_center = value.eq(num++).text();
+      var operator = value.eq(num++).text();
+      var operand = value.eq(num++).text();
+      var ex = value.eq(num++).text();
+      var accuracy = value.eq(num++).text();
+      var enabled = value.eq(num++).text();
+
+      document.getElementById("widget.device_name").value = device_name;
+      document.getElementById("widget.index.di").value = index;
+      document.getElementById("widget.factor_name").value = factor_name;
+      document.getElementById("widget.mode").text = mode;
+      document.getElementById("widget.count_method").text = count_method;
+      document.getElementById("widget.debounce_interval").value = debounce_interval;
+      document.getElementById("widget.server_center").value = server_center;
+      document.getElementById("widget.operator").value = operator;
+      document.getElementById("widget.operand").value = operand;
+      document.getElementById("widget.ex").value = ex;
+      document.getElementById("widget.accuracy").value = accuracy;
+      if (enabled == "true") {
+          document.getElementById("widget.enabled").checked = true;
+      } else {
+          document.getElementById("widget.enabled").checked = false;
+      }
+
+      openBox();
+      switchPage("btnDI");
+  }
+
+  function editDataDO(object) {
+      var row = $(object).parent().parent().parent().prevAll().length + 1;
+      document.getElementById("page_type").value = row;
+      var num = 0;
+      var value = $(object).parent().parent().find("td");
+      var device_name = value.eq(num++).text();
+      var index = value.eq(num++).text();
+      var factor_name = value.eq(num++).text();
+      var init_status = value.eq(num++).text();
+      var cur_status = value.eq(num++).text();
+      var server_center = value.eq(num++).text();
+      var operator = value.eq(num++).text();
+      var operand = value.eq(num++).text();
+      var ex = value.eq(num++).text();
+      var accuracy = value.eq(num++).text();
+      var enabled = value.eq(num++).text();
+
+      document.getElementById("widget.device_name").value = device_name;
+      document.getElementById("widget.index.do").value = index;
+      document.getElementById("widget.factor_name").value = factor_name;
+      document.getElementById("widget.init_status").text = init_status;
+      document.getElementById("widget.cur_status").innerHTML = cur_status;
+      document.getElementById("widget.server_center").value = server_center;
+      document.getElementById("widget.operator").value = operator;
+      document.getElementById("widget.operand").value = operand;
+      document.getElementById("widget.ex").value = ex;
+      document.getElementById("widget.accuracy").value = accuracy;
+      if (enabled == "true") {
+          document.getElementById("widget.enabled").checked = true;
+      } else {
+          document.getElementById("widget.enabled").checked = false;
+      }
+
+      openBox();
+      switchPage("btnDO");
+  }

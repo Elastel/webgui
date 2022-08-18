@@ -12,7 +12,7 @@
     <div id="page_server5" name="page_server5">
       <div class="cbi-value">
         <label class="cbi-value-title"><?php echo _("Protocol"); ?></label>
-        <select id="protocol5" name="protocol5" class="cbi-input-select" onchange="protocolChange(5)">
+        <select id="proto5" name="proto5" class="cbi-input-select" onchange="protocolChange(5)">
           <option value="0" selected="">TCP</option>
           <option value="1">UDP</option>
           <option value="2">MQTT</option>
@@ -25,7 +25,7 @@
       <div name="page_encap5" id="page_encap5">
         <div class="cbi-value">
           <label class="cbi-value-title"><?php echo _("Encapsulation Type"); ?></label>
-          <select id="encap5" name="encap5" class="cbi-input-select" onchange="encapChange(5)">
+          <select id="encap_type5" name="encap_type5" class="cbi-input-select" onchange="encapChange(5)">
             <option value="0">Transparent</option>
             <option value="1" selected="">JSON</option>
             <option value="2">HJ212</option>
@@ -36,7 +36,7 @@
       <div name="page_addr5" id="page_addr5">
         <div class="cbi-value">
           <label class="cbi-value-title"><?php echo _("Server Address"); ?></label>
-          <input type="text" class="cbi-input-text" name="server_address5" id="server_address5" />
+          <input type="text" class="cbi-input-text" name="server_addr5" id="server_addr5" />
         </div>
       </div>
 
@@ -108,12 +108,12 @@
 
         <div class="cbi-value">
           <label class="cbi-value-title"><?php echo _("MQTT Public Topic"); ?></label>
-          <input type="text" class="cbi-input-text" name="mqtt_public_topic5" id="mqtt_public_topic5" />
+          <input type="text" class="cbi-input-text" name="mqtt_pub_topic5" id="mqtt_pub_topic5" />
         </div>
 
         <div class="cbi-value">
           <label class="cbi-value-title"><?php echo _("MQTT Subscribe Topic"); ?></label>
-          <input type="text" class="cbi-input-text" name="mqtt_subscribe_topic5" id="mqtt_subscribe_topic5" />
+          <input type="text" class="cbi-input-text" name="mqtt_sub_topic5" id="mqtt_sub_topic5" />
         </div>
 
         <div class="cbi-value">
@@ -128,7 +128,7 @@
 
         <div class="cbi-value">
           <label class="cbi-value-title"><?php echo _("Client ID"); ?></label>
-          <input type="text" class="cbi-input-text" name="client_id5" id="client_id5" />
+          <input type="text" class="cbi-input-text" name="mqtt_client_id5" id="mqtt_client_id5" />
         </div>
 
         <div class="cbi-value">
@@ -149,10 +149,10 @@
           <div name="page_one5" id="page_one5">
             <div class="cbi-value">
               <label class="cbi-value-title"><?php echo _("CA"); ?></label>
-              <label for="ca_file5" class="cbi-file-lable">
+              <label for="mqtt_ca5" class="cbi-file-lable">
                   <input type="button" class="cbi-file-btn" id="ca_btn5" value="<?php echo _("Choose file"); ?>">
                   <span id="ca_text5"><?php echo _("No file chosen"); ?></span>
-                  <input type="file" class="cbi-file" name="ca_file5" id="ca_file5" onchange="caFileChange(5)">
+                  <input type="file" class="cbi-file" name="mqtt_ca5" id="mqtt_ca5" onchange="caFileChange(5)">
               </label>
             </div>
           </div>
@@ -160,18 +160,18 @@
           <div name="page_two5" id="page_two5">
             <div class="cbi-value">
               <label class="cbi-value-title"><?php echo _("Public Certificate"); ?></label>
-              <label class="cbi-file-lable" for="pubulic_cer5">
+              <label class="cbi-file-lable" for="mqtt_cert5">
                   <input type="button" class="cbi-file-btn" id="cer_btn5" value="<?php echo _("Choose file"); ?>">
                   <span id="cer_text5"><?php echo _("No file chosen"); ?></span>
-                  <input type="file" class="cbi-file" name="pubulic_cer5" id="pubulic_cer5"  onchange="cerFileChange(5)">
+                  <input type="file" class="cbi-file" name="mqtt_cert5" id="mqtt_cert5"  onchange="cerFileChange(5)">
               </label>
             </div>
             <div class="cbi-value">
               <label class="cbi-value-title"><?php echo _("Private Key"); ?></label>
-              <label class="cbi-file-lable" for="private_key5">
+              <label class="cbi-file-lable" for="mqtt_key5">
                   <input type="button" class="cbi-file-btn" id="key_btn5" value="<?php echo _("Choose file"); ?>">
                   <span id="key_text5"><?php echo _("No file chosen"); ?></span>
-                  <input type="file" class="cbi-file" name="private_key5" id="private_key5" onchange="keyFileChange(5)">
+                  <input type="file" class="cbi-file" name="mqtt_key5" id="mqtt_key5" onchange="keyFileChange(5)">
               </label>
             </div>
           </div>

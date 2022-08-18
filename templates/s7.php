@@ -110,16 +110,6 @@
       <label class="cbi-value-title" for="widget.belonged_com"><?php echo _("Belonged Interface"); ?></label>
       <select id="widget.belonged_com" class="cbi-input-select">
       <?php
-        exec("sudo uci get dct.com.enabled1", $com1_enable);
-        exec("sudo uci get dct.com.enabled2", $com2_enable);
-        exec("sudo uci get dct.com.enabled3", $com3_enable);
-        exec("sudo uci get dct.com.enabled4", $com4_enable);
-        
-        exec("sudo uci get dct.com.proto1", $com1_proto);
-        exec("sudo uci get dct.com.proto2", $com2_proto);
-        exec("sudo uci get dct.com.proto3", $com3_proto);
-        exec("sudo uci get dct.com.proto4", $com4_proto);
-
         exec("sudo uci get dct.tcp_server.enabled1", $tcp1_enable);
         exec("sudo uci get dct.tcp_server.enabled2", $tcp2_enable);
         exec("sudo uci get dct.tcp_server.enabled3", $tcp3_enable);
@@ -132,43 +122,27 @@
         exec("sudo uci get dct.tcp_server.proto4", $tcp4_proto);
         exec("sudo uci get dct.tcp_server.proto5", $tcp5_proto);
       ?>
-      <?php if ($com1_enable[0] == "1" && $com1_proto[0] == "0") { ?>
-        <option value="COM1">COM1</option>
-      <?php } ?>
-      <?php if ($com2_enable[0] == "1" && $com2_proto[0] == "0") { ?>
-        <option value="COM2">COM2</option>
-      <?php } ?>
-      <?php if ($com3_enable[0] == "1" && $com3_proto[0] == "0") { ?>
-        <option value="COM3">COM3</option>
-      <?php } ?>
-      <?php if ($com4_enable[0] == "1" && $com4_proto[0] == "0") { ?>
-        <option value="COM4">COM4</option>
-      <?php } ?>  
-      <?php if ($tcp1_enable[0] == "1" && $tcp1_proto[0] == "0") { ?>
+      <?php if ($tcp1_enable[0] == "1" && $tcp1_proto[0] == "2") { ?>
         <option value="TCP1">TCP1</option>
       <?php } ?>
-      <?php if ($tcp2_enable[0] == "1" && $tcp2_proto[0] == "0") { ?>
+      <?php if ($tcp2_enable[0] == "1" && $tcp2_proto[0] == "2") { ?>
         <option value="TCP2">TCP2</option>
       <?php } ?>
-      <?php if ($tcp3_enable[0] == "1" && $tcp3_proto[0] == "0") { ?>
+      <?php if ($tcp3_enable[0] == "1" && $tcp3_proto[0] == "2") { ?>
         <option value="TCP3">TCP3</option>
       <?php } ?>
-      <?php if ($tcp4_enable[0] == "1" && $tcp4_proto[0] == "0") { ?>
+      <?php if ($tcp4_enable[0] == "1" && $tcp4_proto[0] == "2") { ?>
         <option value="TCP4">TCP4</option>
       <?php } ?>
-      <?php if ($tcp5_enable[0] == "1" && $tcp5_proto[0] == "0") { ?>
+      <?php if ($tcp5_enable[0] == "1" && $tcp5_proto[0] == "2") { ?>
         <option value="TCP5">TCP5</option>
       <?php } ?>
 
-      <?php if (($com1_enable[0] == null || $com1_enable[0]  == "0"  || $com1_proto[0] != "0") &&
-        ($com2_enable[0] == null || $com2_enable[0]  == "0" || $com2_proto[0] != "0") &&
-        ($com3_enable[0] == null || $com3_enable[0]  == "0" || $com3_proto[0] != "0") &&
-        ($com4_enable[0] == null || $com4_enable[0]  == "0" || $com4_proto[0] != "0") &&
-        ($tcp1_enable[0] == null || $tcp1_enable[0]  == "0" || $tcp1_proto[0] != "0") &&
-        ($tcp2_enable[0] == null || $tcp2_enable[0]  == "0" || $tcp2_proto[0] != "0") &&
-        ($tcp3_enable[0] == null || $tcp3_enable[0]  == "0" || $tcp3_proto[0] != "0") &&
-        ($tcp4_enable[0] == null || $tcp4_enable[0]  == "0" || $tcp4_proto[0] != "0") &&
-        ($tcp5_enable[0] == null || $tcp5_enable[0]  == "0" || $tcp5_proto[0] != "0")) { 
+      <?php if (($tcp1_enable[0] == null || $tcp1_enable[0]  == "0" || $tcp1_proto[0] != "2") &&
+        ($tcp2_enable[0] == null || $tcp2_enable[0]  == "0" || $tcp2_proto[0] != "2") &&
+        ($tcp3_enable[0] == null || $tcp3_enable[0]  == "0" || $tcp3_proto[0] != "2") &&
+        ($tcp4_enable[0] == null || $tcp4_enable[0]  == "0" || $tcp4_proto[0] != "2") &&
+        ($tcp5_enable[0] == null || $tcp5_enable[0]  == "0" || $tcp5_proto[0] != "2")) { 
       ?>
         <option value="<?php echo _("No Interface Is Enabled") ?>"><?php echo _("No Interface Is Enabled") ?></option>
       <?php } ?>
@@ -180,12 +154,6 @@
       <input id="widget.factor_name" type="text" class="cbi-input-text">
       <label class="cbi-value-description"><?php echo _("Multiple Factors Are Separated By Semicolon"); ?></label>
     </div>
-
-    <!-- <div class="cbi-value">
-      <label class="cbi-value-title" for="widget.alias_name"><?php //echo _("Alias Name"); ?></label>
-      <input id="widget.alias_name" type="text" class="cbi-input-text">
-      <label class="cbi-value-description"><?php //echo _("Multiple Aliases Are Separated By Semicolon"); ?></label>
-    </div> -->
 
     <div class="cbi-value">
       <label class="cbi-value-title" for="widget.reg_type"><?php echo _("Register Type"); ?></label>

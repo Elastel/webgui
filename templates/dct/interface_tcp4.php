@@ -12,7 +12,7 @@
     <div id="page_tcp4" name="page_tcp4">
       <div class="cbi-value">
         <label class="cbi-value-title"><?php echo _("Server Address"); ?></label>
-        <input type="text" class="cbi-input-text" name="server_address4" id="server_address4" />
+        <input type="text" class="cbi-input-text" name="server_addr4" id="server_addr4" />
       </div>
 
       <div class="cbi-value">
@@ -22,13 +22,13 @@
 
       <div class="cbi-value">
         <label class="cbi-value-title"><?php echo _("Frame Interval"); ?></label>
-        <input type="text" class="cbi-input-text" name="tcp_frame_interval4" id="tcp_frame_interval4" />
+        <input type="text" class="cbi-input-text" name="tcp_frame_interval4" id="tcp_frame_interval4" value="200" />
         <label class="cbi-value-description"><?php echo _("ms"); ?></label>
       </div>
 
       <div class="cbi-value">
         <label class="cbi-value-title"><?php echo _("Protocol"); ?></label>
-        <select id="tcp_protocol4" name="tcp_protocol4" class="cbi-input-select" onchange="tcpProtocolChange4(this)">
+        <select id="tcp_proto4" name="tcp_proto4" class="cbi-input-select" onchange="tcpProtocolChange4(this)">
           <option value="0" selected="">Modbus</option>
           <option value="1">Transparent</option>
           <option value="2">S7</option>
@@ -37,13 +37,13 @@
 
       <div class="cbi-value" id="tcp_page_protocol_modbus4" name="tcp_page_protocol_modbus4">
         <label class="cbi-value-title"><?php echo _("Command Interval"); ?></label>
-        <input type="text" class="cbi-input-text" name="tcp_command_interval4" id="tcp_command_interval4" />
+        <input type="text" class="cbi-input-text" name="tcp_cmd_interval4" id="tcp_cmd_interval4" value="2" />
         <label class="cbi-value-description"><?php echo _("ms"); ?></label>
       </div>
 
       <div class="cbi-value" id="tcp_page_protocol_transparent4" name="tcp_page_protocol_transparent4">
         <label class="cbi-value-title"><?php echo _("Reporting Center"); ?></label>
-        <input type="text" class="cbi-input-text" name="tcp_reporting_center4" id="tcp_reporting_center4" />
+        <input type="text" class="cbi-input-text" name="tcp_report_center4" id="tcp_report_center4" />
         <label class="cbi-value-description"><?php echo _("1-2-3-4-5"); ?></label>
       </div>
 
@@ -79,7 +79,7 @@
   }
 
   function tcpProtocolChange4(that) {
-    var protocol = document.getElementById("tcp_protocol4").value;
+    var protocol = document.getElementById("tcp_proto4").value;
 
     if (protocol == "0") {
       $('#tcp_page_protocol_modbus4').show();

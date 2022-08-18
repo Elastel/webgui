@@ -31,15 +31,17 @@ function DisplayDashboard(&$extraFooterScripts)
     $interfaceState = $matchesState[1];
 
     // brought in from template
-    $arrHostapdConf = parse_ini_file(RASPI_CONFIG.'/hostapd.ini');
-    $bridgedEnable = $arrHostapdConf['BridgedEnable'];
-    $clientInterface = $_SESSION['wifi_client_interface'];
-    $apInterface = $_SESSION['ap_interface'];
-    $MACPattern = '"([[:xdigit:]]{2}:){5}[[:xdigit:]]{2}"';
+    if (file_exists(RASPI_CONFIG.'/hostapd.ini')) {
+        $arrHostapdConf = parse_ini_file(RASPI_CONFIG.'/hostapd.ini');
+        $bridgedEnable = $arrHostapdConf['BridgedEnable'];
+        $clientInterface = $_SESSION['wifi_client_interface'];
+        $apInterface = $_SESSION['ap_interface'];
+        $MACPattern = '"([[:xdigit:]]{2}:){5}[[:xdigit:]]{2}"';
 
-    $moreLink = "dhcpd_conf";
-    exec('cat ' . RASPI_DNSMASQ_LEASES . '| grep -E $(iw dev ' . $apInterface . ' station dump | grep -oE ' . $MACPattern . ' | paste -sd "|")', $clients);
-
+        $moreLink = "dhcpd_conf";
+        exec('cat ' . RASPI_DNSMASQ_LEASES . '| grep -E $(iw dev ' . $apInterface . ' station dump | grep -oE ' . $MACPattern . ' | paste -sd "|")', $clients);
+    }
+    
     exec('ip route | grep "default"  | grep -c "eth0"', $wired);
     if ($wired[0] == "1") {
         $ifaceStatus = "Wired";

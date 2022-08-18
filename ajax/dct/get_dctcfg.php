@@ -6,87 +6,57 @@ require_once '../../includes/config.php';
 $type = $_GET['type'];
 
 if ($type == "basic") {
+    $arrInfo = array('collect_period', 'report_period', 'cache_enabled', 'cache_day', 'minute_enabled',
+        'minute_period', 'hour_enabled', 'day_enabled');
+
     exec("/usr/local/bin/uci get dct.basic.enabled", $enabled);
     $dctdata['enabled'] = $enabled[0];
     if ($enabled[0] == "1") {
-        exec("sudo /usr/local/bin/uci get dct.basic.collect_period", $collect_period);
-        exec("sudo /usr/local/bin/uci get dct.basic.report_period", $report_period);
-        exec("sudo /usr/local/bin/uci get dct.basic.cache_enabled", $cache_enabled);
-        exec("sudo /usr/local/bin/uci get dct.basic.cache_day", $cache_day);
-        exec("sudo /usr/local/bin/uci get dct.basic.minute_enabled", $minute_enabled);
-        exec("sudo /usr/local/bin/uci get dct.basic.minute_period", $minute_period);
-        exec("sudo /usr/local/bin/uci get dct.basic.hour_enabled", $hour_enabled);
-        exec("sudo /usr/local/bin/uci get dct.basic.day_enabled", $day_enabled);
-
-        $dctdata['collect_period'] = $collect_period[0];
-        $dctdata['report_period'] = $report_period[0];
-        $dctdata['cache_enabled'] = $cache_enabled[0];
-        $dctdata['cache_day'] = $cache_day[0];
-        $dctdata['minute_enabled'] = $minute_enabled[0];
-        $dctdata['minute_period'] = $minute_period[0];
-        $dctdata['hour_enabled'] = $hour_enabled[0];
-        $dctdata['day_enabled'] = $day_enabled[0];
+        foreach ($arrInfo as $info) {
+            unset($val);
+            exec("sudo /usr/local/bin/uci get dct.basic." . $info, $val);
+            $dctdata[$info] = $val[0];
+        }
     } 
 } else if ($type == 'interfaces') {
     $x = 1;
-    $j = 0;
+    $arrInfo = array('baudrate', 'databit', 'stopbit', 'parity', 'frame_interval',
+        'proto', 'cmd_interval', 'report_center');
+
     for ($i = 0; $i < 4; $i++) {
         exec('sudo /usr/local/bin/uci get dct.com.enabled' . ($i + $x), $com_enabled);
         $dctdata['com_enabled'][($i + $x)] = $com_enabled[$i];
         if ($com_enabled[$i] == '1') {
-            exec('sudo /usr/local/bin/uci get dct.com.baudrate' . ($i + $x), $baudrate);
-            exec('sudo /usr/local/bin/uci get dct.com.databit' . ($i + $x), $databit);
-            exec('sudo /usr/local/bin/uci get dct.com.stopbit' . ($i + $x), $stopbit);
-            exec('sudo /usr/local/bin/uci get dct.com.parity' . ($i + $x), $parity);
-            exec('sudo /usr/local/bin/uci get dct.com.frame_interval' . ($i + $x), $com_frame_interval);
-            exec('sudo /usr/local/bin/uci get dct.com.proto' . ($i + $x), $com_protocol);
-            if ($com_protocol[$j] == "0") {
-                exec('sudo /usr/local/bin/uci get dct.com.cmd_interval' . ($i + $x), $com_command_interval);
-                $dctdata['com_command_interval'][($i + $x)] = $com_command_interval[$j];
-            } else {
-                exec('sudo /usr/local/bin/uci get dct.com.report_center' . ($i + $x), $com_reporting_center);
-                $dctdata['com_reporting_center'][($i + $x)] = $com_reporting_center[$j];
+            foreach ($arrInfo as $info) {
+                unset($val);
+                exec('sudo /usr/local/bin/uci get dct.com.' . $info . ($i + $x), $val);
+                if ($info == 'frame_interval' || $info == 'proto' || $info == 'cmd_interval'
+                    ||  $info == 'report_center') {
+                    $dctdata['com_' . $info][($i + $x)] = $val[0];
+                } else {
+                    $dctdata[$info][($i + $x)] = $val[0];
+                }
             }
-            
-            $dctdata['baudrate'][($i + $x)] = $baudrate[$j];
-            $dctdata['databit'][($i + $x)] = $databit[$j];
-            $dctdata['stopbit'][($i + $x)] = $stopbit[$j];
-            $dctdata['parity'][($i + $x)] = $parity[$j];
-            $dctdata['com_frame_interval'][($i + $x)] = $com_frame_interval[$j];
-            $dctdata['com_protocol'][($i + $x)] = $com_protocol[$j];
-            $j++;
         }
     }
 
-    $j = 0;
+    $arrInfo = array('server_addr', 'server_port', 'frame_interval', 'proto', 'cmd_interval', 'report_center', 
+    'rack', 'slot');
+
     for ($i = 0; $i < 5; $i++) {
         exec('/usr/local/bin/uci get dct.tcp_server.enabled' . ($i + $x), $tcp_enabled);
         $dctdata['tcp_enabled'][($i + $x)] = $tcp_enabled[$i];
         if ($tcp_enabled[$i] == '1') {
-            exec('sudo /usr/local/bin/uci get dct.tcp_server.server_addr' . ($i + $x), $server_address);
-            exec('sudo /usr/local/bin/uci get dct.tcp_server.server_port' . ($i + $x), $server_port);
-            exec('sudo /usr/local/bin/uci get dct.tcp_server.frame_interval' . ($i + $x), $tcp_frame_interval);
-            exec('sudo /usr/local/bin/uci get dct.tcp_server.proto' . ($i + $x), $tcp_protocol);
-
-            if ($tcp_protocol[$j] == "0") {
-                exec('sudo /usr/local/bin/uci get dct.tcp_server.cmd_interval' . ($i + $x), $tcp_command_interval);
-                $dctdata['tcp_command_interval'][($i + $x)] = $tcp_command_interval[$j];
-            } else if ($tcp_protocol[$j] == "1") {
-                exec('sudo /usr/local/bin/uci get dct.tcp_server.report_center' . ($i + $x), $tcp_reporting_center);
-                $dctdata['tcp_reporting_center'][($i + $x)] = $tcp_reporting_center[$j];
-            } else {
-                exec('sudo /usr/local/bin/uci get dct.tcp_server.rack' . ($i + $x), $rack);
-                exec('sudo /usr/local/bin/uci get dct.tcp_server.slot' . ($i + $x), $slot);
-                $dctdata['rack'][($i + $x)] = $rack[$j];
-                $dctdata['slot'][($i + $x)] = $slot[$j];
+            foreach ($arrInfo as $info) {
+                unset($val);
+                exec('sudo /usr/local/bin/uci get dct.tcp_server.' . $info . ($i + $x), $val);
+                if ($info == 'frame_interval' || $info == 'proto' || $info == 'cmd_interval' 
+                    ||  $info == 'report_center') {
+                    $dctdata['tcp_' . $info][($i + $x)] = $val[0];
+                } else {
+                    $dctdata[$info][($i + $x)] = $val[0];
+                }
             }
-
-            $dctdata['server_address'][($i + $x)] = $server_address[$j];
-            $dctdata['server_port'][($i + $x)] = $server_port[$j];
-            $dctdata['tcp_frame_interval'][($i + $x)] = $tcp_frame_interval[$j];
-            $dctdata['tcp_protocol'][($i + $x)] = $tcp_protocol[$j];
-
-            $j++;
         }
     }
 } else if ($type == "modbus") {
@@ -95,8 +65,8 @@ if ($type == "basic") {
     "Signed 32Bits ABCD", "Signed 32Bits BADC", "Signed 32Bits CDAB", "Signed 32Bits DCBA",
     "Float ABCD", "Float BADC", "Float CDAB", "Float DCBA");
 
-    exec("sudo /usr/local/bin/uci get dct.basic.modbus_count", $modbus_count);
-    $dctdata['modbus_count'] = $modbus_count[0];
+    exec("sudo /usr/sbin/uci_get_count modbus", $modbus_count);
+    $dctdata['count'] = $modbus_count[0];
     
     for ($i = 0; $i < number_format($modbus_count[0]); $i++) {
         exec("sudo /usr/local/bin/uci get dct.@modbus[$i].order", $order);
@@ -135,8 +105,8 @@ if ($type == "basic") {
     $reg_type_value = array("I", "Q", "M", "DB", "V", "C", "T");
     $word_len_value = array("Bit", "Byte", "Word", "DWord", "Real", "Counter", "Timer");
 
-    exec("sudo /usr/local/bin/uci get dct.basic.s7_count", $s7_count);
-    $dctdata['s7_count'] = $s7_count[0];
+    exec("sudo /usr/sbin/uci_get_count s7", $s7_count);
+    $dctdata['count'] = $s7_count[0];
     
     for ($i = 0; $i < number_format($s7_count[0]); $i++) {
         exec("sudo /usr/local/bin/uci get dct.@s7[$i].order", $order);
@@ -169,99 +139,147 @@ if ($type == "basic") {
         $dctdata['accuracy'][$i] = $accuracy[$i];
         $dctdata['enabled'][$i] = ($enabled[$i] == '1') ? 'true' : 'false';
     }
-} else if ($type == "server") {
-    $x = 1;
-    $j = 0;
-    for ($i = 0; $i < 5; $i++) {
-        exec("/usr/local/bin/uci get dct.server.enabled" . ($i + $x), $enabled);
-        $dctdata['enabled'][($i + $x)] = $enabled[$i];
-        if ($enabled[$i] == "1") {
-            exec("sudo /usr/local/bin/uci get dct.server.protocol" . ($i + $x), $protocol);
-            exec("sudo /usr/local/bin/uci get dct.server.encap_type" . ($i + $x), $encap);
-            exec("sudo /usr/local/bin/uci get dct.server.server_addr" . ($i + $x), $server_address);
-            exec("sudo /usr/local/bin/uci get dct.server.http_url" . ($i + $x), $http_url);
-            exec("sudo /usr/local/bin/uci get dct.server.server_port" . ($i + $x), $server_port);
-            exec("sudo /usr/local/bin/uci get dct.server.cache_enabled" . ($i + $x), $cache_enabled);
-            exec("sudo /usr/local/bin/uci get dct.server.register_packet" . ($i + $x), $register_packet);
-            exec("sudo /usr/local/bin/uci get dct.server.register_packet_hex" . ($i + $x), $register_packet_hex);
-            exec("sudo /usr/local/bin/uci get dct.server.heartbeat_packet" . ($i + $x), $heartbeat_packet);
-            exec("sudo /usr/local/bin/uci get dct.server.heartbeat_packet_hex" . ($i + $x), $heartbeat_packet_hex);
-            exec("sudo /usr/local/bin/uci get dct.server.heartbeat_interval" . ($i + $x), $heartbeat_interval);
-            exec("sudo /usr/local/bin/uci get dct.server.mqtt_heartbeat_interval" . ($i + $x), $mqtt_heartbeat_interval);
-            exec("sudo /usr/local/bin/uci get dct.server.mqtt_pub_topic" . ($i + $x), $mqtt_public_topic);
-            exec("sudo /usr/local/bin/uci get dct.server.mqtt_sub_topic" . ($i + $x), $mqtt_subscribe_topic);
-            exec("sudo /usr/local/bin/uci get dct.server.mqtt_username" . ($i + $x), $mqtt_username);
-            exec("sudo /usr/local/bin/uci get dct.server.mqtt_password" . ($i + $x), $mqtt_password);
-            exec("sudo /usr/local/bin/uci get dct.server.mqtt_client_id" . ($i + $x), $client_id);
-            exec("sudo /usr/local/bin/uci get dct.server.mqtt_tls_enabled" . ($i + $x), $mqtt_tls_enabled);
-            exec("sudo /usr/local/bin/uci get dct.server.certificate_type" . ($i + $x), $certificate_type);
-            exec("sudo /usr/local/bin/uci get dct.server.mqtt_ca" . ($i + $x), $ca_file);
-            exec("sudo /usr/local/bin/uci get dct.server.mqtt_cert" . ($i + $x), $pubulic_cer);
-            exec("sudo /usr/local/bin/uci get dct.server.mqtt_key" . ($i + $x), $private_key);
-            exec("sudo /usr/local/bin/uci get dct.server.self_define_var" . ($i + $x), $self_define_var);
-            exec("sudo /usr/local/bin/uci get dct.server.var_name1_" . ($i + $x), $var_name1);
-            exec("sudo /usr/local/bin/uci get dct.server.var_value1_" . ($i + $x), $var_value1);
-            exec("sudo /usr/local/bin/uci get dct.server.var_name2_" . ($i + $x), $var_name2);
-            exec("sudo /usr/local/bin/uci get dct.server.var_value2_" . ($i + $x), $var_value2);
-            exec("sudo /usr/local/bin/uci get dct.server.var_name3_" . ($i + $x), $var_name3);
-            exec("sudo /usr/local/bin/uci get dct.server.var_value3_" . ($i + $x), $var_value3);
-            exec("sudo /usr/local/bin/uci get dct.server.mn" . ($i + $x), $mn);
-            exec("sudo /usr/local/bin/uci get dct.server.st" . ($i + $x), $st);
-            exec("sudo /usr/local/bin/uci get dct.server.pw" . ($i + $x), $password);
+} else if ($type == "adc") {
+    $cap_type_value = array("4-20mA", "0-10V");
 
-            $dctdata['protocol'][($i + $x)] = $protocol[$j];
-            $dctdata['encap'][($i + $x)] = $encap[$j];
-            $dctdata['server_address'][($i + $x)] = $server_address[$j];
-			$dctdata['http_url'][($i + $x)] = $http_url[$j];
-            $dctdata['server_port'][($i + $x)] = $server_port[$j];
-            $dctdata['cache_enabled'][($i + $x)] = $cache_enabled[$j];
-            $dctdata['register_packet'][($i + $x)] = $register_packet[$j];
-            $dctdata['register_packet_hex'][($i + $x)] = $register_packet_hex[$j];
-            $dctdata['heartbeat_packet'][($i + $x)] = $heartbeat_packet[$j];
-            $dctdata['heartbeat_packet_hex'][($i + $x)] = $heartbeat_packet_hex[$j];
-            $dctdata['heartbeat_interval'][($i + $x)] = $heartbeat_interval[$j];
-            $dctdata['mqtt_heartbeat_interval'][($i + $x)] = $mqtt_heartbeat_interval[$j];
-            $dctdata['mqtt_public_topic'][($i + $x)] = $mqtt_public_topic[$j];
-            $dctdata['mqtt_subscribe_topic'][($i + $x)] = $mqtt_subscribe_topic[$j];
-            $dctdata['mqtt_username'][($i + $x)] = $mqtt_username[$j];
-            $dctdata['mqtt_password'][($i + $x)] = $mqtt_password[$j];
-            $dctdata['client_id'][($i + $x)] = $client_id[$j];
-            $dctdata['mqtt_tls_enabled'][($i + $x)] = $mqtt_tls_enabled[$j];
-            $dctdata['certificate_type'][($i + $x)] = $certificate_type[$j];
-            $dctdata['ca_file'][($i + $x)] = $ca_file[$j];
-            $dctdata['pubulic_cer'][($i + $x)] = $pubulic_cer[$j];
-            $dctdata['private_key'][($i + $x)] = $private_key[$j];
-            $dctdata['self_define_var'][($i + $x)] = $self_define_var[$j];
-            $dctdata['var_name1'][($i + $x)] = $var_name1[$j];
-            $dctdata['var_value1'][($i + $x)] = $var_value1[$j];
-            $dctdata['var_name2'][($i + $x)] = $var_name2[$j];
-            $dctdata['var_value2'][($i + $x)] = $var_value2[$j];
-            $dctdata['var_name3'][($i + $x)] = $var_name3[$j];
-            $dctdata['var_value3'][($i + $x)] = $var_value3[$j];
-            $dctdata['mn'][($i + $x)] = $mn[$j];
-            $dctdata['st'][($i + $x)] = $st[$j];
-            $dctdata['password'][($i + $x)] = $password[$j];
-            $j++;
+    exec("sudo /usr/sbin/uci_get_count adc", $count);
+    $dctdata['count'] = $count[0];
+    
+    for ($i = 0; $i < number_format($count[0]); $i++) {
+        exec("sudo /usr/local/bin/uci get dct.@adc[$i].device_name", $device_name);
+        exec("sudo /usr/local/bin/uci get dct.@adc[$i].index", $index);
+        exec("sudo /usr/local/bin/uci get dct.@adc[$i].factor_name", $factor_name);
+        exec("sudo /usr/local/bin/uci get dct.@adc[$i].cap_type", $cap_type);
+        exec("sudo /usr/local/bin/uci get dct.@adc[$i].range_down", $range_down);
+        exec("sudo /usr/local/bin/uci get dct.@adc[$i].range_up", $range_up);
+        exec("sudo /usr/local/bin/uci get dct.@adc[$i].server_center", $server_center);
+        exec("sudo /usr/local/bin/uci get dct.@adc[$i].operator", $operator);
+        exec("sudo /usr/local/bin/uci get dct.@adc[$i].operand", $operand);
+        exec("sudo /usr/local/bin/uci get dct.@adc[$i].ex", $ex);
+        exec("sudo /usr/local/bin/uci get dct.@adc[$i].accuracy", $accuracy);
+        exec("sudo /usr/local/bin/uci get dct.@adc[$i].enabled", $enabled);
 
-            $ca_file_dir = '/etc/ssl/server' . ($i + $x) . '/' . $ca_file[$i];
-            if (file_exists($ca_file_dir) && strlen($ca_file[$i]) > 0) {
-                $dctdata['ca_file_exists'][($i + $x)] = '1';
-            }else{
-                $dctdata['ca_file_exists'][($i + $x)] = '0';
-            }
+        $dctdata['device_name'][$i] = $device_name[$i];
+        $dctdata['index'][$i] = $index[$i];
+        $dctdata['factor_name'][$i] = $factor_name[$i];
+        $dctdata['cap_type'][$i] = $cap_type_value[number_format($cap_type[$i])];
+        $dctdata['range_down'][$i] = $range_down[$i];
+        $dctdata['range_up'][$i] = $range_up[$i];
+        $dctdata['server_center'][$i] = $server_center[$i];
+        $dctdata['operator'][$i] = $operator[$i];
+        $dctdata['operand'][$i] = $operand[$i];
+        $dctdata['ex'][$i] = $ex[$i];
+        $dctdata['accuracy'][$i] = $accuracy[$i];
+        $dctdata['enabled'][$i] = ($enabled[$i] == '1') ? 'true' : 'false';
+    }
+} else if ($type == "di") {
+    $mode_value = array("Counting Mode", "Status Mode");
+    $method_value = array("Rising Edge", "Falling Edge");
 
-            $cer_file_dir = '/etc/ssl/server' . ($i + $x) . '/' . $pubulic_cer[$i];
-            if (file_exists($cer_file_dir) && strlen($pubulic_cer[$i]) > 0) {
-                $dctdata['cer_file_exists'][($i + $x)] = '1';
-            }else{
-                $dctdata['cer_file_exists'][($i + $x)] = '0';
-            }
+    exec("sudo /usr/sbin/uci_get_count di", $count);
+    $dctdata['count'] = $count[0];
+    
+    for ($i = 0; $i < number_format($count[0]); $i++) {
+        exec("sudo /usr/local/bin/uci get dct.@di[$i].device_name", $device_name);
+        exec("sudo /usr/local/bin/uci get dct.@di[$i].index", $index);
+        exec("sudo /usr/local/bin/uci get dct.@di[$i].factor_name", $factor_name);
+        exec("sudo /usr/local/bin/uci get dct.@di[$i].mode", $mode);
+        exec("sudo /usr/local/bin/uci get dct.@di[$i].count_method", $count_method);
+        exec("sudo /usr/local/bin/uci get dct.@di[$i].debounce_interval", $debounce_interval);
+        exec("sudo /usr/local/bin/uci get dct.@di[$i].server_center", $server_center);
+        exec("sudo /usr/local/bin/uci get dct.@di[$i].operator", $operator);
+        exec("sudo /usr/local/bin/uci get dct.@di[$i].operand", $operand);
+        exec("sudo /usr/local/bin/uci get dct.@di[$i].ex", $ex);
+        exec("sudo /usr/local/bin/uci get dct.@di[$i].accuracy", $accuracy);
+        exec("sudo /usr/local/bin/uci get dct.@di[$i].enabled", $enabled);
 
-            $key_file_dir = '/etc/ssl/server' . ($i + $x) . '/' . $private_key[$i];
-            if (file_exists($key_file_dir) && strlen($private_key[$i]) > 0) {
-                $dctdata['key_file_exists'][($i + $x)] = '1';
-            }else{
-                $dctdata['key_file_exists'][($i + $x)] = '0';
+        $dctdata['device_name'][$i] = $device_name[$i];
+        $dctdata['index'][$i] = $index[$i];
+        $dctdata['factor_name'][$i] = $factor_name[$i];
+        $dctdata['mode'][$i] = $mode_value[number_format($mode[$i])];
+        $dctdata['count_method'][$i] = $method_value[number_format($count_method[$i])];
+        $dctdata['debounce_interval'][$i] = $debounce_interval[$i];
+        $dctdata['server_center'][$i] = $server_center[$i];
+        $dctdata['operator'][$i] = $operator[$i];
+        $dctdata['operand'][$i] = $operand[$i];
+        $dctdata['ex'][$i] = $ex[$i];
+        $dctdata['accuracy'][$i] = $accuracy[$i];
+        $dctdata['enabled'][$i] = ($enabled[$i] == '1') ? 'true' : 'false';
+    }
+} else if ($type == "do") {
+    $status_value = array("Open", "Close");
+
+    exec("sudo /usr/sbin/uci_get_count do", $count);
+    $dctdata['count'] = $count[0];
+    
+    for ($i = 0; $i < number_format($count[0]); $i++) {
+        exec("sudo /usr/local/bin/uci get dct.@do[$i].device_name", $device_name);
+        exec("sudo /usr/local/bin/uci get dct.@do[$i].index", $index);
+        exec("sudo /usr/local/bin/uci get dct.@do[$i].factor_name", $factor_name);
+        exec("sudo /usr/local/bin/uci get dct.@do[$i].init_status", $init_status);
+        exec("sudo /usr/local/bin/uci get dct.@do[$i].server_center", $server_center);
+        exec("sudo /usr/local/bin/uci get dct.@do[$i].operator", $operator);
+        exec("sudo /usr/local/bin/uci get dct.@do[$i].operand", $operand);
+        exec("sudo /usr/local/bin/uci get dct.@do[$i].ex", $ex);
+        exec("sudo /usr/local/bin/uci get dct.@do[$i].accuracy", $accuracy);
+        exec("sudo /usr/local/bin/uci get dct.@do[$i].enabled", $enabled);
+
+        $dctdata['device_name'][$i] = $device_name[$i];
+        $dctdata['index'][$i] = $index[$i];
+        $dctdata['factor_name'][$i] = $factor_name[$i];
+        $dctdata['init_status'][$i] = $status_value[number_format($init_status[$i])];
+        $num = substr($index[$i], -1);
+        exec("sudo /usr/sbin/read_do $num[0]", $string);
+        $cur_status = substr($string[0], -1);
+        $dctdata['cur_status'][$i] = $cur_status[0] == 0 ? 'Open' : 'Close';
+
+        $dctdata['server_center'][$i] = $server_center[$i];
+        $dctdata['operator'][$i] = $operator[$i];
+        $dctdata['operand'][$i] = $operand[$i];
+        $dctdata['ex'][$i] = $ex[$i];
+        $dctdata['accuracy'][$i] = $accuracy[$i];
+        $dctdata['enabled'][$i] = ($enabled[$i] == '1') ? 'true' : 'false';
+    }
+} else if ($type == 'server') {
+    $serverInfo = array('proto', 'encap_type', 'server_addr', 'http_url', 'server_port', 'cache_enabled', 
+    'register_packet', 'register_packet_hex', 'heartbeat_packet', 'heartbeat_packet_hex', 'heartbeat_interval',
+    'mqtt_heartbeat_interval', 'mqtt_pub_topic', 'mqtt_sub_topic', 'mqtt_username', 'mqtt_password', 
+    'mqtt_client_id', 'mqtt_tls_enabled', 'certificate_type', 'mqtt_ca', 'mqtt_cert', 'mqtt_key', 
+    'self_define_var', 'var_name1_', 'var_value1_', 'var_name2_', 'var_value2_', 'var_name3_', 'var_value3_', 
+    'mn', 'st', 'pw');
+
+    for ($i = 1; $i < 6; $i++) {
+        unset($enabled);
+        exec('/usr/local/bin/uci get dct.server.enabled' . $i, $enabled);
+        $dctdata['enabled'][$i] = $enabled[0];
+        if ($enabled[0] == '1') {
+            foreach ($serverInfo as $info) {
+                unset($val);
+                exec('sudo /usr/local/bin/uci get dct.server.' . $info . $i, $val);
+                $dctdata[$info][$i] = $val[0];
+
+                if ($info == 'mqtt_ca') {
+                    $ca_file_dir = '/etc/ssl/server' . $i . '/' . $val[0];
+                    if (file_exists($ca_file_dir) && strlen($val[0]) > 0) {
+                        $dctdata['ca_file_exists'][$i] = '1';
+                    }else{
+                        $dctdata['ca_file_exists'][$i] = '0';
+                    }
+                } else if ($info == 'mqtt_cert') {
+                    $cer_file_dir = '/etc/ssl/server' . $i . '/' . $val[0];
+                    if (file_exists($cer_file_dir) && strlen($val[0]) > 0) {
+                        $dctdata['cer_file_exists'][$i] = '1';
+                    }else{
+                        $dctdata['cer_file_exists'][$i] = '0';
+                    }
+                } else if ($info == 'mqtt_key') {
+                    $key_file_dir = '/etc/ssl/server' . $i . '/' . $val[0];
+                    if (file_exists($key_file_dir) && strlen($val[0]) > 0) {
+                        $dctdata['key_file_exists'][$i] = '1';
+                    }else{
+                        $dctdata['key_file_exists'][$i] = '0';
+                    }
+                }
             }
         }
     }

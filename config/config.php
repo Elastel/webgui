@@ -43,8 +43,8 @@ define('RASPI_OPENVPN_ENABLED', false);
 define('RASPI_WIREGUARD_ENABLED', false);
 define('RASPI_TORPROXY_ENABLED', false);
 define('RASPI_CONFAUTH_ENABLED', true);
-define('RASPI_CHANGETHEME_ENABLED', true);
-define('RASPI_VNSTAT_ENABLED', true);
+define('RASPI_CHANGETHEME_ENABLED', false);
+define('RASPI_VNSTAT_ENABLED', false);
 define('RASPI_SYSTEM_ENABLED', true);
 define('RASPI_MONITOR_ENABLED', false);
 

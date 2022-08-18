@@ -4,7 +4,7 @@ function getConfig()
 {
     $config = array(
         'admin_user' => 'admin',
-        'admin_pass' => '$2y$10$YKIyWAmnQLtiJAy6QgHQ.eCpY4m.HCEbiHaTgN6.acNC6bDElzt.i'
+        'admin_pass' => '$2y$10$.I8ji57GDlWHu6aWklGWZuTe57g980zelhV9VlYFyQfZ.eLd4b2/2'
     );
 
     if (file_exists(RASPI_CONFIG . '/raspap.auth')) {

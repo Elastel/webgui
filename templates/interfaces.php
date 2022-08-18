@@ -44,10 +44,15 @@
           <div class="cbi-section" data-idref="e02cc6f3">
             <h4>Serial Port Setting</h4>
             <ul class="nav nav-tabs">
-              <li role="presentation" class="nav-item"><a class="nav-link active" href="#com1" aria-controls="com1" role="tab" data-toggle="tab"><?php echo _("COM1/RS485"); ?></a></li>
-              <li role="presentation" class="nav-item"><a class="nav-link" href="#com2" aria-controls="com2" role="tab" data-toggle="tab"><?php echo _("COM2/RS485"); ?></a></li>
-              <li role="presentation" class="nav-item"><a class="nav-link" href="#com3" aria-controls="com3" role="tab" data-toggle="tab"><?php echo _("COM3/RS485/RS232"); ?></a></li>
-              <li role="presentation" class="nav-item"><a class="nav-link" href="#com4" aria-controls="com4" role="tab" data-toggle="tab"><?php echo _("COM4/RS485/RS232"); ?></a></li>
+              <?php if ($model == "EG500") { ?>
+                <li role="presentation" class="nav-item"><a class="nav-link active" href="#com1" aria-controls="com1" role="tab" data-toggle="tab"><?php echo _("COM1/RS485"); ?></a></li>
+                <li role="presentation" class="nav-item"><a class="nav-link" href="#com2" aria-controls="com2" role="tab" data-toggle="tab"><?php echo _("COM2/RS232"); ?></a></li>
+              <?php } else { ?>
+                <li role="presentation" class="nav-item"><a class="nav-link active" href="#com1" aria-controls="com1" role="tab" data-toggle="tab"><?php echo _("COM1/RS485"); ?></a></li>
+                <li role="presentation" class="nav-item"><a class="nav-link" href="#com2" aria-controls="com2" role="tab" data-toggle="tab"><?php echo _("COM2/RS485"); ?></a></li>
+                <li role="presentation" class="nav-item"><a class="nav-link" href="#com3" aria-controls="com3" role="tab" data-toggle="tab"><?php echo _("COM3/RS485/RS232"); ?></a></li>
+                <li role="presentation" class="nav-item"><a class="nav-link" href="#com4" aria-controls="com4" role="tab" data-toggle="tab"><?php echo _("COM4/RS485/RS232"); ?></a></li>
+              <?php } ?>
             </ul>
             <!-- Tab panes -->
             <div class="tab-content">

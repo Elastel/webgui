@@ -51,6 +51,7 @@ require_once 'includes/basic.php';
 require_once 'includes/interfaces.php';
 require_once 'includes/modbus.php';
 require_once 'includes/s7.php';
+require_once 'includes/io.php';
 require_once 'includes/server.php';
 
 $config = getConfig();
@@ -162,10 +163,13 @@ $bridgedEnabled = getBridgedState();
           </a>
           <div class="collapse navbar-collapse" id="navbar-collapse-dct">
             <ul class="nav navbar-nav navbar-right">
-              <li class="nav-item" name="basic" id="basic" ><a class="nav-link" href="basic_conf"><?php echo _("Basic"); ?></a></li>
+              <li class="nav-item" name="dct_basic" id="dct_basic" ><a class="nav-link" href="basic_conf"><?php echo _("Basic"); ?></a></li>
               <li class="nav-item" name="interfaces" id="interfaces"><a class="nav-link" href="interfaces_conf"><?php echo _("Interfaces"); ?></a></li>
               <li class="nav-item" name="modbus" id="modbus"><a class="nav-link" href="modbus_conf"><?php echo _("Modbus Rules"); ?></a></li>
               <li class="nav-item" name="s7" id="s7"><a class="nav-link" href="s7_conf"><?php echo _("S7 Rules"); ?></a></li>
+              <?php if ($model == "EG500") : ?>
+              <li class="nav-item" name="io" id="io"><a class="nav-link" href="io_conf"><?php echo _("IO"); ?></a></li>
+              <?php endif; ?>
               <li class="nav-item" name="server" id="server"><a class="nav-link" href="server_conf"><?php echo _("Server"); ?></a></li>
             </ul>
           </div>
@@ -289,6 +293,9 @@ $bridgedEnabled = getBridgedState();
             case "/s7_conf":
                 DisplayS7();
                 break;
+            case "/io_conf":
+                DisplayIO();
+                break;
             case "/server_conf":
                 DisplayServer();
                 break;
@@ -355,7 +362,7 @@ $(document).ready(function(){
   $('.nav-item').each(function() {
       if ($(this).hasClass('active')) {
         var id = $($(this))[0].id;
-        if (id == "basic" || id == "interfaces" || id == "modbus" || id == "s7" || id == "server") {
+        if (id == "dct_basic" || id == "interfaces" || id == "modbus" || id == "s7" || id == "server" || id == "io") {
           $('#navbar-collapse-dct').addClass('show')
           $('#dct').removeClass('collapsed');
         } else {
