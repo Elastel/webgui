@@ -1,0 +1,47 @@
+#!/bin/bash
+
+sudo git pull origin
+if [ $? -eq 0 ]; then
+    echo Start update...
+else
+    echo Fail to update. 
+    exit 0;
+fi
+
+sleep 1
+
+model=$(cat /etc/fw_model)
+
+if [ ! -n "$model" ]; then
+        model="EG500"
+fi
+
+echo model:$model
+
+sudo cp config/hostapd.conf /etc/hostapd/hostapd.conf
+sudo cp config/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
+sudo cp config/090_br0.conf /etc/dnsmasq.d/090_br0.conf
+sudo cp config/dhcpcd.conf /etc/dhcpcd.conf
+sudo cp config/defaults.json /etc/raspap/networking/
+sudo cp EG/$model/etc/config/* /etc/config/
+sudo cp EG/$model/etc/init.d/* /etc/init.d/
+sudo rm /etc/rc5.d/S10failover
+sudo rm /etc/rc5.d/S10lte
+sudo rm /etc/rc5.d/S10dct
+sudo rm /etc/rc5.d/S10daemon
+sudo ln -s /etc/init.d/failover /etc/rc5.d/S10failover
+sudo ln -s /etc/init.d/lte /etc/rc5.d/S10lte
+sudo ln -s /etc/init.d/dct /etc/rc5.d/S10dct
+sudo ln -s /etc/init.d/daemon /etc/rc5.d/S10daemon
+sudo /etc/init.d/dct stop
+sudo /etc/init.d/daemon stop
+sudo /etc/init.d/lte stop
+sudo /etc/init.d/failover stop
+sudo cp EG/$model/sbin/* /sbin/
+sudo cp EG/$model/usr/sbin/* /usr/sbin/
+sudo cp EG/$model/usr/lib/* /usr/lib/
+sudo cp EG/$model/usr/local/bin/* /usr/local/bin/
+
+echo -e "Complete to update, it will reboot system."
+sleep 5
+sudo systemctl reboot

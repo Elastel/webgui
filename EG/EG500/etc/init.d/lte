@@ -10,9 +10,6 @@ do_start()
 	local proto lte_interface
 
 	proto=$(uci get network.swan.proto)
-	lte_interface=$(ifconfig -a | grep -c wwan0)
-	
-	[ "$proto" = "lte" -a "$lte_interface" = "1" ] || return
 
 	$START_PROG swan
 }
