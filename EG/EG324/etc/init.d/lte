@@ -1,6 +1,6 @@
 #! /bin/sh
 
-START_PROG=/usr/sbin/start_diald swan
+START_PROG=/usr/sbin/start_diald
 STOP_PROG=/usr/sbin/stop_diald
 
 do_start()
@@ -10,11 +10,8 @@ do_start()
 	local proto lte_interface
 
 	proto=$(uci get network.swan.proto)
-	lte_interface=$(ifconfig -a | grep -c wwan0)
-	
-	[ "$proto" = "lte" -a "$lte_interface" = "1" ] || return
 
-	$START_PROG
+	$START_PROG swan
 }
 
 do_stop()
