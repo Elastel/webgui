@@ -159,7 +159,7 @@ $bridgedEnabled = getBridgedState();
         <li class="nav-item">
           <a class="nav-link navbar-toggle collapsed" id="dct" href="#" data-toggle="collapse" data-target="#navbar-collapse-dct">
               <i class="fas fa-exchange-alt fa-fw mr-2"></i>
-              <span class="nav-label"><?php echo _("DTC"); ?></a>
+              <span class="nav-label"><?php echo _("Data Collect"); ?></a>
           </a>
           <div class="collapse navbar-collapse" id="navbar-collapse-dct">
             <ul class="nav navbar-nav navbar-right">
