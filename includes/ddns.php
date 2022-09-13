@@ -69,13 +69,12 @@ function saveDDNSConfig($status)
         exec("sudo /usr/local/bin/uci set ddns.ddns.username=" .$_POST['username']);
         exec("sudo /usr/local/bin/uci set ddns.ddns.password=" .$_POST['password']);
         exec("sudo /usr/local/bin/uci set ddns.ddns.interval=" .$_POST['interval']);
+        if ($_POST['username'] == NULL || $_POST['password'] == NULL) {
+            return false;
+        }
     }
     
     exec("sudo /usr/local/bin/uci commit ddns");
-
-    if ($_POST['username'] == NULL || $_POST['password'] == NULL) {
-        return false;
-    }
 
     $status->addMessage('DDNS configuration updated ', 'success');
     return true;

@@ -19,13 +19,12 @@ require_once 'app/lib/Parsedown.php';
         <div class="tab-pane active" id="aboutgeneral">
           <div class="row">
             <div class="col-md-8">
-              <h2 class="mt-3"><?php echo _("ElastOS") ." V".RASPI_VERSION; ?></h2>
-                <div class="ml-5 mt-3"><img class="about-logo" src="app/img/elastel_logo.png"></div>
-                <div class="mt-3" style="text-indent : 1rem"><a href="https://www.elastel.com/">Elastel</a> Technology Ltd is a design and manufacturing company providing industrial-quality wireless products and solutions for IoT and M2M.
-                </div>
-                <div class="mt-3" style="text-indent : 1rem">With an innovative design on open standards, premium quality control, Elastel providing the most Elastic and robust <a href="https://www.elastel.com/product-category/industrial-computer/">Industrial Computers</a>,
-                <a href="https://www.elastel.com/product/cellular-router/eg500-wifi-halow-gateway/">Routers</a>, <a href="https://www.elastel.com/product-category/edge-gateway/">Edge Gateways</a> for people easy and fast achieved their IoT telecommunication needs. 
-                </div>
+              <div class="ml-5 mt-3"><img class="about-logo" src="app/img/elastel_logo.png"></div>
+              <div class="mt-3" style="text-indent : 1rem"><a href="https://www.elastel.com/">Elastel</a> Technology Ltd is a design and manufacturing company providing industrial-quality wireless products and solutions for IoT and M2M.
+              </div>
+              <div class="mt-3" style="text-indent : 1rem">With an innovative design on open standards, premium quality control, Elastel providing the most Elastic and robust <a href="https://www.elastel.com/product-category/industrial-computer/">Industrial Computers</a>,
+              <a href="https://www.elastel.com/product/cellular-router/eg500-wifi-halow-gateway/">Routers</a>, <a href="https://www.elastel.com/product-category/edge-gateway/">Edge Gateways</a> for people easy and fast achieved their IoT telecommunication needs. 
+              </div>
           </div><!-- /.row -->
         </div><!-- /.tab-pane | general tab -->
 
