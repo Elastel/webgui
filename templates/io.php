@@ -39,47 +39,49 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form method="POST" action="io_conf" role="form">
-            <?php echo CSRFTokenFieldTag() ?>       
-              <div class="cbi-section cbi-tblsection" id="pageADC" name="pageADC">
-                <input type="hidden" name="tableDataADC" value="" id="hidTDADC">
-                <h4><?php echo _("ADC Setting"); ?></h4>
-                <table class="table cbi-section-table" name="tableADC" id="tableADC">
-                  <tr class="tr cbi-section-table-titles">
-                    <th class="th cbi-section-table-cell"><?php echo _("Device Name"); ?></th>
-                    <th class="th cbi-section-table-cell"><?php echo _("ADC Channel"); ?></th>
-                    <th class="th cbi-section-table-cell"><?php echo _("Factor Name"); ?></th>
-                    <th class="th cbi-section-table-cell"><?php echo _("Capture Type"); ?></th>
-                    <th class="th cbi-section-table-cell"><?php echo _("Range Down"); ?></th>
-                    <th class="th cbi-section-table-cell"><?php echo _("Range Up"); ?></th>
-                    <th class="th cbi-section-table-cell"><?php echo _("Reporting Center"); ?></th>
-                    <th class="th cbi-section-table-cell" style="display:none"><?php echo _("Operator"); ?></th>
-                    <th class="th cbi-section-table-cell" style="display:none"><?php echo _("Operation Expression"); ?></th>
-                    <th class="th cbi-section-table-cell" style="display:none"><?php echo _("Operand"); ?></th>
-                    <th class="th cbi-section-table-cell" style="display:none"><?php echo _("Accuracy"); ?></th>
-                    <th class="th cbi-section-table-cell"><?php echo _("Enable"); ?></th>
-                    <th class="th cbi-section-table-cell cbi-section-actions"></th>
-                    <th class="th cbi-section-table-cell cbi-section-actions"></th>
-                  </tr>
-                  <tr class="tr cbi-section-table-descr">
-                    <th class="th cbi-section-table-cell" ></th>
-                    <th class="th cbi-section-table-cell" ></th>
-                    <th class="th cbi-section-table-cell" ></th>
-                    <th class="th cbi-section-table-cell" ></th>
-                    <th class="th cbi-section-table-cell" ></th>
-                    <th class="th cbi-section-table-cell" ><?php echo _("Multiple Servers Are Separated By Minus"); ?></th>
-                    <th class="th cbi-section-table-cell" style="display:none"></th>
-                    <th class="th cbi-section-table-cell" style="display:none"></th>
-                    <th class="th cbi-section-table-cell" style="display:none"></th>
-                    <th class="th cbi-section-table-cell" style="display:none"></th>
-                    <th class="th cbi-section-table-cell" ></th>
-                    <th class="th cbi-section-table-cell cbi-section-actions"></th>
-                    <th class="th cbi-section-table-cell cbi-section-actions"></th>
-                  </tr>
-                </table>
-                <div class="cbi-section-create">
-                  <input type="button" class="cbi-button-add" name="btnADC" value="ADD" onclick="addDataIO(this)">
+            <?php echo CSRFTokenFieldTag() ?>
+              <?php if ($model == "EG500") { ?>
+                <div class="cbi-section cbi-tblsection" id="pageADC" name="pageADC">
+                  <input type="hidden" name="tableDataADC" value="" id="hidTDADC">
+                  <h4><?php echo _("ADC Setting"); ?></h4>
+                  <table class="table cbi-section-table" name="tableADC" id="tableADC">
+                    <tr class="tr cbi-section-table-titles">
+                      <th class="th cbi-section-table-cell"><?php echo _("Device Name"); ?></th>
+                      <th class="th cbi-section-table-cell"><?php echo _("ADC Channel"); ?></th>
+                      <th class="th cbi-section-table-cell"><?php echo _("Factor Name"); ?></th>
+                      <th class="th cbi-section-table-cell"><?php echo _("Capture Type"); ?></th>
+                      <th class="th cbi-section-table-cell"><?php echo _("Range Down"); ?></th>
+                      <th class="th cbi-section-table-cell"><?php echo _("Range Up"); ?></th>
+                      <th class="th cbi-section-table-cell"><?php echo _("Reporting Center"); ?></th>
+                      <th class="th cbi-section-table-cell" style="display:none"><?php echo _("Operator"); ?></th>
+                      <th class="th cbi-section-table-cell" style="display:none"><?php echo _("Operation Expression"); ?></th>
+                      <th class="th cbi-section-table-cell" style="display:none"><?php echo _("Operand"); ?></th>
+                      <th class="th cbi-section-table-cell" style="display:none"><?php echo _("Accuracy"); ?></th>
+                      <th class="th cbi-section-table-cell"><?php echo _("Enable"); ?></th>
+                      <th class="th cbi-section-table-cell cbi-section-actions"></th>
+                      <th class="th cbi-section-table-cell cbi-section-actions"></th>
+                    </tr>
+                    <tr class="tr cbi-section-table-descr">
+                      <th class="th cbi-section-table-cell" ></th>
+                      <th class="th cbi-section-table-cell" ></th>
+                      <th class="th cbi-section-table-cell" ></th>
+                      <th class="th cbi-section-table-cell" ></th>
+                      <th class="th cbi-section-table-cell" ></th>
+                      <th class="th cbi-section-table-cell" ><?php echo _("Multiple Servers Are Separated By Minus"); ?></th>
+                      <th class="th cbi-section-table-cell" style="display:none"></th>
+                      <th class="th cbi-section-table-cell" style="display:none"></th>
+                      <th class="th cbi-section-table-cell" style="display:none"></th>
+                      <th class="th cbi-section-table-cell" style="display:none"></th>
+                      <th class="th cbi-section-table-cell" ></th>
+                      <th class="th cbi-section-table-cell cbi-section-actions"></th>
+                      <th class="th cbi-section-table-cell cbi-section-actions"></th>
+                    </tr>
+                  </table>
+                  <div class="cbi-section-create">
+                    <input type="button" class="cbi-button-add" name="btnADC" value="ADD" onclick="addDataIO(this)">
+                  </div>
                 </div>
-              </div>
+              <?php } ?>
 
               <div class="cbi-section cbi-tblsection" id="pageDI" name="pageDI">
                 <input type="hidden" name="tableDataDI" value="" id="hidTDDI">
@@ -194,10 +196,12 @@
       <select id="widget.index.di" class="cbi-input-select">
         <option value="DI0">DI0</option>
         <option value="DI1">DI1</option>
+        <?php if ($model == "EG500") { ?>
         <option value="DI2">DI2</option>
         <option value="DI3">DI3</option>
         <option value="DI4">DI4</option>
         <option value="DI5">DI5</option>
+        <?php } ?>
       </select>
     </div>
 
@@ -206,10 +210,12 @@
       <select id="widget.index.do" class="cbi-input-select">
         <option value="DO0">DO0</option>
         <option value="DO1">DO1</option>
+        <?php if ($model == "EG500") { ?>
         <option value="DO2">DO2</option>
         <option value="DO3">DO3</option>
         <option value="DO4">DO4</option>
         <option value="DO5">DO5</option>
+        <?php } ?>
       </select>
     </div>
 

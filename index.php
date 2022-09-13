@@ -53,6 +53,7 @@ require_once 'includes/modbus.php';
 require_once 'includes/s7.php';
 require_once 'includes/io.php';
 require_once 'includes/server.php';
+require_once 'includes/ddns.php';
 
 $config = getConfig();
 $model = getModel();
@@ -167,7 +168,7 @@ $bridgedEnabled = getBridgedState();
               <li class="nav-item" name="interfaces" id="interfaces"><a class="nav-link" href="interfaces_conf"><?php echo _("Interfaces"); ?></a></li>
               <li class="nav-item" name="modbus" id="modbus"><a class="nav-link" href="modbus_conf"><?php echo _("Modbus Rules"); ?></a></li>
               <li class="nav-item" name="s7" id="s7"><a class="nav-link" href="s7_conf"><?php echo _("S7 Rules"); ?></a></li>
-              <?php if ($model == "EG500") : ?>
+              <?php if ($model == "EG500" || $model == "EG410") : ?>
               <li class="nav-item" name="io" id="io"><a class="nav-link" href="io_conf"><?php echo _("IO"); ?></a></li>
               <?php endif; ?>
               <li class="nav-item" name="server" id="server"><a class="nav-link" href="server_conf"><?php echo _("Server"); ?></a></li>
@@ -182,6 +183,11 @@ $bridgedEnabled = getBridgedState();
           <?php if (RASPI_WIREGUARD_ENABLED) : ?>
         <li class="nav-item">
           <a class="nav-link" href="wg_conf"><span class="ra-wireguard mr-2"></span><span class="nav-label"><?php echo _("WireGuard"); ?></a>
+        </li>
+          <?php endif; ?>
+          <?php if (DDNS_ENABLED) : ?>
+        <li class="nav-item">
+          <a class="nav-link" href="ddns"><i class="fas fa-server fa-fw mr-2"></i><span class="nav-label"><?php echo _("DDNS"); ?></a>
         </li>
           <?php endif; ?>
           <?php if (RASPI_TORPROXY_ENABLED) : ?>
@@ -298,6 +304,9 @@ $bridgedEnabled = getBridgedState();
                 break;
             case "/server_conf":
                 DisplayServer();
+                break;
+            case "/ddns":
+                DisplayDDNS();
                 break;
             default:
                 DisplayDashboard($extraFooterScripts);

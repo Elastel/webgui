@@ -9,10 +9,11 @@ require_once 'config.php';
 function DisplayIO()
 {
     $status = new StatusMessages();
+    $model = getModel();
 
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['saveIOsettings']) || isset($_POST['applyIOsettings'])) {
-            saveIOConfig($status);
+            saveIOConfig($status, $model);
             
             if (isset($_POST['applyIOsettings'])) {
                 sleep(2);
@@ -21,7 +22,7 @@ function DisplayIO()
         }
     }
 
-    echo renderTemplate("io", compact('status'));
+    echo renderTemplate("io", compact('status'), "model");
 }
 
 function saveADC($status)
@@ -154,10 +155,12 @@ function saveDO($status)
     }
 }
 
-function saveIOConfig($status)
+function saveIOConfig($status, $model)
 {
+    if ($model == "EG500") {
+        saveADC($status);
+    }
 
-    saveADC($status);
     saveDI($status);
     saveDO($status);
     

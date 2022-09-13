@@ -1,0 +1,13 @@
+
+config interface 'wan'
+	option device 'eth0'
+	option wan_multi '0'
+	option proto 'dhcp'
+
+config interface 'swan'
+	option proto 'lte'
+	option device '/dev/cdc-wdm0'
+	option pdptype 'ipv4'
+	option ifname 'wwan0'
+	option auth 'none'
+
