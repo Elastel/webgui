@@ -41,7 +41,7 @@
                <div class="panel-heading">
                  <h5 class="panel-title"><?php echo _("Certificates in the configuration file"); ?></h5>
                </div>
-               <p><?php echo _("RaspAP supports certificates by including them in the configuration file."); ?>
+               <p><?php echo _("It supports certificates by including them in the configuration file."); ?>
                  <ul>
                    <small>
                      <li><?php echo _("Signing certification authority (CA) certificate (e.g. <code>ca.crt</code>): enclosed in <code>&lt;ca> ... &lt;/ca></code> tags."); ?></li>

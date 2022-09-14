@@ -76,7 +76,7 @@
           <label class="custom-control-label" for="dhcp-iface"><?php echo _("Enable DHCP for this interface") ?></label>
         </div>
         <p class="mb-0" id="dhcp-iface-description">
-          <small><?php echo _("Enable this option if you want RaspAP to assign IP addresses to clients on the selected interface. A static IP address is required for this option.") ?></small>
+          <small><?php echo _("Enable this option if you want to assign IP addresses to clients on the selected interface. A static IP address is required for this option.") ?></small>
         </p>
       </div>
      </div>

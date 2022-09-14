@@ -10,7 +10,7 @@
           <label class="custom-control-label" for="peer_enabled"><?php echo _("Enable peer") ?></label>
         </div>
         <p id="wg-description">
-          <small><?php echo _("Enable this option to encrypt traffic by creating a tunnel between RaspAP and this peer.") ?></small>
+          <small><?php echo _("Enable this option to encrypt traffic by creating a tunnel.") ?></small>
           <small><?php echo _("This option adds <code>client.conf</code> to the WireGuard configuration.") ?></small>
         </p>
      </div>
@@ -67,7 +67,7 @@
     <div class="col-md-6 mt-5">
       <figure class="figure w-75 ml-3">
         <?php if ($wg_penabled == true ) : ?>
-        <img src="app/img/wg-qr-code.php" class="figure-img img-fluid" alt="RaspAP Wifi QR code" style="width:100%;">
+        <img src="app/img/wg-qr-code.php" class="figure-img img-fluid" alt="Wifi QR code" style="width:100%;">
         <figcaption class="figure-caption">
           <?php echo _("Scan this QR code with your client to connect to this tunnel"); ?>
           <?php echo _("or download the <code>client.conf</code> file to your device."); ?>

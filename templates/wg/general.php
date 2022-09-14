@@ -65,7 +65,7 @@
                   </div>
                   <p id="wg-description">
                     <small>
-                      <?php echo _("Enable this option to secure network traffic by creating an encrypted tunnel between RaspAP and configured peers.") ?>
+                      <?php echo _("Enable this option to secure network traffic by creating an encrypted tunnel.") ?>
                       <?php echo _("This setting generates a new WireGuard <code>.conf</code> file on this device.") ?>
                     </small>
                   </p>

@@ -47,7 +47,7 @@ function DisplayHostAPDConfig()
 
     if (!RASPI_MONITOR_ENABLED) {
          if (isset($_POST['StartHotspot']) || isset($_POST['RestartHotspot'])) {
-            $status->addMessage('Attempting to start hotspot', 'info');
+            //$status->addMessage('Attempting to start hotspot', 'info');
             if ($arrHostapdConf['BridgedEnable'] == 1) {
                 exec('sudo /etc/raspap/hostapd/servicestart.sh --interface br0 --seconds 3', $return);
             } elseif ($arrHostapdConf['WifiAPEnable'] == 1) {
@@ -55,15 +55,16 @@ function DisplayHostAPDConfig()
             } else {
                 exec('sudo /etc/raspap/hostapd/servicestart.sh --seconds 3', $return);
             }
-            foreach ($return as $line) {
-                $status->addMessage($line, 'info');
-            }
+            // foreach ($return as $line) {
+            //     $status->addMessage($line, 'info');
+            // }
+            $status->addMessage('Success to restart WIFI', 'success');
         } elseif (isset($_POST['StopHotspot'])) {
-            $status->addMessage('Attempting to stop hotspot', 'info');
+            //$status->addMessage('Attempting to stop hotspot', 'info');
             exec('sudo /bin/systemctl stop hostapd.service', $return);
-            foreach ($return as $line) {
-                $status->addMessage($line, 'info');
-            }
+            // foreach ($return as $line) {
+            //     $status->addMessage($line, 'info');
+            // }
         }
     }
     
@@ -100,11 +101,11 @@ function DisplayHostAPDConfig()
     if (isset($_POST['txpower']) && ($_POST['txpower'] != 'auto')) {
         $sdBm = $_POST['txpower'] * 100;
         exec('sudo /sbin/iw dev '.$_POST['interface'].' set txpower fixed '.$sdBm, $return);
-        $status->addMessage('Setting transmit power to '.$_POST['txpower'].' dBm.', 'success');
+        //$status->addMessage('Setting transmit power to '.$_POST['txpower'].' dBm.', 'success');
         $txpower = $_POST['txpower'];
     } elseif ($_POST['txpower'] == 'auto') {
         exec('sudo /sbin/iw dev '.$_POST['interface'].' set txpower auto', $return);
-        $status->addMessage('Setting transmit power to '.$_POST['txpower'].'.', 'success');
+        //$status->addMessage('Setting transmit power to '.$_POST['txpower'].'.', 'success');
         $txpower = $_POST['txpower'];
     }
 

@@ -15,7 +15,7 @@
             <div class="modal-title" id="ModalLabel"><i class="fas fa-sync-alt mr-2"></i><?php echo $msg ?></div>
           </div>
           <div class="modal-body">
-            <div class="col-md-12 mb-3 mt-1"><?php echo _("Executing RaspAP service start") ?>...</div>
+            <div class="col-md-12 mb-3 mt-1"><?php echo _("Executing WIFI restart") ?>...</div>
             <div class="progress" style="height: 20px;">
               <div class="progress-bar bg-info" role="progressbar" id="progressBar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="9"></div>
             </div>
@@ -71,9 +71,6 @@
           <?php echo $buttons ?>
         </form>
       </div><!-- /.card-body -->
-
-      <div class="card-footer"> <?php echo _("Information provided by hostapd"); ?></div>
-
     </div><!-- /.card -->
   </div><!-- /.col-lg-12 -->
 </div><!-- /.row -->
