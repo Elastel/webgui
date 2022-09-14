@@ -142,7 +142,7 @@ $bridgedEnabled = getBridgedState();
           <?php endif; ?>
           <?php if (RASPI_HOTSPOT_ENABLED) : ?>
         <li class="nav-item">
-          <a class="nav-link" href="hostapd_conf"><i class="far fa-dot-circle fa-fw mr-2"></i><span class="nav-label"><?php echo _("WiFi"); ?></a>
+          <a class="nav-link" href="hostapd_conf"><i class="fas fa-wifi fa-fw mr-2"></i><span class="nav-label"><?php echo _("WiFi"); ?></a>
         </li>
           <?php endif; ?>
           <?php if (RASPI_ADBLOCK_ENABLED) : ?>

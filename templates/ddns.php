@@ -79,7 +79,7 @@
                 <div class="cbi-value">
                   <label class="cbi-value-title"><?php echo _("Update Interval"); ?></label>
                   <input type="text" class="cbi-input-text" name="interval" id="interval"/>
-                  <label class="cbi-value-description"><?php echo _("Seconds"); ?></label>
+                  <label class="cbi-value-description"><?php echo _("Minutes, minimum is 5"); ?></label>
                 </div>
 
                 <div class="cbi-value">
