@@ -19,11 +19,6 @@ function DisplayDDNS()
                     } else {
                         exec("ip route | grep default | awk {'print $5'}", $interface);
                         $total_interface = sizeof($interface);
-                        for ($i = 0; $i < $total_interface; $i++) {
-                            if ($interface[$i] == $_POST['interface']) {
-                                break;
-                            }
-                        }
 
                         if ($_POST['interval'] == NULL) {
                             $interval = 30;
@@ -34,12 +29,17 @@ function DisplayDDNS()
                         exec('sudo rm /etc/ddns.conf');
                         if ($total_interface > 0) {
                             exec('sudo /etc/init.d/ddns stop');
-                            exec('sudo /usr/sbin/set_noip.sh ' . $i . ' ' . $_POST['username'] . ' ' . $_POST['password']. ' ' . $interval . ' > /dev/null');
+                            exec('sudo /usr/sbin/noip2 -C -c /etc/ddns.conf' .
+                            ' -u ' . $_POST['username'] . 
+                            ' -p ' . $_POST['password'] . 
+                            ' -I ' . $_POST['interface'] . 
+                            ' -H ' . $_POST['hostname'] .
+                            ' -U ' . $interval . 
+                            ' > /dev/null');
                             sleep(2);
                             if (!is_file('/etc/ddns.conf')) {
                                 $status->addMessage("Failed to restart DDNS", 'danger');
                             } else {
-                                //exec('sudo /usr/sbin/noip2 -c /etc/ddns.conf');
                                 exec('sudo /etc/init.d/ddns restart');
                             }
                         } else {
@@ -51,9 +51,7 @@ function DisplayDDNS()
         }
     }
 
-    exec("sudo /usr/sbin/noip2 -S -c /etc/ddns.conf", $hostname);
-
-    echo renderTemplate("ddns", compact('status', 'hostname'));
+    echo renderTemplate("ddns", compact('status'));
 }
 
 function saveDDNSConfig($status)
@@ -69,6 +67,7 @@ function saveDDNSConfig($status)
         exec("sudo /usr/local/bin/uci set ddns.ddns.username=" .$_POST['username']);
         exec("sudo /usr/local/bin/uci set ddns.ddns.password=" .$_POST['password']);
         exec("sudo /usr/local/bin/uci set ddns.ddns.interval=" .$_POST['interval']);
+        exec("sudo /usr/local/bin/uci set ddns.ddns.hostname=" .$_POST['hostname']);
         if ($_POST['username'] == NULL || $_POST['password'] == NULL) {
             return false;
         }

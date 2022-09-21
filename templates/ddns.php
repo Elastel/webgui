@@ -84,7 +84,7 @@
 
                 <div class="cbi-value">
                 <label class="cbi-value-title"><?php echo _("Hostname"); ?></label>
-                <label id="hostname" name="hostname"><?php echo _(($hostname[0] != null) ? $hostname[0] : "-"); ?></label>
+                <input type="text" class="cbi-input-text" name="hostname" id="hostname"/>
               </div>
               </div>
             </div>

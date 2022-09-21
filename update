@@ -1,14 +1,14 @@
 #!/bin/bash
 
-sudo git pull origin
-if [ $? -eq 0 ]; then
-    echo Start update...
-else
-    echo Fail to update. 
-    exit 0;
-fi
+# sudo git pull origin
+# if [ $? -eq 0 ]; then
+#     echo Start update...
+# else
+#     echo Fail to update. 
+#     exit 0;
+# fi
 
-sleep 1
+# sleep 1
 
 model=$(cat /etc/fw_model)
 
@@ -29,18 +29,22 @@ sudo rm /etc/rc5.d/S10failover
 sudo rm /etc/rc5.d/S10lte
 sudo rm /etc/rc5.d/S10dct
 sudo rm /etc/rc5.d/S10daemon
+sudo rm /etc/rc5.d/S10ddns
 sudo ln -s /etc/init.d/failover /etc/rc5.d/S10failover
 sudo ln -s /etc/init.d/lte /etc/rc5.d/S10lte
 sudo ln -s /etc/init.d/dct /etc/rc5.d/S10dct
 sudo ln -s /etc/init.d/daemon /etc/rc5.d/S10daemon
+sudo ln -s /etc/init.d/ddns /etc/rc5.d/S10ddns
 sudo /etc/init.d/dct stop
-sudo /etc/init.d/daemon stop
 sudo /etc/init.d/lte stop
 sudo /etc/init.d/failover stop
-sudo cp EG/$model/sbin/* /sbin/
 sudo cp EG/$model/usr/sbin/* /usr/sbin/
 sudo cp EG/$model/usr/lib/* /usr/lib/
 sudo cp EG/$model/usr/local/bin/* /usr/local/bin/
+
+[ -n "$(pgrep daemond)" ] && {
+    sudo kill -9 $(pgrep daemond) && sudo cp EG/$model/sbin/* /sbin/
+}
 
 echo -e "Complete to update, it will reboot system."
 sleep 5
