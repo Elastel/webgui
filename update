@@ -18,12 +18,16 @@ fi
 
 echo model:$model
 
-sudo cp config/hostapd.conf /etc/hostapd/hostapd.conf
-sudo cp config/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
-sudo cp config/090_br0.conf /etc/dnsmasq.d/090_br0.conf
-sudo cp config/dhcpcd.conf /etc/dhcpcd.conf
-sudo cp config/defaults.json /etc/raspap/networking/
-sudo cp EG/$model/etc/config/* /etc/config/
+if [ "$1" == "reset" ]; then
+    echo $1
+    sudo cp config/hostapd.conf /etc/hostapd/hostapd.conf
+    sudo cp config/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
+    sudo cp config/090_br0.conf /etc/dnsmasq.d/090_br0.conf
+    sudo cp config/dhcpcd.conf /etc/dhcpcd.conf
+    sudo cp config/defaults.json /etc/raspap/networking/
+    sudo cp EG/$model/etc/config/* /etc/config/
+fi
+
 sudo cp EG/$model/etc/init.d/* /etc/init.d/
 sudo rm /etc/rc5.d/S10failover
 sudo rm /etc/rc5.d/S10lte
@@ -38,6 +42,7 @@ sudo ln -s /etc/init.d/ddns /etc/rc5.d/S10ddns
 sudo /etc/init.d/dct stop
 sudo /etc/init.d/lte stop
 sudo /etc/init.d/failover stop
+sudo /etc/init.d/ddns stop
 sudo cp EG/$model/usr/sbin/* /usr/sbin/
 sudo cp EG/$model/usr/lib/* /usr/lib/
 sudo cp EG/$model/usr/local/bin/* /usr/local/bin/
