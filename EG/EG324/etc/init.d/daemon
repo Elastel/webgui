@@ -20,7 +20,7 @@ case "$1" in
       do_start
       ;;
   stop)
-      do_stop
+      #do_stop
 	  model=$(cat /etc/fw_model)
 
 	  if [ "$model" = "EG500" ]; then
