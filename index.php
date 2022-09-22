@@ -54,6 +54,7 @@ require_once 'includes/s7.php';
 require_once 'includes/io.php';
 require_once 'includes/server.php';
 require_once 'includes/ddns.php';
+require_once 'includes/bacnet.php';
 
 $config = getConfig();
 $model = getModel();
@@ -172,6 +173,7 @@ $bridgedEnabled = getBridgedState();
               <li class="nav-item" name="io" id="io"><a class="nav-link" href="io_conf"><?php echo _("IO"); ?></a></li>
               <?php endif; ?>
               <li class="nav-item" name="server" id="server"><a class="nav-link" href="server_conf"><?php echo _("Server"); ?></a></li>
+              <li class="nav-item" name="bacnet" id="bacnet"><a class="nav-link" href="bacnet"><?php echo _("BACnet Server"); ?></a></li>
             </ul>
           </div>
         </li>
@@ -307,6 +309,9 @@ $bridgedEnabled = getBridgedState();
                 break;
             case "/ddns":
                 DisplayDDNS();
+                break;
+            case "/bacnet":
+                DisplayBACnet();
                 break;
             default:
                 DisplayDashboard($extraFooterScripts);

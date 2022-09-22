@@ -189,7 +189,34 @@ function contentLoaded() {
         case "ddns":
             loadDDNSConfig();
             break;
+        case "bacnet":
+            loadBACnetConfig();
+            break;
     }
+}
+
+function loadBACnetConfig() {
+    $.get('ajax/dct/get_dctcfg.php?type=bacnet',function(data){
+        jsonData = JSON.parse(data);
+        var arr = ['port', 'device_id', 'object_name'];
+
+        $('#enabled').val(jsonData.enabled);
+        if (jsonData.enabled == '1') {
+            $('#page_bacnet').show();
+            $('#bacnet_enable').prop('checked', true);
+
+            arr.forEach(function (info) {
+                if (info == null) {
+                    return true;    // continue: return true; break: return false
+                }
+                
+                $('#' + info).val(jsonData[info]);
+            })
+        } else {
+            $('#page_bacnet').hide(); 
+            $('#bacnet_disable').prop('checked', true);
+        }
+    });
 }
 
 function loadDDNSConfig() {

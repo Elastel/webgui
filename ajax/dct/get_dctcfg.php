@@ -283,6 +283,18 @@ if ($type == "basic") {
             }
         }
     }
+} else if ($type == 'bacnet') {
+    $arr = array('port', 'device_id', 'object_name');
+    unset($enabled);
+    exec('/usr/local/bin/uci get dct.bacnet.enabled', $enabled);
+    $dctdata['enabled'] = $enabled[0];
+    if ($enabled[0] == '1') {
+        foreach ($arr as $info) {
+            unset($val);
+            exec('sudo /usr/local/bin/uci get dct.bacnet.' . $info, $val);
+            $dctdata[$info] = $val[0];
+        }
+    }
 }
 
 echo json_encode($dctdata);
