@@ -28,6 +28,7 @@ if [ "$1" == "reset" ]; then
     sudo cp EG/$model/etc/config/* /etc/config/
 fi
 
+sudo cp config/090_raspap /etc/sudoers.d/090_raspap
 sudo cp EG/$model/etc/init.d/* /etc/init.d/
 sudo rm /etc/rc5.d/S10failover
 sudo rm /etc/rc5.d/S10lte
