@@ -376,7 +376,8 @@ $(document).ready(function(){
   $('.nav-item').each(function() {
       if ($(this).hasClass('active')) {
         var id = $($(this))[0].id;
-        if (id == "dct_basic" || id == "interfaces" || id == "modbus" || id == "s7" || id == "server" || id == "io") {
+        if (id == "dct_basic" || id == "interfaces" || id == "modbus" || id == "s7" ||
+            id == "server" || id == "io" || id == "bacnet") {
           $('#navbar-collapse-dct').addClass('show')
           $('#dct').removeClass('collapsed');
         } else {
