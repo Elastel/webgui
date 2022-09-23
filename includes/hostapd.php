@@ -13,6 +13,7 @@ getWifiInterface();
  */
 function DisplayHostAPDConfig()
 {
+    $model = getModel();
     $status = new StatusMessages();
     $system = new \RaspAP\System\Sysinfo;
     $arrConfig = array();
@@ -23,6 +24,7 @@ function DisplayHostAPDConfig()
         'n' => '802.11n - 2.4 GHz',
         'ac' => '802.11.ac - 5 GHz'
     ];
+
     $arrSecurity = array(1 => 'WPA', 2 => 'WPA2', 3 => 'WPA+WPA2', 'none' => _("None"));
     $arrEncType = array('TKIP' => 'TKIP', 'CCMP' => 'CCMP', 'TKIP CCMP' => 'TKIP+CCMP');
     $arrTxPower = getDefaultNetOpts('txpower','dbm');
@@ -39,7 +41,7 @@ function DisplayHostAPDConfig()
 
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['SaveHostAPDSettings'])) {
-            SaveHostAPDConfig($arrSecurity, $arrEncType, $arr80211Standard, $interfaces, $status);
+            SaveHostAPDConfig($arrSecurity, $arrEncType, $arr80211Standard, $interfaces, $status, $model);
         }
     }
     
@@ -138,7 +140,7 @@ function DisplayHostAPDConfig()
  * @param object $status
  * @return boolean
  */
-function SaveHostAPDConfig($wpa_array, $enc_types, $modes, $interfaces, $status)
+function SaveHostAPDConfig($wpa_array, $enc_types, $modes, $interfaces, $status, $model)
 {
     // It should not be possible to send bad data for these fields so clearly
     // someone is up to something if they fail. Fail silently.
@@ -283,7 +285,7 @@ function SaveHostAPDConfig($wpa_array, $enc_types, $modes, $interfaces, $status)
     $_POST['max_num_sta'] = $_POST['max_num_sta'] < 1 ? null : $_POST['max_num_sta'];
 
     if ($good_input) {
-        $return = updateHostapdConfig($ignore_broadcast_ssid,$wifiAPEnable,$bridgedEnable);
+        $return = updateHostapdConfig($ignore_broadcast_ssid,$wifiAPEnable,$bridgedEnable, $model);
 /*
         // Fetch dhcp-range, lease time from system config
         $syscfg = parse_ini_file(RASPI_DNSMASQ_PREFIX.$ap_iface.'.conf', false, INI_SCANNER_RAW);
@@ -391,11 +393,16 @@ function SaveHostAPDConfig($wpa_array, $enc_types, $modes, $interfaces, $status)
  *
  * @return boolean $result
  */
-function updateHostapdConfig($ignore_broadcast_ssid,$wifiAPEnable,$bridgedEnable)
+function updateHostapdConfig($ignore_broadcast_ssid,$wifiAPEnable,$bridgedEnable,$model)
 {
     // Fixed values
     $country_code = $_POST['country_code'];
-    $config = 'driver=nl80211'.PHP_EOL;
+    if ($model == "EG324") {
+        $config = 'driver=rtl871xdrv'.PHP_EOL;
+    } else {
+        $config = 'driver=nl80211'.PHP_EOL;
+    }
+    
     $config.= 'ctrl_interface='.RASPI_HOSTAPD_CTRL_INTERFACE.PHP_EOL;
     $config.= 'ctrl_interface_group=0'.PHP_EOL;
     $config.= 'auth_algs=1'.PHP_EOL;

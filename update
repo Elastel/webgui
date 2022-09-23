@@ -21,6 +21,9 @@ echo model:$model
 if [ "$1" == "reset" ]; then
     echo $1
     sudo cp config/hostapd.conf /etc/hostapd/hostapd.conf
+    if [ "$model" = "EG324" ]; then
+        sed -i "s/nl80211/rtl871xdrv/g" /etc/hostapd/hostapd.conf
+    fi
     sudo cp config/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
     sudo cp config/090_br0.conf /etc/dnsmasq.d/090_br0.conf
     sudo cp config/dhcpcd.conf /etc/dhcpcd.conf
@@ -30,11 +33,13 @@ fi
 
 sudo cp config/090_raspap /etc/sudoers.d/090_raspap
 sudo cp EG/$model/etc/init.d/* /etc/init.d/
+sudo rm /etc/rc5.d/S01init-wifi
 sudo rm /etc/rc5.d/S10failover
 sudo rm /etc/rc5.d/S10lte
 sudo rm /etc/rc5.d/S10dct
 sudo rm /etc/rc5.d/S10daemon
 sudo rm /etc/rc5.d/S10ddns
+sudo ln -s /etc/init.d/init-wifi /etc/rc5.d/S01init-wifi
 sudo ln -s /etc/init.d/failover /etc/rc5.d/S10failover
 sudo ln -s /etc/init.d/lte /etc/rc5.d/S10lte
 sudo ln -s /etc/init.d/dct /etc/rc5.d/S10dct

@@ -1,0 +1,37 @@
+#!/bin/bash
+echo "Start to search usb wifi..."
+WIFIID=`id_wifi`
+echo "Find usb wifi $WIFIID."
+
+
+if [ $WIFIID = "rtl8188eu" ];then
+	modprobe r8188eu
+elif [ $WIFIID = "rtl8192eu" ];then
+	modprobe 8192eu
+elif [ $WIFIID = "mt7601u" ];then
+	modprobe -r mt7601u
+	modprobe -r rtnet7601Uap
+	modprobe rtnet7601Uap
+elif [ $WIFIID = "rtl8811cu" ];then
+	modprobe 8821cu
+elif [ $WIFIID = "rtl8812bu" ];then
+	modprobe 88x2bu
+else
+	exit
+fi
+
+sleep 2
+
+brctl addif br0 wlan0
+sleep 1
+
+systemctl stop dnsmasq.service
+sleep 1
+systemctl start dnsmasq.service
+
+systemctl stop hostapd.service
+sleep 1
+systemctl start hostapd.service
+
+
+
