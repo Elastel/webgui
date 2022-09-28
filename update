@@ -53,6 +53,13 @@ sudo cp EG/$model/usr/sbin/* /usr/sbin/
 sudo cp EG/$model/usr/lib/* /usr/lib/
 sudo cp EG/$model/usr/local/bin/* /usr/local/bin/
 
+if [ $model = "EG410" ]; then
+	if [ -e /dev/ttyACM0 ]; then
+		sudo cp EG/$model/usr/sbin/dctd-new /usr/sbin/dctd
+	fi
+
+fi
+
 [ -n "$(pgrep daemond)" ] && {
     sudo kill -9 $(pgrep daemond) && sudo cp EG/$model/sbin/* /sbin/
 }
