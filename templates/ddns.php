@@ -73,7 +73,7 @@
 
                 <div class="cbi-value">
                   <label class="cbi-value-title"><?php echo _("Password"); ?></label>
-                  <input type="text" class="cbi-input-text" name="password" id="password"/>
+                  <input type="password" class="cbi-input-text" name="password" id="password"/>
                 </div>
 
                 <div class="cbi-value">
