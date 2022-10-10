@@ -143,7 +143,12 @@ $bridgedEnabled = getBridgedState();
           <?php endif; ?>
           <?php if (RASPI_HOTSPOT_ENABLED) : ?>
         <li class="nav-item">
-          <a class="nav-link" href="hostapd_conf"><i class="fas fa-wifi fa-fw mr-2"></i><span class="nav-label"><?php echo _("WiFi"); ?></a>
+          <a class="nav-link" href="hostapd_conf"><i class="fas fa-dot-circle fa-fw mr-2"></i><span class="nav-label"><?php echo _("WiFi"); ?></a>
+        </li>
+          <?php endif; ?>
+          <?php if (RASPI_WIFICLIENT_ENABLED) : ?>
+        <li class="nav-item">
+          <a class="nav-link" href="wpa_conf"><i class="fas fa-wifi fa-fw mr-2"></i><span class="nav-label"><?php echo _("WiFi client"); ?></span></a>
         </li>
           <?php endif; ?>
           <?php if (RASPI_ADBLOCK_ENABLED) : ?>
@@ -151,13 +156,6 @@ $bridgedEnabled = getBridgedState();
            <a class="nav-link" href="adblock_conf"><i class="far fa-hand-paper fa-fw mr-2"></i><span class="nav-label"><?php echo _("Ad Blocking"); ?></a>
         </li>
           <?php endif; ?>
-          <!--
-          <?php if (RASPI_WIFICLIENT_ENABLED) : ?>
-        <li class="nav-item">
-          <a class="nav-link" href="wpa_conf"><i class="fas fa-wifi fa-fw mr-2"></i><span class="nav-label"><?php echo _("WiFi client"); ?></span></a>
-        </li>
-          <?php endif; ?>
-          -->
         <li class="nav-item">
           <a class="nav-link navbar-toggle collapsed" id="dct" href="#" data-toggle="collapse" data-target="#navbar-collapse-dct">
               <i class="fas fa-exchange-alt fa-fw mr-2"></i>

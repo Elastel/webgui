@@ -40,33 +40,24 @@ function DisplayHostAPDConfig()
     $txpower = intval($txpower[0]);
 
     if (!RASPI_MONITOR_ENABLED) {
-        if (isset($_POST['SaveHostAPDSettings'])) {
+        if (isset($_POST['SaveHostAPDSettings']) || isset($_POST['applyHostAPDsettings'])) {
             SaveHostAPDConfig($arrSecurity, $arrEncType, $arr80211Standard, $interfaces, $status, $model);
-        }
-    }
-    
-    $arrHostapdConf = parse_ini_file('/etc/raspap/hostapd.ini');
+            $arrHostapdConf = parse_ini_file('/etc/raspap/hostapd.ini');
 
-    if (!RASPI_MONITOR_ENABLED) {
-         if (isset($_POST['StartHotspot']) || isset($_POST['RestartHotspot'])) {
-            //$status->addMessage('Attempting to start hotspot', 'info');
-            if ($arrHostapdConf['BridgedEnable'] == 1) {
-                exec('sudo /etc/raspap/hostapd/servicestart.sh --interface br0 --seconds 3', $return);
-            } elseif ($arrHostapdConf['WifiAPEnable'] == 1) {
-                exec('sudo /etc/raspap/hostapd/servicestart.sh --interface uap0 --seconds 3', $return);
-            } else {
-                exec('sudo /etc/raspap/hostapd/servicestart.sh --seconds 3', $return);
+            if (isset($_POST['applyHostAPDsettings'])) {
+                //$status->addMessage('Attempting to start hotspot', 'info');
+                if ($arrHostapdConf['BridgedEnable'] == 1) {
+                    exec('sudo /etc/raspap/hostapd/servicestart.sh --interface br0 --seconds 3', $return);
+                } elseif ($arrHostapdConf['WifiAPEnable'] == 1) {
+                    exec('sudo /etc/raspap/hostapd/servicestart.sh --interface uap0 --seconds 3', $return);
+                } else {
+                    exec('sudo /etc/raspap/hostapd/servicestart.sh --seconds 3', $return);
+                }
+                // foreach ($return as $line) {
+                //     $status->addMessage($line, 'info');
+                // }
+                $status->addMessage('Success to restart WIFI', 'success');
             }
-            // foreach ($return as $line) {
-            //     $status->addMessage($line, 'info');
-            // }
-            $status->addMessage('Success to restart WIFI', 'success');
-        } elseif (isset($_POST['StopHotspot'])) {
-            //$status->addMessage('Attempting to stop hotspot', 'info');
-            exec('sudo /bin/systemctl stop hostapd.service', $return);
-            // foreach ($return as $line) {
-            //     $status->addMessage($line, 'info');
-            // }
         }
     }
     
@@ -95,6 +86,17 @@ function DisplayHostAPDConfig()
     if (isset($arrConfig['disassoc_low_ack'])) {
         $arrConfig['disassoc_low_ack_bool'] = 1;
     }
+
+    exec("sudo /usr/local/bin/uci get wifi.wifi.enabled", $wifi_enable);
+    if ($wifi_enable[0] == '0') {
+        $arrConfig['disable_wifi_ap_bool'] = 1;
+    }
+
+    exec("sudo /usr/local/bin/uci get wifi.wifi_client.enabled", $wifi_client_enable);
+    if ($wifi_client_enable[0]) {
+        $arrConfig['enable_wifi_client_bool'] = 1;
+    }
+
     // assign country_code from iw reg if not set in config
     if (empty($arrConfig['country_code']) && isset($country_code[0])) {
         $arrConfig['country_code'] = $country_code[0];
@@ -285,7 +287,7 @@ function SaveHostAPDConfig($wpa_array, $enc_types, $modes, $interfaces, $status,
     $_POST['max_num_sta'] = $_POST['max_num_sta'] < 1 ? null : $_POST['max_num_sta'];
 
     if ($good_input) {
-        $return = updateHostapdConfig($ignore_broadcast_ssid,$wifiAPEnable,$bridgedEnable, $model);
+		$return = updateHostapdConfig($ignore_broadcast_ssid,$wifiAPEnable,$bridgedEnable, $model);
 /*
         // Fetch dhcp-range, lease time from system config
         $syscfg = parse_ini_file(RASPI_DNSMASQ_PREFIX.$ap_iface.'.conf', false, INI_SCANNER_RAW);
@@ -402,6 +404,25 @@ function updateHostapdConfig($ignore_broadcast_ssid,$wifiAPEnable,$bridgedEnable
     } else {
         $config = 'driver=nl80211'.PHP_EOL;
     }
+
+    
+    if (isset($_POST['enable_wifi_client'])) {
+        exec('sudo /usr/local/bin/uci set wifi.wifi_client.enabled=1');
+    } else {
+        exec('sudo /usr/local/bin/uci get wifi.wifi_client.enabled', $ret);
+        if ($ret[0] == '1') {
+            exec('sudo /usr/local/bin/uci set wifi.wifi_client.enabled=0');
+            exec('sudo reboot');
+        }
+        
+        if (isset($_POST['disable_wifi_ap'])) {
+            exec('sudo /usr/local/bin/uci set wifi.wifi.enabled=0');
+        } else {
+            exec('sudo /usr/local/bin/uci set wifi.wifi.enabled=1');
+        }
+    }
+
+    exec("sudo /usr/local/bin/uci commit wifi");
     
     $config.= 'ctrl_interface='.RASPI_HOSTAPD_CTRL_INTERFACE.PHP_EOL;
     $config.= 'ctrl_interface_group=0'.PHP_EOL;

@@ -1,12 +1,7 @@
 <?php ob_start() ?>
   <?php if (!RASPI_MONITOR_ENABLED) : ?>
     <input type="submit" class="btn btn-outline btn-primary" name="SaveHostAPDSettings" value="<?php echo _("Save settings"); ?>" />
-    <?php if ($hostapdstatus[0] == 0) : ?>
-      <input type="submit" class="btn btn-success" name="StartHotspot" value="<?php echo  _("Start hotspot"); $msg=_("Starting hotspot"); ?>" data-toggle="modal" data-target="#hostapdModal"/>
-    <?php else : ?>
-      <input type="submit" class="btn btn-warning" name="StopHotspot" value="<?php echo _("Stop hotspot") ?>"/>
-      <input type ="submit" class="btn btn-warning" name="RestartHotspot" value="<?php echo _("Restart hotspot"); $msg=_("Restarting hotspot"); ?>" data-toggle="modal" data-target="#hostapdModal"/>
-    <?php endif ?>
+    <input type="submit" class="btn btn-success" value="<?php echo _("Apply settings"); $msg=_("Restarting WIFI"); ?>" data-toggle="modal" data-target="#hostapdModal" name="applyHostAPDsettings" />
     <!-- Modal -->
     <div class="modal fade" id="hostapdModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">

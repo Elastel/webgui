@@ -43,7 +43,11 @@ function DisplayDashboard(&$extraFooterScripts)
     }
     
     exec('ip route | grep "default"  | grep -c "eth0"', $wired);
-    if ($wired[0] == "1") {
+    exec('ip route | grep "default"  | grep -c "wlan0"', $wifi);
+    if ($wifi[0] == "1") {
+        $ifaceStatus = "WIFI";
+        $statusIcon = "up";
+    } else if ($wired[0] == "1") {
         $ifaceStatus = "Wired";
         $statusIcon = "up";
     } else {
@@ -118,6 +122,21 @@ function DisplayDashboard(&$extraFooterScripts)
         $lteInfo["lte_status"] = $lte_status;
     }
 
+    exec('ip route | grep "default"  | grep -c "wlan0"', $wifi_enabled);
+    $wifiInfo = array();
+    if ($wifi_enabled[0] == "1") {
+        // exec("/bin/cat /etc/wpa_supplicant/wpa_supplicant.conf | grep ssid | awk -F \\\" '{ print $2 }'", $ssid);
+        exec('ifconfig wlan0 | grep -oP "(?<=inet )([0-9]{1,3}\.){3}[0-9]{1,3}"', $wifi_ip);
+        exec('ifconfig wlan0 | grep -oP "(?<=netmask )([0-9]{1,3}\.){3}[0-9]{1,3}"', $wifi_netmask);
+        exec("ip route show | grep default | grep wlan0 | awk '{print $3}'", $wifi_gateway);
+
+        $wifiInfo["interface"] = 'wlan0';
+        // $wifiInfo["ssid"] = $ssid[0];
+        $wifiInfo["ip"] = $wifi_ip[0];
+        $wifiInfo["netmask"] = $wifi_netmask[0];
+        $wifiInfo["gateway"] = $wifi_gateway[0];
+    }
+
     echo renderTemplate(
         "dashboard", compact(
             "clients",
@@ -131,7 +150,8 @@ function DisplayDashboard(&$extraFooterScripts)
             "leases",
             "routeInfo",
             "lteInfo",
-            "statusIcon"
+            "statusIcon",
+            "wifiInfo"
         )
     );
 }

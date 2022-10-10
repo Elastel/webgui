@@ -9,6 +9,9 @@ CONFIGFILE="/etc/raspap/hostapd.ini"
 DAEMONPATH="/lib/systemd/system/raspapd.service"
 OPENVPNENABLED=$(pidof openvpn | wc -l)
 
+WIFIENABLED=$(uci get wifi.wifi.enabled)
+WIFIECLIENTNABLED=$(uci get wifi.wifi_client.enabled)
+
 positional=()
 while [[ $# -gt 0 ]]
 do
@@ -53,6 +56,46 @@ fi
 #     sed -i "s/\(--interface \)[[:alnum:]]*/\1$interface/" "$DAEMONPATH"
 # fi
 
+# Start services, mitigating race conditions
+echo "Starting network services..."
+if [ $WIFIECLIENTNABLED = "1" ]; then
+    systemctl mask hostapd.service
+    systemctl disable hostapd.service
+    brctl delif br0 wlan0
+    
+    [ -n "$(pgrep wpa_supplicant)" ] || {
+		wpa_supplicant -Dwext -iwlan0 -c/etc/wpa_supplicant/wpa_supplicant.conf -B &> /dev/null
+	}
+    
+else
+    if [ $WIFIENABLED = "1" ]; then
+        kill -9 $(pgrep wpa_supplicant)
+        brctl addif br0 wlan0
+        sleep 1
+        systemctl unmask hostapd.service
+        systemctl enable hostapd.service
+        sleep 1
+        systemctl start hostapd.service
+
+        # if [ $WIFIECLIENTNABLED = "1" ]; then
+        #     uci set wifi.wifi_client.enabled=0
+        #     uci commit wifi
+        #     sleep 1
+        #     reboot
+        # fi
+    else
+        systemctl mask hostapd.service
+        systemctl disable hostapd.service
+        # if [ $WIFIECLIENTNABLED = "1" ]; then
+        #     brctl delif br0 wlan0
+        #     kill -9 $(pgrep wpa_supplicant)
+        #     wpa_supplicant -Dwext -iwlan0 -c/etc/wpa_supplicant.conf -B &> /dev/null
+        # fi
+    fi
+fi
+
+sleep "${seconds}"
+
 echo "Stopping systemd-networkd"
 systemctl stop systemd-networkd
 
@@ -66,11 +109,6 @@ iw dev uap0 del
 echo "Enabling systemd-networkd"
 systemctl start systemd-networkd
 systemctl enable systemd-networkd
-
-# Start services, mitigating race conditions
-echo "Starting network services..."
-systemctl start hostapd.service
-sleep "${seconds}"
 
 systemctl start dhcpcd.service
 sleep "${seconds}"

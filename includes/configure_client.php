@@ -12,6 +12,7 @@ function DisplayWPAConfig()
     $status = new StatusMessages();
     $networks = [];
 
+    $model = getModel();
     getWifiInterface();
     knownWifiStations($networks);
 
@@ -19,6 +20,9 @@ function DisplayWPAConfig()
         $result = 0;
         exec('sudo wpa_cli -i ' . $_SESSION['wifi_client_interface'] . ' select_network '.strval($_POST['connect']));
         $status->addMessage('New network selected', 'success');
+        if ($model == "EG324") {
+            exec("sudo /usr/sbin/init-wlan0 >/dev/null");
+        }
     } elseif (isset($_POST['wpa_reinit'])) {
         $status->addMessage('Reinitializing wpa_supplicant', 'info', false);
         $force_remove = true;
@@ -33,6 +37,10 @@ function DisplayWPAConfig()
             foreach (array_keys($_POST) as $post) {
                 if (preg_match('/delete(\d+)/', $post, $post_match)) {
                     unset($tmp_networks[$_POST['ssid' . $post_match[1]]]);
+                    // $status->addMessage('model:' . $model);
+                    if ($model == "EG324") {
+                        exec("sudo ifconfig wlan0 0.0.0.0");
+                    }
                 } elseif (preg_match('/update(\d+)/', $post, $post_match)) {
                     // NB, multiple protocols are separated with a forward slash ('/')
                     $tmp_networks[$_POST['ssid' . $post_match[1]]] = array(

@@ -91,6 +91,28 @@
                     </div>
                   </div>
                 <?php } ?>
+                <?php if ($wifiInfo['interface'] == "wlan0") { ?>
+                  <h4 class="card-title"><?php echo _("WIFI Network Status"); ?></h4>
+                  <div class="row ml-1">
+                    <div class="col-sm">
+                      <div class="row mb-1">
+                        <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("Interface:"); ?></div><div class="col-xs-3"><?php echo $wifiInfo['interface']; ?></div>
+                      </div>
+                      <!-- <div class="row mb-1">
+                        <div class="col-xs-3" style="color: #858796; width: 7rem"><?php //echo _("SSID:"); ?></div><div class="col-xs-3"><?php //echo $wifiInfo['ssid']; ?></div>
+                      </div> -->
+                      <div class="row mb-1">
+                        <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("Ip Address:"); ?></div><div class="col-xs-3"><?php echo $wifiInfo['ip']; ?></div>
+                      </div>
+                      <div class="row mb-1">
+                        <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("Netmask:"); ?></div><div class="col-xs-3"><?php echo $wifiInfo['netmask']; ?></div>
+                      </div>
+                      <div class="row mb-1">
+                        <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("Gateway:"); ?></div><div class="col-xs-3"><?php echo $wifiInfo["gateway"]; ?></div>
+                      </div>
+                    </div>
+                  </div>
+                <?php } ?>
               </div><!-- /.card-body -->
             </div><!-- /.card -->
           </div><!-- /.col-md-6 -->

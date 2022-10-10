@@ -1,6 +1,25 @@
 <div class="tab-pane active" id="basic">
   <h4 class="mt-3"><?php echo _("Basic settings") ;?></h4>
   <div class="row">
+    <div class="col-md-6 mb-2">
+      <div class="custom-control custom-switch">
+        <?php $checked = $arrConfig['disable_wifi_ap_bool'] == 1 ? 'checked="checked"' : '' ?>
+        <?php $disabled = $arrConfig['enable_wifi_client_bool'] == 1 ? 'disabled="disabled"' : '' ?>
+        <input class="custom-control-input" id="disablewifiap" name="disable_wifi_ap" type="checkbox" value="1" <?php echo $checked ?> <?php echo $disabled ?> />
+        <label class="custom-control-label" for="disablewifiap"><?php echo _("Disable <code>Disable WIFI</code>"); ?></label>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 mb-2">
+      <div class="custom-control custom-switch">
+        <?php $checked = $arrConfig['enable_wifi_client_bool'] == 1 ? 'checked="checked"' : '' ?>
+        <input class="custom-control-input" id="enablewificlient" name="enable_wifi_client" type="checkbox" value="1" <?php echo $checked ?> />
+        <label class="custom-control-label" for="enablewificlient"><?php echo _("Enable WIFI Client <code>Enable WIFI STA mode, WIFI AP mode will be disabled.</code>"); ?></label>
+      </div>
+    </div>
+  </div>
+  <div class="row">
     <div class="form-group col-md-6">
       <label for="cbxinterface"><?php echo _("Interface") ;?></label>
       <?php
