@@ -174,6 +174,7 @@
 <div id="popLayer"></div>
 <div id="popBox" style="overflow:auto">
   <input hidden="hidden" name="page_type" id="page_type" value="0">
+  <input hidden="hidden" name="model" id="model" value="<?php echo $model ?>">
   <input hidden="hidden" name="page_name" id="page_name" value="0">
   <h4 name="popBoxTitle" id="popBoxTitle"><?php echo _("ADC Setting"); ?></h4>
   <div class="cbi-section">

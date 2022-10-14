@@ -22,7 +22,7 @@ function DisplayIO()
         }
     }
 
-    echo renderTemplate("io", compact('status'), "model");
+    echo renderTemplate("io", compact('status', "model"));
 }
 
 function saveADC($status)

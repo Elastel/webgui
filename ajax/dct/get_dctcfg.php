@@ -197,7 +197,12 @@ if ($type == "basic") {
         $dctdata['index'][$i] = $index[$i];
         $dctdata['factor_name'][$i] = $factor_name[$i];
         $dctdata['mode'][$i] = $mode_value[number_format($mode[$i])];
-        $dctdata['count_method'][$i] = $method_value[number_format($count_method[$i])];
+        if ($mode[$i] == '1') {
+            $dctdata['count_method'][$i] = '-';
+        } else {
+            $dctdata['count_method'][$i] = $method_value[number_format($count_method[$i])];
+        }
+        
         $dctdata['debounce_interval'][$i] = $debounce_interval[$i];
         $dctdata['server_center'][$i] = $server_center[$i];
         $dctdata['operator'][$i] = $operator[$i];
