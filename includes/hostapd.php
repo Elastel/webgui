@@ -412,7 +412,11 @@ function updateHostapdConfig($ignore_broadcast_ssid,$wifiAPEnable,$bridgedEnable
         exec('sudo /usr/local/bin/uci get wifi.wifi_client.enabled', $ret);
         if ($ret[0] == '1') {
             exec('sudo /usr/local/bin/uci set wifi.wifi_client.enabled=0');
-            exec('sudo reboot');
+            exec("sudo /usr/bin/killall wpa_supplicant");
+
+            if ($model == "EG324") {
+                exec('sudo reboot');
+            }
         }
         
         if (isset($_POST['disable_wifi_ap'])) {

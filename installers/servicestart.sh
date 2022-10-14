@@ -62,7 +62,8 @@ if [ $WIFIECLIENTNABLED = "1" ]; then
     systemctl mask hostapd.service
     systemctl disable hostapd.service
     brctl delif br0 wlan0
-    
+    sudo sed -i "s/eth1 wlan0/eth1/g" /etc/dhcpcd.conf
+
     [ -n "$(pgrep wpa_supplicant)" ] || {
 		wpa_supplicant -Dwext -iwlan0 -c/etc/wpa_supplicant/wpa_supplicant.conf -B &> /dev/null
 	}
@@ -71,6 +72,9 @@ else
     if [ $WIFIENABLED = "1" ]; then
         kill -9 $(pgrep wpa_supplicant)
         brctl addif br0 wlan0
+        sudo sed -i "s/eth1 wlan0/eth1/g" /etc/dhcpcd.conf
+        sudo sed -i "s/eth1/eth1 wlan0/g" /etc/dhcpcd.conf
+        
         sleep 1
         systemctl unmask hostapd.service
         systemctl enable hostapd.service
