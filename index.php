@@ -51,6 +51,7 @@ require_once 'includes/basic.php';
 require_once 'includes/interfaces.php';
 require_once 'includes/modbus.php';
 require_once 'includes/s7.php';
+require_once 'includes/fx.php';
 require_once 'includes/io.php';
 require_once 'includes/server.php';
 require_once 'includes/ddns.php';
@@ -167,6 +168,7 @@ $bridgedEnabled = getBridgedState();
               <li class="nav-item" name="interfaces" id="interfaces"><a class="nav-link" href="interfaces_conf"><?php echo _("Interfaces"); ?></a></li>
               <li class="nav-item" name="modbus" id="modbus"><a class="nav-link" href="modbus_conf"><?php echo _("Modbus Rules"); ?></a></li>
               <li class="nav-item" name="s7" id="s7"><a class="nav-link" href="s7_conf"><?php echo _("S7 Rules"); ?></a></li>
+			  <li class="nav-item" name="fx" id="fx"><a class="nav-link" href="fx_conf"><?php echo _("FX Rules"); ?></a></li>
               <?php if ($model == "EG500" || $model == "EG410") : ?>
               <li class="nav-item" name="io" id="io"><a class="nav-link" href="io_conf"><?php echo _("IO"); ?></a></li>
               <?php endif; ?>
@@ -299,6 +301,9 @@ $bridgedEnabled = getBridgedState();
             case "/s7_conf":
                 DisplayS7();
                 break;
+			case "/fx_conf":
+                DisplayFx();
+                break;
             case "/io_conf":
                 DisplayIO();
                 break;
@@ -375,7 +380,7 @@ $(document).ready(function(){
       if ($(this).hasClass('active')) {
         var id = $($(this))[0].id;
         if (id == "dct_basic" || id == "interfaces" || id == "modbus" || id == "s7" ||
-            id == "server" || id == "io" || id == "bacnet") {
+            id == "server" || id == "io" || id == "bacnet" || id == "fx") {
           $('#navbar-collapse-dct').addClass('show')
           $('#dct').removeClass('collapsed');
         } else {

@@ -178,6 +178,9 @@ function contentLoaded() {
         case "s7_conf":
             loadS7Config();
             break;
+		case "fx_conf":
+            loadFxConfig();
+            break;
         case "io_conf":
             loadADCConfig();
             loadDIConfig();
@@ -551,6 +554,43 @@ function loadS7Config() {
             }
 
             var result = get_table_data_s7();
+            var json_data = JSON.stringify(result);
+            $('#hidTD').val(json_data);
+        });
+
+        $('#loading').hide();
+    });
+}
+
+function loadFxConfig() {
+    $('#loading').show();
+    $.get('ajax/dct/get_dctcfg.php?type=fx',function(data){
+        jsonData = JSON.parse(data);
+        $.get('ajax/dct/get_dctcfg.php?type=fx',function(data){
+            jsonData = JSON.parse(data);
+            for (var i = 0; i < Number(jsonData.count); i++) {
+                var table = document.getElementsByTagName("table")[0];
+                table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
+                    "        <td style='text-align:center' name='order'>"+ (jsonData.order[i] != null ? jsonData.order[i] : "-") + "</td>\n" +
+                    "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='belonged_com'>"+ (jsonData.belonged_com[i] != null ? jsonData.belonged_com[i] : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='reg_type'>"+ (jsonData.reg_type[i] != null ? jsonData.reg_type[i] : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='reg_addr'>"+ (jsonData.reg_addr[i] != null ? jsonData.reg_addr[i] : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='reg_count'>"+ (jsonData.reg_count[i] != null ? jsonData.reg_count[i] : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='data_type'>"+ jsonData.data_type[i] +"</td>\n" +
+                    "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
+                    "        <td style='display:none' name='operator'>"+ jsonData.operator[i] +"</td>\n" +
+                    "        <td style='display:none' name='operand'>"+ (jsonData.operand[i] != null ? jsonData.operand[i] : "-") +"</td>\n" +
+                    "        <td style='display:none' name='ex'>"+ (jsonData.ex[i] != null ? jsonData.ex[i] : "-") +"</td>\n" +
+                    "        <td style='display:none' name='accuracy'>"+ jsonData.accuracy[i] +"</td>\n" +
+                    "        <td style='text-align:center' name='enabled'>"+ jsonData.enabled[i] +"</td>\n" +
+                    "        <td><a href=\"javascript:void(0);\" onclick=\"editFxData(this);\" >Edit</a></td>\n" +
+                    "        <td><a href=\"javascript:void(0);\" onclick=\"delFxData(this);\" >Del</a></td>\n" +
+                    "    </tr>";
+            }
+
+            var result = getTableDataFx();
             var json_data = JSON.stringify(result);
             $('#hidTD').val(json_data);
         });
@@ -1343,6 +1383,7 @@ function editData(object) {
     openBox();
 }
 
+// S7
 function get_table_data_s7() {
     var tr = $("#table_s7 tr");
     var result = [];
@@ -1499,13 +1540,170 @@ function editS7Data(object) {
     openBox();
 }
 
+// FX
+function getTableDataFx() {
+    var tr = $("#table_fx tr");
+    var result = [];
+    for (var i = 2; i < tr.length; i++) {
+        var tds = $(tr[i]).find("td");
+        if (tds.length > 0) {
+            result.push({
+                'order':$(tds[0]).html(), 
+                'device_name':$(tds[1]).html(),
+                'belonged_com':$(tds[2]).html(),
+                'factor_name':$(tds[3]).html(),
+                'reg_type':$(tds[4]).html(),
+                'reg_addr':$(tds[5]).html(),
+                'reg_count':$(tds[6]).html(),
+                'data_type':$(tds[7]).html(),
+                'server_center':$(tds[8]).html(),
+                'operator':$(tds[9]).html(),
+                'operand':$(tds[10]).html(),
+                'ex':$(tds[11]).html(),
+                'accuracy':$(tds[12]).html(),
+                'enabled':$(tds[13]).html()
+            });
+        }
+    }
+
+    return result;
+}
+  
+function delFxData(object) {
+    var table = object.parentNode.parentNode.parentNode;
+    var tr = object.parentNode.parentNode;
+    table.removeChild(tr);
+
+    var result = getTableDataFx();
+    var json_data = JSON.stringify(result);
+    $('#hidTD').val(json_data);
+}
+  
+function saveFxData() {
+    var order = document.getElementById("widget.order").value;
+    var device_name = document.getElementById("widget.device_name").value;
+    var belonged_com = document.getElementById("widget.belonged_com").value;
+    var factor_name = document.getElementById("widget.factor_name").value;
+    var reg_type = document.getElementById("widget.reg_type").value;
+    var reg_addr = document.getElementById("widget.reg_addr").value;
+    var reg_count = document.getElementById("widget.reg_count").value;
+    var data_type = document.getElementById("widget.data_type").value;
+    var server_center = document.getElementById("widget.server_center").value;
+    var operator = document.getElementById("widget.operator").value;
+    var operand = document.getElementById("widget.operand").value;
+    var ex = document.getElementById("widget.ex").value;
+    var accuracy = document.getElementById("widget.accuracy").value;
+    var enabled = document.getElementById("widget.enabled").checked;
+    var page_type = document.getElementById("page_type").value;
+
+    var reg_type_value = new Array("X", "Y", "M", "S", "D");
+    var reg_type_num = Number(reg_type);
+    reg_type = reg_type_value[reg_type_num]; 
+
+    var data_type_value = new Array("Bit", "Byte", "Word", "DWord", "Real");
+    var data_type_num = Number(data_type);
+    data_type = data_type_value[data_type_num];
+
+    if (belonged_com == "No Interface Is Enabled") {
+        alert("No Interface Is Enabled, please enabled the interface first.");
+        return;
+    }
+
+    if (page_type == "0") {
+        var table = document.getElementsByTagName("table")[0];
+        table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
+            "        <td style='text-align:center'>"+ (order.length > 0 ? order : "-") +"</td>\n" +
+            "        <td style='text-align:center'>"+ (device_name.length > 0 ? device_name : "-") +"</td>\n" +
+            "        <td style='text-align:center'>"+ (belonged_com.length > 0 ? belonged_com : "-") +"</td>\n" +
+            "        <td style='text-align:center'>"+ (factor_name.length > 0 ? factor_name : "-") +"</td>\n" +
+            "        <td style='text-align:center'>"+ (reg_type.length > 0 ? reg_type : "-") +"</td>\n" +
+            "        <td style='text-align:center'>"+ (reg_addr.length > 0 ? reg_addr : "-") +"</td>\n" +
+            "        <td style='text-align:center'>"+ (reg_count.length > 0 ? reg_count : "-") +"</td>\n" +
+            "        <td style='text-align:center'>"+ data_type +"</td>\n" +
+            "        <td style='text-align:center'>"+ (server_center.length > 0 ? server_center : "-") +"</td>\n" +
+            "        <td style='display:none'>"+ operator +"</td>\n" +
+            "        <td style='display:none'>"+ (operand.length > 0 ? operand : "-") +"</td>\n" +
+            "        <td style='display:none'>"+ (ex.length > 0 ? ex : "-") +"</td>\n" +
+            "        <td style='display:none'>"+ accuracy +"</td>\n" +
+            "        <td style='text-align:center'>"+ enabled +"</td>\n" +
+            "        <td><a href=\"javascript:void(0);\" onclick=\"editFxData(this);\" >Edit</a></td>\n" +
+            "        <td><a href=\"javascript:void(0);\" onclick=\"delFxData(this);\" >Del</a></td>\n" +
+            "    </tr>";
+    } else {
+        var table = document.getElementById("table_fx");
+        var num = 0;
+        table.rows[Number(page_type)].cells[num++].innerHTML = (order.length > 0 ? order : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (device_name.length > 0 ? device_name : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (belonged_com.length > 0 ? belonged_com : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (factor_name.length > 0 ? factor_name : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (reg_type.length > 0 ? reg_type : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (reg_addr.length > 0 ? reg_addr : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (reg_count.length > 0 ? reg_count : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = data_type;
+        table.rows[Number(page_type)].cells[num++].innerHTML = (server_center.length > 0 ? server_center : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = operator;
+        table.rows[Number(page_type)].cells[num++].innerHTML = (operand.length > 0 ? operand : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (ex.length > 0 ? ex : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = accuracy;
+        table.rows[Number(page_type)].cells[num++].innerHTML = enabled;
+    }
+
+    result = getTableDataFx();
+    var json_data = JSON.stringify(result);
+    $('#hidTD').val(json_data);
+    closeBox();
+}
+  
+function editFxData(object) {
+    var row = $(object).parent().parent().parent().prevAll().length + 1;
+    var num = 0;
+    document.getElementById("page_type").value = row;
+
+    var value = $(object).parent().parent().find("td");
+    var order = value.eq(num++).text();
+    var device_name = value.eq(num++).text();
+    var belonged_com = value.eq(num++).text();
+    var factor_name = value.eq(num++).text();
+    var reg_type = value.eq(num++).text();
+    var reg_addr = value.eq(num++).text();
+    var reg_count = value.eq(num++).text();
+    var data_type = value.eq(num++).text();
+    var server_center = value.eq(num++).text();
+    var operator = value.eq(num++).text();
+    var operand = value.eq(num++).text();
+    var ex = value.eq(num++).text();
+    var accuracy = value.eq(num++).text();
+    var enabled = value.eq(num++).text();
+
+    document.getElementById("widget.order").value = order;
+    document.getElementById("widget.device_name").value = device_name;
+    document.getElementById("widget.belonged_com").value = belonged_com;
+    document.getElementById("widget.factor_name").value = factor_name;
+    setSelectByText("widget.reg_type", reg_type);
+    document.getElementById("widget.reg_addr").value = reg_addr;
+    document.getElementById("widget.reg_count").value = reg_count;
+    setSelectByText("widget.data_type", data_type);
+    document.getElementById("widget.server_center").value = server_center;
+    document.getElementById("widget.operator").value = operator;
+    document.getElementById("widget.operand").value = operand;
+    document.getElementById("widget.ex").value = ex;
+    document.getElementById("widget.accuracy").value = accuracy;
+    if (enabled == "true") {
+        document.getElementById("widget.enabled").checked = true;
+    } else {
+        document.getElementById("widget.enabled").checked = false;
+    }
+
+    openBox();
+}
+
 function selectMode() {
     var mode = document.getElementById("widget.mode").value;
 
     if (mode == "0") {
-        $('#pageCount').show();
+		$('#pageCount').show();
     } else {
-        $('#pageCount').hide();
+		$('#pageCount').hide();
     }
 }
 

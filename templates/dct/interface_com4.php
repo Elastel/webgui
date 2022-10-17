@@ -59,8 +59,15 @@
       <div class="cbi-value">
         <label class="cbi-value-title"><?php echo _("Protocol"); ?></label>
         <select id="com_proto4" name="com_proto4" class="cbi-input-select" onchange="protocolChange4(this)">
-          <option value="0" selected="">Modbus</option>
-          <option value="1">Transparent</option>
+          <?php $i = 0; ?>
+          <?php foreach($com_proto as $proto): ?>
+            <?php if ($i == 0) { ?>
+              <option value="<?php echo $i ?>" selected=""><?php echo $proto ?></option>
+            <?php } else {?> 
+              <option value="<?php echo $i ?>"><?php echo $proto ?></option>
+            <?php } ?> 
+            <?php $i++; ?>
+          <?php endforeach ?>
         </select>
       </div>
 
@@ -92,7 +99,7 @@
   function protocolChange4(that) {
     var protocol = document.getElementById("com_proto4").value;
 
-    if (protocol == "0") {
+    if (protocol == "0" || protocol == "2") {
       $('#com_page_protocol_modbus4').show();
       $('#com_page_protocol_transparent4').hide();
     } else {

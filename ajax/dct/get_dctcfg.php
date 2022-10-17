@@ -139,6 +139,44 @@ if ($type == "basic") {
         $dctdata['accuracy'][$i] = $accuracy[$i];
         $dctdata['enabled'][$i] = ($enabled[$i] == '1') ? 'true' : 'false';
     }
+} else if ($type == "fx") {
+    $reg_type_value = array("X", "Y", "M", "S", "D");
+    $data_type_value = array("Bit", "Byte", "Word", "DWord", "Real");
+
+    exec("sudo /usr/sbin/uci_get_count fx", $fx_count);
+    $dctdata['count'] = $fx_count[0];
+    
+    for ($i = 0; $i < number_format($fx_count[0]); $i++) {
+        exec("sudo /usr/local/bin/uci get dct.@fx[$i].order", $order);
+        exec("sudo /usr/local/bin/uci get dct.@fx[$i].device_name", $device_name);
+        exec("sudo /usr/local/bin/uci get dct.@fx[$i].belonged_com", $belonged_com);
+        exec("sudo /usr/local/bin/uci get dct.@fx[$i].factor_name", $factor_name);
+        exec("sudo /usr/local/bin/uci get dct.@fx[$i].reg_type", $reg_type);
+        exec("sudo /usr/local/bin/uci get dct.@fx[$i].reg_addr", $reg_addr);
+        exec("sudo /usr/local/bin/uci get dct.@fx[$i].reg_count", $reg_count);
+        exec("sudo /usr/local/bin/uci get dct.@fx[$i].data_type", $data_type);
+        exec("sudo /usr/local/bin/uci get dct.@fx[$i].server_center", $server_center);
+        exec("sudo /usr/local/bin/uci get dct.@fx[$i].operator", $operator);
+        exec("sudo /usr/local/bin/uci get dct.@fx[$i].operand", $operand);
+        exec("sudo /usr/local/bin/uci get dct.@fx[$i].ex", $ex);
+        exec("sudo /usr/local/bin/uci get dct.@fx[$i].accuracy", $accuracy);
+        exec("sudo /usr/local/bin/uci get dct.@fx[$i].enabled", $enabled);
+
+        $dctdata['order'][$i] = $order[$i];
+        $dctdata['device_name'][$i] = $device_name[$i];
+        $dctdata['belonged_com'][$i] = $belonged_com[$i];
+        $dctdata['factor_name'][$i] = $factor_name[$i];
+        $dctdata['reg_type'][$i] = $reg_type_value[number_format($reg_type[$i])];
+        $dctdata['reg_addr'][$i] = $reg_addr[$i];
+        $dctdata['reg_count'][$i] = $reg_count[$i];
+        $dctdata['data_type'][$i] = $data_type_value[number_format($data_type[$i])];
+        $dctdata['server_center'][$i] = $server_center[$i];
+        $dctdata['operator'][$i] = $operator[$i];
+        $dctdata['operand'][$i] = $operand[$i];
+        $dctdata['ex'][$i] = $ex[$i];
+        $dctdata['accuracy'][$i] = $accuracy[$i];
+        $dctdata['enabled'][$i] = ($enabled[$i] == '1') ? 'true' : 'false';
+    }
 } else if ($type == "adc") {
     $cap_type_value = array("4-20mA", "0-10V");
 
@@ -202,7 +240,7 @@ if ($type == "basic") {
         } else {
             $dctdata['count_method'][$i] = $method_value[number_format($count_method[$i])];
         }
-        
+
         $dctdata['debounce_interval'][$i] = $debounce_interval[$i];
         $dctdata['server_center'][$i] = $server_center[$i];
         $dctdata['operator'][$i] = $operator[$i];

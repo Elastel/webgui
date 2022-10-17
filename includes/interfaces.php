@@ -7,6 +7,8 @@ function DisplayInterfaces()
 {   
     $model = getModel();
     $status = new StatusMessages();
+	$com_proto = array('Modbus', 'Transparent', 'FX');
+    $tcp_proto = array('Modbus', 'Transparent', 'S7', 'FX');
 
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['saveinterfacesettings']) || isset($_POST['applyinterfacesettings'])) {
@@ -19,7 +21,7 @@ function DisplayInterfaces()
         }
     }
 
-    echo renderTemplate('interfaces', compact('status', 'model'));
+    echo renderTemplate('interfaces', compact('status', 'model', 'com_proto', 'tcp_proto'));
 }
 
 function saveComConfig($status, $model)

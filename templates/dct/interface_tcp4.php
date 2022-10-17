@@ -29,9 +29,15 @@
       <div class="cbi-value">
         <label class="cbi-value-title"><?php echo _("Protocol"); ?></label>
         <select id="tcp_proto4" name="tcp_proto4" class="cbi-input-select" onchange="tcpProtocolChange4(this)">
-          <option value="0" selected="">Modbus</option>
-          <option value="1">Transparent</option>
-          <option value="2">S7</option>
+          <?php $i = 0; ?>
+          <?php foreach($tcp_proto as $proto): ?>
+            <?php if ($i == 0) { ?>
+              <option value="<?php echo $i ?>" selected=""><?php echo $proto ?></option>
+            <?php } else {?> 
+              <option value="<?php echo $i ?>"><?php echo $proto ?></option>
+            <?php } ?> 
+            <?php $i++; ?>
+          <?php endforeach ?>
         </select>
       </div>
 
@@ -81,7 +87,7 @@
   function tcpProtocolChange4(that) {
     var protocol = document.getElementById("tcp_proto4").value;
 
-    if (protocol == "0") {
+    if (protocol == "0" || protocol == "3") {
       $('#tcp_page_protocol_modbus4').show();
       $('#tcp_page_protocol_transparent4').hide(); 
       $('#tcp_page_protocol_s74').hide(); 
