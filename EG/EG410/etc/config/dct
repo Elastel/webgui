@@ -31,6 +31,8 @@ config setting 'server'
 	option enabled5 '0'
 	option enabled1 '0'
 
+config setting 'bacnet'
+
 config state 'connection'
 
 config state 'sensor'

@@ -1,15 +1,21 @@
 #! /bin/sh
 
 PROG=/usr/sbin/dctd
+BACNET_PROG=/usr/sbin/bacserv
 
 do_start()
 {
-	local enabled hour_enabled day_enabled
+	local enabled hour_enabled day_enabled bacnet_enabled
 
 	enabled=$(uci get dct.basic.enabled)
 	[ "$enabled" = "1" ] || return
 
-	$PROG &
+	$PROG >/dev/null &
+
+	bacnet_enabled=$(uci get dct.bacnet.enabled)
+	[ "$bacnet_enabled" = "1" ] || return
+
+	$BACNET_PROG >/dev/null &
 }
 
 do_stop()
@@ -19,6 +25,13 @@ do_stop()
 	[ -n "$(pgrep dctd)" ] && {
 		sleep 1
 		kill -9 $(pgrep dctd)
+	}
+
+	killall -q bacserv
+	sleep 1
+	[ -n "$(pgrep bacserv)" ] && {
+		sleep 1
+		kill -9 $(pgrep bacserv)
 	}
 }
 
