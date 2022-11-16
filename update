@@ -49,9 +49,9 @@ sudo /etc/init.d/dct stop
 sudo /etc/init.d/lte stop
 sudo /etc/init.d/failover stop
 sudo /etc/init.d/ddns stop
-sudo cp EG/$model/usr/sbin/* /usr/sbin/
-sudo cp EG/$model/usr/lib/* /usr/lib/
-sudo cp EG/$model/usr/local/bin/* /usr/local/bin/
+sudo cp -r EG/$model/usr/sbin/* /usr/sbin/
+sudo cp -r EG/$model/usr/lib/* /usr/lib/
+sudo cp -r EG/$model/usr/local/bin/* /usr/local/bin/
 
 if [ $model = "EG410" ]; then
 	if [ -e /dev/ttyACM0 ]; then
