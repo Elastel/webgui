@@ -790,18 +790,15 @@ function loadServerConfig() {
                         $('#' + info + i).prop('checked', (jsonData[info][i] == '1') ? true:false);
                     } else if (info == "mqtt_ca") {
                         if (jsonData.ca_file_exists[i] == '1') {
-                            $('#' + info + i).val('1');
-                            $('#' + info + i).html(jsonData.mqtt_ca[i]);
+                            $('#ca_text' + i).html(jsonData.mqtt_ca[i]);
                         }
                     } else if (info == "mqtt_cert") {
                         if (jsonData.cer_file_exists[i] == '1') {
-                            $('#' + info + i).val('1');
-                            $('#' + info + i).html(jsonData.mqtt_cert[i]);
+                            $('#cer_text' + i).html(jsonData.mqtt_cert[i]);
                         }
                     } else if (info == "mqtt_key") {
                         if (jsonData.key_file_exists[i] == '1') {
-                            $('#' + info + i).val('1');
-                            $('#' + info + i).html(jsonData.mqtt_key[i]);
+                            $('#key_text' + i).html(jsonData.mqtt_key[i]);
                         }
                     } else {
                         $('#' + info + i).val(jsonData[info][i]);

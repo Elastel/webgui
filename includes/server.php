@@ -49,6 +49,11 @@ function SaveServerUpload($status, $file, $num)
         // Valid upload, get file contents
         $tmp_serverconfig = $results['full_path'];
 
+        $path = "/etc/ssl/server" . $num;
+        if (!is_dir($path)) {
+            exec("sudo /bin/mkdir -p " . $path);
+        }
+
         // Move processed file from tmp to destination
         system("sudo mv $tmp_serverconfig /etc/ssl/server" . $num . "/" . $file['name'], $return);
 
@@ -75,38 +80,39 @@ function saveServerConfig($status)
         exec('sudo /usr/local/bin/uci set dct.server.enabled' . $i . '=' .$_POST['enabled' . $i]);
         if ($_POST['enabled' . $i] == '1') {
             
-            if ($_POST['certificate_type' . $i] == '1' && $_POST['protocol' . $i] == '2') {
-                if (strlen($_FILES['ca_file' . $i]['name']) > 0) {
-                    if (is_uploaded_file($_FILES['ca_file' . $i]['tmp_name'])) {
-                        SaveServerUpload($status, $_FILES['ca_file' . $i], $i);
+            if ($_POST['certificate_type' . $i] == '1' && $_POST['proto' . $i] == '2') {
+                if (strlen($_FILES['mqtt_ca' . $i]['name']) > 0) {
+                    if (is_uploaded_file($_FILES['mqtt_ca' . $i]['tmp_name'])) {
+                        SaveServerUpload($status, $_FILES['mqtt_ca' . $i], $i);
                     }
-
-                    exec('sudo /usr/local/bin/uci set dct.server.mqtt_ca' . $i . '=' . $_FILES['ca_file' . $i]['name']);
-                }
-                
-            } else if ($_POST['certificate_type' . $i] == '2'  && $_POST['protocol' . $i] == '2') {
-                if (strlen($_FILES['ca_file' . $i]['name']) > 0) {
-                    if (is_uploaded_file($_FILES['ca_file' . $i]['tmp_name'])) {
-                        SaveServerUpload($status, $_FILES['ca_file' . $i], $i);
+                    $fileName = $_FILES['mqtt_ca' . $i]['name'];
+                    exec('sudo /usr/local/bin/uci set dct.server.mqtt_ca' . $i . '=' . $fileName);
+                }     
+            } else if ($_POST['certificate_type' . $i] == '2'  && $_POST['proto' . $i] == '2') {
+                if (strlen($_FILES['mqtt_ca' . $i]['name']) > 0) {
+                    if (is_uploaded_file($_FILES['mqtt_ca' . $i]['tmp_name'])) {
+                        SaveServerUpload($status, $_FILES['mqtt_ca' . $i], $i);
                     }
-
-                    exec('sudo /usr/local/bin/uci set dct.server.mqtt_ca' . $i . '=' . $_FILES['ca_file' . $i]['name']);
-                }
-
-                if (strlen($_FILES['pubulic_cer' . $i]['name']) > 0) {
-                    if (is_uploaded_file($_FILES['pubulic_cer' . $i]['tmp_name'])) {
-                        SaveServerUpload($status, $_FILES['pubulic_cer' . $i], $i);
-                    }
-
-                    exec('sudo /usr/local/bin/uci set dct.server.mqtt_cert' . $i . '=' . $_FILES['pubulic_cer' . $i]['name']);
+                    $fileName = $_FILES['mqtt_ca' . $i]['name'];
+                    exec('sudo /usr/local/bin/uci set dct.server.mqtt_ca' . $i . '=' . $fileName);
                 }
 
-                if (strlen($_FILES['private_key' . $i]['name']) > 0) {
-                    if (is_uploaded_file($_FILES['private_key' . $i]['tmp_name'])) {
-                        SaveServerUpload($status, $_FILES['private_key' . $i], $i);
+                if (strlen($_FILES['mqtt_cert' . $i]['name']) > 0) {
+                    if (is_uploaded_file($_FILES['mqtt_cert' . $i]['tmp_name'])) {
+                        SaveServerUpload($status, $_FILES['mqtt_cert' . $i], $i);
                     }
 
-                    exec('sudo /usr/local/bin/uci set dct.server.mqtt_key' . $i . '=' . $_FILES['private_key' . $i]['name']);
+                    $certName = $_FILES['mqtt_cert' . $i]['name'];
+                    exec('sudo /usr/local/bin/uci set dct.server.mqtt_cert' . $i . '=' . $certName);
+                }
+
+                if (strlen($_FILES['mqtt_key' . $i]['name']) > 0) {
+                    if (is_uploaded_file($_FILES['mqtt_key' . $i]['tmp_name'])) {
+                        SaveServerUpload($status, $_FILES['mqtt_key' . $i], $i);
+                    }
+
+                    $keyName = $_FILES['mqtt_key' . $i]['name'];
+                    exec('sudo /usr/local/bin/uci set dct.server.mqtt_key' . $i . '=' . $keyName);
                 }
             }
             $serverInfo = array("proto", "encap_type", "server_addr", "http_url", "server_port", "cache_enabled", 
@@ -121,36 +127,6 @@ function saveServerConfig($status)
                     exec('sudo /usr/local/bin/uci set dct.server.' . $info . $i . '=' .$_POST[$info . $i]);
                 } 
             }
-
-            // exec('sudo /usr/local/bin/uci set dct.server.proto' . $i . '=' .$_POST['protocol' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.encap_type' . $i . '=' .$_POST['encap' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.server_addr' . $i . '=' .$_POST['server_address' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.http_url' . $i . '=' .$_POST['http_url' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.server_port' . $i . '=' .$_POST['server_port' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.cache_enabled' . $i . '=' .$_POST['cache_enabled' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.register_packet' . $i . '=' .$_POST['register_packet' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.register_packet_hex' . $i . '=' .$_POST['register_packet_hex' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.heartbeat_packet' . $i . '=' .$_POST['heartbeat_packet' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.heartbeat_packet_hex' . $i . '=' .$_POST['heartbeat_packet_hex' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.heartbeat_interval' . $i . '=' .$_POST['heartbeat_interval' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.mqtt_heartbeat_interval' . $i . '=' .$_POST['mqtt_heartbeat_interval' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.mqtt_pub_topic' . $i . '=' .$_POST['mqtt_public_topic' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.mqtt_sub_topic' . $i . '=' .$_POST['mqtt_subscribe_topic' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.mqtt_username' . $i . '=' .$_POST['mqtt_username' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.mqtt_password' . $i . '=' .$_POST['mqtt_password' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.mqtt_client_id' . $i . '=' .$_POST['client_id' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.mqtt_tls_enabled' . $i . '=' .$_POST['mqtt_tls_enabled' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.certificate_type' . $i . '=' .$_POST['certificate_type' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.self_define_var' . $i . '=' .$_POST['self_define_var' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.var_name1_' . $i . '=' .$_POST['var_name1_' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.var_value1_' . $i . '=' .$_POST['var_value1_' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.var_name2_' . $i . '=' .$_POST['var_name2_' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.var_value2_' . $i . '=' .$_POST['var_value2_' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.var_name3_' . $i . '=' .$_POST['var_name3_' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.var_value3_' . $i . '=' .$_POST['var_value3_' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.mn' . $i . '=' .$_POST['mn' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.st' . $i . '=' .$_POST['st' . $i]);
-            // exec('sudo /usr/local/bin/uci set dct.server.pw' . $i . '=' .$_POST['password' . $i]);
         }
     }
 
