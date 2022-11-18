@@ -56,6 +56,7 @@ require_once 'includes/io.php';
 require_once 'includes/server.php';
 require_once 'includes/ddns.php';
 require_once 'includes/bacnet.php';
+require_once 'includes/datadisplay.php';
 
 $config = getConfig();
 $model = getModel();
@@ -168,12 +169,13 @@ $bridgedEnabled = getBridgedState();
               <li class="nav-item" name="interfaces" id="interfaces"><a class="nav-link" href="interfaces_conf"><?php echo _("Interfaces"); ?></a></li>
               <li class="nav-item" name="modbus" id="modbus"><a class="nav-link" href="modbus_conf"><?php echo _("Modbus Rules"); ?></a></li>
               <li class="nav-item" name="s7" id="s7"><a class="nav-link" href="s7_conf"><?php echo _("S7 Rules"); ?></a></li>
-			  <li class="nav-item" name="fx" id="fx"><a class="nav-link" href="fx_conf"><?php echo _("FX Rules"); ?></a></li>
+			        <li class="nav-item" name="fx" id="fx"><a class="nav-link" href="fx_conf"><?php echo _("FX Rules"); ?></a></li>
               <?php if ($model == "EG500" || $model == "EG410") : ?>
               <li class="nav-item" name="io" id="io"><a class="nav-link" href="io_conf"><?php echo _("IO"); ?></a></li>
               <?php endif; ?>
               <li class="nav-item" name="server" id="server"><a class="nav-link" href="server_conf"><?php echo _("Server"); ?></a></li>
               <li class="nav-item" name="bacnet" id="bacnet"><a class="nav-link" href="bacnet"><?php echo _("BACnet Server"); ?></a></li>
+              <li class="nav-item" name="datadisplay" id="datadisplay"><a class="nav-link" href="datadisplay"><?php echo _("Data Display"); ?></a></li>
             </ul>
           </div>
         </li>
@@ -316,6 +318,9 @@ $bridgedEnabled = getBridgedState();
             case "/bacnet":
                 DisplayBACnet();
                 break;
+            case "/datadisplay":
+                dataDisplay();
+                break;
             default:
                 DisplayDashboard($extraFooterScripts);
             }            
@@ -380,7 +385,7 @@ $(document).ready(function(){
       if ($(this).hasClass('active')) {
         var id = $($(this))[0].id;
         if (id == "dct_basic" || id == "interfaces" || id == "modbus" || id == "s7" ||
-            id == "server" || id == "io" || id == "bacnet" || id == "fx") {
+            id == "server" || id == "io" || id == "bacnet" || id == "fx" || id == "datadisplay") {
           $('#navbar-collapse-dct').addClass('show')
           $('#dct').removeClass('collapsed');
         } else {

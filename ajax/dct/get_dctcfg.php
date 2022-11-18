@@ -338,6 +338,16 @@ if ($type == "basic") {
             $dctdata[$info] = $val[0];
         }
     }
+} else if ($type == 'datadisplay') {
+    exec('cat /tmp/webshow', $dctdata);
+    if ($dctdata[0] != NULL){
+        echo $dctdata[0];
+    }  else {
+        echo "{}";
+    }
 }
 
-echo json_encode($dctdata);
+if ($type != 'datadisplay') {
+    echo json_encode($dctdata);
+}
+

@@ -503,3 +503,22 @@ canvas#divDBChartBandwidthhourly {
   0% {transform: rotate(0deg);}
   100% {transform: rotate(360deg);}
 }
+
+.table-label-key{
+  text-align:right; 
+  width:9rem;
+  font-weight:bold;
+  font-size:1.2rem;
+  //border:1px solid;
+  //background-color:red;
+}
+
+.table-label-value{
+  text-align:center; 
+  width:8rem; 
+  border:1px solid;
+  color:red;
+  border-color:black;
+  font-size:1.2rem;
+  //background-color:red;
+}

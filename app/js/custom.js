@@ -195,7 +195,61 @@ function contentLoaded() {
         case "bacnet":
             loadBACnetConfig();
             break;
+        case "datadisplay":
+            loadDataDisplay();
+            break;
     }
+}
+
+function getWebshowDate() {
+    $.get('ajax/dct/get_dctcfg.php?type=datadisplay', function(data) {
+        jsonData = JSON.parse(data);
+        var num = 0;
+        var table = document.getElementsByTagName("table")[0]; 
+        var data = [];
+        var flag = 0;
+        if ($('table tr').length) {
+            for (var key in jsonData) {
+                $('#' + key ).html(jsonData[key]);
+                num++;
+            }
+        } else {
+            for (var key in jsonData) {
+                //console.log(key + ":" + jsonData[key]);
+                if ((num % 4) == 0) {
+                    data += "<tr class=\"tr cbi-section-table-descr\" style='border:0;'>\n"
+                }
+                
+                data += "<td style='border:0'>\n";
+                data += "<label class='table-label-key' id=" + key + "1 >" + key + ":" + "</label>\n";
+                data += "<label class='table-label-value' id=" + key + " >" + jsonData[key] + "</label>\n";
+                data += "</td>\n";
+    
+                num++;
+                if ( num > 0 && ((num % 4) == 0)) {
+                    flag = 1;
+                    data += "</tr>\n";
+                    flag = 0;
+                } 
+            }
+    
+            if (flag == 0 && num > 0) {
+                data += "</tr>\n";
+            }
+    
+            table.innerHTML += data;
+            if (num > 0) {
+                $('#msg').hide();
+            } else {
+                $('#msg').html("Data collection in progress, please check later...");
+            }
+        }
+    });
+}
+
+function loadDataDisplay() {
+    getWebshowDate();
+    setInterval(getWebshowDate, 1000);
 }
 
 function loadBACnetConfig() {
