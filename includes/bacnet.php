@@ -31,10 +31,12 @@ function saveBACnetConfig($status)
     exec("sudo /usr/local/bin/uci set dct.bacnet.object_name=" .$_POST['object_name']);
     exec("sudo /usr/local/bin/uci commit dct");
 
-    if ($_POST['port'] == NULL || (int)($_POST['port']) > 65535 || (int)($_POST['device_id']) > 65535) {
-        return false;
+    if ($_POST['enabled'] == "1") {
+        if ($_POST['port'] == NULL || (int)($_POST['port']) > 65535 || (int)($_POST['device_id']) > 65535) {
+            return false;
+        }
     }
-
+    
     $status->addMessage('BACnet configuration updated ', 'success');
     return true;
 }
