@@ -57,6 +57,7 @@ require_once 'includes/server.php';
 require_once 'includes/ddns.php';
 require_once 'includes/bacnet.php';
 require_once 'includes/datadisplay.php';
+require_once 'includes/detection.php';
 
 $config = getConfig();
 $model = getModel();
@@ -153,6 +154,9 @@ $bridgedEnabled = getBridgedState();
           <a class="nav-link" href="wpa_conf"><i class="fas fa-wifi fa-fw mr-2"></i><span class="nav-label"><?php echo _("WiFi client"); ?></span></a>
         </li>
           <?php endif; ?>
+        <li class="nav-item">
+          <a class="nav-link" href="detection_conf"><i class="fas fa-link fa-fw mr-2"></i><span class="nav-label"><?php echo _("Online Detection"); ?></a>
+        </li>
           <?php if (RASPI_ADBLOCK_ENABLED) : ?>
         <li class="nav-item">
            <a class="nav-link" href="adblock_conf"><i class="far fa-hand-paper fa-fw mr-2"></i><span class="nav-label"><?php echo _("Ad Blocking"); ?></a>
@@ -261,6 +265,9 @@ $bridgedEnabled = getBridgedState();
             case "/hostapd_conf":
                 DisplayHostAPDConfig();
                 break;
+            case "/detection_conf":
+                DisplayDetectionConfig();
+                break;
             case "/adblock_conf":
                 DisplayAdBlockConfig();
                 break;
@@ -303,7 +310,7 @@ $bridgedEnabled = getBridgedState();
             case "/s7_conf":
                 DisplayS7();
                 break;
-			case "/fx_conf":
+            case "/fx_conf":
                 DisplayFx();
                 break;
             case "/io_conf":
