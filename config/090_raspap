@@ -82,3 +82,4 @@ www-data ALL=(ALL) NOPASSWD:/bin/kill -9 *
 www-data ALL=(ALL) NOPASSWD:/usr/sbin/init-wlan0
 www-data ALL=(ALL) NOPASSWD:/sbin/ifconfig *
 www-data ALL=(ALL) NOPASSWD:/bin/mkdir *
+www-data ALL=(ALL) NOPASSWD:/usr/sbin/read_do *
