@@ -108,7 +108,7 @@
 
         <div class="cbi-value">
           <label class="cbi-value-title"><?php echo _("MQTT Public Topic"); ?></label>
-          <input type="text" class="cbi-input-text" name="mqtt_pub_topic3" id="mqtt_public_topic3" />
+          <input type="text" class="cbi-input-text" name="mqtt_pub_topic3" id="mqtt_pub_topic3" />
         </div>
 
         <div class="cbi-value">
