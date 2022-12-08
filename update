@@ -61,8 +61,8 @@ sudo cp -r EG/$model/usr/lib/* /usr/lib/
 sudo cp -r EG/$model/usr/local/bin/* /usr/local/bin/
 
 if [ $model = "EG410" ]; then
-	if [ -e /dev/ttyACM0 ]; then
-		sudo cp EG/$model/usr/sbin/dctd-new /usr/sbin/dctd
+	if [ ! -e /dev/ttyACM0 ]; then
+		sudo cp EG/$model/EG410_a/dctd /usr/sbin/dctd
 	fi
 
 fi
