@@ -2,6 +2,14 @@
 <?php
 require_once '../../includes/functions.php';
 $color = getColorOpt();
+$model = getModel();
+if ($model == "ElastBox400") {
+  $model_font = 1.5;
+  $model_top = 1.5;
+} else {
+  $model_font = 2.5;
+  $model_top = 0.5;
+}
 ?>
 
 /*
@@ -479,8 +487,8 @@ canvas#divDBChartBandwidthhourly {
 }
 
 .cbi-model {
-  font-size:2.5rem;
-  padding-top: 0.5rem;
+  font-size:<?php echo $model_font ?>rem;
+  padding-top:<?php echo $model_top ?>rem;
 }
 
 .load {

@@ -41,7 +41,8 @@
           <form method="POST" action="interfaces_conf" role="form">
           <?php echo CSRFTokenFieldTag() ?>
 
-          <div class="cbi-section" data-idref="e02cc6f3">
+          <?php if ($model != "ElastBox400") { ?>
+          <div class="cbi-section">
             <h4>Serial Port Setting</h4>
             <ul class="nav nav-tabs">
               <?php if ($model == "EG500" || $model == "EG410") { ?>
@@ -62,8 +63,9 @@
                 <?php echo renderTemplate("dct/interface_com4", $__template_data); ?>
             </div><!-- /.tab-content -->
           </div>
+          <?php } ?>
 
-          <div class="cbi-section" data-idref="e02cc6f3">
+          <div class="cbi-section">
             <h4>TCP Server Setting</h4>
             <ul class="nav nav-tabs">
               <li role="presentation" class="nav-item"><a class="nav-link active" href="#tcp1" aria-controls="tcp1" role="tab" data-toggle="tab"><?php echo _("TCP Server1"); ?></a></li>

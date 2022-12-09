@@ -1,0 +1,18 @@
+
+config interface 'wan'
+	option device 'eth0'
+	option wan_multi '0'
+	option proto 'dhcp'
+
+config interface 'swan'
+	option proto 'lte'
+	option device '/dev/cdc-wdm0'
+	option pdptype 'ipv4'
+	option ifname 'wwan0'
+	option auth 'none'
+
+config setting 'detection'
+	option secondary_addr '8.8.8.8'
+	option primary_addr '1.1.1.1'
+	option enabled_reboot '0'
+

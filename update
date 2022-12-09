@@ -17,7 +17,7 @@ if [ "$1" == "reset" ]; then
     sudo cp config/090_br0.conf /etc/dnsmasq.d/090_br0.conf
     sudo cp config/dhcpcd.conf /etc/dhcpcd.conf
     sudo cp config/defaults.json /etc/raspap/networking/
-    sudo cp EG/$model/etc/config/* /etc/config/
+    sudo cp Elastel/$model/etc/config/* /etc/config/
     sleep 1
 
     # reset wifi ssid
@@ -29,7 +29,7 @@ fi
 sudo cp config/090_raspap /etc/sudoers.d/090_raspap
 sudo cp installers/service*.sh /etc/raspap/hostapd
 sudo chown -c root:www-data /etc/raspap/hostapd/*.sh
-sudo cp EG/$model/etc/init.d/* /etc/init.d/
+sudo cp Elastel/$model/etc/init.d/* /etc/init.d/
 sleep 1
 sudo rm /etc/rc5.d/S01init-wifi
 sudo rm /etc/rc5.d/S10failover
@@ -49,19 +49,19 @@ sudo /etc/init.d/lte stop
 sudo /etc/init.d/failover stop
 sudo /etc/init.d/ddns stop
 sleep 1
-sudo cp -r EG/$model/usr/sbin/* /usr/sbin/
-sudo cp -r EG/$model/usr/lib/* /usr/lib/
-sudo cp -r EG/$model/usr/local/bin/* /usr/local/bin/
+sudo cp -r Elastel/$model/usr/sbin/* /usr/sbin/
+sudo cp -r Elastel/$model/usr/lib/* /usr/lib/
+sudo cp -r Elastel/$model/usr/local/bin/* /usr/local/bin/
 sleep 1
 if [ $model = "EG410" ]; then
         if [ ! -e /dev/ttyACM0 ]; then
-                sudo cp EG/$model/EG410_a/dctd /usr/sbin/dctd
+                sudo cp Elastel/$model/EG410_a/dctd /usr/sbin/dctd
         fi
 
 fi
 sleep 1
 [ -n "$(pgrep daemond)" ] && {
-    sudo kill -9 $(pgrep daemond) && sudo cp EG/$model/sbin/* /sbin/
+    sudo kill -9 $(pgrep daemond) && sudo cp Elastel/$model/sbin/* /sbin/
 }
 
 echo -e "Complete to update, it will reboot system."
