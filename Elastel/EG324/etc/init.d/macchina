@@ -1,0 +1,42 @@
+#! /bin/sh
+
+PROG=/usr/local/sbin/WebTunnelAgent
+
+do_start()
+{
+	local enabled
+
+	enabled=$(uci get macchina.macchina.enabled)
+	[ "$enabled" = "1" ] || return
+
+	$PROG --config-file=/etc/WebTunnelAgent.properties >/dev/null &
+}
+
+do_stop()
+{
+	killall -q WebTunnelAgent
+	sleep 1
+	[ -n "$(pgrep WebTunnelAgent)" ] && {
+		sleep 1
+		kill -9 $(pgrep WebTunnelAgent)
+	}
+}
+
+case "$1" in
+  start)
+	do_start
+	;;
+  stop)
+	do_stop
+	;;
+  restart|force-reload)
+	$0 stop
+	$0 start
+	;;
+  *)
+	echo "Usage: $SCRIPTNAME {start|stop|restart}" >&2
+	exit 3
+	;;
+esac
+
+:

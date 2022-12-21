@@ -530,3 +530,9 @@ canvas#divDBChartBandwidthhourly {
   font-size:1.2rem;
   //background-color:red;
 }
+
+.info-label{
+  width: 30rem;
+  font-size: 0.8em;
+  color: #858796;
+}

@@ -1,0 +1,4 @@
+
+config setting 'macchina'
+	option enabled '0'
+

@@ -58,6 +58,7 @@ require_once 'includes/ddns.php';
 require_once 'includes/bacnet.php';
 require_once 'includes/datadisplay.php';
 require_once 'includes/detection.php';
+require_once 'includes/macchina.php';
 
 $config = getConfig();
 $model = getModel();
@@ -162,7 +163,7 @@ $bridgedEnabled = getBridgedState();
            <a class="nav-link" href="adblock_conf"><i class="far fa-hand-paper fa-fw mr-2"></i><span class="nav-label"><?php echo _("Ad Blocking"); ?></a>
         </li>
           <?php endif; ?>
-        <li class="nav-item">
+        <li class="nav-item" id="page_dct">
           <a class="nav-link navbar-toggle collapsed" id="dct" href="#" data-toggle="collapse" data-target="#navbar-collapse-dct">
               <i class="fas fa-exchange-alt fa-fw mr-2"></i>
               <span class="nav-label"><?php echo _("Data Collect"); ?></a>
@@ -193,11 +194,18 @@ $bridgedEnabled = getBridgedState();
           <a class="nav-link" href="wg_conf"><span class="ra-wireguard mr-2"></span><span class="nav-label"><?php echo _("WireGuard"); ?></a>
         </li>
           <?php endif; ?>
-          <?php if (DDNS_ENABLED) : ?>
-        <li class="nav-item">
-          <a class="nav-link" href="ddns"><i class="fas fa-server fa-fw mr-2"></i><span class="nav-label"><?php echo _("DDNS"); ?></a>
+        <li class="nav-item" id="page_remote">
+          <a class="nav-link navbar-toggle collapsed" id="remote" href="#" data-toggle="collapse" data-target="#navbar-collapse-remote">
+              <i class="fas fa-server fa-fw mr-2"></i>
+              <span class="nav-label"><?php echo _("Remote Manage"); ?></a>
+          </a>
+          <div class="collapse navbar-collapse" id="navbar-collapse-remote">
+            <ul class="nav navbar-nav navbar-right">
+              <li class="nav-item" name="ddns" id="ddns"> <a class="nav-link" href="ddns"><?php echo _("DDNS"); ?></a></li>
+              <li class="nav-item" name="macchina" id="macchina"> <a class="nav-link" href="macchina"><?php echo _("Macchina"); ?></a></li>
+            </ul>
+          </div>
         </li>
-          <?php endif; ?>
           <?php if (RASPI_TORPROXY_ENABLED) : ?>
         <li class="nav-item">
            <a class="nav-link" href="torproxy_conf"><i class="fas fa-eye-slash fa-fw mr-2"></i><span class="nav-label"><?php echo _("TOR proxy"); ?></a>
@@ -328,6 +336,9 @@ $bridgedEnabled = getBridgedState();
             case "/datadisplay":
                 dataDisplay();
                 break;
+            case "/macchina":
+                DisplayMacchina();
+                break;
             default:
                 DisplayDashboard($extraFooterScripts);
             }            
@@ -395,12 +406,27 @@ $(document).ready(function(){
             id == "server" || id == "io" || id == "bacnet" || id == "fx" || id == "datadisplay") {
           $('#navbar-collapse-dct').addClass('show')
           $('#dct').removeClass('collapsed');
-        } else {
-          $('#navbar-collapse-dct').removeClass('show')
-          $('#dct').addClass('collapsed');
+        } else if (id == "ddns" || id == "macchina") {
+          $('#navbar-collapse-remote').addClass('show');
+          $('#remote').removeClass('collapsed');
         }
       }
   });
+
+  $('.nav-item').click(function() {
+    var id = $($(this))[0].id;
+    if (id == "page_dct") {
+      if ($('#navbar-collapse-remote').hasClass('show')) {
+          $('#navbar-collapse-remote').removeClass('show');
+          $('#remote').addClass('collapsed');
+      }
+    } else if (id == "page_remote") {
+      if ($('#navbar-collapse-dct').hasClass('show')) {
+          $('#navbar-collapse-dct').removeClass('show');
+          $('#dct').addClass('collapsed');
+      }
+    }
+  })
 });
 </script>
 </html>
