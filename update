@@ -9,12 +9,6 @@ echo model:$model
 
 sleep 1
 
-if [ ! -f "/usr/local/sbin/WebTunnelAgent" ]; then
-    curl https://raw.githubusercontent.com/my-devices/agent-installer/master/install.sh | bash
-fi
-
-sleep 2
-
 if [ "$1" == "reset" ]; then
     echo $1
     sudo cp config/hostapd.conf /etc/hostapd/hostapd.conf
