@@ -30,7 +30,7 @@
       <div class="card-header">
         <div class="row">
           <div class="col">
-            <i class="fas fa-network-wired mr-2"></i><?php echo _("WAN"); ?>
+            <?php echo _("WAN"); ?>
           </div>
         </div><!-- ./row -->
       </div><!-- ./card-header -->
