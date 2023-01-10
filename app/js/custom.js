@@ -192,6 +192,9 @@ function contentLoaded() {
         case "ddns":
             loadDDNSConfig();
             break;
+        case "opcua":
+            loadOpcuaConfig();
+            break;
         case "bacnet":
             loadBACnetConfig();
             break;
@@ -272,6 +275,55 @@ function loadBACnetConfig() {
         } else {
             $('#page_bacnet').hide(); 
             $('#bacnet_disable').prop('checked', true);
+        }
+    });
+}
+
+function loadOpcuaConfig() {
+    $.get('ajax/dct/get_dctcfg.php?type=opcua',function(data){
+        jsonData = JSON.parse(data);
+        var arr = ['port', 'anonymous', 'username', 'password', 'security_policy', 
+        'certificate', 'private_key'];
+
+        $('#enabled').val(jsonData.enabled);
+        if (jsonData.enabled == '1') {
+            $('#page_opcua').show();
+            $('#opcua_enable').prop('checked', true);
+
+            arr.forEach(function (info) {
+                if (info == null) {
+                    return true;    // continue: return true; break: return false
+                }
+
+                if (info == "anonymous") {
+                    $('#' + info).prop('checked', (jsonData[info] == '1') ? true:false);
+                } else if (info == "certificate") {
+                    if (jsonData[info]) {
+                        $('#cert_text').html(jsonData[info]);
+                    }
+                } else if (info == "private_key") {
+                    if (jsonData[info]) {
+                        $('#key_text').html(jsonData[info]);
+                    }
+                }  else {
+                    $('#' + info).val(jsonData[info]);
+                }
+            })
+        } else {
+            $('#page_opcua').hide(); 
+            $('#opcua_disable').prop('checked', true);
+        }
+
+        if (jsonData['anonymous'] != '1') {
+            $('#page_anonymous').show();
+        } else {
+            $('#page_anonymous').hide();
+        }
+
+        if (jsonData['security_policy'] == '0') {
+            $('#page_security').hide();
+        } else {
+            $('#page_security').show();
         }
     });
 }

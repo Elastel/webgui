@@ -59,6 +59,7 @@ require_once 'includes/bacnet.php';
 require_once 'includes/datadisplay.php';
 require_once 'includes/detection.php';
 require_once 'includes/macchina.php';
+require_once 'includes/opcua.php';
 
 $config = getConfig();
 $model = getModel();
@@ -179,6 +180,7 @@ $bridgedEnabled = getBridgedState();
               <li class="nav-item" name="io" id="io"><a class="nav-link" href="io_conf"><?php echo _("IO"); ?></a></li>
               <?php endif; ?>
               <li class="nav-item" name="server" id="server"><a class="nav-link" href="server_conf"><?php echo _("Server"); ?></a></li>
+              <li class="nav-item" name="opcua" id="opcua"><a class="nav-link" href="opcua"><?php echo _("OPC UA"); ?></a></li>
               <li class="nav-item" name="bacnet" id="bacnet"><a class="nav-link" href="bacnet"><?php echo _("BACnet Server"); ?></a></li>
               <li class="nav-item" name="datadisplay" id="datadisplay"><a class="nav-link" href="datadisplay"><?php echo _("Data Display"); ?></a></li>
             </ul>
@@ -330,6 +332,9 @@ $bridgedEnabled = getBridgedState();
             case "/ddns":
                 DisplayDDNS();
                 break;
+            case "/opcua":
+                DisplayOpcua();
+                break;
             case "/bacnet":
                 DisplayBACnet();
                 break;
@@ -403,7 +408,8 @@ $(document).ready(function(){
       if ($(this).hasClass('active')) {
         var id = $($(this))[0].id;
         if (id == "dct_basic" || id == "interfaces" || id == "modbus" || id == "s7" ||
-            id == "server" || id == "io" || id == "bacnet" || id == "fx" || id == "datadisplay") {
+            id == "server" || id == "io" || id == "bacnet" || id == "fx" || id == "datadisplay" ||
+            id == "opcua") {
           $('#navbar-collapse-dct').addClass('show')
           $('#dct').removeClass('collapsed');
         } else if (id == "ddns" || id == "macchina") {

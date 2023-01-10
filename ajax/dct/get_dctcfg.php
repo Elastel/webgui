@@ -338,7 +338,28 @@ if ($type == "basic") {
             $dctdata[$info] = $val[0];
         }
     }
-} else if ($type == 'datadisplay') {
+} else if ($type == 'opcua') {
+    $arr = array('port', 'anonymous', 'username', 'password', 'security_policy', 
+    'certificate', 'private_key');
+    unset($enabled);
+    exec('/usr/local/bin/uci get dct.opcua.enabled', $enabled);
+    $dctdata['enabled'] = $enabled[0];
+    if ($enabled[0] == '1') {
+        foreach ($arr as $info) {
+            unset($val);
+            exec('sudo /usr/local/bin/uci get dct.opcua.' . $info, $val);
+            if ($info == 'certificate' || $info == 'private_key') {
+                unset($file_dir);
+                $file_dir = '/etc/ssl/opcua' . '/' . $val[0];
+                if (file_exists($file_dir) && strlen($val[0]) > 0) {
+                    $dctdata[$info] = $val[0];
+                }
+            } else {
+                $dctdata[$info] = $val[0];
+            }
+        }
+    }
+}  else if ($type == 'datadisplay') {
     exec('cat /tmp/webshow', $dctdata);
     if ($dctdata[0] != NULL){
         echo $dctdata[0];
