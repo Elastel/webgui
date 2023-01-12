@@ -4,7 +4,7 @@ require_once 'includes/status_messages.php';
 require_once 'config.php';
 
 function DisplayMacchina()
-{   
+{
     $status = new StatusMessages();
 
     if (!RASPI_MONITOR_ENABLED) {
@@ -22,76 +22,76 @@ function DisplayMacchina()
     }
 
     if (is_file("/etc/WebTunnelAgent.properties")) {
-        exec("cat /etc/WebTunnelAgent.properties | grep 'webtunnel.domain ' | awk -F'= ' '{print $2}'", $uuid);
-        exec("sudo /usr/local/bin/uci get macchina.macchina.mac_config", $file_name);
+        exec("sudo /usr/local/bin/uci get macchina.macchina.domain", $domain);
+        exec("sudo /usr/local/bin/uci get macchina.macchina.device_id", $device_id);
+        exec("sudo /usr/local/bin/uci get macchina.macchina.url", $url);
+        exec("sudo /usr/local/bin/uci get macchina.macchina.enabled_http", $enabled_http);
+        exec("sudo /usr/local/bin/uci get macchina.macchina.enabled_ssh", $enabled_ssh);
     }
 
     exec("pgrep WebTunnelAgent", $run_status);
     exec("sudo /usr/local/bin/uci get macchina.macchina.enabled", $enabled);
 
-    echo renderTemplate("macchina", compact('status', 'uuid', 'run_status', 'file_name', 'enabled'));
-}
-
-function SaveUpload($status, $file)
-{
-    define('KB', 1024);
-    $tmp_destdir = '/tmp/';
-    $auth_flag = 0;
-
-    try {
-        // If undefined or multiple files, treat as invalid
-        if (!isset($file['error']) || is_array($file['error'])) {
-            throw new RuntimeException('Invalid parameters');
-        }
-
-        $upload = \RaspAP\Uploader\Upload::factory('macchina', $tmp_destdir);
-        $upload->set_max_file_size(128*KB);
-        $upload->set_allowed_mime_types(array('text/plain'));
-        $upload->file($file);
-
-        $validation = new validation;
-        $upload->callbacks($validation, array('check_name_length'));
-        $results = $upload->upload();
-
-        if (!empty($results['errors'])) {
-            throw new RuntimeException($results['errors'][0]);
-        }
-
-        // Valid upload, get file contents
-        $tmp_config = $results['full_path'];
-        // Move processed file from tmp to destination
-        system("sudo mv $tmp_config /etc/WebTunnelAgent.properties", $return);
-        return $status;
-
-    } catch (RuntimeException $e) {
-        $status->addMessage($e->getMessage(), 'danger');
-        return $status;
-    }
+    echo renderTemplate("macchina", compact(
+        'status',
+        'domain',
+        'run_status',
+        'device_id',
+        'enabled',
+        'url',
+        'enabled_http',
+        'enabled_ssh'
+    ));
 }
 
 function saveConfig($status)
 {
-    $return = 1;
+    $return = true;
     $error = array();
-
-    if (is_uploaded_file($_FILES['mac_config']['tmp_name'])) {
-        SaveUpload($status, $_FILES['mac_config']);
-    }
 
     exec("sudo /usr/local/bin/uci set macchina.macchina.enabled=" . $_POST['enabled']);
     if ($_POST['enabled'] == "1") {
-        if (is_uploaded_file($_FILES['mac_config']['tmp_name'])) {
-            exec("sudo rm /etc/WebTunnelAgent.properties");
-            SaveUpload($status, $_FILES['mac_config']);
+        if ($_POST['domain']) {
+            exec("sudo /usr/local/bin/uci set macchina.macchina.domain=" . $_POST['domain']);
+            exec("sudo /bin/sed -i 's/webtunnel.domain =.*/webtunnel.domain = " . $_POST['domain'] . "/g' /etc/WebTunnelAgent.properties");
+        } else {
+            $return = false;
+            $status->addMessage('error domain', 'danger');
         }
-        if (is_file("/etc/WebTunnelAgent.properties")) {
-            exec("sudo /usr/local/bin/uci set macchina.macchina.mac_config=" . $_FILES['mac_config']['name']);
+
+        if ($_POST['device_id']) {
+            exec("sudo /usr/local/bin/uci set macchina.macchina.device_id=" . $_POST['device_id']);
+            exec("sudo /bin/sed -i 's/webtunnel.deviceId =.*/webtunnel.deviceId = " . $_POST['device_id'] . "/g' /etc/WebTunnelAgent.properties");
+        } else {
+            $return = false;
+            $status->addMessage('error device_id', 'danger');
+        }
+
+        if ($_POST['url']) {
+            exec("sudo /usr/local/bin/uci set macchina.macchina.url=" . $_POST['url']);
+            exec("sudo /bin/sed -i 's/webtunnel.reflectorURI =.*/webtunnel.reflectorURI = https:\/\/" . $_POST['url'] . "/g' /etc/WebTunnelAgent.properties");
+        } else {
+            $return = false;
+            $status->addMessage('error url', 'danger');
+        }
+
+        exec("sudo /usr/local/bin/uci set macchina.macchina.enabled_http=" . $_POST['enabled_http']);
+        exec("sudo /usr/local/bin/uci set macchina.macchina.enabled_ssh=" . $_POST['enabled_ssh']);
+
+        if ($_POST['enabled_http'] == "1" && $_POST['enabled_ssh'] == "1") {
+            exec("sudo /bin/sed -i 's/webtunnel.ports =.*/webtunnel.ports = 22, 80/g' /etc/WebTunnelAgent.properties");
+        } else if ($_POST['enabled_http'] == "1") {
+            exec("sudo /bin/sed -i 's/webtunnel.ports =.*/webtunnel.ports = 80/g' /etc/WebTunnelAgent.properties");
+        } else if ($_POST['enabled_ssh'] == "1") {
+            exec("sudo /bin/sed -i 's/webtunnel.ports =.*/webtunnel.ports = 22/g' /etc/WebTunnelAgent.properties");
+        } else {
+            exec("sudo /bin/sed -i 's/webtunnel.ports =.*/webtunnel.ports = /g' /etc/WebTunnelAgent.properties");
         }
     }
 
     exec("sudo /usr/local/bin/uci commit macchina");
 
-    $status->addMessage('Macchina configuration updated ', 'success');
-    return true;
+    $status->addMessage('Macchina configuration updated', 'success');
+    return $return;
 }
 

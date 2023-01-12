@@ -53,29 +53,43 @@
                 </div>
                 <div id="page_macchina" name="page_macchina" <?php if ($enabled[0] != 1) { ?> style="display: none;" <?php } ?>>
                     <div class="cbi-value">
-                        <label class="cbi-value-title"><?php echo _("UUID:"); ?></label>
-                        <label class="info-label" id="uuid" name="uuid"><?php echo _(($uuid[0] != null) ? $uuid[0] : "-"); ?></label>
+                        <label class="cbi-value-title"><?php echo _("Domain"); ?></label>
+                        <input type="text" class="cbi-input-text" name="domain" id="domain" value="<?php echo _(($domain[0] != null) ? $domain[0] : ""); ?>"/>
+                    </div>
+
+                    <div class="cbi-value">
+                        <label class="cbi-value-title"><?php echo _("Device ID"); ?></label>
+                        <input type="text" class="cbi-input-text" name="device_id" id="device_id" value="<?php echo _(($device_id[0] != null) ? $device_id[0] : ""); ?>"/>
+                    </div>
+
+                    <div class="cbi-value">
+                        <label class="cbi-value-title"><?php echo _("URL"); ?></label>
+                        <input type="text" class="cbi-input-text" name="url" id="url" value="<?php echo _(($url[0] != null) ? $url[0] : ""); ?>"/>
+                    </div>
+
+                    <div class="cbi-value">
+                      <label class="cbi-value-title"><?php echo _("Enabled http"); ?></label>
+                      <input type="checkbox" class="cbi-input-checkbox" name="enabled_http" id="enabled_http" value="1" <?php echo _(($enabled_http[0] == 1) ? "checked" : ""); ?>/>
+                    </div>
+
+                    <div class="cbi-value">
+                      <label class="cbi-value-title"><?php echo _("Enabled SSH"); ?></label>
+                      <input type="checkbox" class="cbi-input-checkbox" name="enabled_ssh" id="enabled_ssh" value="1" <?php echo _(($enabled_ssh[0] == 1) ? "checked" : ""); ?>/>
                     </div>
 
                     <div class="cbi-value">
                         <label class="cbi-value-title"><?php echo _("Status:"); ?></label>
-                        <label class="info-label" id="run_status" name="run_status"><?php echo _(($run_status[0] != null) ? "Runing" : "Stop"); ?></label>
-                    </div>
-
-                    <div class="cbi-value">
-                        <label class="cbi-value-title"><?php echo _("Upload Configuration:"); ?></label>
-                        <label for="mac_config" class="cbi-file-lable">
-                            <input type="button" class="cbi-file-btn" id="btn" value="<?php echo _("Choose file"); ?>">
-                            <span id="text"><?php echo _(($file_name[0] != null) ? $file_name[0] : "No file chosen"); ?></span>
-                            <input type="file" class="cbi-file" name="mac_config" id="mac_config" onchange="macchinaChange(this)">
+                        <label class="info-label" id="run_status" name="run_status">
+                          <?php echo _(($run_status[0] != null) ? "<font color=\"green\">Runing</font>" : "<font color=\"red\">Stop</font>"); ?>
                         </label>
                     </div>
-                    <div class="cbi-value">
+
+                    <!-- <div class="cbi-value">
                         <label class="cbi-value-title"><?php echo _("Account Login:"); ?></label>
                         <a href="https://reflector.remote.macchina.io/my-devices/login" target="_blank"><?php echo _("macchina.io"); ?></a>
                         &nbsp&nbsp&nbsp&nbsp
                         <label class="info-label"><?php echo _("Configuration file can be downloaded by the url."); ?></label>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <?php echo $buttons ?>
@@ -92,10 +106,5 @@
         $('#page_macchina').hide();
       }
   }
-
-  function macchinaChange(state) {
-    $('#text').html($('#mac_config')[0].files[0].name);
-  }
-
 </script>
 

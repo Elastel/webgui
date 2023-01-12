@@ -299,7 +299,7 @@ canvas#divDBChartBandwidthhourly {
   margin-right:0.5rem;
 }
 .cbi-input-text {
-  min-width: 15rem;
+  min-width: 20rem;
   height: calc(1.5em + 0.75rem);
   color: #6e707e;
   background-color: #fff;
@@ -323,7 +323,7 @@ canvas#divDBChartBandwidthhourly {
 }
 
 .cbi-input-select {
-  min-width: 15rem;
+  min-width: 20rem;
   height: calc(1.5em + 0.75rem);
   color: #6e707e;
   background-color: #fff;

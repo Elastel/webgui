@@ -21,6 +21,7 @@ if [ "$1" == "reset" ]; then
     sudo cp config/defaults.json /etc/raspap/networking/
     sudo cp Elastel/$model/etc/config/* /etc/config/
     sleep 1
+    sudo cp Elastel/$model/etc/WebTunnelAgent.properties /etc/WebTunnelAgent.properties
 
     # reset wifi ssid
     sub_mac=$(ifconfig br0 | grep ether | awk '{print $2}' | cut -f 5-6 -d ":" | tr -d ":")
