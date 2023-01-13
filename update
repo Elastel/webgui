@@ -1,5 +1,6 @@
 #!/bin/bash
 model=$(cat /etc/fw_model)
+bit=$(getconf LONG_BIT)
 
 if [ ! -n "$model" ]; then
         model="EG500"
@@ -54,9 +55,11 @@ sudo /etc/init.d/lte stop
 sudo /etc/init.d/failover stop
 sudo /etc/init.d/ddns stop
 sleep 1
-sudo cp -r Elastel/$model/usr/sbin/* /usr/sbin/
-sudo cp -r Elastel/$model/usr/lib/* /usr/lib/
-sudo cp -r Elastel/$model/usr/local/bin/* /usr/local/bin/
+if [ $bit = "64" ]; then
+	sudo cp -r Elastel/$model/usr/* /usr/
+elif [ $bit = "32" ]; then
+	sudo cp -r Elastel/$model/32/usr/* /usr/
+fi
 sleep 1
 if [ $model = "EG410" ]; then
         if [ ! -e /dev/ttyACM0 ]; then
@@ -67,7 +70,11 @@ fi
 sleep 5
 
 [ -n "$(pgrep daemond)" ] && {
-    sudo kill -9 $(pgrep daemond) && sudo cp Elastel/$model/sbin/* /sbin/
+	if [ $bit = "64" ]; then
+		sudo kill -9 $(pgrep daemond) && sudo cp Elastel/$model/sbin/* /sbin/
+	elif [ $bit = "32" ]; then
+		sudo kill -9 $(pgrep daemond) && sudo cp Elastel/$model/32/sbin/* /sbin/
+	fi
 }
 
 echo -e "Complete to update, it will reboot system."
