@@ -64,7 +64,7 @@ if [ $model = "EG410" ]; then
         fi
 fi
 
-sleep 2
+sleep 5
 
 [ -n "$(pgrep daemond)" ] && {
     sudo kill -9 $(pgrep daemond) && sudo cp Elastel/$model/sbin/* /sbin/
