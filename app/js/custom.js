@@ -1857,6 +1857,7 @@ function getTableDataADC() {
 
     for (var i = 2; i < tr.length; i++) {
         var tds = $(tr[i]).find("td");
+        num = 0;
         if (tds.length > 0) {
         result.push({
             'device_name':$(tds[num++]).html(),
@@ -1885,6 +1886,7 @@ function getTableDataDI() {
 
     for (var i = 2; i < tr.length; i++) {
         var tds = $(tr[i]).find("td");
+        num = 0;
         if (tds.length > 0) {
         result.push({
             'device_name':$(tds[num++]).html(),
@@ -1913,6 +1915,7 @@ function getTableDataDO() {
 
     for (var i = 2; i < tr.length; i++) {
         var tds = $(tr[i]).find("td");
+        num = 0;
         if (tds.length > 0) {
         result.push({
             'device_name':$(tds[num++]).html(),
