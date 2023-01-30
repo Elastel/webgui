@@ -88,7 +88,8 @@ function saveStaticConfig($status)
         if ($_POST['adapter-ip'] == "1") {
             exec("sudo uci set network.wan.proto=dhcp");
             // remove dhcp configs for selected interface
-            $return = removeDHCPConfig($iface0,$status);
+            // $return = removeDHCPConfig($iface0,$status);
+            updateDHCPConfigMetric($iface0,$status);
         } else {
             //$status->addMessage('updateDHCPConfig');
             exec("sudo uci set network.wan.proto=static");
@@ -202,6 +203,40 @@ function updateDHCPConfigNetwork($iface0,$status)
     if ($_POST['Fallback'] == 1) {
         $cfg[] = 'profile static_'.$iface0;
         $cfg[] = 'fallback static_'.$iface0;
+    }
+
+    // $cfg[] = $_POST['DefaultRoute'] == '1' ? 'gateway' : 'nogateway';
+    $orgin_str = file_get_contents(RASPI_DHCPCD_CONFIG);
+    $count = strpos($orgin_str, "denyinterfaces");
+    if ($_POST['wan-multi'] == '1') {
+        $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0 eth0' . PHP_EOL, number_format($count), 31);
+    } else {
+        $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0     ' . PHP_EOL, number_format($count), 31);
+    }
+    
+    if (!preg_match('/^interface\s'.$iface0.'$/m', $dhcp_cfg)) {
+        $cfg[] = PHP_EOL;
+        $cfg = join(PHP_EOL, $cfg);
+        $dhcp_cfg .= $cfg;
+        $status->addMessage('DHCP configuration for '.$iface0.' added.', 'success');
+    } else {
+        $cfg = join(PHP_EOL, $cfg);
+        $dhcp_cfg = preg_replace('/^#\sRaspAP\s'.$iface0.'\s.*?(?=\s*^\s*$)/ms', $cfg, $dhcp_cfg, 1);
+        $status->addMessage('DHCP configuration for '.$iface0.' updated.', 'success');
+    }
+    file_put_contents("/tmp/dhcpddata", $dhcp_cfg);
+    system('sudo cp /tmp/dhcpddata '.RASPI_DHCPCD_CONFIG, $result);
+
+    return $result;
+}
+
+function updateDHCPConfigMetric($iface0,$status)
+{
+    $cfg[] = '# RaspAP '.$iface0.' configuration';
+    $cfg[] = 'interface '.$iface0;
+
+    if ($_POST['Metric'] !== '') {
+      $cfg[] = 'metric '.$_POST['Metric'];
     }
 
     // $cfg[] = $_POST['DefaultRoute'] == '1' ? 'gateway' : 'nogateway';

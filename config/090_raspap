@@ -87,4 +87,4 @@ www-data ALL=(ALL) NOPASSWD:/bin/rm /etc/WebTunnelAgent.properties
 www-data ALL=(ALL) NOPASSWD:/etc/init.d/macchina *
 www-data ALL=(ALL) NOPASSWD:/bin/sed -i * /etc/WebTunnelAgent.properties
 www-data ALL=(ALL) NOPASSWD:/usr/sbin/brctl delif br0 eth0
-
+www-data ALL=(ALL) NOPASSWD:/etc/init.d/dhcpcd *
