@@ -25,7 +25,9 @@ function DisplayNetworkingConfig()
                 if ($_POST['wan-multi'] == '1') {
                     exec("sudo systemctl restart systemd-networkd.service");
                 } else {
-                    exec("sudo reboot");
+                    exec("sudo systemctl restart systemd-networkd.service");
+                    exec("sudo /usr/sbin/brctl delif br0 eth0");
+                    exec("sudo /etc/init.d/dhcpcd restart");
                 }
 
                 if ($_POST['adapter-ip'] == "0") {
@@ -70,6 +72,12 @@ function saveStaticConfig($status)
 
     if ($iface0 == "eth0") {
         exec("sudo uci set network.wan.device=eth0");
+        if ($_POST['Metric'] !== '') {
+            exec("sudo /usr/local/bin/uci set network.wan.metric=" .$_POST['Metric']);
+        } else {
+            exec("sudo /usr/local/bin/uci set network.wan.metric=202");
+        }
+
         if ($_POST['wan-multi'] == '1') {
             exec("sudo uci set network.wan.wan_multi=1");
         } else {
@@ -223,6 +231,12 @@ function updateDHCPConfigNetwork($iface0,$status)
 
 function updateLteConfigNetwork($iface0, $status)
 {
+    if ($_POST['lte_metric'] != '') {
+        exec("sudo /usr/local/bin/uci set network.swan.metric=" .$_POST['lte_metric']);
+    } else {
+        exec("sudo /usr/local/bin/uci set network.swan.metric=207");
+    }
+
     exec("sudo /usr/local/bin/uci set network.swan.apn=" .$_POST['apn']);
     exec("sudo /usr/local/bin/uci set network.swan.pincode=" .$_POST['pin']);
     exec("sudo /usr/local/bin/uci set network.swan.auth=" .$_POST['auth_type']);
@@ -238,24 +252,3 @@ function updateLteConfigNetwork($iface0, $status)
     
     return $result;
 }
-
-// function updateLteConfigNetwork($iface0,$status)
-// {
-//     if (isset($_POST['apn'])) {
-//         $cfg[] = 'APN='.$_POST['apn'];
-//         $cfg[] = PHP_EOL;
-//     } 
-//     if (isset($_POST['auth_type'])) {
-//       $cfg[] = 'AUTH_TYPE='.$_POST['auth_type'];
-//       $cfg[] = PHP_EOL;
-//       $cfg[] = 'APN_USER='.$_POST['username'];
-//       $cfg[] = PHP_EOL;
-//       $cfg[] = 'APN_PASS='.$_POST['password'];
-//       $cfg[] = PHP_EOL;
-//     }
-
-//     file_put_contents("/tmp/lte_data", $cfg);
-//     system('sudo cp /tmp/lte_data '.RASPI_LTE_CONFIG, $result);
-
-//     return $result;
-// }

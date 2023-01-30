@@ -10,6 +10,12 @@
   </div>
   <div class="row">
     <div class="form-group col-md-6">
+      <label for="<metric"><?php echo _("Metric") ?></label>
+      <input type="text" class="form-control" id="lte_metric" name="lte_metric">
+    </div>
+  </div>
+  <div class="row">
+    <div class="form-group col-md-6">
       <label for="txtapn"><?php echo _("APN"); ?></label>
       <input type="text" id="txtapn" class="form-control" name="apn" value="<?php echo htmlspecialchars($arrConfig['apn'], ENT_QUOTES); ?>" />
     </div>

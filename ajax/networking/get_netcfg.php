@@ -39,13 +39,14 @@ if (isset($interface)) {
     // fetch dhcpcd.conf settings for interface
     $conf = file_get_contents(RASPI_DHCPCD_CONFIG);
     preg_match('/^#\sRaspAP\s'.$interface.'\s.*?(?=\s*+$)/ms', $conf, $matched);
-    preg_match('/metric\s(\d*)/', $matched[0], $metric);
+    // preg_match('/metric\s(\d*)/', $matched[0], $metric);
     preg_match('/static\sip_address=(.*)/', $matched[0], $static_ip);
     preg_match('/static\srouters=(.*)/', $matched[0], $static_routers);
     preg_match('/static\sdomain_name_server=(.*)/', $matched[0], $static_dns);
     preg_match('/fallback\sstatic_'.$interface.'/', $matched[0], $fallback);
     preg_match('/(?:no)?gateway/', $matched[0], $gateway);
-    $dhcpdata['Metric'] = $metric[1];
+    exec("sudo /usr/local/bin/uci get network.wan.metric", $metric);
+    $dhcpdata['Metric'] = $metric[0];
     $dhcpdata['StaticIP'] = strpos($static_ip[1],'/') ?  substr($static_ip[1], 0, strpos($static_ip[1],'/')) : $static_ip[1];
     $dhcpdata['SubnetMask'] = cidr2mask($static_ip[1]);
     $dhcpdata['StaticRouters'] = $static_routers[1];
@@ -64,11 +65,13 @@ if (isset($interface)) {
     $dhcpdata['wan_multi'] = $wan_multi[0];
 
     // fetch qmi-network.conf settings for interface
+    exec("sudo /usr/local/bin/uci get network.swan.metric", $lte_metric);
     exec("sudo /usr/local/bin/uci get network.swan.apn", $apn);
     exec("sudo /usr/local/bin/uci get network.swan.pincode", $pin);
     exec("sudo /usr/local/bin/uci get network.swan.auth", $auth_type);
     exec("sudo /usr/local/bin/uci get network.swan.username", $apn_user);
     exec("sudo /usr/local/bin/uci get network.swan.password", $apn_pass);
+    $dhcpdata['lte_metric'] = $lte_metric[0];
     $dhcpdata['Apn'] = $apn[0];
     $dhcpdata['Pin'] = $pin[0];
     $dhcpdata['ApnUser'] = $apn_user[0];

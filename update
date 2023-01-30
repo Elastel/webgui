@@ -31,6 +31,7 @@ if [ "$1" == "reset" ]; then
 fi
 
 sudo cp config/090_raspap /etc/sudoers.d/090_raspap
+sudo cp config/rules.v4 /etc//etc/iptables/rules.v4
 sudo cp installers/service*.sh /etc/raspap/hostapd
 sudo chown -c root:www-data /etc/raspap/hostapd/*.sh
 sudo cp Elastel/$model/etc/init.d/* /etc/init.d/

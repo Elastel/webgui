@@ -42,23 +42,19 @@ function DisplayDashboard(&$extraFooterScripts)
         exec('cat ' . RASPI_DNSMASQ_LEASES . '| grep -E $(iw dev ' . $apInterface . ' station dump | grep -oE ' . $MACPattern . ' | paste -sd "|")', $clients);
     }
     
-    exec('ip route | grep "default"  | grep -c "eth0"', $wired);
-    exec('ip route | grep "default"  | grep -c "wlan0"', $wifi);
-    if ($wifi[0] == "1") {
-        $ifaceStatus = "WIFI";
-        $statusIcon = "up";
-    } else if ($wired[0] == "1") {
+    exec("sudo uci get -P /var/state/ network.wan.link", $cur_interface);
+    if ($cur_interface[0] == "eth0") {
         $ifaceStatus = "Wired";
         $statusIcon = "up";
+    } else if ($cur_interface[0] == "wlan0") {
+        $ifaceStatus = "WIFI";
+        $statusIcon = "up";
+    } else if ($cur_interface[0] == "wwan0") {
+        $ifaceStatus = "LTE";
+        $statusIcon = "up";
     } else {
-        exec('ip route | grep "default"  | grep -c "wwan0"', $lte);
-        if ($lte[0] == "1") {
-            $ifaceStatus = "LTE";
-            $statusIcon = "up";
-        } else {
-            $ifaceStatus = "No network";
-            $statusIcon = "down";
-        }
+        $ifaceStatus = "No network";
+        $statusIcon = "down";
     }
     
     exec('cat ' . RASPI_DNSMASQ_LEASES, $leases);

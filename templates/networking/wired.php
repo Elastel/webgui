@@ -7,6 +7,13 @@
         <?php SelectorOptions('interface0', $wired_interface, $ap_iface, 'cbxdhcpiface', 'loadInterfaceDHCPSelect', $DHCPDisabled); ?>
     </div>
   </div>
+  
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label for="<metric"><?php echo _("Metric") ?></label>
+      <input type="text" class="form-control" id="txtmetric" name="Metric">
+    </div>
+  </div>
 
   <div class="row">
     <div class="form-group col-md-6">
@@ -67,13 +74,6 @@
       <div class="form-group col-md-6">
         <label for="code"><?php echo _("DNS Server"); ?> 2</label>
         <input type="text" class="form-control" id="txtdns2" name="DNS2" />
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="form-group col-md-6">
-        <label for="<metric"><?php echo _("Metric") ?></label>
-        <input type="text" class="form-control" id="txtmetric" name="Metric">
       </div>
     </div>
   </div>
