@@ -4,7 +4,7 @@
       <div class="card-header">
         <div class="row">
           <div class="col">
-            <i class="fas fa-cube mr-2"></i><?php echo _("System"); ?>
+            <?php echo _("System"); ?>
           </div>
         </div><!-- /.row -->
       </div><!-- /.card-header -->

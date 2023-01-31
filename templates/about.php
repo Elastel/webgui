@@ -9,7 +9,7 @@ require_once 'app/lib/Parsedown.php';
       <div class="card-header">
         <div class="row">
           <div class="col">
-            <i class="fas fa-info-circle mr-2"></i><?php echo _("About Elastel"); ?>
+            <?php echo _("About Elastel"); ?>
           </div>
         </div><!-- ./row -->
       </div><!-- ./card-header -->

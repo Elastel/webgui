@@ -136,34 +136,21 @@ $bridgedEnabled = getBridgedState();
         <li class="nav-item">
           <a class="nav-link" href="wlan0_info"><i class="fas fa-tachometer-alt fa-fw mr-2"></i><span class="nav-label"><?php echo _("Dashboard"); ?></span></a>
         </li>
-          <?php if (RASPI_NETWORK_ENABLED) : ?>
-        <li class="nav-item">
-           <a class="nav-link" href="network_conf"><i class="fas fa-ethernet fa-fw mr-2"></i><span class="nav-label"><?php echo _("WAN"); ?></a>
-        </li> 
-          <?php endif; ?>
-          <?php if (RASPI_DHCP_ENABLED) : ?>
-        <li class="nav-item">
-          <a class="nav-link" href="dhcpd_conf"><i class="fas fa-network-wired fa-fw mr-2"></i><span class="nav-label"><?php echo _("LAN"); ?></a>
+        <li class="nav-item" id="page_network">
+          <a class="nav-link navbar-toggle collapsed" id="network" href="#" data-toggle="collapse" data-target="#navbar-collapse-network">
+              <i class="fas fa-network-wired fa-fw mr-2"></i>
+              <span class="nav-label"><?php echo _("Network"); ?></a>
+          </a>
+          <div class="collapse navbar-collapse" id="navbar-collapse-network">
+            <ul class="nav navbar-nav navbar-right">
+              <li class="nav-item" name="wan" id="wan" ><a class="nav-link" href="network_conf"><?php echo _("WAN"); ?></a></li>
+              <li class="nav-item" name="lan" id="lan" ><a class="nav-link" href="dhcpd_conf"><?php echo _("LAN"); ?></a></li>
+              <li class="nav-item" name="wifi" id="wifi" ><a class="nav-link" href="hostapd_conf"><?php echo _("WiFi"); ?></a></li>
+              <li class="nav-item" name="wifi_client" id="wifi_client" ><a class="nav-link" href="wpa_conf"><?php echo _("WiFi client"); ?></a></li>
+              <li class="nav-item" name="online_detection" id="online_detection" ><a class="nav-link" href="detection_conf"><?php echo _("Online Detection"); ?></a></li>
+            </ul>
+          </div>
         </li>
-          <?php endif; ?>
-          <?php if (RASPI_HOTSPOT_ENABLED) : ?>
-        <li class="nav-item">
-          <a class="nav-link" href="hostapd_conf"><i class="fas fa-dot-circle fa-fw mr-2"></i><span class="nav-label"><?php echo _("WiFi"); ?></a>
-        </li>
-          <?php endif; ?>
-          <?php if (RASPI_WIFICLIENT_ENABLED) : ?>
-        <li class="nav-item">
-          <a class="nav-link" href="wpa_conf"><i class="fas fa-wifi fa-fw mr-2"></i><span class="nav-label"><?php echo _("WiFi client"); ?></span></a>
-        </li>
-          <?php endif; ?>
-        <li class="nav-item">
-          <a class="nav-link" href="detection_conf"><i class="fas fa-link fa-fw mr-2"></i><span class="nav-label"><?php echo _("Online Detection"); ?></a>
-        </li>
-          <?php if (RASPI_ADBLOCK_ENABLED) : ?>
-        <li class="nav-item">
-           <a class="nav-link" href="adblock_conf"><i class="far fa-hand-paper fa-fw mr-2"></i><span class="nav-label"><?php echo _("Ad Blocking"); ?></a>
-        </li>
-          <?php endif; ?>
         <li class="nav-item" id="page_dct">
           <a class="nav-link navbar-toggle collapsed" id="dct" href="#" data-toggle="collapse" data-target="#navbar-collapse-dct">
               <i class="fas fa-exchange-alt fa-fw mr-2"></i>
@@ -415,6 +402,9 @@ $(document).ready(function(){
         } else if (id == "ddns" || id == "macchina") {
           $('#navbar-collapse-remote').addClass('show');
           $('#remote').removeClass('collapsed');
+        } else if (id == "wan" || id == "lan" || id == "wifi" || id == "wifi_client" || id == "online_detection") {
+          $('#navbar-collapse-network').addClass('show');
+          $('#network').removeClass('collapsed');
         }
       }
   });
@@ -426,10 +416,30 @@ $(document).ready(function(){
           $('#navbar-collapse-remote').removeClass('show');
           $('#remote').addClass('collapsed');
       }
+
+      if ($('#navbar-collapse-network').hasClass('show')) {
+          $('#navbar-collapse-network').removeClass('show');
+          $('#network').addClass('collapsed');
+      }
     } else if (id == "page_remote") {
       if ($('#navbar-collapse-dct').hasClass('show')) {
           $('#navbar-collapse-dct').removeClass('show');
           $('#dct').addClass('collapsed');
+      }
+
+      if ($('#navbar-collapse-network').hasClass('show')) {
+          $('#navbar-collapse-network').removeClass('show');
+          $('#network').addClass('collapsed');
+      }
+    } else if (id == "page_network") {
+      if ($('#navbar-collapse-dct').hasClass('show')) {
+          $('#navbar-collapse-dct').removeClass('show');
+          $('#dct').addClass('collapsed');
+      }
+
+      if ($('#navbar-collapse-remote').hasClass('show')) {
+          $('#navbar-collapse-remote').removeClass('show');
+          $('#remote').addClass('collapsed');
       }
     }
   })

@@ -4,7 +4,7 @@
       <div class="card-header">
         <div class="row">
     <div class="col">
-      <i class="fas fa-tachometer-alt fa-fw mr-2"></i><?php echo _("Dashboard"); ?>
+      <?php echo _("Dashboard"); ?>
     </div>
     <div class="col">
       <button class="btn btn-light btn-icon-split btn-sm service-status float-right">

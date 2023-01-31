@@ -4,7 +4,7 @@
       <div class="card-header">
         <div class="row align-items-center">
           <div class="col">
-            <i class="fas fa-wifi mr-2"></i><?php echo _("WiFi client"); ?>
+            <?php echo _("WiFi client"); ?>
           </div>
             <div class="col">
               <button class="btn btn-light btn-icon-split btn-sm service-status float-right">
