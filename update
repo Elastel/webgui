@@ -56,7 +56,7 @@ sudo /etc/init.d/lte stop
 sudo /etc/init.d/failover stop
 sudo /etc/init.d/ddns stop
 sleep 1
-if [ $bit = "64" ]; then
+if [ $bit = "64" -o $model = "EG324" ]; then
 	sudo cp -r Elastel/$model/usr/* /usr/
 elif [ $bit = "32" ]; then
 	sudo cp -r Elastel/$model/32/usr/* /usr/
@@ -71,7 +71,7 @@ fi
 sleep 5
 
 [ -n "$(pgrep daemond)" ] && {
-	if [ $bit = "64" ]; then
+	if [ $bit = "64" -o $model = "EG324" ]; then
 		sudo kill -9 $(pgrep daemond) && sudo cp Elastel/$model/sbin/* /sbin/
 	elif [ $bit = "32" ]; then
 		sudo kill -9 $(pgrep daemond) && sudo cp Elastel/$model/32/sbin/* /sbin/
