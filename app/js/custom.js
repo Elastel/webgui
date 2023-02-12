@@ -201,7 +201,82 @@ function contentLoaded() {
         case "datadisplay":
             loadDataDisplay();
             break;
+        case "lorawan_conf":
+            loadDataLorawan();
+            break;
     }
+}
+
+function loadDataLorawan(){
+    $.get('ajax/networking/get_loragw.php?type=lorawan', function(data) {
+        console.log(data);
+        jsonData = JSON.parse(data);
+        var general = ['server_address', 'serv_port_up', 'serv_port_down', 'gateway_ID',
+        'keepalive_interval', 'stat_interval'];
+        console.log(jsonData["type"]);
+        if (jsonData['type'] == '1') {
+            $('#type').val('1');
+        } else {
+            $('#type').val('0');
+        }
+
+        general.forEach(function (info) {
+            if (info == null) {
+                return true;    // continue: return true; break: return false
+            }
+            
+            $('#' + info).val(jsonData[info]);
+        })
+
+        var radio = ['radio0_enable', 'radio0_frequency', 'radio0_tx', 'radio0_tx_min', 'radio0_tx_max',
+        'radio1_enable', 'radio1_frequency', 'radio1_tx'];
+
+        radio.forEach(function (info) {
+            if (info == null) {
+                return true;    // continue: return true; break: return false
+            }
+            
+            if (info == 'radio0_enable' || info == 'radio0_tx' || info == 'radio1_enable' ||
+                info == 'radio1_tx') {
+                $('#' + info).prop('checked', (jsonData[info] == '1') ? true:false);
+            } else {
+                $('#' + info).val(jsonData[info]);
+            }
+        })
+
+        if (jsonData['radio0_enable'] == '1') {
+            $('#page_radio0').show();
+        } else {
+            $('#page_radio0').hide();
+        }
+
+        if (jsonData['radio0_tx'] == '1') {
+            $('#page_radio0_tx').show();
+        } else {
+            $('#page_radio0_tx').hide();
+        }
+
+        if (jsonData['radio1_enable'] == '1') {
+            $('#page_radio1').show();
+        } else {
+            $('#page_radio1').hide();
+        }
+
+        var channels = ['channel_enable', 'channel_radio', 'channel_if'];
+        for (var i = 0; i < 8; i++) {
+            channels.forEach(function (info) {
+                if (info == null) {
+                    return true;    // continue: return true; break: return false
+                }
+                
+                if (info == 'channel_enable') {
+                    $('#' + info + i).prop('checked', (jsonData[info + i] == '1') ? true:false);
+                } else {
+                    $('#' + info + i).val(jsonData[info + i]);
+                }
+            })
+        }
+    });
 }
 
 function getWebshowDate() {

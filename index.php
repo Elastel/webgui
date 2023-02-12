@@ -1,28 +1,4 @@
 <?php
-
-/**
- * Raspbian WiFi Configuration Portal (RaspAP)
- *
- * Simple AP setup & WiFi management for Debian-based devices.
- * Enables use of simple web interface rather than SSH to control WiFi and related services  on the Raspberry Pi.
- * Recommended distribution is Raspberry Pi OS (32-bit) Lite. Specific instructions to install the supported software are
- * in the README and original post by @SirLagz. For a quick run through, the packages required for the WebGUI are:
- * lighttpd (version 1.4.59 installed via apt)
- * php-cgi (version 7.4.25 installed via apt)
- * along with their supporting packages, php7.3 will also need to be enabled.
- *
- * @author  Lawrence Yau <sirlagz@gmail.com>
- * @author  Bill Zimmerman <billzimmerman@gmail.com>
- * @license GNU General Public License, version 3 (GPL-3.0)
- * @version 2.8.4
- * @link    https://github.com/RaspAP/raspap-webgui/
- * @link    https://raspap.com/
- * @see     http://sirlagz.net/2013/02/08/raspap-webgui/
- *
- * You are not obligated to bundle the LICENSE file with your RaspAP projects as long
- * as you leave these references intact in the header comments of your source files.
- */
-
 require 'includes/csrf.php';
 ensureCSRFSessionToken();
 
@@ -60,6 +36,7 @@ require_once 'includes/datadisplay.php';
 require_once 'includes/detection.php';
 require_once 'includes/macchina.php';
 require_once 'includes/opcua.php';
+require_once 'includes/lorawan.php';
 
 $config = getConfig();
 $model = getModel();
@@ -148,6 +125,7 @@ $bridgedEnabled = getBridgedState();
               <li class="nav-item" name="wifi" id="wifi" ><a class="nav-link" href="hostapd_conf"><?php echo _("WiFi"); ?></a></li>
               <li class="nav-item" name="wifi_client" id="wifi_client" ><a class="nav-link" href="wpa_conf"><?php echo _("WiFi client"); ?></a></li>
               <li class="nav-item" name="online_detection" id="online_detection" ><a class="nav-link" href="detection_conf"><?php echo _("Online Detection"); ?></a></li>
+              <li class="nav-item" name="lorawan" id="lorawan" ><a class="nav-link" href="lorawan_conf"><?php echo _("LoRaWan"); ?></a></li>
             </ul>
           </div>
         </li>
@@ -331,6 +309,9 @@ $bridgedEnabled = getBridgedState();
             case "/macchina":
                 DisplayMacchina();
                 break;
+            case "/lorawan_conf":
+                DisplayLorawan();
+                break;
             default:
                 DisplayDashboard($extraFooterScripts);
             }            
@@ -402,7 +383,8 @@ $(document).ready(function(){
         } else if (id == "ddns" || id == "macchina") {
           $('#navbar-collapse-remote').addClass('show');
           $('#remote').removeClass('collapsed');
-        } else if (id == "wan" || id == "lan" || id == "wifi" || id == "wifi_client" || id == "online_detection") {
+        } else if (id == "wan" || id == "lan" || id == "wifi" || id == "wifi_client" || 
+          id == "online_detection" || id == "lorawan") {
           $('#navbar-collapse-network').addClass('show');
           $('#network').removeClass('collapsed');
         }
