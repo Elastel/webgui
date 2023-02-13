@@ -7,8 +7,8 @@ do_start()
         enabled=$(uci get loragw.loragw.type)
         [ "$enabled" = "1" ] || return
 
-	cd /usr/sbin/
-	./lora_pkt_fwd -c /etc/global_conf.json &
+
+	/usr/sbin/lora_pkt_fwd -c /etc/global_conf.json &
 }
 
 do_stop()
