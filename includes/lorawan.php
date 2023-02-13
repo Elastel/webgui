@@ -97,7 +97,8 @@ function saveLorawanConfig($status)
         }
 
         $json_strings = json_encode($data);
-        file_put_contents("/etc/global_conf.json", $json_strings);
+        file_put_contents("/tmp/global_conf.json", $json_strings);
+        exec("sudo mv /tmp/global_conf.json /etc/global_conf.json");
 
         $status->addMessage('lorawan configuration updated ', 'success');
     } else {

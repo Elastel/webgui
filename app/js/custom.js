@@ -209,11 +209,10 @@ function contentLoaded() {
 
 function loadDataLorawan(){
     $.get('ajax/networking/get_loragw.php?type=lorawan', function(data) {
-        console.log(data);
         jsonData = JSON.parse(data);
         var general = ['server_address', 'serv_port_up', 'serv_port_down', 'gateway_ID',
         'keepalive_interval', 'stat_interval'];
-        console.log(jsonData["type"]);
+
         if (jsonData['type'] == '1') {
             $('#type').val('1');
         } else {
@@ -224,7 +223,7 @@ function loadDataLorawan(){
             if (info == null) {
                 return true;    // continue: return true; break: return false
             }
-            
+
             $('#' + info).val(jsonData[info]);
         })
 
@@ -235,7 +234,7 @@ function loadDataLorawan(){
             if (info == null) {
                 return true;    // continue: return true; break: return false
             }
-            
+
             if (info == 'radio0_enable' || info == 'radio0_tx' || info == 'radio1_enable' ||
                 info == 'radio1_tx') {
                 $('#' + info).prop('checked', (jsonData[info] == '1') ? true:false);
@@ -268,7 +267,7 @@ function loadDataLorawan(){
                 if (info == null) {
                     return true;    // continue: return true; break: return false
                 }
-                
+
                 if (info == 'channel_enable') {
                     $('#' + info + i).prop('checked', (jsonData[info + i] == '1') ? true:false);
                 } else {
@@ -297,24 +296,24 @@ function getWebshowDate() {
                 if ((num % 4) == 0) {
                     data += "<tr class=\"tr cbi-section-table-descr\" style='border:0;'>\n"
                 }
-                
+
                 data += "<td style='border:0'>\n";
                 data += "<label class='table-label-key' id=" + key + "1 >" + key + ":" + "</label>\n";
                 data += "<label class='table-label-value' id=" + key + " >" + jsonData[key] + "</label>\n";
                 data += "</td>\n";
-    
+
                 num++;
                 if ( num > 0 && ((num % 4) == 0)) {
                     flag = 1;
                     data += "</tr>\n";
                     flag = 0;
-                } 
+                }
             }
-    
+
             if (flag == 0 && num > 0) {
                 data += "</tr>\n";
             }
-    
+
             table.innerHTML += data;
             if (num > 0) {
                 $('#msg').hide();
@@ -344,11 +343,11 @@ function loadBACnetConfig() {
                 if (info == null) {
                     return true;    // continue: return true; break: return false
                 }
-                
+
                 $('#' + info).val(jsonData[info]);
             })
         } else {
-            $('#page_bacnet').hide(); 
+            $('#page_bacnet').hide();
             $('#bacnet_disable').prop('checked', true);
         }
     });
@@ -357,7 +356,7 @@ function loadBACnetConfig() {
 function loadOpcuaConfig() {
     $.get('ajax/dct/get_dctcfg.php?type=opcua',function(data){
         jsonData = JSON.parse(data);
-        var arr = ['port', 'anonymous', 'username', 'password', 'security_policy', 
+        var arr = ['port', 'anonymous', 'username', 'password', 'security_policy',
         'certificate', 'private_key'];
 
         $('#enabled').val(jsonData.enabled);
@@ -385,7 +384,7 @@ function loadOpcuaConfig() {
                 }
             })
         } else {
-            $('#page_opcua').hide(); 
+            $('#page_opcua').hide();
             $('#opcua_disable').prop('checked', true);
         }
 
