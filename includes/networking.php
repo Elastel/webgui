@@ -15,6 +15,8 @@ function DisplayNetworkingConfig()
         if (isset($_POST['savenetworksettings']) || isset($_POST['applynetworksettings'])) {
             saveStaticConfig($status);
             saveLteConfig($status);
+	    exec("sudo /usr/local/bin/uci commit network");
+
             if ($_POST['wan-multi'] == '1') {
                 exec("sudo cp /var/www/html/config/raspap-br0-member-eth0.network /etc/systemd/network/");
             } else {
@@ -33,7 +35,7 @@ function DisplayNetworkingConfig()
                 if ($_POST['adapter-ip'] == "0") {
                     exec('sudo /usr/sbin/dhcpcd_restart ' . $_POST['StaticIP']);
                 }
-                
+
                 exec('sudo /etc/init.d/lte restart > /dev/null');
                 exec('sudo /etc/init.d/failover restart > /dev/null');
             }
@@ -47,7 +49,7 @@ function DisplayNetworkingConfig()
     foreach( $interfaces as $k=>$v) {
         if($v == 'wwan0') {
             $lte_enabled = 1;
-        }        
+        }
     }
 
     // $routeInfo = getRouteInfo(true);
@@ -213,7 +215,7 @@ function updateDHCPConfigNetwork($iface0,$status)
     } else {
         $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0     ' . PHP_EOL, number_format($count), 31);
     }
-    
+
     if (!preg_match('/^interface\s'.$iface0.'$/m', $dhcp_cfg)) {
         $cfg[] = PHP_EOL;
         $cfg = join(PHP_EOL, $cfg);
@@ -247,7 +249,7 @@ function updateDHCPConfigMetric($iface0,$status)
     } else {
         $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0     ' . PHP_EOL, number_format($count), 31);
     }
-    
+
     if (!preg_match('/^interface\s'.$iface0.'$/m', $dhcp_cfg)) {
         $cfg[] = PHP_EOL;
         $cfg = join(PHP_EOL, $cfg);
@@ -282,8 +284,6 @@ function updateLteConfigNetwork($iface0, $status)
         exec("sudo /usr/local/bin/uci set network.swan.username=" .$_POST['username']);
         exec("sudo /usr/local/bin/uci set network.swan.password=" .$_POST['password']);
     }
-    
-    exec("sudo /usr/local/bin/uci commit network");
-    
+
     return $result;
 }
