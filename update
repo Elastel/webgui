@@ -55,15 +55,20 @@ sudo ln -s /etc/init.d/ddns /etc/rc5.d/S10ddns
 sudo ln -s /etc/init.d/macchina /etc/rc5.d/S10macchina
 sudo ln -s /etc/init.d/loragw /etc/rc5.d/S10loragw
 sudo /etc/init.d/dct stop
+sleep 1
 sudo /etc/init.d/lte stop
+sleep 1
 sudo /etc/init.d/failover stop
+sleep 1
 sudo /etc/init.d/ddns stop
+sleep 1
 sudo /etc/init.d/loragw stop
 sleep 1
 if [ $bit = "64" -o $model = "EG324" ]; then
 	sudo cp -r Elastel/$model/usr/* /usr/
 elif [ $bit = "32" ]; then
 	sudo cp -r Elastel/$model/32/usr/* /usr/
+	sudo sed -i "s/SX1302_RESET_PIN=6/SX1302_RESET_PIN=5/" /usr/sbin/reset_lgw.sh
 fi
 sleep 1
 if [ $model = "EG410" ]; then
@@ -72,7 +77,13 @@ if [ $model = "EG410" ]; then
         fi
 fi
 
-sleep 5
+sleep 1
+
+echo -e "Start feed dog"
+
+sudo /var/www/html/installers/feed_dog.sh &
+
+sleep 1
 
 [ -n "$(pgrep daemond)" ] && {
 	if [ $bit = "64" -o $model = "EG324" ]; then
