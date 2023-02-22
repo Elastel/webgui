@@ -188,7 +188,7 @@
       <select id="widget.index.adc" class="cbi-input-select">
         <option value="ADC0">ADC0</option>
         <option value="ADC1">ADC1</option>
-        <option value="ADC1">ADC2</option>
+        <option value="ADC2">ADC2</option>
       </select>
     </div>
 
