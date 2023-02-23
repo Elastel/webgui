@@ -67,6 +67,7 @@
                       <th class="th cbi-section-table-cell" ></th>
                       <th class="th cbi-section-table-cell" ></th>
                       <th class="th cbi-section-table-cell" ></th>
+                      <th class="th cbi-section-table-cell" ></th>
                       <th class="th cbi-section-table-cell" ><?php echo _("Multiple Servers Are Separated By Minus"); ?></th>
                       <th class="th cbi-section-table-cell" style="display:none"></th>
                       <th class="th cbi-section-table-cell" style="display:none"></th>
