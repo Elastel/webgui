@@ -8,6 +8,17 @@ fi
 
 echo model:$model
 
+#check openvpn
+if ! type openvpn >/dev/null 2>&1; then
+        echo "openvpn is NOT installed!"
+        sudo apt-get install openvpn
+
+        if [ $? -ne 0 ] ; then
+                echo "Failed to install openvpn."
+                exit 4
+        fi
+fi
+
 sleep 1
 
 if [ "$1" == "reset" ]; then

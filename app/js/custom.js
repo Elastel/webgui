@@ -204,7 +204,88 @@ function contentLoaded() {
         case "lorawan_conf":
             loadDataLorawan();
             break;
+        case "openvpn":
+            loadOpenvpn();
+            break;
     }
+}
+
+function getOpenvpnStatus() {
+    $.get('ajax/openvpn/get_openvpnstatus.php', function(data) {
+        //console.log(data);
+        jsonData = JSON.parse(data);
+        for(var key in jsonData){ 
+            if (key == null) {
+                return true;    // continue: return true; break: return false
+            }
+            //console.log(key + ":" + jsonData[key]);
+
+            $('#' + key).html(jsonData[key]); 
+        }
+    });
+}
+
+function loadOpenvpn() {
+    getOpenvpnStatus();
+    setInterval(getOpenvpnStatus, 60000);
+    $.get('ajax/openvpn/get_openvpncfg.php', function(data) {
+        //console.log(data);
+        jsonData = JSON.parse(data);
+        if (jsonData['type'] != 'off') {
+            $('#page_role').show();
+            if (jsonData['type'] == 'config') {
+                $('#page_config').show();
+                $('#page_ovpn').hide();
+            } else {
+                $('#page_config').hide();
+                $('#page_ovpn').show();
+            }
+
+            if (jsonData['role'] == 'client') {
+                $('#page_client').show();
+                $('#page_server').hide();
+            } else {
+                $('#page_client').hide();
+                $('#page_server').show();
+            }
+
+            if (jsonData['auth_type'] == 'cert') {
+                $('#page_cert').show();
+                $('#page_user_pass').hide();
+                if (jsonData['role'] == 'server') {
+                    $('#page_dh').show();
+                } else {
+                    $('#page_dh').hide();
+                }
+            } else {
+                $('#page_user_pass').show();
+                if (jsonData['role'] == 'server') {
+                    $('#page_cert').show();
+                    $('#page_dh').show();
+                } else {
+                    $('#page_cert').hide();
+                    $('#page_dh').hide();
+                }
+            }
+
+            for(var key in jsonData){ 
+                if (key == null) {
+                    return true;    // continue: return true; break: return false
+                }
+                //console.log(key + ":" + jsonData[key]);
+                if (key == 'ca' || key == 'ta' || key == 'cert' || key == 'key' || key == 'ovpn' || key == 'dh') {
+                    $('#' + key + '_text').html(jsonData[key]); 
+                } else {
+                    $('#' + key).val(jsonData[key]); 
+                }
+            }
+        } else {
+            $('#page_role').hide();
+            $('#page_config').hide();
+            $('#page_ovpn').hide();
+        }
+        
+    });
 }
 
 function loadDataLorawan(){

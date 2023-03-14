@@ -153,16 +153,6 @@ $bridgedEnabled = getBridgedState();
             </ul>
           </div>
         </li>
-          <?php if (RASPI_OPENVPN_ENABLED) : ?>
-        <li class="nav-item">
-          <a class="nav-link" href="openvpn_conf"><i class="fas fa-key fa-fw mr-2"></i><span class="nav-label"><?php echo _("OpenVPN"); ?></a>
-        </li>
-          <?php endif; ?>
-          <?php if (RASPI_WIREGUARD_ENABLED) : ?>
-        <li class="nav-item">
-          <a class="nav-link" href="wg_conf"><span class="ra-wireguard mr-2"></span><span class="nav-label"><?php echo _("WireGuard"); ?></a>
-        </li>
-          <?php endif; ?>
         <li class="nav-item" id="page_remote">
           <a class="nav-link navbar-toggle collapsed" id="remote" href="#" data-toggle="collapse" data-target="#navbar-collapse-remote">
               <i class="fas fa-server fa-fw mr-2"></i>
@@ -172,6 +162,18 @@ $bridgedEnabled = getBridgedState();
             <ul class="nav navbar-nav navbar-right">
               <li class="nav-item" name="ddns" id="ddns"> <a class="nav-link" href="ddns"><?php echo _("DDNS"); ?></a></li>
               <li class="nav-item" name="macchina" id="macchina"> <a class="nav-link" href="macchina"><?php echo _("Macchina"); ?></a></li>
+            </ul>
+          </div>
+        </li>
+        <li class="nav-item" id="page_vpn">
+          <a class="nav-link navbar-toggle collapsed" id="vpn" href="#" data-toggle="collapse" data-target="#navbar-collapse-vpn">
+              <i class="fas fa-key fa-fw mr-2"></i>
+              <span class="nav-label"><?php echo _("VPN"); ?></a>
+          </a>
+          <div class="collapse navbar-collapse" id="navbar-collapse-vpn">
+            <ul class="nav navbar-nav navbar-right">
+              <li class="nav-item" name="openvpn" id="openvpn"> <a class="nav-link" href="openvpn"><?php echo _("OpenVPN"); ?></a></li>
+              <!-- <li class="nav-item" name="wireguard" id="wireguard"> <a class="nav-link" href="wireguard"><?php echo _("WireGuard"); ?></a></li> -->
             </ul>
           </div>
         </li>
@@ -248,10 +250,10 @@ $bridgedEnabled = getBridgedState();
             case "/adblock_conf":
                 DisplayAdBlockConfig();
                 break;
-            case "/openvpn_conf":
+            case "/openvpn":
                 DisplayOpenVPNConfig();
                 break;
-            case "/wg_conf":
+            case "/wireguard":
                 DisplayWireGuardConfig();
                 break;
             case "/torproxy_conf":
@@ -389,6 +391,9 @@ $(document).ready(function(){
           id == "online_detection" || id == "lorawan") {
           $('#navbar-collapse-network').addClass('show');
           $('#network').removeClass('collapsed');
+        } else if (id == "openvpn" || id == "wireguard") {
+          $('#navbar-collapse-vpn').addClass('show');
+          $('#vpn').removeClass('collapsed');
         }
       }
   });
@@ -405,6 +410,11 @@ $(document).ready(function(){
           $('#navbar-collapse-network').removeClass('show');
           $('#network').addClass('collapsed');
       }
+
+      if ($('#navbar-collapse-vpn').hasClass('show')) {
+          $('#navbar-collapse-vpn').removeClass('show');
+          $('#vpn').addClass('collapsed');
+      }
     } else if (id == "page_remote") {
       if ($('#navbar-collapse-dct').hasClass('show')) {
           $('#navbar-collapse-dct').removeClass('show');
@@ -415,6 +425,11 @@ $(document).ready(function(){
           $('#navbar-collapse-network').removeClass('show');
           $('#network').addClass('collapsed');
       }
+
+      if ($('#navbar-collapse-vpn').hasClass('show')) {
+          $('#navbar-collapse-vpn').removeClass('show');
+          $('#vpn').addClass('collapsed');
+      }
     } else if (id == "page_network") {
       if ($('#navbar-collapse-dct').hasClass('show')) {
           $('#navbar-collapse-dct').removeClass('show');
@@ -424,6 +439,26 @@ $(document).ready(function(){
       if ($('#navbar-collapse-remote').hasClass('show')) {
           $('#navbar-collapse-remote').removeClass('show');
           $('#remote').addClass('collapsed');
+      }
+
+      if ($('#navbar-collapse-vpn').hasClass('show')) {
+          $('#navbar-collapse-vpn').removeClass('show');
+          $('#vpn').addClass('collapsed');
+      }
+    } else if (id == "page_vpn") {
+      if ($('#navbar-collapse-dct').hasClass('show')) {
+          $('#navbar-collapse-dct').removeClass('show');
+          $('#dct').addClass('collapsed');
+      }
+
+      if ($('#navbar-collapse-remote').hasClass('show')) {
+          $('#navbar-collapse-remote').removeClass('show');
+          $('#remote').addClass('collapsed');
+      }
+
+      if ($('#navbar-collapse-network').hasClass('show')) {
+          $('#navbar-collapse-network').removeClass('show');
+          $('#network').addClass('collapsed');
       }
     }
   })
