@@ -100,3 +100,4 @@ www-data ALL=(ALL) NOPASSWD:/bin/rm /etc/openvpn/server/*.ovpn
 www-data ALL=(ALL) NOPASSWD:/bin/mv /tmp/ovpn/* /etc/openvpn/server/*.conf
 www-data ALL=(ALL) NOPASSWD:/bin/rm /etc/openvpn/server/*.conf
 www-data ALL=(ALL) NOPASSWD:/usr/bin/pgrep *
+www-data ALL=(ALL) NOPASSWD:/usr/bin/basename *

@@ -207,7 +207,53 @@ function contentLoaded() {
         case "openvpn":
             loadOpenvpn();
             break;
+        case "wireguard":
+            loadWireguard();
+            break;
     }
+}
+
+function loadWireguard() {
+    $.get('ajax/networking/get_wgcfg.php?type=settings', function(data) {
+        //console.log(data);
+        jsonData = JSON.parse(data);
+        if (jsonData['type'] != 'off') {
+            if (jsonData['type'] == 'config') {
+                $('#page_config').show();
+                $('#page_role').show();
+                $('#page_wg').hide();
+            } else {
+                $('#page_config').hide();
+                $('#page_role').hide();
+                $('#page_wg').show();
+            }
+
+            if (jsonData['role'] == 'client') {
+                $('#page_client').show();
+                $('#page_server').hide();
+            } else {
+                $('#page_client').hide();
+                $('#page_server').show();
+            }
+        } else {
+            $('#page_role').hide();
+            $('#page_config').hide();
+            $('#page_wg').hide();
+        }
+
+        for(var key in jsonData){ 
+            if (key == null) {
+                return true;    // continue: return true; break: return false
+            }
+            //console.log(key + ":" + jsonData[key]);
+            if (key == 'wg') {
+                $('#' + key + '_text').html(jsonData[key]); 
+            } else {
+                $('#' + key).val(jsonData[key]); 
+            }
+        }
+        
+    });
 }
 
 function getOpenvpnStatus() {
@@ -1185,7 +1231,7 @@ $('.wg-keygen').click(function(){
 // Handler for wireguard client.conf download
 $('.wg-client-dl').click(function(){
     var req = new XMLHttpRequest();
-    var url = 'ajax/networking/get_wgcfg.php';
+    var url = 'ajax/networking/get_wgcfg.php?type=download';
     req.open('get', url, true);
     req.responseType = 'blob';
     req.setRequestHeader('Content-type', 'text/plain; charset=UTF-8');

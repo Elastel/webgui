@@ -19,6 +19,17 @@ if ! type openvpn >/dev/null 2>&1; then
         fi
 fi
 
+#check wireguard
+if ! type wireguard >/dev/null 2>&1; then
+        echo "wireguard is NOT installed!"
+        sudo apt-get install wireguard
+
+        if [ $? -ne 0 ] ; then
+                echo "Failed to install wireguard."
+                exit 4
+        fi
+fi
+
 sleep 1
 
 if [ "$1" == "reset" ]; then

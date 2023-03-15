@@ -1,12 +1,28 @@
   <?php ob_start() ?>
     <?php if (!RASPI_MONITOR_ENABLED) : ?>
-      <input type="submit" class="btn btn-outline btn-primary" name="savewgsettings" value="<?php echo _("Save settings"); ?>">
-      <?php if ($wg_state) : ?>
-        <input type="submit" class="btn btn-warning" name="stopwg" value="<?php echo _("Stop WireGuard"); ?>">
-      <?php else : ?>
-        <input type="submit" class="btn btn-success" name="startwg" value="<?php echo _("Start WireGuard"); ?>">
-      <?php endif ?>
+      <div class="cbi-page-actions">
+        <input type="submit" class="btn btn-outline btn-primary" name="savewgsettings" value="<?php echo _("Save settings"); ?>">
+        <input type="submit" class="btn btn-success" name="applywgsettings" value="<?php echo _("Apply settings"); $msg=_("Restarting Wireguard"); ?>" data-toggle="modal" data-target="#hostapdModal" />
+      </div>
     <?php endif ?>
+    <div class="modal fade" id="hostapdModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div class="modal-title" id="ModalLabel"><i class="fas fa-sync-alt mr-2"></i><?php echo $msg ?></div>
+          </div>
+          <div class="modal-body">
+            <div class="col-md-12 mb-3 mt-1"><?php echo _("Executing Wireguard restart") ?>...</div>
+            <div class="progress" style="height: 20px;">
+              <div class="progress-bar bg-info" role="progressbar" id="progressBar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="9"></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-primary" data-dismiss="modal"><?php echo _("Close"); ?></button>
+          </div>
+        </div>
+      </div>
+    </div>
   <?php $buttons = ob_get_clean(); ob_end_clean() ?>
 
   <div class="row">
@@ -15,7 +31,7 @@
         <div class="card-header">
           <div class="row">
             <div class="col">
-              <span class="ra-wireguard mr-2"></span><?php echo _("WireGuard"); ?>
+              <?php echo _("WireGuard"); ?>
             </div>
             <div class="col">
               <button class="btn btn-light btn-icon-split btn-sm service-status float-right">
@@ -27,20 +43,18 @@
         </div><!-- /.card-header -->
         <div class="card-body">
         <?php $status->showMessages(); ?>
-          <form role="form" action="/wg_conf" enctype="multipart/form-data" method="POST">
+          <form role="form" action="/wireguard" enctype="multipart/form-data" method="POST">
             <?php echo CSRFTokenFieldTag() ?>
             <!-- Nav tabs -->
             <ul class="nav nav-tabs">
                 <li class="nav-item"><a class="nav-link active" id="settingstab" href="#wgsettings" data-toggle="tab"><?php echo _("Settings"); ?></a></li>
-                <li class="nav-item"><a class="nav-link" id="peertab" href="#wgpeers" data-toggle="tab"><?php echo _("Peer"); ?></a></li>
-                <li class="nav-item"><a class="nav-link" id="loggingtab" href="#wglogging" data-toggle="tab"><?php echo _("Logging"); ?></a></li>
+                <li class="nav-item"><a class="nav-link" id="statustab" href="#wgstatus" data-toggle="tab"><?php echo _("Status"); ?></a></li>
             </ul>
 
             <!-- Tab panes -->
             <div class="tab-content">
-              <?php echo renderTemplate("wg/general", $__template_data) ?>
-              <?php echo renderTemplate("wg/peers", $__template_data) ?>
-              <?php echo renderTemplate("wg/logging", $__template_data) ?>
+              <?php echo renderTemplate("wg/settings", $__template_data) ?>
+              <?php echo renderTemplate("wg/status", $__template_data) ?>
             </div><!-- /.tab-content -->
 
           <?php echo $buttons ?>
