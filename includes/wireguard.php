@@ -31,9 +31,11 @@ function DisplayWireGuardConfig()
             if (isset($_POST['applywgsettings'])) {
                 $status->addMessage('Attempting to stop WireGuard', 'info');
                 exec('sudo /bin/systemctl stop wg-quick@wg0', $return);
-
+                exec('sudo /bin/systemctl disable wg-quick@wg0', $return);
+                sleep(1);
                 if ($type != 'off') {
                     $status->addMessage('Attempting to start WireGuard', 'info');
+                    exec('sudo /bin/systemctl enable wg-quick@wg0', $return);
                     exec('sudo /bin/systemctl start wg-quick@wg0', $return);
                 } else {
                     # remove selected conf + keys

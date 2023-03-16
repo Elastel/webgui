@@ -4,7 +4,7 @@
     <div class="cbi-value">
       <label class="cbi-value-title"><?php echo _("Start Selection"); ?></label>
       <select id="type" name="type" class="cbi-input-select" onchange="typeChangeWg()">
-        <option value="off" active>OFF</option>
+        <option value="off">OFF</option>
         <option value="config">Config Enabled</option>
         <option value="wg">Wg File Enabled</option>
       </select>
@@ -13,7 +13,7 @@
     <div class="cbi-value" id="page_role">
       <label class="cbi-value-title"><?php echo _("Role"); ?></label>
       <select id="role" name="role" class="cbi-input-select" onchange="roleChangeWg()">
-        <option value="client" active>Client</option>
+        <option value="client">Client</option>
         <option value="server">Server</option>
       </select>
     </div>
@@ -83,13 +83,6 @@
 </div><!-- /.tab-pane | settings tab -->
 
 <script type="text/javascript">
-
-  var type_object = document.getElementById("type");
-  type_object.value = "<?php echo htmlspecialchars($type, ENT_QUOTES); ?>";
-
-  var role_object = document.getElementById("role");
-  role_object.value = "<?php echo $role[0]; ?>";
-
   function typeChangeWg() {
     var type = document.getElementById("type").value;
 
