@@ -20,7 +20,7 @@ if ! type openvpn >/dev/null 2>&1; then
 fi
 
 #check wireguard
-if ! type wireguard >/dev/null 2>&1; then
+if ! type wg >/dev/null 2>&1; then
         echo "wireguard is NOT installed!"
         sudo apt-get install wireguard
 
@@ -112,12 +112,14 @@ fi
 sleep 1
 
 [ -n "$(pgrep daemond)" ] && {
-	if [ $bit = "64" -o $model = "EG324" ]; then
-		sudo kill -9 $(pgrep daemond) && sudo cp Elastel/$model/sbin/* /sbin/
-	elif [ $bit = "32" ]; then
-		sudo kill -9 $(pgrep daemond) && sudo cp Elastel/$model/32/sbin/* /sbin/
-	fi
+        sudo kill -9 $(pgrep daemond)
 }
+
+if [ $bit = "64" -o $model = "EG324" ]; then
+        sudo cp Elastel/$model/sbin/* /sbin/
+elif [ $bit = "32" ]; then
+        sudo cp Elastel/$model/32/sbin/* /sbin/
+fi
 
 echo -e "Complete to update, it will reboot system."
 sleep 5
