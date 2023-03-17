@@ -48,6 +48,9 @@ function DisplayOpenVPNConfig()
                     exec('sudo /bin/systemctl enable openvpn-server@server', $return);
                     exec('sudo /bin/systemctl start openvpn-server@server', $return);
                 }
+            } else {
+                system('sudo rm /etc/openvpn/client/client.conf', $return);
+                system('sudo rm /etc/openvpn/server/server.conf', $return);
             }
 
             foreach ($return as $line) {
