@@ -173,7 +173,7 @@ $bridgedEnabled = getBridgedState();
           <div class="collapse navbar-collapse" id="navbar-collapse-vpn">
             <ul class="nav navbar-nav navbar-right">
               <li class="nav-item" name="openvpn" id="openvpn"> <a class="nav-link" href="openvpn"><?php echo _("OpenVPN"); ?></a></li>
-	      <?php if ($model == "EG500" || $model == "EG410") : ?>
+	      <?php if ($model != "EG324") : ?>
               <li class="nav-item" name="wireguard" id="wireguard"> <a class="nav-link" href="wireguard"><?php echo _("WireGuard"); ?></a></li>
 	      <?php endif; ?>
             </ul>
