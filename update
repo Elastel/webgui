@@ -48,7 +48,7 @@ if [ "$1" == "reset" ]; then
     sudo cp config/global_conf.json /etc/global_conf.json
 
     # reset wifi ssid
-    sub_mac=$(ifconfig br0 | grep ether | awk '{print $2}' | cut -f 5-6 -d ":" | tr -d ":")
+    sub_mac=$(ifconfig eth0 | grep ether | awk '{print $2}' | cut -f 5-6 -d ":" | tr -d ":")
     ssid="$model"_"$sub_mac"
     sed -i "s/ssid.*/ssid=$ssid/" /etc/hostapd/hostapd.conf
 fi
