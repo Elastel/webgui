@@ -4,7 +4,7 @@
   <div class="row">
     <div class="form-group col-md-6">
       <label for="code">Interface</label>
-        <?php SelectorOptions('interface0', $wired_interface, $ap_iface, 'cbxdhcpiface', 'loadInterfaceDHCPSelect', $DHCPDisabled); ?>
+        <?php SelectorOptions('interface0', $wired_interface, null, 'cbxdhcpiface', 'loadInterfaceDHCPSelect', null); ?>
     </div>
   </div>
   

@@ -37,8 +37,10 @@ function DisplayHostAPDConfig()
 
     $cmd = "iw dev ".$_SESSION['ap_interface']." info | awk '$1==\"txpower\" {print $2}'";
     exec($cmd, $txpower);
-    $txpower = intval($txpower[0]);
-
+    if ($txpower[0] != null) {
+      $txpower = intval($txpower[0]);  
+    }
+    
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['SaveHostAPDSettings']) || isset($_POST['applyHostAPDsettings'])) {
             SaveHostAPDConfig($arrSecurity, $arrEncType, $arr80211Standard, $interfaces, $status, $model);
@@ -122,7 +124,6 @@ function DisplayHostAPDConfig()
             "interfaces",
             "arrConfig",
             "arr80211Standard",
-            "selectedHwMode",
             "arrSecurity",
             "arrEncType",
             "arrTxPower",
@@ -164,36 +165,15 @@ function SaveHostAPDConfig($wpa_array, $enc_types, $modes, $interfaces, $status,
         $status->addMessage('Attempting to set channel outside of permitted range', 'danger');
         $good_input = false;
     }
-    $arrHostapdConf = parse_ini_file('/etc/raspap/hostapd.ini');
-
+    $arrHostapdConf = array();
+    if (file_exists('/etc/raspap/hostapd.ini')) {
+        $arrHostapdConf = parse_ini_file('/etc/raspap/hostapd.ini');
+    }
+    
     // Check for Bridged AP mode checkbox
     $bridgedEnable = 1;
-    /*
-    if ($arrHostapdConf['BridgedEnable'] == 0) {
-        if (isset($_POST['bridgedEnable'])) {
-            $bridgedEnable = 1;
-        }
-    } else {
-        if (isset($_POST['bridgedEnable'])) {
-            $bridgedEnable = 1;
-        }
-    }
-    */
     // Check for WiFi client AP mode checkbox
     $wifiAPEnable = 0;
-    /*
-    if ($bridgedEnable == 0) {  // enable client mode actions when not bridged
-        if ($arrHostapdConf['WifiAPEnable'] == 0) {
-            if (isset($_POST['wifiAPEnable'])) {
-                $wifiAPEnable = 1;
-            }
-        } else {
-            if (isset($_POST['wifiAPEnable'])) {
-                $wifiAPEnable = 1;
-            }
-        }
-    }
-    */
     // Check for Logfile output checkbox
     $logEnable = 0;
     if ($arrHostapdConf['LogEnable'] == 0) {

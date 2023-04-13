@@ -700,7 +700,10 @@ function getSidebarState()
 // Returns bridged AP mode status
 function getBridgedState()
 {
-    $arrHostapdConf = parse_ini_file(RASPI_CONFIG.'/hostapd.ini');
+    $arrHostapdConf = array();
+    if (file_exists(RASPI_CONFIG.'/hostapd.ini')) {
+        $arrHostapdConf = parse_ini_file(RASPI_CONFIG.'/hostapd.ini');
+    }
     // defaults to false
     return  $arrHostapdConf['BridgedEnable'];
 }

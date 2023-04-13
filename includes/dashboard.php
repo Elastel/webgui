@@ -31,6 +31,9 @@ function DisplayDashboard(&$extraFooterScripts)
     $interfaceState = $matchesState[1];
 
     // brought in from template
+    $clients = array();
+    $moreLink = array();
+    $apInterface = array();
     if (file_exists(RASPI_CONFIG.'/hostapd.ini')) {
         $arrHostapdConf = parse_ini_file(RASPI_CONFIG.'/hostapd.ini');
         $bridgedEnable = $arrHostapdConf['BridgedEnable'];
@@ -58,7 +61,6 @@ function DisplayDashboard(&$extraFooterScripts)
     }
     
     exec('cat ' . RASPI_DNSMASQ_LEASES, $leases);
-    
     // fetch dhcpcd.conf settings for interface
     $conf = file_get_contents(RASPI_DHCPCD_CONFIG);
     preg_match('/^#\sRaspAP\seth0\s.*?(?=\s*+$)/ms', $conf, $matched);
@@ -66,7 +68,7 @@ function DisplayDashboard(&$extraFooterScripts)
     preg_match('/static\sip_address=(.*)/', $matched[0], $static_ip);
     preg_match('/static\srouters=(.*)/', $matched[0], $static_routers);
     preg_match('/static\sdomain_name_server=(.*)/', $matched[0], $static_dns);
-    preg_match('/fallback\sstatic_'.$interface.'/', $matched[0], $fallback);
+    // preg_match('/fallback\sstatic_'.$interface.'/', $matched[0], $fallback);
     preg_match('/(?:no)?gateway/', $matched[0], $gateway);
     $dhcpdata['Metric'] = $metric[1];
     $dhcpdata['StaticIP'] = strpos($static_ip[1],'/') ?  substr($static_ip[1], 0, strpos($static_ip[1],'/')) : $static_ip[1];
@@ -91,8 +93,8 @@ function DisplayDashboard(&$extraFooterScripts)
         $routeInfo[0]['ip-address'] = $dhcpdata['StaticIP'];
         $routeInfo[0]['gateway'] = $dhcpdata['StaticRouters'];
         $routeInfo[0]['netmask'] = $dhcpdata['SubnetMask'];
-        $routeInfo[0]['dns1'] = $dhcpdata['StaticDNS1'];
-        $routeInfo[0]['dns2'] = $dhcpdata['StaticDNS2'];
+        // $routeInfo[0]['dns1'] = $dhcpdata['StaticDNS1'];
+        // $routeInfo[0]['dns2'] = $dhcpdata['StaticDNS2'];
         exec('cat /sys/class/net/eth0/address', $mac);
         $routeInfo[0]['mac'] = $mac[0];
     }
@@ -137,12 +139,8 @@ function DisplayDashboard(&$extraFooterScripts)
         "dashboard", compact(
             "clients",
             "moreLink",
-            "apInterface",
-            "clientInterface",
             "ifaceStatus",
-            "bridgedEnable",
             "status",
-            "wlan0up",
             "leases",
             "routeInfo",
             "lteInfo",

@@ -45,7 +45,7 @@ $page = $_SERVER['PATH_INFO'];
 
 $theme_url = getThemeOpt();
 $toggleState = getSidebarState();
-$bridgedEnabled = getBridgedState();
+//$bridgedEnabled = getBridgedState();
 
 ?><!DOCTYPE html>
 <html lang="en">
@@ -227,100 +227,98 @@ $bridgedEnabled = getBridgedState();
         <div class="container-fluid">
         <div class="load" id="loading" name="loading"></div>
         <?php
-          if (RASPI_ENABLED) {
-            $extraFooterScripts = array();
-            // handle page actions
-            switch ($page) {
-            case "/wlan0_info":
-                DisplayDashboard($extraFooterScripts);
-                break;
-            case "/dhcpd_conf":
-                DisplayDHCPConfig();
-                break;
-            case "/wpa_conf":
-                DisplayWPAConfig();
-                break;
-            case "/network_conf":
-                DisplayNetworkingConfig();
-                break;
-            case "/hostapd_conf":
-                DisplayHostAPDConfig();
-                break;
-            case "/detection_conf":
-                DisplayDetectionConfig();
-                break;
-            case "/adblock_conf":
-                DisplayAdBlockConfig();
-                break;
-            case "/openvpn":
-                DisplayOpenVPNConfig();
-                break;
-            case "/wireguard":
-                DisplayWireGuardConfig();
-                break;
-            case "/torproxy_conf":
-                DisplayTorProxyConfig();
-                break;
-            case "/auth_conf":
-                DisplayAuthConfig($config['admin_user'], $config['admin_pass']);
-                break;
-            case "/save_hostapd_conf":
-                SaveTORAndVPNConfig();
-                break;
-            case "/theme_conf":
-                DisplayThemeConfig($extraFooterScripts);
-                break;
-            case "/data_use":
-                DisplayDataUsage($extraFooterScripts);
-                break;
-            case "/system_info":
-                DisplaySystem();
-                break;
-            case "/about":
-                DisplayAbout();
-                break;
-            case "/basic_conf":
-                DisplayBasic();
-                break;
-            case "/interfaces_conf":
-                DisplayInterfaces();
-                break;
-            case "/modbus_conf":
-                DisplayModbus();
-                break;
-            case "/s7_conf":
-                DisplayS7();
-                break;
-            case "/fx_conf":
-                DisplayFx();
-                break;
-            case "/io_conf":
-                DisplayIO();
-                break;
-            case "/server_conf":
-                DisplayServer();
-                break;
-            case "/ddns":
-                DisplayDDNS();
-                break;
-            case "/opcua":
-                DisplayOpcua();
-                break;
-            case "/bacnet":
-                DisplayBACnet();
-                break;
-            case "/datadisplay":
-                dataDisplay();
-                break;
-            case "/macchina":
-                DisplayMacchina();
-                break;
-            case "/lorawan_conf":
-                DisplayLorawan();
-                break;
-            default:
-                DisplayDashboard($extraFooterScripts);
-            }            
+          $extraFooterScripts = array();
+          // handle page actions
+          switch ($page) {
+          case "/wlan0_info":
+            DisplayDashboard($extraFooterScripts);
+            break;
+          case "/dhcpd_conf":
+            DisplayDHCPConfig();
+            break;
+          case "/wpa_conf":
+            DisplayWPAConfig();
+            break;
+          case "/network_conf":
+            DisplayNetworkingConfig();
+            break;
+          case "/hostapd_conf":
+            DisplayHostAPDConfig();
+            break;
+          case "/detection_conf":
+            DisplayDetectionConfig();
+            break;
+          case "/adblock_conf":
+            DisplayAdBlockConfig();
+            break;
+          case "/openvpn":
+            DisplayOpenVPNConfig();
+            break;
+          case "/wireguard":
+            DisplayWireGuardConfig();
+            break;
+          case "/torproxy_conf":
+            DisplayTorProxyConfig();
+            break;
+          case "/auth_conf":
+            DisplayAuthConfig($config['admin_user'], $config['admin_pass']);
+            break;
+          case "/save_hostapd_conf":
+            SaveTORAndVPNConfig();
+            break;
+          case "/theme_conf":
+            DisplayThemeConfig($extraFooterScripts);
+            break;
+          case "/data_use":
+            DisplayDataUsage($extraFooterScripts);
+            break;
+          case "/system_info":
+            DisplaySystem();
+            break;
+          case "/about":
+            DisplayAbout();
+            break;
+          case "/basic_conf":
+            DisplayBasic();
+            break;
+          case "/interfaces_conf":
+            DisplayInterfaces();
+            break;
+          case "/modbus_conf":
+            DisplayModbus();
+            break;
+          case "/s7_conf":
+            DisplayS7();
+            break;
+          case "/fx_conf":
+            DisplayFx();
+            break;
+          case "/io_conf":
+            DisplayIO();
+            break;
+          case "/server_conf":
+            DisplayServer();
+            break;
+          case "/ddns":
+            DisplayDDNS();
+            break;
+          case "/opcua":
+            DisplayOpcua();
+            break;
+          case "/bacnet":
+            DisplayBACnet();
+            break;
+          case "/datadisplay":
+            dataDisplay();
+            break;
+          case "/macchina":
+            DisplayMacchina();
+            break;
+          case "/lorawan_conf":
+            DisplayLorawan();
+            break;
+          default:
+            DisplayDashboard($extraFooterScripts);
           }
           ?>
         </div><!-- /.container-fluid -->

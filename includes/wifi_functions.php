@@ -157,19 +157,23 @@ function sortNetworksByRSSI(&$networks)
  */
 function getWifiInterface()
 {
+    $arrHostapdConf = array();
+    if (file_exists(RASPI_CONFIG.'/hostapd.ini')) {
         $arrHostapdConf = parse_ini_file(RASPI_CONFIG.'/hostapd.ini');
-        $iface = $_SESSION['ap_interface'] = isset($arrHostapdConf['WifiInterface']) ?  $arrHostapdConf['WifiInterface'] : RASPI_WIFI_AP_INTERFACE;
-        // check for 2nd wifi interface -> wifi client on different interface
-        exec("iw dev | awk '$1==\"Interface\" && $2!=\"$iface\" {print $2}'",$iface2);
-        $client_iface = $_SESSION['wifi_client_interface'] = (empty($iface2) ? $iface : trim($iface2[0]));
+    }
+    
+    $iface = $_SESSION['ap_interface'] = isset($arrHostapdConf['WifiInterface']) ?  $arrHostapdConf['WifiInterface'] : RASPI_WIFI_AP_INTERFACE;
+    // check for 2nd wifi interface -> wifi client on different interface
+    exec("iw dev | awk '$1==\"Interface\" && $2!=\"$iface\" {print $2}'",$iface2);
+    $client_iface = $_SESSION['wifi_client_interface'] = (empty($iface2) ? $iface : trim($iface2[0]));
 
-        // specifically for rpi0W in AP-STA mode, the above check ends up with the interfaces
-        // crossed over (wifi_client_interface vs 'ap_interface'), because the second interface (uap0) is 
-        // created by raspap and used as the access point.
-        if ($client_iface == "uap0"  && ($arrHostapdConf['WifiAPEnable'] ?? 0)){
-            $_SESSION['wifi_client_interface'] = $iface;
-            $_SESSION['ap_interface'] = $client_iface; 
-        } 
+    // specifically for rpi0W in AP-STA mode, the above check ends up with the interfaces
+    // crossed over (wifi_client_interface vs 'ap_interface'), because the second interface (uap0) is 
+    // created by raspap and used as the access point.
+    if ($client_iface == "uap0"  && ($arrHostapdConf['WifiAPEnable'] ?? 0)){
+        $_SESSION['wifi_client_interface'] = $iface;
+        $_SESSION['ap_interface'] = $client_iface; 
+    } 
 }
 
 /*

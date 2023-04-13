@@ -3,15 +3,15 @@
     <div class="card">
       <div class="card-header">
         <div class="row">
-    <div class="col">
-      <?php echo _("Dashboard"); ?>
-    </div>
-    <div class="col">
-      <button class="btn btn-light btn-icon-split btn-sm service-status float-right">
-        <span class="icon"><i class="fas fa-circle service-status-<?php echo $statusIcon ?>"></i></span>
-        <span class="text service-status"><?php echo strtolower($ap_iface) .' '. _($ifaceStatus) ?></span>
-      </button>
-    </div>
+          <div class="col">
+            <?php echo _("Dashboard"); ?>
+          </div>
+          <div class="col">
+            <button class="btn btn-light btn-icon-split btn-sm service-status float-right">
+              <span class="icon"><i class="fas fa-circle service-status-<?php echo $statusIcon ?>"></i></span>
+              <span class="text service-status"><?php echo _($ifaceStatus) ?></span>
+            </button>
+          </div>
         </div><!-- /.row -->
       </div><!-- /.card-header -->
 
@@ -42,16 +42,6 @@
                       <div class="row mb-1">
                         <?php if ( $route["mac"] != null && $route["mac"] != ' ') {  ?>
                         <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("MAC:"); ?></div><div class="col-xs-3" > <?php echo $route["mac"]; ?></div>
-                        <?php } ?>
-                      </div>
-                      <div class="row mb-1">
-                        <?php if ( $route["dns1"] != null && $route["dns1"] != ' ') { ?>
-                        <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("DNS1:"); ?></div><div class="col-xs-3" > <?php echo $route["dns1"]; ?></div>
-                        <?php } ?>
-                      </div>
-                      <div class="row mb-1">
-                        <?php if ( $route["dns2"] != null && $route["dns2"] != ' ') {  ?>
-                        <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("DNS2:"); ?></div><div class="col-xs-3" > <?php echo $route["dns2"]; ?></div>
                         <?php } ?>
                       </div>
                     </div>

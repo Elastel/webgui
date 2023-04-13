@@ -11,28 +11,46 @@ if (isset($interface)) {
     $conf = ParseConfig($return);
 
     $dhcpdata['DHCPEnabled'] = empty($conf) ? false : true;
-    $arrRange = explode(",", $conf['dhcp-range']);
-    $dhcpdata['RangeStart'] = $arrRange[0];
-    $dhcpdata['RangeEnd'] = $arrRange[1];
-    $dhcpdata['RangeMask'] = $arrRange[2];
-    $dhcpdata['leaseTime'] = $arrRange[3];
-    $dhcpHost = $conf["dhcp-host"];
+    if (array_key_exists('dhcp-range', $conf)) {
+        if ($conf['dhcp-range'] != null) {
+            $arrRange = explode(",", $conf['dhcp-range']);
+            $dhcpdata['RangeStart'] = $arrRange[0];
+            $dhcpdata['RangeEnd'] = $arrRange[1];
+            $dhcpdata['RangeMask'] = $arrRange[2];
+            $dhcpdata['leaseTime'] = $arrRange[3];
+        }
+    }
+    
+    if (array_key_exists('dhcp-host', $conf)) {
+        if ($conf['dhcp-host'] != null) {
+            $dhcpHost = $conf['dhcp-host'];
+        }
+    }
+    
     $dhcpHost = empty($dhcpHost) ? [] : $dhcpHost;
     $dhcpdata['dhcpHost'] = is_array($dhcpHost) ? $dhcpHost : [ $dhcpHost ];
-    $upstreamServers = is_array($conf['server']) ? $conf['server'] : [ $conf['server'] ];
-    $dhcpdata['upstreamServersEnabled'] = empty($conf['server']) ? false: true;
-    $dhcpdata['upstreamServers'] = array_filter($upstreamServers);
-    preg_match('/([0-9]*)([a-z])/i', $dhcpdata['leaseTime'], $arrRangeLeaseTime);
-    $dhcpdata['leaseTime'] = $arrRangeLeaseTime[1];
-    $dhcpdata['leaseTimeInterval'] = $arrRangeLeaseTime[2];
-    if (isset($conf['dhcp-option'])) {
-        $arrDns = explode(",", $conf['dhcp-option']);
-        if ($arrDns[0] == '6') {
-            if (count($arrDns) > 1) {
-                $dhcpdata['DNS1'] = $arrDns[1];
-            }
-            if (count($arrDns) > 2) {
-                $dhcpdata['DNS2'] = $arrDns[2];
+    if (array_key_exists('server', $conf)) {
+        $upstreamServers = is_array($conf['server']) ? $conf['server'] : [ $conf['server'] ];
+        $dhcpdata['upstreamServersEnabled'] = empty($conf['server']) ? false: true;
+        $dhcpdata['upstreamServers'] = array_filter($upstreamServers);
+    }
+
+    if (array_key_exists('leaseTime', $dhcpdata)) {
+        preg_match('/([0-9]*)([a-z])/i', $dhcpdata['leaseTime'], $arrRangeLeaseTime);
+        $dhcpdata['leaseTime'] = $arrRangeLeaseTime[1];
+        $dhcpdata['leaseTimeInterval'] = $arrRangeLeaseTime[2];
+    }
+    
+    if (array_key_exists('dhcp-option', $conf)) {
+        if (isset($conf['dhcp-option'])) {
+            $arrDns = explode(",", $conf['dhcp-option']);
+            if ($arrDns[0] == '6') {
+                if (count($arrDns) > 1) {
+                    $dhcpdata['DNS1'] = $arrDns[1];
+                }
+                if (count($arrDns) > 2) {
+                    $dhcpdata['DNS2'] = $arrDns[2];
+                }
             }
         }
     }

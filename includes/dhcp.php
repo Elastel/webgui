@@ -17,47 +17,17 @@ function DisplayDHCPConfig()
             if (isset($_POST['applydhcpdsettings'])) {
                 //exec('sudo /bin/systemctl restart dnsmasq.service', $dnsmasq, $return);
                 exec('sudo /etc/raspap/hostapd/servicestart.sh --interface br0 --seconds 3', $return);
+                $status->addMessage($return, 'info');
             }
         }
     }
 
-    foreach ($return as $line) {
-        $status->addMessage($line, 'info');
-    }
-    exec('pidof dnsmasq | wc -l', $dnsmasq);
-    $dnsmasq_state = ($dnsmasq[0] > 0);
-/*
+    // foreach ($return as $line) {
+    //     $status->addMessage($line, 'info');
+    // }
     exec('pidof dnsmasq | wc -l', $dnsmasq);
     $dnsmasq_state = ($dnsmasq[0] > 0);
 
-    if (!RASPI_MONITOR_ENABLED) {
-        if (isset($_POST['startdhcpd'])) {
-            if ($dnsmasq_state) {
-                $status->addMessage('dnsmasq already running', 'info');
-            } else {
-                exec('sudo /bin/systemctl start dnsmasq.service', $dnsmasq, $return);
-                if ($return == 0) {
-                    $status->addMessage('Successfully started dnsmasq', 'success');
-                    $dnsmasq_state = true;
-                } else {
-                    $status->addMessage('Failed to start dnsmasq', 'danger');
-                }
-            }
-        } elseif (isset($_POST['stopdhcpd'])) {
-            if ($dnsmasq_state) {
-                exec('sudo /bin/systemctl stop dnsmasq.service', $dnsmasq, $return);
-                if ($return == 0) {
-                    $status->addMessage('Successfully stopped dnsmasq', 'success');
-                    $dnsmasq_state = false;
-                } else {
-                    $status->addMessage('Failed to stop dnsmasq', 'danger');
-                }
-            } else {
-                $status->addMessage('dnsmasq already stopped', 'info');
-            }
-        }
-    }
- */
     getWifiInterface();
     $ap_iface = $_SESSION['ap_interface'];
     $serviceStatus = $dnsmasq_state ? "up" : "down";
@@ -65,8 +35,14 @@ function DisplayDHCPConfig()
     $conf = ParseConfig($return);
     exec('cat '. RASPI_DNSMASQ_PREFIX.$ap_iface.'.conf', $return);
     $conf = array_merge(ParseConfig($return));
-    $hosts = (array)$conf['dhcp-host'];
-    $upstreamServers = (array)$conf['server'];
+    $hosts = array();
+    $upstreamServers = array();
+    if (array_key_exists('dhcp-host', $conf)) {
+        $hosts = (array)$conf['dhcp-host'];
+    }
+    if (array_key_exists('server', $conf)) {
+        $upstreamServers = (array)$conf['server'];
+    }
     //exec("ip -o link show | awk -F': ' '{print $2}'", $interfaces);
     exec('cat ' . RASPI_DNSMASQ_LEASES, $leases);
 
