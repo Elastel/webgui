@@ -37,6 +37,7 @@ require_once 'includes/detection.php';
 require_once 'includes/macchina.php';
 require_once 'includes/opcua.php';
 require_once 'includes/lorawan.php';
+require_once 'includes/terminal.php';
 
 $config = getConfig();
 $model = getModel();
@@ -179,6 +180,17 @@ $toggleState = getSidebarState();
             </ul>
           </div>
         </li>
+        <li class="nav-item" id="page_services">
+          <a class="nav-link navbar-toggle collapsed" id="services" href="#" data-toggle="collapse" data-target="#navbar-collapse-services">
+              <i class="fas fa-cube fa-fw mr-2"></i>
+              <span class="nav-label"><?php echo _("Services"); ?></a>
+          </a>
+          <div class="collapse navbar-collapse" id="navbar-collapse-services">
+            <ul class="nav navbar-nav navbar-right">
+              <li class="nav-item" name="terminal" id="terminal"> <a class="nav-link" href="terminal"><?php echo _("Terminal"); ?></a></li>
+            </ul>
+          </div>
+        </li>
           <?php if (RASPI_TORPROXY_ENABLED) : ?>
         <li class="nav-item">
            <a class="nav-link" href="torproxy_conf"><i class="fas fa-eye-slash fa-fw mr-2"></i><span class="nav-label"><?php echo _("TOR proxy"); ?></a>
@@ -317,6 +329,9 @@ $toggleState = getSidebarState();
           case "/lorawan_conf":
             DisplayLorawan();
             break;
+          case "/terminal":
+            DisplayTerminal();
+            break;
           default:
             DisplayDashboard($extraFooterScripts);
           }
@@ -394,74 +409,36 @@ $(document).ready(function(){
         } else if (id == "openvpn" || id == "wireguard") {
           $('#navbar-collapse-vpn').addClass('show');
           $('#vpn').removeClass('collapsed');
+        } else if (id == "terminal") {
+          $('#navbar-collapse-services').addClass('show');
+          $('#services').removeClass('collapsed');
         }
       }
   });
 
-  $('.nav-item').click(function() {
-    var id = $($(this))[0].id;
-    if (id == "page_dct") {
-      if ($('#navbar-collapse-remote').hasClass('show')) {
-          $('#navbar-collapse-remote').removeClass('show');
-          $('#remote').addClass('collapsed');
-      }
-
-      if ($('#navbar-collapse-network').hasClass('show')) {
-          $('#navbar-collapse-network').removeClass('show');
-          $('#network').addClass('collapsed');
-      }
-
-      if ($('#navbar-collapse-vpn').hasClass('show')) {
-          $('#navbar-collapse-vpn').removeClass('show');
-          $('#vpn').addClass('collapsed');
-      }
-    } else if (id == "page_remote") {
-      if ($('#navbar-collapse-dct').hasClass('show')) {
-          $('#navbar-collapse-dct').removeClass('show');
-          $('#dct').addClass('collapsed');
-      }
-
-      if ($('#navbar-collapse-network').hasClass('show')) {
-          $('#navbar-collapse-network').removeClass('show');
-          $('#network').addClass('collapsed');
-      }
-
-      if ($('#navbar-collapse-vpn').hasClass('show')) {
-          $('#navbar-collapse-vpn').removeClass('show');
-          $('#vpn').addClass('collapsed');
-      }
-    } else if (id == "page_network") {
-      if ($('#navbar-collapse-dct').hasClass('show')) {
-          $('#navbar-collapse-dct').removeClass('show');
-          $('#dct').addClass('collapsed');
-      }
-
-      if ($('#navbar-collapse-remote').hasClass('show')) {
-          $('#navbar-collapse-remote').removeClass('show');
-          $('#remote').addClass('collapsed');
-      }
-
-      if ($('#navbar-collapse-vpn').hasClass('show')) {
-          $('#navbar-collapse-vpn').removeClass('show');
-          $('#vpn').addClass('collapsed');
-      }
-    } else if (id == "page_vpn") {
-      if ($('#navbar-collapse-dct').hasClass('show')) {
-          $('#navbar-collapse-dct').removeClass('show');
-          $('#dct').addClass('collapsed');
-      }
-
-      if ($('#navbar-collapse-remote').hasClass('show')) {
-          $('#navbar-collapse-remote').removeClass('show');
-          $('#remote').addClass('collapsed');
-      }
-
-      if ($('#navbar-collapse-network').hasClass('show')) {
-          $('#navbar-collapse-network').removeClass('show');
-          $('#network').addClass('collapsed');
+  function itemChange(id) {
+    var idArr = ['dct', 'remote', 'network', 'vpn', 'services'];
+    if (id.includes('page_')) {
+      var key = id.slice(5);
+      // console.log(key);
+      if (idArr.includes(key)) {
+        idArr.forEach(function (info) {
+            if (id != 'page_' + info) {
+              // console.log("info:" + info);
+              if ($('#navbar-collapse-' + info).hasClass('show')) {
+                  $('#navbar-collapse-' + info).removeClass('show');
+                  $('#' + info).addClass('collapsed');
+              }
+            }
+        });
       }
     }
-  })
+  }
+
+  $('.nav-item').click(function() {
+    var id = $($(this))[0].id;
+    itemChange(id);
+  });
 });
 </script>
 </html>

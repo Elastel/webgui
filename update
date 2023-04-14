@@ -20,13 +20,15 @@ if ! type openvpn >/dev/null 2>&1; then
 fi
 
 #check wireguard
-if ! type wg >/dev/null 2>&1; then
-        echo "wireguard is NOT installed!"
-        sudo apt-get install wireguard
+if [ $model != "EG324" ]; then
+        if ! type wg >/dev/null 2>&1; then
+                echo "wireguard is NOT installed!"
+                sudo apt-get install wireguard
 
-        if [ $? -ne 0 ] ; then
-                echo "Failed to install wireguard."
-                exit 4
+                if [ $? -ne 0 ] ; then
+                        echo "Failed to install wireguard."
+                        exit 4
+                fi
         fi
 fi
 
@@ -60,6 +62,7 @@ sudo chown -c root:www-data /etc/raspap/hostapd/*.sh
 sudo cp Elastel/$model/etc/init.d/* /etc/init.d/
 sleep 1
 sudo rm /etc/rc5.d/S01init-wifi
+sudo rm /etc/rc5.d/S01terminal
 sudo rm /etc/rc5.d/S10failover
 sudo rm /etc/rc5.d/S10lte
 sudo rm /etc/rc5.d/S10dct
@@ -68,6 +71,7 @@ sudo rm /etc/rc5.d/S10ddns
 sudo rm /etc/rc5.d/S10macchina
 sleep 1
 sudo ln -s /etc/init.d/init-wifi /etc/rc5.d/S01init-wifi
+sudo ln -s /etc/init.d/terminal /etc/rc5.d/S01terminal
 sudo ln -s /etc/init.d/failover /etc/rc5.d/S10failover
 sudo ln -s /etc/init.d/lte /etc/rc5.d/S10lte
 sudo ln -s /etc/init.d/dct /etc/rc5.d/S10dct

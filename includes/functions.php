@@ -410,6 +410,32 @@ function SelectorOptions($name, $options, $selected = null, $id = null, $event =
     echo '</select>' , PHP_EOL;
 }
 
+function SelectorOptionsCustom($name, $options, $selected = null, $id = null, $event = null, $disabled = null)
+{
+    echo '<select class="cbi-input-select" name="'.htmlspecialchars($name, ENT_QUOTES).'"';
+    if (isset($id)) {
+        echo ' id="' . htmlspecialchars($id, ENT_QUOTES) .'"';
+    }
+    if (isset($event)) {
+        echo ' onChange="' . htmlspecialchars($event, ENT_QUOTES).'()"';
+    }
+    echo '>' , PHP_EOL;
+    foreach ($options as $opt => $label) {
+        $select = '';
+        $key = isAssoc($options) ? $opt : $label;
+        if ($key == $selected) {
+            $select = ' selected="selected"';
+        }
+        if ($key == $disabled) {
+            $disabled = ' disabled';
+        }
+        echo '<option value="'.htmlspecialchars($key, ENT_QUOTES).'"'.$select.$disabled.'>'.
+            htmlspecialchars($label, ENT_QUOTES).'</option>' , PHP_EOL;
+    }
+
+    echo '</select>' , PHP_EOL;
+}
+
 /**
  *
  * @param  string $input
