@@ -15,7 +15,7 @@ function DisplayNetworkingConfig()
         if (isset($_POST['savenetworksettings']) || isset($_POST['applynetworksettings'])) {
             saveStaticConfig($status);
             saveLteConfig($status);
-	    exec("sudo /usr/local/bin/uci commit network");
+            exec("sudo /usr/local/bin/uci commit network");
 
             if ($_POST['wan-multi'] == '1') {
                 exec("sudo cp /var/www/html/config/raspap-br0-member-eth0.network /etc/systemd/network/");
@@ -33,7 +33,18 @@ function DisplayNetworkingConfig()
                 }
 
                 if ($_POST['adapter-ip'] == "0") {
-                    exec('sudo /usr/sbin/dhcpcd_restart ' . $_POST['StaticIP']);
+                    // add dns to resolv.conf
+                    if ($_POST['DNS1'] !== '' || $_POST['DNS2'] !== '') {
+                        $orgin_data = file_get_contents('/etc/resolv.conf');
+                        $new_data .= $orgin_data;
+                        $new_data .= 'nameserver ' . $_POST['DNS1'] . PHP_EOL . 'nameserver ' . $_POST['DNS2'] . PHP_EOL;
+                        file_put_contents('/tmp/resolv.conf', $new_data);
+                        system('sudo cp /tmp/resolv.conf /etc/resolv.conf');
+                    }
+
+                    exec('sudo ifconfig eth0 down');
+                    sleep(2);
+                    exec('sudo ifconfig eth0 up ' . $_POST['StaticIP']);
                 }
 
                 exec('sudo /etc/init.d/lte restart > /dev/null');

@@ -83,6 +83,7 @@ if [ $model != "EG324" ]; then
 	sudo ln -s /etc/init.d/loragw /etc/rc5.d/S10loragw
 	sudo /etc/init.d/loragw stop
 fi
+
 sleep 1
 sudo /etc/init.d/dct stop
 sleep 1
@@ -92,6 +93,9 @@ sudo /etc/init.d/failover stop
 sleep 1
 sudo /etc/init.d/ddns stop
 sleep 1
+sudo /etc/init.d/terminal stop
+sleep 1
+
 if [ $bit = "64" -o $model = "EG324" ]; then
 	sudo cp -r Elastel/$model/usr/* /usr/
 elif [ $bit = "32" ]; then
