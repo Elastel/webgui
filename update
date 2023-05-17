@@ -69,6 +69,7 @@ sudo rm /etc/rc5.d/S10dct
 sudo rm /etc/rc5.d/S10daemon
 sudo rm /etc/rc5.d/S10ddns
 sudo rm /etc/rc5.d/S10macchina
+sudo rm /etc/rc5.d/S10gps
 sleep 1
 sudo ln -s /etc/init.d/init-wifi /etc/rc5.d/S01init-wifi
 sudo ln -s /etc/init.d/terminal /etc/rc5.d/S01terminal
@@ -78,6 +79,8 @@ sudo ln -s /etc/init.d/dct /etc/rc5.d/S10dct
 sudo ln -s /etc/init.d/daemon /etc/rc5.d/S10daemon
 sudo ln -s /etc/init.d/ddns /etc/rc5.d/S10ddns
 sudo ln -s /etc/init.d/macchina /etc/rc5.d/S10macchina
+sudo ln -s /etc/init.d/gps /etc/rc5.d/S10gps
+
 if [ $model != "EG324" ]; then
 	sudo rm /etc/rc5.d/S10loragw
 	sudo ln -s /etc/init.d/loragw /etc/rc5.d/S10loragw
@@ -95,6 +98,9 @@ sudo /etc/init.d/ddns stop
 sleep 1
 sudo /etc/init.d/terminal stop
 sleep 1
+sudo /etc/init.d/gps stop
+sleep 1
+
 
 if [ $bit = "64" -o $model = "EG324" ]; then
 	sudo cp -r Elastel/$model/usr/* /usr/

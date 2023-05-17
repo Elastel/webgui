@@ -106,3 +106,4 @@ www-data ALL=(ALL) NOPASSWD:/bin/ln -s /etc/openvpn/client/*.ovpn /etc/openvpn/c
 www-data ALL=(ALL) NOPASSWD:/etc/init.d/terminal *
 www-data ALL=(ALL) NOPASSWD:/bin/chmod -R * /tmp/terminal
 www-data ALL=(ALL) NOPASSWD:/bin/cp /tmp/resolv.conf /etc/resolv.conf
+www-data ALL=(ALL) NOPASSWD:/etc/init.d/gps *

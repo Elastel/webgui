@@ -38,6 +38,7 @@ require_once 'includes/macchina.php';
 require_once 'includes/opcua.php';
 require_once 'includes/lorawan.php';
 require_once 'includes/terminal.php';
+require_once 'includes/gps.php';
 
 $config = getConfig();
 $model = getModel();
@@ -189,6 +190,11 @@ $toggleState = getSidebarState();
             <ul class="nav navbar-nav navbar-right">
               <li class="nav-item" name="terminal" id="terminal"> <a class="nav-link" href="terminal"><?php echo _("Terminal"); ?></a></li>
             </ul>
+            <?php if ($model == "EG500" || $model == "EG410") : ?>
+            <ul class="nav navbar-nav navbar-right">
+              <li class="nav-item" name="gps" id="gps"> <a class="nav-link" href="gps"><?php echo _("GPS Location"); ?></a></li>
+            </ul>
+            <?php endif; ?>
           </div>
         </li>
           <?php if (RASPI_TORPROXY_ENABLED) : ?>
@@ -332,6 +338,9 @@ $toggleState = getSidebarState();
           case "/terminal":
             DisplayTerminal();
             break;
+          case "/gps":
+            DisplayGps();
+            break;
           default:
             DisplayDashboard($extraFooterScripts);
           }
@@ -409,7 +418,7 @@ $(document).ready(function(){
         } else if (id == "openvpn" || id == "wireguard") {
           $('#navbar-collapse-vpn').addClass('show');
           $('#vpn').removeClass('collapsed');
-        } else if (id == "terminal") {
+        } else if (id == "terminal" || id == "gps") {
           $('#navbar-collapse-services').addClass('show');
           $('#services').removeClass('collapsed');
         }
