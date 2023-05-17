@@ -226,6 +226,7 @@ function loadGps() {
 
         $('#enabled').val(jsonData.enabled);
         if (jsonData.enabled == '1') {
+            $('#gps_enable').prop('checked', true);
             for(var key in jsonData){ 
                 if (key == null) {
                     return true;    // continue: return true; break: return false
@@ -251,6 +252,7 @@ function loadGps() {
                 $('#gps_report').hide();
             }
         } else {
+            $('#gps_disable').prop('checked', true);
             $('#page_gps').hide();
         }
     })

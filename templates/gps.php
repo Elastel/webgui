@@ -53,7 +53,7 @@
               <div id="page_gps" name="page_gps">
                 <div class="cbi-value">
                   <label class="cbi-value-title"><?php echo _("Output Mode"); ?></label>
-                  <select id="output_mode" name="output_mode" class="cbi-input-select"  onchange="outputModeChange(this)">
+                  <select id="output_mode" name="output_mode" class="cbi-input-select"  onchange="outputModeChange()">
                     <option value="network"><?php echo _("Output To Network") ?></option>
                     <option value="serial"><?php echo _("Output To Serial") ?></option>
                     <option value="none" selected=""><?php echo _("None") ?></option>
@@ -177,9 +177,11 @@
       } else {
         $('#page_gps').hide();
       }
+
+      outputModeChange();
   }
 
-  function outputModeChange(that) {
+  function outputModeChange() {
     var output_mode = document.getElementById("output_mode").value;
     if (output_mode == "network") {
       $('#gps_network').show();
