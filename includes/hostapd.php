@@ -47,17 +47,17 @@ function DisplayHostAPDConfig()
             $arrHostapdConf = parse_ini_file('/etc/raspap/hostapd.ini');
 
             if (isset($_POST['applyHostAPDsettings'])) {
-                //$status->addMessage('Attempting to start hotspot', 'info');
-                if ($arrHostapdConf['BridgedEnable'] == 1) {
-                    exec('sudo /etc/raspap/hostapd/servicestart.sh --interface br0 --seconds 3', $return);
-                } elseif ($arrHostapdConf['WifiAPEnable'] == 1) {
-                    exec('sudo /etc/raspap/hostapd/servicestart.sh --interface uap0 --seconds 3', $return);
+                if ($model == "EG324" || $model == "EG324L") {
+                    exec("sudo /usr/sbin/init-wlan0 >/dev/null");
                 } else {
-                    exec('sudo /etc/raspap/hostapd/servicestart.sh --seconds 3', $return);
+                    if ($arrHostapdConf['BridgedEnable'] == 1) {
+                        exec('sudo /etc/raspap/hostapd/servicestart.sh --interface br0 --seconds 3', $return);
+                    } elseif ($arrHostapdConf['WifiAPEnable'] == 1) {
+                        exec('sudo /etc/raspap/hostapd/servicestart.sh --interface uap0 --seconds 3', $return);
+                    } else {
+                        exec('sudo /etc/raspap/hostapd/servicestart.sh --seconds 3', $return);
+                    }
                 }
-                // foreach ($return as $line) {
-                //     $status->addMessage($line, 'info');
-                // }
                 $status->addMessage('Success to restart WIFI', 'success');
             }
         }
@@ -68,6 +68,7 @@ function DisplayHostAPDConfig()
     if (!empty($wifiNetworkID[0])) {
         $managedModeEnabled = true;
     }
+
     $hostapdstatus = $system->hostapdStatus();
     $serviceStatus = $hostapdstatus[0] == 0 ? "down" : "up";
 

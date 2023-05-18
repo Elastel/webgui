@@ -42,9 +42,9 @@ function DisplayTerminal()
     }
 
     if ($interface[0] == 'br0') {
-        exec('ifconfig br0 | grep -oP "(?<=inet )([0-9]{1,3}\.){3}[0-9]{1,3}"', $ip);
+        exec('ifconfig br0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep -v "255.255."', $ip);
     } else {
-        exec('ifconfig eth0 | grep -oP "(?<=inet )([0-9]{1,3}\.){3}[0-9]{1,3}"', $ip);
+        exec('ifconfig eth0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep -v "255.255."', $ip);
     }
 
     echo renderTemplate('terminal', compact(

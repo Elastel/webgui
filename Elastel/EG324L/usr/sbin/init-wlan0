@@ -1,0 +1,56 @@
+#!/bin/bash
+echo "Start to search usb wifi..."
+WIFIID=`id_wifi`
+echo "Find usb wifi $WIFIID."
+
+
+if [ $WIFIID = "rtl8188eu" ];then
+	modprobe r8188eu
+elif [ $WIFIID = "rtl8192eu" ];then
+	modprobe 8192eu
+elif [ $WIFIID = "mt7601u" ];then
+	modprobe -r mt7601u
+	modprobe -r rtnet7601Uap
+	modprobe rtnet7601Uap
+elif [ $WIFIID = "rtl8811cu" ];then
+	modprobe 8821cu
+elif [ $WIFIID = "rtl8812bu" ];then
+	modprobe 88x2bu
+else
+	exit
+fi
+
+WIFI_ENABLE=$(uci get wifi.wifi.enabled)
+WIFI_CLINET_ENABLE=$(uci get wifi.wifi_client.enabled)
+WLAN0_EXIST=$(ifconfig -a | grep -c wlan0)
+
+if [ $WLAN0_EXIST = "0" ]; then
+	exit
+fi
+
+/etc/init.d/S50hostapd stop
+sleep 1
+
+if [ $WIFI_CLINET_ENABLE = "1" ]; then
+	brctl delif br0 wlan0
+
+	[ -n "$(pgrep wpa_supplicant)" ] || {
+		wpa_supplicant -Dwext -iwlan0 -c/etc/wpa_supplicant/wpa_supplicant.conf -B & >/dev/null
+	}
+
+	[ -n "$(pgrep busybox)" ] && {
+		sleep 1
+		kill -9 $(pgrep busybox)
+	}
+
+	busybox udhcpc -q -i wlan0 & >/dev/null
+else
+	if [ $WIFI_ENABLE = "1" ]; then
+		brctl addif br0 wlan0
+		sleep 1
+		/etc/init.d/S50hostapd restart
+	fi
+fi
+
+sleep 1
+/etc/init.d/S80dnsmasq restart

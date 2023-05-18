@@ -8,6 +8,7 @@
  */
 function getRouteInfo($checkAccess)
 {
+    $model = getModel();
     $rInfo = array();
     // get all default routes
     exec('ip route list |  sed -rn "s/default via (([0-9]{1,3}\.){3}[0-9]{1,3}).*dev (\w*).*src (([0-9]{1,3}\.){3}[0-9]{1,3}).*/\3 \4 \1/p"', $routes);
@@ -37,7 +38,12 @@ function getRouteInfo($checkAccess)
             $rInfo[$i]["interface"] = $prop[0];
             $rInfo[$i]["ip-address"] = $prop[1];
             $rInfo[$i]["gateway"] = $prop[2];
-            exec('ifconfig ' . $prop[0] . ' | grep -oP "(?<=netmask )([0-9]{1,3}\.){3}[0-9]{1,3}"', $netmask);
+            if ($model != "EG324L") {
+                exec('ifconfig ' . $prop[0] . ' | grep -oP "(?<=netmask )([0-9]{1,3}\.){3}[0-9]{1,3}"', $netmask);
+            } else {
+                exec('ifconfig ' . $prop[0] . ' | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep "255.255"', $netmask);
+            }
+            
             $rInfo[$i]["netmask"] = $netmask[0];
             exec('cat /sys/class/net/' . $prop[0] . '/address', $mac);
             $rInfo[$i]["mac"] = $mac[0];

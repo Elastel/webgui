@@ -163,7 +163,9 @@ $toggleState = getSidebarState();
           <div class="collapse navbar-collapse" id="navbar-collapse-remote">
             <ul class="nav navbar-nav navbar-right">
               <li class="nav-item" name="ddns" id="ddns"> <a class="nav-link" href="ddns"><?php echo _("DDNS"); ?></a></li>
+              <?php if ($model != "EG324L") : ?>
               <li class="nav-item" name="macchina" id="macchina"> <a class="nav-link" href="macchina"><?php echo _("Macchina"); ?></a></li>
+              <?php endif; ?>
             </ul>
           </div>
         </li>
@@ -175,9 +177,9 @@ $toggleState = getSidebarState();
           <div class="collapse navbar-collapse" id="navbar-collapse-vpn">
             <ul class="nav navbar-nav navbar-right">
               <li class="nav-item" name="openvpn" id="openvpn"> <a class="nav-link" href="openvpn"><?php echo _("OpenVPN"); ?></a></li>
-	      <?php if ($model != "EG324") : ?>
+	            <?php if ($model != "EG324" && $model != "EG324L") : ?>
               <li class="nav-item" name="wireguard" id="wireguard"> <a class="nav-link" href="wireguard"><?php echo _("WireGuard"); ?></a></li>
-	      <?php endif; ?>
+	            <?php endif; ?>
             </ul>
           </div>
         </li>

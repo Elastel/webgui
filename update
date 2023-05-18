@@ -8,19 +8,19 @@ fi
 
 echo model:$model
 
+if [ $model == "EG500" -o $model == "EG410" -o $model == "ElastBox400" ]; then
 #check openvpn
-if ! type openvpn >/dev/null 2>&1; then
-        echo "openvpn is NOT installed!"
-        sudo apt-get install openvpn
+        if ! type openvpn >/dev/null 2>&1; then
+                echo "openvpn is NOT installed!"
+                sudo apt-get install openvpn
 
-        if [ $? -ne 0 ] ; then
-                echo "Failed to install openvpn."
-                exit 4
+                if [ $? -ne 0 ] ; then
+                        echo "Failed to install openvpn."
+                        exit 4
+                fi
         fi
-fi
 
 #check wireguard
-if [ $model != "EG324" ]; then
         if ! type wg >/dev/null 2>&1; then
                 echo "wireguard is NOT installed!"
                 sudo apt-get install wireguard
@@ -37,51 +37,73 @@ sleep 1
 if [ "$1" == "reset" ]; then
     echo $1
     sudo cp config/hostapd.conf /etc/hostapd/hostapd.conf
-    if [ "$model" = "EG324" ]; then
+    if [ "$model" = "EG324" -o "$model" = "EG324L" ]; then
         sed -i "s/nl80211/rtl871xdrv/g" /etc/hostapd/hostapd.conf
     fi
-    sudo cp config/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
+     
     sudo cp config/090_br0.conf /etc/dnsmasq.d/090_br0.conf
     sudo cp config/dhcpcd.conf /etc/dhcpcd.conf
     sudo cp config/defaults.json /etc/raspap/networking/
     sudo cp Elastel/$model/etc/config/* /etc/config/
     sleep 1
-    sudo cp Elastel/$model/etc/WebTunnelAgent.properties /etc/WebTunnelAgent.properties
-    sudo cp config/global_conf.json /etc/global_conf.json
+    if [ $model != "EG324L" ]; then
+        sudo cp config/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
+        sudo cp Elastel/$model/etc/WebTunnelAgent.properties /etc/WebTunnelAgent.properties
+        sudo cp config/global_conf.json /etc/global_conf.json
+        # reset wifi ssid
+        sub_mac=$(ifconfig eth0 | grep ether | awk '{print $2}' | cut -f 5-6 -d ":" | tr -d ":")
+    else
+        sub_mac=$(ifconfig eth0 | grep HWaddr | awk '{print $5}' | cut -f 5-6 -d ":" | tr -d ":")
+    fi
 
-    # reset wifi ssid
-    sub_mac=$(ifconfig eth0 | grep ether | awk '{print $2}' | cut -f 5-6 -d ":" | tr -d ":")
     ssid="$model"_"$sub_mac"
     sed -i "s/ssid.*/ssid=$ssid/" /etc/hostapd/hostapd.conf
 fi
 
-sudo cp config/090_raspap /etc/sudoers.d/090_raspap
 sudo cp config/rules.v4 /etc/iptables/rules.v4
 sudo cp installers/service*.sh /etc/raspap/hostapd
-sudo chown -c root:www-data /etc/raspap/hostapd/*.sh
 sudo cp Elastel/$model/etc/init.d/* /etc/init.d/
 sleep 1
-sudo rm /etc/rc5.d/S01init-wifi
-sudo rm /etc/rc5.d/S01terminal
-sudo rm /etc/rc5.d/S10failover
-sudo rm /etc/rc5.d/S10lte
-sudo rm /etc/rc5.d/S10dct
-sudo rm /etc/rc5.d/S10daemon
-sudo rm /etc/rc5.d/S10ddns
-sudo rm /etc/rc5.d/S10macchina
-sudo rm /etc/rc5.d/S10gps
-sleep 1
-sudo ln -s /etc/init.d/init-wifi /etc/rc5.d/S01init-wifi
-sudo ln -s /etc/init.d/terminal /etc/rc5.d/S01terminal
-sudo ln -s /etc/init.d/failover /etc/rc5.d/S10failover
-sudo ln -s /etc/init.d/lte /etc/rc5.d/S10lte
-sudo ln -s /etc/init.d/dct /etc/rc5.d/S10dct
-sudo ln -s /etc/init.d/daemon /etc/rc5.d/S10daemon
-sudo ln -s /etc/init.d/ddns /etc/rc5.d/S10ddns
-sudo ln -s /etc/init.d/macchina /etc/rc5.d/S10macchina
-sudo ln -s /etc/init.d/gps /etc/rc5.d/S10gps
+if [ $model != "EG324L" ]; then
+        sudo cp config/090_raspap /etc/sudoers.d/090_raspap
+        sudo chown -c root:www-data /etc/raspap/hostapd/*.sh
+        sleep 1
+        sudo rm /etc/rc5.d/S01init-wifi
+        sudo rm /etc/rc5.d/S01terminal
+        sudo rm /etc/rc5.d/S10failover
+        sudo rm /etc/rc5.d/S10lte
+        sudo rm /etc/rc5.d/S10dct
+        sudo rm /etc/rc5.d/S10daemon
+        sudo rm /etc/rc5.d/S10ddns
+        sudo rm /etc/rc5.d/S10macchina
+        sudo rm /etc/rc5.d/S10gps
+        sleep 1
+        sudo ln -s /etc/init.d/init-wifi /etc/rc5.d/S01init-wifi
+        sudo ln -s /etc/init.d/terminal /etc/rc5.d/S01terminal
+        sudo ln -s /etc/init.d/failover /etc/rc5.d/S10failover
+        sudo ln -s /etc/init.d/lte /etc/rc5.d/S10lte
+        sudo ln -s /etc/init.d/dct /etc/rc5.d/S10dct
+        sudo ln -s /etc/init.d/daemon /etc/rc5.d/S10daemon
+        sudo ln -s /etc/init.d/ddns /etc/rc5.d/S10ddns
+        sudo ln -s /etc/init.d/macchina /etc/rc5.d/S10macchina
+        sudo ln -s /etc/init.d/gps /etc/rc5.d/S10gps
+else
+        sudo rm /etc/init.d/S90terminal
+        sudo rm /etc/init.d/S90failover
+        sudo rm /etc/init.d/S90lte
+        sudo rm /etc/init.d/S90dct
+        sudo rm /etc/init.d/S90edaemon
+        sudo rm /etc/init.d/S90ddns
+        sleep 1
+        sudo ln -s /etc/init.d/terminal /etc/init.d/S90terminal
+        sudo ln -s /etc/init.d/failover /etc/init.d/S90failover
+        sudo ln -s /etc/init.d/lte /etc/init.d/S90lte
+        sudo ln -s /etc/init.d/dct /etc/init.d/S90dct
+        sudo ln -s /etc/init.d/edaemon /etc/init.d/S90edaemon
+        sudo ln -s /etc/init.d/ddns /etc/init.d/S90ddns
+fi
 
-if [ $model != "EG324" ]; then
+if [ $model = "EG500" -o  $model = "EG410" ]; then
 	sudo rm /etc/rc5.d/S10loragw
 	sudo ln -s /etc/init.d/loragw /etc/rc5.d/S10loragw
 	sudo /etc/init.d/loragw stop
@@ -101,8 +123,7 @@ sleep 1
 sudo /etc/init.d/gps stop
 sleep 1
 
-
-if [ $bit = "64" -o $model = "EG324" ]; then
+if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" ]]; then
 	sudo cp -r Elastel/$model/usr/* /usr/
 elif [ $bit = "32" ]; then
 	sudo cp -r Elastel/$model/32/usr/* /usr/
@@ -118,7 +139,7 @@ fi
 sleep 1
 
 
-if [ $model != "EG324" ]; then
+if [ $model != "EG324" -a $model != "EG324L" ]; then
 	echo -e "Start feed dog"
 	sudo /var/www/html/installers/feed_dog.sh &
 fi
@@ -129,7 +150,7 @@ sleep 1
         sudo kill -9 $(pgrep daemond)
 }
 
-if [ $bit = "64" -o $model = "EG324" ]; then
+if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" ]]; then
         sudo cp Elastel/$model/sbin/* /sbin/
 elif [ $bit = "32" ]; then
         sudo cp Elastel/$model/32/sbin/* /sbin/
@@ -137,4 +158,4 @@ fi
 
 echo -e "Complete to update, it will reboot system."
 sleep 5
-sudo systemctl reboot
+sudo reboot

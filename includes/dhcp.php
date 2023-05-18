@@ -8,6 +8,7 @@ require_once 'config.php';
  */
 function DisplayDHCPConfig()
 {
+    $model = getModel();
     $status = new StatusMessages();
 
     if (!RASPI_MONITOR_ENABLED) {
@@ -16,7 +17,12 @@ function DisplayDHCPConfig()
             
             if (isset($_POST['applydhcpdsettings'])) {
                 //exec('sudo /bin/systemctl restart dnsmasq.service', $dnsmasq, $return);
-                exec('sudo /etc/raspap/hostapd/servicestart.sh --interface br0 --seconds 3', $return);
+                
+                   exec('sudo /etc/raspap/hostapd/servicestart.sh --interface br0 --seconds 3', $return); 
+                if ($model == "EG324L") {
+                   exec('/etc/init.d/S80dnsmasq restart; sleep 1; /etc/init.d/S80dhcpcd restart', $return); 
+                }
+                
                 $status->addMessage($return, 'info');
             }
         }

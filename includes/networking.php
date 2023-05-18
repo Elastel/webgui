@@ -9,7 +9,7 @@ require_once 'config.php';
  */
 function DisplayNetworkingConfig()
 {
-
+    $model = getModel();
     $status = new StatusMessages();
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['savenetworksettings']) || isset($_POST['applynetworksettings'])) {
@@ -17,20 +17,34 @@ function DisplayNetworkingConfig()
             saveLteConfig($status);
             exec("sudo /usr/local/bin/uci commit network");
 
-            if ($_POST['wan-multi'] == '1') {
-                exec("sudo cp /var/www/html/config/raspap-br0-member-eth0.network /etc/systemd/network/");
+            if ($model != "EG324L") {
+                if ($_POST['wan-multi'] == '1') {
+                    exec("sudo cp /var/www/html/config/raspap-br0-member-eth0.network /etc/systemd/network/");
+                } else {
+                    exec("sudo rm /etc/systemd/network/raspap-br0-member-eth0.network");
+                }
             } else {
-                exec("sudo rm /etc/systemd/network/raspap-br0-member-eth0.network");
+                if ($_POST['wan-multi'] == '1') {
+                    exec("brctl addif br0 eth0");
+                } else {
+                    exec("brctl delif br0 eth0");
+                }
             }
+            
 
             if (isset($_POST['applynetworksettings'])) {
-                if ($_POST['wan-multi'] == '1') {
-                    exec("sudo systemctl restart systemd-networkd.service");
+                if ($model != "EG324L") {
+                    if ($_POST['wan-multi'] == '1') {
+                        exec("sudo systemctl restart systemd-networkd.service");
+                    } else {
+                        exec("sudo systemctl restart systemd-networkd.service");
+                        exec("sudo /usr/sbin/brctl delif br0 eth0");
+                        exec("sudo /etc/init.d/dhcpcd restart");
+                    }
                 } else {
-                    exec("sudo systemctl restart systemd-networkd.service");
-                    exec("sudo /usr/sbin/brctl delif br0 eth0");
-                    exec("sudo /etc/init.d/dhcpcd restart");
+                    exec("sudo /etc/init.d/S80dhcpcd restart");
                 }
+                
 
                 if ($_POST['adapter-ip'] == "0") {
                     // add dns to resolv.conf

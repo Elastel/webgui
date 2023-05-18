@@ -102,8 +102,8 @@ function DisplayDashboard(&$extraFooterScripts)
     exec('ip route | grep "default"  | grep -c "wwan0"', $enabled);
     $lteInfo = array();
     if ($enabled[0] == "1") {
-        exec('ifconfig wwan0 | grep -oP "(?<=inet )([0-9]{1,3}\.){3}[0-9]{1,3}"', $ip_address);
-        exec('ifconfig wwan0 | grep -oP "(?<=netmask )([0-9]{1,3}\.){3}[0-9]{1,3}"', $netmask);
+        exec('ifconfig wwan0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep -v "255.255."', $ip_address);
+        exec('ifconfig wwan0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep "255.255."', $netmask);
         exec('uci -P /var/state/ get dangle.dev.signal', $signal);
         exec('uci -P /var/state/ get dangle.dev.service', $operator);
         exec('uci -P /var/state/ get dangle.dev.iccid', $iccid);
@@ -124,8 +124,8 @@ function DisplayDashboard(&$extraFooterScripts)
     $wifiInfo = array();
     if ($wifi_enabled[0] == "1") {
         // exec("/bin/cat /etc/wpa_supplicant/wpa_supplicant.conf | grep ssid | awk -F \\\" '{ print $2 }'", $ssid);
-        exec('ifconfig wlan0 | grep -oP "(?<=inet )([0-9]{1,3}\.){3}[0-9]{1,3}"', $wifi_ip);
-        exec('ifconfig wlan0 | grep -oP "(?<=netmask )([0-9]{1,3}\.){3}[0-9]{1,3}"', $wifi_netmask);
+        exec('ifconfig wlan0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep -v "255.255."', $wifi_ip);
+        exec('ifconfig wlan0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep "255.255."', $wifi_netmask);
         exec("ip route show | grep default | grep wlan0 | awk '{print $3}'", $wifi_gateway);
 
         $wifiInfo["interface"] = 'wlan0';

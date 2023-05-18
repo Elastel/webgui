@@ -30,9 +30,9 @@ function DisplayDDNS()
                         if ($total_interface > 0) {
                             exec('sudo /etc/init.d/ddns stop');
                             exec('sudo /usr/sbin/noip2 -C -c /etc/ddns.conf' .
-                            ' -u ' . $_POST['username'] . 
-                            ' -p ' . $_POST['password'] . 
-                            ' -I ' . $_POST['interface'] . 
+                            " -u '" . $_POST['username'] . 
+                            "' -p '" . $_POST['password'] . 
+                            "' -I " . $_POST['interface'] . 
                             ' -H ' . $_POST['hostname'] .
                             ' -U ' . $interval . 
                             ' > /dev/null');
@@ -65,7 +65,7 @@ function saveDDNSConfig($status)
         exec("sudo /usr/local/bin/uci set ddns.ddns.interface=" .$_POST['interface']);
         exec("sudo /usr/local/bin/uci set ddns.ddns.server_type=" .$_POST['server_type']);
         exec("sudo /usr/local/bin/uci set ddns.ddns.username=" .$_POST['username']);
-        exec("sudo /usr/local/bin/uci set ddns.ddns.password=" .$_POST['password']);
+        exec("sudo /usr/local/bin/uci set ddns.ddns.password='" .$_POST['password'] . "'");
         exec("sudo /usr/local/bin/uci set ddns.ddns.interval=" .$_POST['interval']);
         exec("sudo /usr/local/bin/uci set ddns.ddns.hostname=" .$_POST['hostname']);
         if ($_POST['username'] == NULL || $_POST['password'] == NULL) {

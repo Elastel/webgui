@@ -1,0 +1,18 @@
+#!/bin/sh
+
+[ $# -lt 2 ] && {
+	echo "Please specify an AT command"
+	exit 1
+}
+
+tty_dev="$1"
+[ ! -c $tty_dev ] && return 1
+
+cmd=$2
+
+count=3
+while [ $count -gt 0 ]; do
+	echo -e "$cmd" | socat -T 3 -W /tmp/socat.lock $tty_dev,nonblock,cr,echo=0 -
+	[ $? -eq 0 ] && break || count=$(($count - 1))
+done
+
