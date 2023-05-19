@@ -73,7 +73,7 @@ if [ $model != "EG324L" ]; then
         sudo rm /etc/rc5.d/S10failover
         sudo rm /etc/rc5.d/S10lte
         sudo rm /etc/rc5.d/S10dct
-        sudo rm /etc/rc5.d/S10daemon
+	sudo rm /etc/rc5.d/S10*daemon
         sudo rm /etc/rc5.d/S10ddns
         sudo rm /etc/rc5.d/S10macchina
         sudo rm /etc/rc5.d/S10gps
@@ -83,7 +83,7 @@ if [ $model != "EG324L" ]; then
         sudo ln -s /etc/init.d/failover /etc/rc5.d/S10failover
         sudo ln -s /etc/init.d/lte /etc/rc5.d/S10lte
         sudo ln -s /etc/init.d/dct /etc/rc5.d/S10dct
-        sudo ln -s /etc/init.d/daemon /etc/rc5.d/S10daemon
+        sudo ln -s /etc/init.d/edaemon /etc/rc5.d/S10edaemon
         sudo ln -s /etc/init.d/ddns /etc/rc5.d/S10ddns
         sudo ln -s /etc/init.d/macchina /etc/rc5.d/S10macchina
         sudo ln -s /etc/init.d/gps /etc/rc5.d/S10gps
@@ -148,6 +148,10 @@ sleep 1
 
 [ -n "$(pgrep daemond)" ] && {
         sudo kill -9 $(pgrep daemond)
+}
+
+[ -n "$(pgrep edaemon)" ] && {
+        sudo kill -9 $(pgrep edaemon)
 }
 
 if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" ]]; then
