@@ -2,10 +2,10 @@
   <div class="row">
     <div class="cbi-value">
       <label class="cbi-value-title"><?php echo _("Enabled"); ?></label>
-      <input class="cbi-input-radio" id="tcp_enable5" name="tcp_enabled5" value="1" type="radio" checked onchange="enableTcp5(true)">
+      <input class="cbi-input-radio" id="tcp_enable5" name="tcp_enabled5" value="1" type="radio" checked onchange="enableTcp(true, 5)">
       <label ><?php echo _("Enable"); ?></label>
 
-      <input class="cbi-input-radio" id="tcp_disable5" name="tcp_enabled5" value="0" type="radio" onchange="enableTcp5(false)">
+      <input class="cbi-input-radio" id="tcp_disable5" name="tcp_enabled5" value="0" type="radio" onchange="enableTcp(false, 5)">
       <label ><?php echo _("Disable"); ?></label>
     </div>
 
@@ -28,7 +28,7 @@
 
       <div class="cbi-value">
         <label class="cbi-value-title"><?php echo _("Protocol"); ?></label>
-        <select id="tcp_proto5" name="tcp_proto5" class="cbi-input-select" onchange="tcpProtocolChange5(this)">
+        <select id="tcp_proto5" name="tcp_proto5" class="cbi-input-select" onchange="tcpProtocolChange(5)">
           <?php $i = 0; ?>
           <?php foreach($tcp_proto as $proto): ?>
             <?php if ($i == 0) { ?>
@@ -73,33 +73,3 @@
     </div><!-- /.page_tcp -->
   </div><!-- /.row -->
 </div><!-- /.tab-pane | basic tab -->
-<script type="text/javascript">
-  function enableTcp5(state) {
-    if (state) {
-      $('#page_tcp5').show();
-
-      tcpProtocolChange5(state);
-    } else {
-      $('#page_tcp5').hide();
-    }
-  }
-
-  function tcpProtocolChange5(that) {
-    var protocol = document.getElementById("tcp_proto5").value;
-
-    if (protocol == "0" || protocol == "3") {
-      $('#tcp_page_protocol_modbus5').show();
-      $('#tcp_page_protocol_transparent5').hide(); 
-      $('#tcp_page_protocol_s75').hide(); 
-    } else if (protocol == "1") {
-      $('#tcp_page_protocol_modbus5').hide();
-      $('#tcp_page_protocol_transparent5').show(); 
-      $('#tcp_page_protocol_s75').hide(); 
-    } else {
-      $('#tcp_page_protocol_modbus5').hide();
-      $('#tcp_page_protocol_transparent5').hide(); 
-      $('#tcp_page_protocol_s75').show(); 
-    }
-  }
-
-</script>

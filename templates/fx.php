@@ -275,6 +275,3 @@
     <button class="cbi-button cbi-button-positive important" onclick="saveFxData()"><?php echo _("Save"); ?></button>
   </div>
 </div><!-- popBox -->
-
-<script type="text/javascript">
-</script>

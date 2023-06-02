@@ -2,10 +2,10 @@
   <div class="row">
     <div class="cbi-value">
       <label class="cbi-value-title"><?php echo _("Enabled"); ?></label>
-      <input class="cbi-input-radio" id="com_enable1" name="com_enabled1" value="1" type="radio" checked onchange="enableCom1(true)">
+      <input class="cbi-input-radio" id="com_enable1" name="com_enabled1" value="1" type="radio" checked onchange="enableCom(true, 1)">
       <label ><?php echo _("Enable"); ?></label>
 
-      <input class="cbi-input-radio" id="com_disable1" name="com_enabled1" value="0" type="radio" onchange="enableCom1(false)">
+      <input class="cbi-input-radio" id="com_disable1" name="com_enabled1" value="0" type="radio" onchange="enableCom(false, 1)">
       <label ><?php echo _("Disable"); ?></label>
     </div>
 
@@ -58,7 +58,7 @@
 
       <div class="cbi-value">
         <label class="cbi-value-title"><?php echo _("Protocol"); ?></label>
-        <select id="com_proto1" name="com_proto1" class="cbi-input-select" onchange="protocolChange1(this)">
+        <select id="com_proto1" name="com_proto1" class="cbi-input-select" onchange="comProtocolChange(1)">
           <?php $i = 0; ?>
           <?php foreach($com_proto as $proto): ?>
             <?php if ($i == 0) { ?>
@@ -85,27 +85,3 @@
     </div><!-- /.page_com -->
   </div><!-- /.row -->
 </div><!-- /.tab-pane | basic tab -->
-<script type="text/javascript">
-  function enableCom1(state) {
-    if (state) {
-      $('#page_com1').show();
-
-      protocolChange1(state);
-    } else {
-      $('#page_com1').hide();
-    }
-  }
-
-  function protocolChange1(that) {
-    var protocol = document.getElementById("com_proto1").value;
-
-    if (protocol == "0" || protocol == "2") {
-      $('#com_page_protocol_modbus1').show();
-      $('#com_page_protocol_transparent1').hide();
-    } else {
-      $('#com_page_protocol_modbus1').hide();
-      $('#com_page_protocol_transparent1').show();
-    }
-  }
-
-</script>

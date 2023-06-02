@@ -2556,3 +2556,58 @@ function setSelectByText(id, text)
         }  
     }  
 }
+
+function comProtocolChange(num) {
+    var numStr = num.toString();
+    var protocol = document.getElementById("com_proto" + numStr).value;
+
+    if (protocol == "1") {
+        $('#com_page_protocol_modbus' + numStr).hide();
+        $('#com_page_protocol_transparent' + numStr).show();
+    } else {
+        $('#com_page_protocol_modbus' + numStr).show();
+        $('#com_page_protocol_transparent' + numStr).hide();
+    }
+}
+
+function tcpProtocolChange(num) {
+    var numStr = num.toString();
+    var protocol = document.getElementById('tcp_proto' + numStr).value;
+
+    if (protocol == '1') {
+        $('#tcp_page_protocol_modbus' + numStr).hide();
+        $('#tcp_page_protocol_transparent' + numStr).show();
+        $('#tcp_page_protocol_s7' + numStr).hide();
+    } else if (protocol == '2') {
+        $('#tcp_page_protocol_modbus' + numStr).hide();
+        $('#tcp_page_protocol_transparent' + numStr).hide();
+        $('#tcp_page_protocol_s7' + numStr).show();
+    } else {
+        $('#tcp_page_protocol_modbus' + numStr).show();
+        $('#tcp_page_protocol_transparent' + numStr).hide();
+        $('#tcp_page_protocol_s7' + numStr).hide();
+    }
+}
+
+function enableCom(state, num) {
+    var numStr = num.toString();
+
+    if (state) {
+        $('#page_com' + numStr).show();
+        comProtocolChange(num);
+    } else {
+        $('#page_com' + numStr).hide();
+    }
+}
+
+function enableTcp(state, num) {
+    var numStr = num.toString();
+
+    if (state) {
+        $('#page_tcp' + numStr).show();
+        tcpProtocolChange(num);
+    } else {
+        $('#page_tcp' + numStr).hide();
+    }
+}
+

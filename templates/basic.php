@@ -127,6 +127,5 @@
           $("#page_minute_data").hide();
       }
   }
-
 </script>
 

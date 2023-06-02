@@ -22,7 +22,3 @@
     </div><!-- card -->
   </div><!-- col-lg-12 -->
 </div>
-
-<script type="text/javascript">
-
-</script>

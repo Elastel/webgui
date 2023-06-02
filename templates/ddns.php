@@ -102,6 +102,5 @@
         $('#page_ddns').hide();
       }
   }
-
 </script>
 
