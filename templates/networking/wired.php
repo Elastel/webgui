@@ -10,8 +10,15 @@
   
   <div class="row">
     <div class="form-group col-md-6">
-      <label for="<metric"><?php echo _("Metric") ?></label>
+      <label for="metric"><?php echo _("Metric") ?></label>
       <input type="text" class="form-control" id="txtmetric" name="Metric">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-md-6">
+      <label for="wired_mac"><?php echo _("Mac") ?></label>
+      <input type="text" class="form-control" id="wired_mac" name="wired_mac" value=<?php echo $wired_mac ?>>
     </div>
   </div>
 

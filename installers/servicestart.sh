@@ -56,6 +56,26 @@ fi
 #     sed -i "s/\(--interface \)[[:alnum:]]*/\1$interface/" "$DAEMONPATH"
 # fi
 
+if [ $interface = "br0" -o  $interface = "uap0" ]; then
+    lan_mac_conf=$(uci get network.lan.mac)
+    cur_mac=$(cat /sys/class/net/br0/address)
+    if [[ "$lan_mac_conf" != "$cur_mac" ]]; then
+        ifconfig br0 down
+        ifconfig br0 hw ether $lan_mac_conf
+        ifconfig br0 up
+    fi
+fi
+
+if [ $interface = "uap0" ]; then
+    wan_mac_conf=$(uci get network.wan.mac)
+    cur_wan_mac=$(cat /sys/class/net/eth0/address)
+    if [[ "$lan_mac_conf" != "$cur_mac" ]]; then
+        ifconfig eth0 down
+        ifconfig eth0 hw ether $wan_mac_conf
+        ifconfig eth0 up
+    fi
+fi
+
 # Start services, mitigating race conditions
 echo "Starting network services..."
 if [ $WIFIECLIENTNABLED = "1" ]; then

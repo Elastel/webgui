@@ -15,38 +15,45 @@ function DisplayNetworkingConfig()
         if (isset($_POST['savenetworksettings']) || isset($_POST['applynetworksettings'])) {
             saveStaticConfig($status);
             saveLteConfig($status);
-            exec("sudo /usr/local/bin/uci commit network");
+            exec('sudo /usr/local/bin/uci commit network');
 
-            if ($model != "EG324L") {
+            if ($model != 'EG324L') {
                 if ($_POST['wan-multi'] == '1') {
-                    exec("sudo cp /var/www/html/config/raspap-br0-member-eth0.network /etc/systemd/network/");
+                    exec('sudo cp /var/www/html/config/raspap-br0-member-eth0.network /etc/systemd/network/');
                 } else {
-                    exec("sudo rm /etc/systemd/network/raspap-br0-member-eth0.network");
+                    exec('sudo rm /etc/systemd/network/raspap-br0-member-eth0.network');
                 }
             } else {
                 if ($_POST['wan-multi'] == '1') {
-                    exec("brctl addif br0 eth0");
+                    exec('brctl addif br0 eth0');
                 } else {
-                    exec("brctl delif br0 eth0");
+                    exec('brctl delif br0 eth0');
                 }
             }
             
 
             if (isset($_POST['applynetworksettings'])) {
-                if ($model != "EG324L") {
+                if ($model != 'EG324L') {
+                    exec('cat /sys/class/net/eth0/address', $cur_wired_mac);
+                    if ($cur_wired_mac[0] != $_POST['wired_mac']) {
+                        exec('sudo ifconfig eth0 down');
+                        exec('sudo ifconfig eth0 hw ether ' . $_POST['wired_mac']);
+                        exec('sudo ifconfig eth0 up');
+                    }
+
                     if ($_POST['wan-multi'] == '1') {
-                        exec("sudo systemctl restart systemd-networkd.service");
+                        exec('sudo systemctl restart systemd-networkd.service');
                     } else {
-                        exec("sudo systemctl restart systemd-networkd.service");
-                        exec("sudo /usr/sbin/brctl delif br0 eth0");
-                        exec("sudo /etc/init.d/dhcpcd restart");
+                        exec('sudo systemctl restart systemd-networkd.service');
+                        exec('sudo /usr/sbin/brctl delif br0 eth0');
+                        exec('sudo /etc/init.d/dhcpcd restart');
                     }
                 } else {
-                    exec("sudo /etc/init.d/S80dhcpcd restart");
+                    exec('sudo /etc/init.d/S80dhcpcd restart');
                 }
                 
 
-                if ($_POST['adapter-ip'] == "0") {
+                if ($_POST['adapter-ip'] == '0') {
                     // add dns to resolv.conf
                     if ($_POST['DNS1'] !== '' || $_POST['DNS2'] !== '') {
                         $orgin_data = file_get_contents('/etc/resolv.conf');
@@ -70,21 +77,32 @@ function DisplayNetworkingConfig()
     $wired_interface = ['eth0'];
     $lte_interface = ['wwan0'];
     $lte_enabled = 0;
-    exec("ls /sys/class/net | grep -v lo", $interfaces);
+    exec('ls /sys/class/net | grep -v lo', $interfaces);
     foreach( $interfaces as $k=>$v) {
         if($v == 'wwan0') {
             $lte_enabled = 1;
         }
     }
 
+    exec('uci get network.wan.mac', $mac_conf);
+    if ($mac_conf[0] != '') {
+        $wired_mac = $mac_conf[0];
+    } else {
+        $wired_mac = exec('cat /sys/class/net/eth0/address');
+    }
+
+    $lte_mac = exec('cat /sys/class/net/wwan0/address');
+
     // $routeInfo = getRouteInfo(true);
-    echo renderTemplate("networking", compact(
-        "status",
-        "wired_interface",
-        "lte_interface",
-        //"routeInfo",
-        "lte_enabled")
-    );
+    echo renderTemplate('networking', compact(
+        'status',
+        'wired_interface',
+        'lte_interface',
+        //'routeInfo',
+        'lte_enabled',
+        'wired_mac',
+        'lte_mac'
+    ));
 }
 
 /**
@@ -97,29 +115,33 @@ function saveStaticConfig($status)
     $iface0 = $_POST['interface0'];
     $return = 1;
 
-    if ($iface0 == "eth0") {
-        exec("sudo uci set network.wan.device=eth0");
+    if ($iface0 == 'eth0') {
+        exec('sudo uci set network.wan.device=eth0');
         if ($_POST['Metric'] !== '') {
-            exec("sudo /usr/local/bin/uci set network.wan.metric=" .$_POST['Metric']);
+            exec('sudo /usr/local/bin/uci set network.wan.metric=' . $_POST['Metric']);
         } else {
-            exec("sudo /usr/local/bin/uci set network.wan.metric=202");
+            exec('sudo /usr/local/bin/uci set network.wan.metric=202');
+        }
+
+        if (filter_var($_POST['wired_mac'], FILTER_VALIDATE_MAC)) {
+            exec('sudo /usr/local/bin/uci set network.wan.mac=' . $_POST['wired_mac']);
         }
 
         if ($_POST['wan-multi'] == '1') {
-            exec("sudo uci set network.wan.wan_multi=1");
+            exec('sudo uci set network.wan.wan_multi=1');
         } else {
-            exec("sudo uci set network.wan.wan_multi=0");
+            exec('sudo uci set network.wan.wan_multi=0');
         }
 
         // handle disable dhcp option
-        if ($_POST['adapter-ip'] == "1") {
-            exec("sudo uci set network.wan.proto=dhcp");
+        if ($_POST['adapter-ip'] == '1') {
+            exec('sudo uci set network.wan.proto=dhcp');
             // remove dhcp configs for selected interface
             // $return = removeDHCPConfig($iface0,$status);
             updateDHCPConfigMetric($iface0,$status);
         } else {
             //$status->addMessage('updateDHCPConfig');
-            exec("sudo uci set network.wan.proto=static");
+            exec('sudo uci set network.wan.proto=static');
             $errors = validateDHCPInputNetwork();
             if (empty($errors)) {
                 $return = updateDHCPConfigNetwork($iface0,$status);
@@ -234,7 +256,7 @@ function updateDHCPConfigNetwork($iface0,$status)
 
     // $cfg[] = $_POST['DefaultRoute'] == '1' ? 'gateway' : 'nogateway';
     $orgin_str = file_get_contents(RASPI_DHCPCD_CONFIG);
-    $count = strpos($orgin_str, "denyinterfaces");
+    $count = strpos($orgin_str, 'denyinterfaces');
     if ($_POST['wan-multi'] == '1') {
         $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0 eth0' . PHP_EOL, number_format($count), 31);
     } else {
@@ -251,7 +273,7 @@ function updateDHCPConfigNetwork($iface0,$status)
         $dhcp_cfg = preg_replace('/^#\sRaspAP\s'.$iface0.'\s.*?(?=\s*^\s*$)/ms', $cfg, $dhcp_cfg, 1);
         $status->addMessage('DHCP configuration for '.$iface0.' updated.', 'success');
     }
-    file_put_contents("/tmp/dhcpddata", $dhcp_cfg);
+    file_put_contents('/tmp/dhcpddata', $dhcp_cfg);
     system('sudo cp /tmp/dhcpddata '.RASPI_DHCPCD_CONFIG, $result);
 
     return $result;
@@ -268,7 +290,7 @@ function updateDHCPConfigMetric($iface0,$status)
 
     // $cfg[] = $_POST['DefaultRoute'] == '1' ? 'gateway' : 'nogateway';
     $orgin_str = file_get_contents(RASPI_DHCPCD_CONFIG);
-    $count = strpos($orgin_str, "denyinterfaces");
+    $count = strpos($orgin_str, 'denyinterfaces');
     if ($_POST['wan-multi'] == '1') {
         $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0 eth0' . PHP_EOL, number_format($count), 31);
     } else {
@@ -285,7 +307,7 @@ function updateDHCPConfigMetric($iface0,$status)
         $dhcp_cfg = preg_replace('/^#\sRaspAP\s'.$iface0.'\s.*?(?=\s*^\s*$)/ms', $cfg, $dhcp_cfg, 1);
         $status->addMessage('DHCP configuration for '.$iface0.' updated.', 'success');
     }
-    file_put_contents("/tmp/dhcpddata", $dhcp_cfg);
+    file_put_contents('/tmp/dhcpddata', $dhcp_cfg);
     system('sudo cp /tmp/dhcpddata '.RASPI_DHCPCD_CONFIG, $result);
 
     return $result;
@@ -294,20 +316,20 @@ function updateDHCPConfigMetric($iface0,$status)
 function updateLteConfigNetwork($iface0, $status)
 {
     if ($_POST['lte_metric'] != '') {
-        exec("sudo /usr/local/bin/uci set network.swan.metric=" .$_POST['lte_metric']);
+        exec('sudo /usr/local/bin/uci set network.swan.metric=' .$_POST['lte_metric']);
     } else {
-        exec("sudo /usr/local/bin/uci set network.swan.metric=207");
+        exec('sudo /usr/local/bin/uci set network.swan.metric=207');
     }
 
-    exec("sudo /usr/local/bin/uci set network.swan.apn=" .$_POST['apn']);
-    exec("sudo /usr/local/bin/uci set network.swan.pincode=" .$_POST['pin']);
-    exec("sudo /usr/local/bin/uci set network.swan.auth=" .$_POST['auth_type']);
-    if ($_POST['auth_type'] == "none") {
-        exec("sudo /usr/local/bin/uci delete network.swan.username");
-        exec("sudo /usr/local/bin/uci delete network.swan.password");
+    exec('sudo /usr/local/bin/uci set network.swan.apn=' .$_POST['apn']);
+    exec('sudo /usr/local/bin/uci set network.swan.pincode=' .$_POST['pin']);
+    exec('sudo /usr/local/bin/uci set network.swan.auth=' .$_POST['auth_type']);
+    if ($_POST['auth_type'] == 'none') {
+        exec('sudo /usr/local/bin/uci delete network.swan.username');
+        exec('sudo /usr/local/bin/uci delete network.swan.password');
     } else {
-        exec("sudo /usr/local/bin/uci set network.swan.username=" .$_POST['username']);
-        exec("sudo /usr/local/bin/uci set network.swan.password=" .$_POST['password']);
+        exec('sudo /usr/local/bin/uci set network.swan.username=' .$_POST['username']);
+        exec('sudo /usr/local/bin/uci set network.swan.password=' .$_POST['password']);
     }
 
     return $result;

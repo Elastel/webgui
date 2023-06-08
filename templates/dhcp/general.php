@@ -57,6 +57,13 @@
 
   <div class="row">
     <div class="form-group col-md-6">
+      <label for="lan_mac"><?php echo _("Mac") ?></label>
+      <input type="text" class="form-control" id="lan_mac" name="lan_mac" value=<?php echo $lan_mac ?>>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group col-md-6">
         <div class="custom-control custom-switch">
           <input class="custom-control-input" id="default-route" type="checkbox" name="DefaultRoute" value="1" aria-describedby="default-route-description">
           <label class="custom-control-label" for="default-route"><?php echo _("Install a default route for this interface") ?></label>
