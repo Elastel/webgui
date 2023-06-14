@@ -386,7 +386,7 @@ function loadDataLorawan(){
     $.get('ajax/networking/get_loragw.php?type=lorawan', function(data) {
         jsonData = JSON.parse(data);
         var general = ['server_address', 'serv_port_up', 'serv_port_down', 'gateway_ID',
-        'keepalive_interval', 'stat_interval'];
+        'keepalive_interval', 'stat_interval', 'frequency'];
 
         if (jsonData['type'] == '1') {
             $('#type').val('1');
@@ -2791,3 +2791,27 @@ function enableTcp(state, num) {
     }
 }
 
+function freqPlanChange() {
+    var a = document.getElementById('frequency').value;
+    if (a == '0') { // EU868
+        $('#radio0_frequency').val('867500000');
+        $('#radio0_tx_min').val('863000000');
+        $('#radio0_tx_max').val('870000000');
+        $('#radio1_frequency').val('868500000');
+    } else if (a == '1') { // CN490
+        $('#radio0_frequency').val('471400000');
+        $('#radio0_tx_min').val('500000000');
+        $('#radio0_tx_max').val('510000000');
+        $('#radio1_frequency').val('475000000');
+    } else if (a == '2') { // US915
+        $('#radio0_frequency').val('904300000');
+        $('#radio0_tx_min').val('923000000');
+        $('#radio0_tx_max').val('928000000');
+        $('#radio1_frequency').val('905000000');
+    } else if (a == '3') { // AS923
+        $('#radio0_frequency').val('922300000');
+        $('#radio0_tx_min').val('920000000');
+        $('#radio0_tx_max').val('924000000');
+        $('#radio1_frequency').val('923100000');
+    }
+}

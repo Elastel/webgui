@@ -65,6 +65,9 @@ if (isset($type)) {
             $json_strings['channel_if' . $i] = $data['SX130x_conf']['chan_multiSF_' . $i]['if'];
 
         }
+
+        exec('sudo /usr/local/bin/uci get loragw.loragw.frequency', $freq);
+        $json_strings['frequency'] = $freq[0] != null ? $freq[0] : '0';
     }
 
     echo json_encode($json_strings);

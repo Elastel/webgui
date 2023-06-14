@@ -109,7 +109,6 @@ function saveLorawanConfig($status)
     }
 
     exec("sudo /usr/local/bin/uci set loragw.loragw.type=" .$_POST['type']);
+    exec("sudo /usr/local/bin/uci set loragw.loragw.frequency=" .$_POST['frequency']);
     exec("sudo /usr/local/bin/uci commit loragw");
-
-    
 }

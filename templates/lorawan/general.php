@@ -38,16 +38,14 @@
         <input type="text" class="cbi-input-text" name="stat_interval" id="stat_interval" value="30" />
     </div>
 
-    <!-- <div class="cbi-value">
+    <div class="cbi-value">
         <label class="cbi-value-title"><?php echo _("Frequency Plan"); ?></label>
-        <select id="frequency" name="frequency" class="cbi-input-select">
+        <select id="frequency" name="frequency" class="cbi-input-select" onchange="freqPlanChange()">
             <option value="0"><?php echo _("Europe 868MHz(863~870)--EU868"); ?></option>
             <option value="1"><?php echo _("China 490MHz--CN490"); ?></option>
             <option value="2"><?php echo _("United States 915MHz(902~928)--US915"); ?></option>
             <option value="3"><?php echo _("Asia 920~923MHz--AS923"); ?></option>
         </select>
-    </div> -->
+    </div>
   </div><!-- /.row -->
 </div><!-- /.tab-pane | basic tab -->
-<script type="text/javascript">
-</script>
