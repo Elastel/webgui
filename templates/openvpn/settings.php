@@ -138,15 +138,6 @@
         </div>
       </div>
 
-      <!-- <div class="cbi-value">
-        <label class="cbi-value-title"><?php echo _("LZO Compress"); ?></label>
-        <select id="comp-lzo" name="comp-lzo" class="cbi-input-select">
-          <option value="yes">Yes</option>
-          <option value="no">No</option>
-          <option value="adaptive">Adaptive</option>
-        </select>
-      </div> -->
-
       <div class="cbi-value">
         <label class="cbi-value-title"><?php echo _("Cipher Algorithm"); ?></label>
         <select id="cipher" name="cipher" class="cbi-input-select">
@@ -157,6 +148,24 @@
             }
           ?>
         </select>
+      </div>
+
+      <div class="cbi-value">
+        <label class="cbi-value-title"><?php echo _("Authentication algorithm"); ?></label>
+        <select id="auth" name="auth" class="cbi-input-select">
+          <option value="none">None</option>
+          <?php 
+            foreach ($auth as $info) {
+              echo ("<option value=$info>$info</option>");
+            }
+          ?>
+          <option value="ignore">Ignore</option>
+        </select>
+      </div>
+
+      <div class="cbi-value">
+        <label class="cbi-value-title"><?php echo _("LZO Compression"); ?></label>
+        <input type="checkbox" class="cbi-input-checkbox" name="comp_lzo" id="comp_lzo" value="1"/>
       </div>
     </div>
 

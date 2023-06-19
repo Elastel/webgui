@@ -369,6 +369,8 @@ function loadOpenvpn() {
                 //console.log(key + ":" + jsonData[key]);
                 if (key == 'ca' || key == 'ta' || key == 'cert' || key == 'key' || key == 'ovpn' || key == 'dh') {
                     $('#' + key + '_text').html(jsonData[key]); 
+                } else if (key == 'comp_lzo') {
+                    $('#' + key).prop('checked', (jsonData[key] == '1') ? true:false);
                 } else {
                     $('#' + key).val(jsonData[key]); 
                 }

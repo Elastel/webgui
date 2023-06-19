@@ -13,17 +13,16 @@ if ($type[0] == 'config') {
     $vpndata['role'] = $role[0];
     exec("sudo /usr/local/bin/uci get openvpn.openvpn.auth_type", $auth_type);
     $vpndata['auth_type'] = $auth_type[0];
-    
+
     $conf = file_get_contents('/etc/openvpn/' . $role[0] . '/' . $role[0] . '.conf');
     preg_match('/proto\s(.*)/', $conf, $proto);
     preg_match('/port\s(.*)/', $conf, $port);
     preg_match('/dev\s(.*)/', $conf, $dev);
     preg_match('/cipher\s(.*)/', $conf, $cipher);
-    preg_match('/comp-lzo\s(.*)/', $conf, $lzo);
-    if ($lzo[1] == 'yes' || $lzo[1] == 'no' || $lzo[1] == 'adaptive') {
-        $vpndata['comp-lzo'] = $lzo[1];
-    } else {
-        $vpndata['comp-lzo'] = 'no';
+    preg_match_all('/auth\s(.*)/', $conf, $auth);
+
+    if (preg_match('/comp-lzo/i', $conf)) {
+        $vpndata['comp_lzo'] = '1';
     }
 
     preg_match('/ca\s\/etc\/openvpn\/(.*)/', $conf, $ca_path);
@@ -31,7 +30,7 @@ if ($type[0] == 'config') {
         $arrca = explode("/", $ca_path[1]);
         if (count($arrca) >= 2) {
             $vpndata['ca'] = $arrca[1];
-        } 
+        }
     }
 
     if ($role[0] == 'client') {
@@ -62,7 +61,7 @@ if ($type[0] == 'config') {
             $arrdh = explode("/", $dh_path[1]);
             if (count($arrdh) >= 2) {
                 $vpndata['dh'] = $arrdh[1];
-            } 
+            }
         }
     }
 
@@ -71,7 +70,7 @@ if ($type[0] == 'config') {
         $arrcert = explode("/", $cert_path[1]);
         if (count($arrcert) >= 2) {
             $vpndata['cert'] = $arrcert[1];
-        } 
+        }
     }
 
     preg_match('/key\s\/etc\/openvpn\/(.*)/', $conf, $key_path);
@@ -79,7 +78,7 @@ if ($type[0] == 'config') {
         $arrkey = explode("/", $key_path[1]);
         if (count($arrcert) >= 2) {
             $vpndata['key'] = $arrkey[1];
-        } 
+        }
     }
     if ($auth_type[0] == 'user_pass') {
         exec("sudo /usr/local/bin/uci get openvpn.openvpn.username", $username);
@@ -92,6 +91,18 @@ if ($type[0] == 'config') {
     $vpndata['port'] = $port[1];
     $vpndata['dev'] = $dev[1];
     $vpndata['cipher'] = $cipher[1];
+    
+    foreach ($auth[1] as $arrauth) {
+        if (strstr($arrauth, 'ta.key') != null) {
+            continue;
+        } else {
+            $vpndata['auth'] = $arrauth;
+        }
+    }
+
+    if ($vpndata['auth'] == null) {
+        $vpndata['auth'] = 'ignore';
+    }
 } else if ($type[0] == 'ovpn') {
     $vpndata['type'] = 'ovpn';
     exec("sudo /usr/local/bin/uci get openvpn.openvpn.role", $role);

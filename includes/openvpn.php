@@ -14,12 +14,12 @@ function DisplayOpenVPNConfig()
 {
     $status = new StatusMessages();
 
-    $cipher=array("AES-128-CBC","AES-128-CFB","AES-128-CFB1","AES-128-CFB8","AES-128-GCM","AES-128-OFB","AES-192-CBC",
-			"AES-192-CFB","AES-192-CFB1","AES-192-CFB8","AES-192-GCM","AES-192-OFB","AES-256-CBC","AES-256-CFB",
-			"AES-256-CFB1","AES-256-CFB8","AES-256-GCM","AES-256-OFB","BF-CBC","BF-CFB","BF-OFB","CAST5-CBC",
-			"CAST5-CFB","CAST5-OFB","DES-CBC","DES-CFB","DES-CFB1","DES-CFB8","DES-EDE-CBC","DES-EDE-CFB",
-			"DES-EDE-OFB","DES-EDE3-CBC","DES-EDE3-CFB","DES-EDE3-CFB1","DES-EDE3-CFB8","DES-EDE3-OFB",
-            "DES-OFB","DESX-CBC","RC2-40-CBC","RC2-64-CBC","RC2-CBC","RC2-CFB","RC2-OFB");
+    $cipher=array('BF-CBC', 'DES-EDE-CBC', 'DES-EDE3-CBC', 'AES-128-CBC', 'AES-192-CBC',
+                'AES-256-CBC');
+
+    $auth=array('MD4', 'RSA-MD4', 'MD5', 'RSA-MD5', 'SHA1', 'RSA-SHA1', 'RSA-SHA1-2', 'DSA-SHA1',
+            'DSA', 'RIPEMD160', 'RSA-RIPEMD160', 'RSA-SHA224', 'RSA-SHA256', 'RSA-SHA384',
+            'RSA-SHA512', 'SHA224', 'SHA256', 'SHA384', 'SHA512');
 
     if (isset($_POST['SaveOpenVPNSettings']) || isset($_POST['ApplyOpenVpnSettings'])) {
         saveOpenVpnConfig($status);
@@ -58,17 +58,18 @@ function DisplayOpenVPNConfig()
             }
         }
 
-        exec("sudo /usr/local/bin/uci commit openvpn");
+        exec('sudo /usr/local/bin/uci commit openvpn');
     }
 
     exec('pidof openvpn | wc -l', $openvpnstatus);
-    $serviceStatus = $openvpnstatus[0] == 0 ? "down" : "up";
+    $serviceStatus = $openvpnstatus[0] == 0 ? 'down' : 'up';
 
     echo renderTemplate(
-        "openvpn", compact(
-            "status",
-            "serviceStatus",
-            "cipher",
+        'openvpn', compact(
+            'status',
+            'serviceStatus',
+            'cipher',
+            'auth'
         )
     );
 }
@@ -76,11 +77,11 @@ function DisplayOpenVPNConfig()
 function saveOpenVpnConfig($status)
 {
     if (isset($_POST['type'])) {
-        exec("sudo /usr/local/bin/uci set openvpn.openvpn.type=" . $_POST['type']);
-        if ($_POST['type'] == "config") {
+        exec('sudo /usr/local/bin/uci set openvpn.openvpn.type=' . $_POST['type']);
+        if ($_POST['type'] == 'config') {
             $role = $_POST['role'];
-            exec("sudo /usr/local/bin/uci set openvpn.openvpn.role=" . $role);
-            exec("sudo /usr/local/bin/uci set openvpn.openvpn.auth_type=" . $_POST['auth_type']);
+            exec('sudo /usr/local/bin/uci set openvpn.openvpn.role=' . $role);
+            exec('sudo /usr/local/bin/uci set openvpn.openvpn.auth_type=' . $_POST['auth_type']);
 
             saveConfigs($status, $role);
 
@@ -114,12 +115,12 @@ function saveOpenVpnConfig($status)
                 }
             }
 
-            if ($_POST['auth_type'] == "user_pass") {
+            if ($_POST['auth_type'] == 'user_pass') {
                 saveUserPass($status, $role);
             }
-        } else if ($_POST['type'] == "ovpn") {
+        } else if ($_POST['type'] == 'ovpn') {
             $role = $_POST['role'];
-            exec("sudo /usr/local/bin/uci set openvpn.openvpn.role=" . $role);
+            exec('sudo /usr/local/bin/uci set openvpn.openvpn.role=' . $role);
             if (strlen($_FILES['ovpn']['name']) > 0) {
                 if (is_uploaded_file($_FILES['ovpn']['tmp_name'])) {
                     SaveOVPNConfig($status, $_FILES['ovpn'], $role);
@@ -201,10 +202,15 @@ function saveConfigs($status, $role)
     if (isset($_POST['cipher'])) {
         $cfg[] = 'cipher '.$_POST['cipher'] . PHP_EOL;
     }
-    if (isset($_POST['comp-lzo'])) {
-        if ($_POST['comp-lzo'] != 'no') {
+    if (isset($_POST['comp_lzo'])) {
+        if ($_POST['comp_lzo'] == '1') {
             $cfg[] = 'comp-lzo '.$_POST['comp-lzo'] . PHP_EOL;
         }  
+    }
+    if (isset($_POST['auth'])) {
+        if ($_POST['auth'] != 'ignore') {
+            $cfg[] = 'auth '.$_POST['auth'] . PHP_EOL;
+        }
     }
     if (strlen($_FILES['ca']['name']) > 0) {
         $cfg[] = 'ca /etc/openvpn/' .$role . '/' .$_FILES['ca']['name'] . PHP_EOL;
