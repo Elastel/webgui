@@ -104,6 +104,11 @@ else
 fi
 
 if [ $model = "EG500" -o  $model = "EG410" ]; then
+	if [ ! -n "$(grep 'pcf8563' /boot/config.txt)"  ]; then
+		echo "not pcf8563"
+		sudo bash -c "echo 'dtoverlay=i2c-rtc,pcf8563' >> /boot/config.txt"
+	fi
+	sleep 1
 	sudo rm /etc/rc5.d/S10loragw
 	sudo ln -s /etc/init.d/loragw /etc/rc5.d/S10loragw
 	sudo /etc/init.d/loragw stop
