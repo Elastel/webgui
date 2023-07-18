@@ -33,7 +33,7 @@ function saveS7Config($status)
     $reg_type_value = array("I", "Q", "M", "DB", "V", "C", "T");
     $word_len_value = array("Bit", "Byte", "Word", "DWord", "Real", "Counter", "Timer");
 
-    exec("sudo /usr/sbin/uci_get_count s7", $count);
+    exec("sudo /usr/sbin/uci_get_count dct s7", $count);
 
     if ($count[0] == null || strlen($count[0]) <= 0) {
         $count[0] = 0;

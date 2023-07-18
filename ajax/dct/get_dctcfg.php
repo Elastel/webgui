@@ -65,7 +65,7 @@ if ($type == "basic") {
     "Signed 32Bits ABCD", "Signed 32Bits BADC", "Signed 32Bits CDAB", "Signed 32Bits DCBA",
     "Float ABCD", "Float BADC", "Float CDAB", "Float DCBA");
 
-    exec("sudo /usr/sbin/uci_get_count modbus", $modbus_count);
+    exec("sudo /usr/sbin/uci_get_count dct modbus", $modbus_count);
     $dctdata['count'] = $modbus_count[0];
     
     for ($i = 0; $i < number_format($modbus_count[0]); $i++) {
@@ -105,7 +105,7 @@ if ($type == "basic") {
     $reg_type_value = array("I", "Q", "M", "DB", "V", "C", "T");
     $word_len_value = array("Bit", "Byte", "Word", "DWord", "Real", "Counter", "Timer");
 
-    exec("sudo /usr/sbin/uci_get_count s7", $s7_count);
+    exec("sudo /usr/sbin/uci_get_count dct s7", $s7_count);
     $dctdata['count'] = $s7_count[0];
     
     for ($i = 0; $i < number_format($s7_count[0]); $i++) {
@@ -143,7 +143,7 @@ if ($type == "basic") {
     $reg_type_value = array("X", "Y", "M", "S", "D");
     $data_type_value = array("Bit", "Byte", "Word", "DWord", "Real");
 
-    exec("sudo /usr/sbin/uci_get_count fx", $fx_count);
+    exec("sudo /usr/sbin/uci_get_count dct fx", $fx_count);
     $dctdata['count'] = $fx_count[0];
     
     for ($i = 0; $i < number_format($fx_count[0]); $i++) {
@@ -180,7 +180,7 @@ if ($type == "basic") {
 } else if ($type == "mc") {
     $data_type_value = array("Bit", "Int", "Float");
 
-    exec("sudo /usr/sbin/uci_get_count mc", $mc_count);
+    exec("sudo /usr/sbin/uci_get_count dct mc", $mc_count);
     $dctdata['count'] = $mc_count[0];
     
     for ($i = 0; $i < number_format($mc_count[0]); $i++) {
@@ -217,7 +217,7 @@ if ($type == "basic") {
 } else if ($type == "adc") {
     $cap_type_value = array("4-20mA", "0-10V");
 
-    exec("sudo /usr/sbin/uci_get_count adc", $count);
+    exec("sudo /usr/sbin/uci_get_count dct adc", $count);
     $dctdata['count'] = $count[0];
     
     for ($i = 0; $i < number_format($count[0]); $i++) {
@@ -251,7 +251,7 @@ if ($type == "basic") {
     $mode_value = array("Counting Mode", "Status Mode");
     $method_value = array("Rising Edge", "Falling Edge");
 
-    exec("sudo /usr/sbin/uci_get_count di", $count);
+    exec("sudo /usr/sbin/uci_get_count dct di", $count);
     $dctdata['count'] = $count[0];
     
     for ($i = 0; $i < number_format($count[0]); $i++) {
@@ -289,7 +289,7 @@ if ($type == "basic") {
 } else if ($type == "do") {
     $status_value = array("Open", "Close");
 
-    exec("sudo /usr/sbin/uci_get_count do", $count);
+    exec("sudo /usr/sbin/uci_get_count dct do", $count);
     $dctdata['count'] = $count[0];
     
     for ($i = 0; $i < number_format($count[0]); $i++) {

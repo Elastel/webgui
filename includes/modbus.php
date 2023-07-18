@@ -34,7 +34,7 @@ function saveModbusConfig($status)
     "Signed 32Bits ABCD", "Signed 32Bits BADC", "Signed 32Bits CDAB", "Signed 32Bits DCBA",
     "Float ABCD", "Float BADC", "Float CDAB", "Float DCBA");
 
-    exec("sudo /usr/sbin/uci_get_count modbus", $count);
+    exec("sudo /usr/sbin/uci_get_count dct modbus", $count);
 
     if ($count[0] == null || strlen($count[0]) <= 0) {
         $count[0] = 0;

@@ -40,6 +40,7 @@ require_once 'includes/lorawan.php';
 require_once 'includes/terminal.php';
 require_once 'includes/gps.php';
 require_once 'includes/mc.php';
+require_once 'includes/firewall.php';
 
 $config = getConfig();
 $model = getModel();
@@ -130,6 +131,9 @@ $toggleState = getSidebarState();
               <li class="nav-item" name="online_detection" id="online_detection" ><a class="nav-link" href="detection_conf"><?php echo _("Online Detection"); ?></a></li>
               <?php if ($model == "EG500" || $model == "EG410") : ?>
               <li class="nav-item" name="lorawan" id="lorawan" ><a class="nav-link" href="lorawan_conf"><?php echo _("LoRaWan"); ?></a></li>
+              <?php endif; ?>
+              <?php if ($model == "EG500" || $model == "EG410" || $model == "ElastBox400") : ?>
+              <li class="nav-item" name="firewall" id="firewall" ><a class="nav-link" href="firewall_conf"><?php echo _("Firewall"); ?></a></li>
               <?php endif; ?>
             </ul>
           </div>
@@ -348,6 +352,9 @@ $toggleState = getSidebarState();
           case "/gps":
             DisplayGps();
             break;
+          case "/firewall_conf":
+            DisplayFirewall();
+            break;
           default:
             DisplayDashboard($extraFooterScripts);
           }
@@ -419,7 +426,7 @@ $(document).ready(function(){
           $('#navbar-collapse-remote').addClass('show');
           $('#remote').removeClass('collapsed');
         } else if (id == "wan" || id == "lan" || id == "wifi" || id == "wifi_client" || 
-          id == "online_detection" || id == "lorawan") {
+          id == "online_detection" || id == "lorawan" || id == "firewall") {
           $('#navbar-collapse-network').addClass('show');
           $('#network').removeClass('collapsed');
         } else if (id == "openvpn" || id == "wireguard") {

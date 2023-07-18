@@ -33,7 +33,7 @@ function saveFxConfig($status)
     $reg_type_value = array("X", "Y", "M", "S", "D");
     $data_type_value = array("Bit", "Byte", "Word", "DWord", "Real");
 
-    exec("sudo /usr/sbin/uci_get_count fx", $count);
+    exec("sudo /usr/sbin/uci_get_count dct fx", $count);
 
     if ($count[0] == null || strlen($count[0]) <= 0) {
         $count[0] = 0;

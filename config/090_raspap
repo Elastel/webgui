@@ -107,3 +107,4 @@ www-data ALL=(ALL) NOPASSWD:/etc/init.d/terminal *
 www-data ALL=(ALL) NOPASSWD:/bin/chmod -R * /tmp/terminal
 www-data ALL=(ALL) NOPASSWD:/bin/cp /tmp/resolv.conf /etc/resolv.conf
 www-data ALL=(ALL) NOPASSWD:/etc/init.d/gps *
+www-data ALL=(ALL) NOPASSWD:/etc/init.d/firewall *

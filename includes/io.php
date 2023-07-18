@@ -32,7 +32,7 @@ function saveADC($status)
     $i = 0;
     $cap_type_value = array("4-20mA", "0-10V");
 
-    exec("sudo /usr/sbin/uci_get_count adc", $count);
+    exec("sudo /usr/sbin/uci_get_count dct adc", $count);
 
     if ($count[0] == null || strlen($count[0]) <= 0) {
         $count[0] = 0;
@@ -75,7 +75,7 @@ function saveDI($status)
     $mode_value = array("Counting Mode", "Status Mode");
     $method_value = array("Rising Edge", "Falling Edge");
 
-    exec("sudo /usr/sbin/uci_get_count di", $count);
+    exec("sudo /usr/sbin/uci_get_count dct di", $count);
 
     if ($count[0] == null || strlen($count[0]) <= 0) {
         $count[0] = 0;
@@ -120,7 +120,7 @@ function saveDO($status)
     $i = 0;
     $status_value = array("Open", "Close");
 
-    exec("sudo /usr/sbin/uci_get_count do", $count);
+    exec("sudo /usr/sbin/uci_get_count dct do", $count);
 
     if ($count[0] == null || strlen($count[0]) <= 0) {
         $count[0] = 0;

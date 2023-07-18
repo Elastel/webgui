@@ -31,6 +31,11 @@ if [ $model == "EG500" -o $model == "EG410" -o $model == "ElastBox400" ]; then
                         exit 4
                 fi
         fi
+
+#close nft service
+        sudo systemctl stop nftables.service
+        sleep 1
+        sudo systemctl disable nftables.service
 fi
 
 sleep 1
@@ -41,6 +46,8 @@ if [ "$1" == "reset" ]; then
     if [ "$model" = "EG324" -o "$model" = "EG324L" ]; then
         sed -i "s/nl80211/rtl871xdrv/g" /etc/hostapd/hostapd.conf
     fi
+    sudo cp $path/config/90_raspap.conf /etc/sysctl.d/90_raspap.conf
+    sudo sysctl -p /etc/sysctl.d/90_raspap.conf
     sudo cp $path/config/090_br0.conf /etc/dnsmasq.d/090_br0.conf
     sudo cp $path/config/dhcpcd.conf /etc/dhcpcd.conf
     sudo cp $path/config/defaults.json /etc/raspap/networking/
@@ -77,6 +84,7 @@ if [ $model != "EG324L" ]; then
         sudo rm /etc/rc5.d/S10ddns
         sudo rm /etc/rc5.d/S10macchina
         sudo rm /etc/rc5.d/S10gps
+        sudo rm /etc/rc5.d/S10firewall
         sleep 1
         sudo ln -s /etc/init.d/init-wifi /etc/rc5.d/S01init-wifi
         sudo ln -s /etc/init.d/terminal /etc/rc5.d/S01terminal
@@ -87,6 +95,7 @@ if [ $model != "EG324L" ]; then
         sudo ln -s /etc/init.d/ddns /etc/rc5.d/S10ddns
         sudo ln -s /etc/init.d/macchina /etc/rc5.d/S10macchina
         sudo ln -s /etc/init.d/gps /etc/rc5.d/S10gps
+        sudo ln -s /etc/init.d/firewall /etc/rc5.d/S10firewall
 else
         sudo rm /etc/init.d/S90terminal
         sudo rm /etc/init.d/S90failover
@@ -104,14 +113,15 @@ else
 fi
 
 if [ $model = "EG500" -o  $model = "EG410" ]; then
-	if [ ! -n "$(grep 'pcf8563' /boot/config.txt)"  ]; then
-		echo "not pcf8563"
-		sudo bash -c "echo 'dtoverlay=i2c-rtc,pcf8563' >> /boot/config.txt"
-	fi
-	sleep 1
-	sudo rm /etc/rc5.d/S10loragw
-	sudo ln -s /etc/init.d/loragw /etc/rc5.d/S10loragw
-	sudo /etc/init.d/loragw stop
+        if [ ! -n "$(grep 'pcf8563' /boot/config.txt)"  ]; then
+                echo "not pcf8563"
+                sudo bash -c "echo 'dtoverlay=i2c-rtc,pcf8563' >> /boot/config.txt"
+        fi
+        sleep 1
+
+        sudo rm /etc/rc5.d/S10loragw
+        sudo ln -s /etc/init.d/loragw /etc/rc5.d/S10loragw
+        sudo /etc/init.d/loragw stop
 fi
 
 sleep 1

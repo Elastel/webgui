@@ -377,7 +377,9 @@ canvas#divDBChartBandwidthhourly {
   background-color: <?php echo $color; ?>;
 }
 
-#popLayer {
+#popLayer,
+#forwards_popLayer,
+#traffic_popLayer {
   display: none;
   background-color: #B3B3B3;
   position: absolute;
@@ -391,7 +393,9 @@ canvas#divDBChartBandwidthhourly {
   filter: alpha(opacity=80);
 }
 
-#popBox {
+#popBox,
+#forwards_popBox,
+#traffic_popBox {
   display: none;
   background-color: #FFFFFF;
   z-index: 11;
@@ -406,13 +410,18 @@ canvas#divDBChartBandwidthhourly {
   margin: 3em auto;
 }
 
-#popBox .close{
+#popBox .close,
+#forwards_popBox .close,
+#traffic_popBox .close
+{
   text-align: right;
   margin-right: 5px;
   background-color: #F8F8F8;
 }
 
-#popBox .close a {
+#popBox .close a,
+#forwards_popBox .close a,
+#traffic_popBox .close a {
   text-decoration: none;
   color: #2D2C3B;
 }

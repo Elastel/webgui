@@ -32,7 +32,7 @@ function saveMcConfig($status)
 
     $data_type_value = array("Bit", "Int", "Float");
 
-    exec("sudo /usr/sbin/uci_get_count mc", $count);
+    exec("sudo /usr/sbin/uci_get_count dct mc", $count);
 
     if ($count[0] == null || strlen($count[0]) <= 0) {
         $count[0] = 0;
