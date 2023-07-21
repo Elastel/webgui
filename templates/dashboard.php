@@ -73,7 +73,7 @@
                         <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("ICCID:"); ?></div><div class="col-xs-3"><?php echo $lteInfo["iccid"]; ?></div>
                       </div>
                       <div class="row mb-1">
-                        <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("IMSI:"); ?></div><div class="col-xs-3"><?php echo $lteInfo["imsi"]; ?></div>
+                        <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("IMEI:"); ?></div><div class="col-xs-3"><?php echo $lteInfo["imei"]; ?></div>
                       </div>
                       <div class="row mb-1">
                         <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("Status:"); ?></div><div class="col-xs-3"><?php echo $lteInfo["lte_status"]; ?></div>

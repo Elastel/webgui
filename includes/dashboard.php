@@ -107,7 +107,7 @@ function DisplayDashboard(&$extraFooterScripts)
         exec('uci -P /var/state/ get dangle.dev.signal', $signal);
         exec('uci -P /var/state/ get dangle.dev.service', $operator);
         exec('uci -P /var/state/ get dangle.dev.iccid', $iccid);
-        exec('uci -P /var/state/ get dangle.dev.imei', $imsi);
+        exec('uci -P /var/state/ get dangle.dev.imei', $imei);
         $lte_status="connected";
 
         $lteInfo["interface"] = 'wwan0';
@@ -116,7 +116,7 @@ function DisplayDashboard(&$extraFooterScripts)
         $lteInfo["signal"] = $signal[0];
         $lteInfo["operator"] = $operator[0];
         $lteInfo["iccid"] = $iccid[0];
-        $lteInfo["imsi"] = $imsi[0];
+        $lteInfo["imei"] = $imei[0];
         $lteInfo["lte_status"] = $lte_status;
     }
 
