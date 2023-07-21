@@ -41,6 +41,7 @@ require_once 'includes/terminal.php';
 require_once 'includes/gps.php';
 require_once 'includes/mc.php';
 require_once 'includes/firewall.php';
+require_once 'includes/ascii.php';
 
 $config = getConfig();
 $model = getModel();
@@ -148,6 +149,7 @@ $toggleState = getSidebarState();
               <li class="nav-item" name="dct_basic" id="dct_basic" ><a class="nav-link" href="basic_conf"><?php echo _("Basic"); ?></a></li>
               <li class="nav-item" name="interfaces" id="interfaces"><a class="nav-link" href="interfaces_conf"><?php echo _("Interfaces"); ?></a></li>
               <li class="nav-item" name="modbus" id="modbus"><a class="nav-link" href="modbus_conf"><?php echo _("Modbus Rules"); ?></a></li>
+              <li class="nav-item" name="ascii" id="ascii"><a class="nav-link" href="ascii_conf"><?php echo _("ASCII Rules"); ?></a></li>
               <li class="nav-item" name="s7" id="s7"><a class="nav-link" href="s7_conf"><?php echo _("S7 Rules"); ?></a></li>
 			        <li class="nav-item" name="fx" id="fx"><a class="nav-link" href="fx_conf"><?php echo _("FX Rules"); ?></a></li>
               <li class="nav-item" name="mc" id="mc"><a class="nav-link" href="mc_conf"><?php echo _("MC Rules"); ?></a></li>
@@ -313,6 +315,9 @@ $toggleState = getSidebarState();
           case "/modbus_conf":
             DisplayModbus();
             break;
+          case "/ascii_conf":
+            DisplayAscii();
+            break;
           case "/s7_conf":
             DisplayS7();
             break;
@@ -419,7 +424,7 @@ $(document).ready(function(){
         var id = $($(this))[0].id;
         if (id == "dct_basic" || id == "interfaces" || id == "modbus" || id == "s7" ||
             id == "server" || id == "io" || id == "bacnet" || id == "fx" || id == "datadisplay" ||
-            id == "opcua" || id == "mc") {
+            id == "opcua" || id == "mc" || id == "ascii") {
           $('#navbar-collapse-dct').addClass('show')
           $('#dct').removeClass('collapsed');
         } else if (id == "ddns" || id == "macchina") {

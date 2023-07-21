@@ -175,6 +175,9 @@ function contentLoaded() {
         case "modbus_conf":
             loadModbusConfig();
             break;
+        case "ascii_conf":
+            loadAsciiConfig();
+            break;
         case "s7_conf":
             loadS7Config();
             break;
@@ -608,7 +611,7 @@ function loadBACnetConfig() {
 function loadOpcuaConfig() {
     $.get('ajax/dct/get_dctcfg.php?type=opcua',function(data){
         jsonData = JSON.parse(data);
-        var arr = ['port', 'anonymous', 'username', 'password', 'security_policy',
+        var arr = ['port', 'anonymous', 'max_value', 'username', 'password', 'security_policy',
         'certificate', 'private_key'];
 
         $('#enabled').val(jsonData.enabled);
@@ -951,6 +954,32 @@ function loadModbusConfig() {
         }
 
         var result = get_table_data();
+        var json_data = JSON.stringify(result);
+        $('#hidTD').val(json_data);
+        $('#loading').hide();
+    });
+}
+
+function loadAsciiConfig() {
+    $('#loading').show();
+    $.get('ajax/dct/get_dctcfg.php?type=ascii',function(data){
+        jsonData = JSON.parse(data);
+        for (var i = 0; i < Number(jsonData.count); i++) {
+            var table = document.getElementsByTagName("table")[0];
+            table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
+                "        <td style='text-align:center' name='order'>"+ (jsonData.order[i] != null ? jsonData.order[i] : "-") + "</td>\n" +
+                "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='belonged_com'>"+ (jsonData.belonged_com[i] != null ? jsonData.belonged_com[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='ascii_cmd'>"+ (jsonData.ascii_cmd[i] != null ? jsonData.ascii_cmd[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='enabled'>"+ jsonData.enabled[i] +"</td>\n" +
+                "        <td><a href=\"javascript:void(0);\" onclick=\"editDataAscii(this);\" >Edit</a></td>\n" +
+                "        <td><a href=\"javascript:void(0);\" onclick=\"delDataAscii(this);\" >Del</a></td>\n" +
+                "    </tr>";
+        }
+
+        var result = getTableDataAscii();
         var json_data = JSON.stringify(result);
         $('#hidTD').val(json_data);
         $('#loading').hide();
@@ -1679,6 +1708,8 @@ function addData() {
     document.getElementById("page_type").value = "0"; /* 0 is add. other is edit */
 }
 
+// modbus
+
 function get_table_data() {
     var tr = $("#table_modbus tr");
     var result = [];
@@ -1830,6 +1861,113 @@ function editData(object) {
     document.getElementById("widget.operand").value = operand;
     document.getElementById("widget.ex").value = ex;
     document.getElementById("widget.accuracy").value = accuracy;
+    if (enabled == "true") {
+        document.getElementById("widget.enabled").checked = true;
+    } else {
+        document.getElementById("widget.enabled").checked = false;
+    }
+
+    openBox();
+}
+
+// ascii
+function getTableDataAscii() {
+    var tr = $("#table_ascii tr");
+    var result = [];
+    for (var i = 2; i < tr.length; i++) {
+        var tds = $(tr[i]).find("td");
+        if (tds.length > 0) {
+        result.push({
+            'order':$(tds[0]).html(), 
+            'device_name':$(tds[1]).html(),
+            'belonged_com':$(tds[2]).html(),
+            'factor_name':$(tds[3]).html(),
+            'ascii_cmd':$(tds[4]).html(),
+            'server_center':$(tds[5]).html(),
+            'enabled':$(tds[6]).html()
+        });
+        }
+    }
+
+    return result;
+}
+
+function saveDataAscii() {
+    var result = [];
+    var order = document.getElementById("widget.order").value;
+    var device_name = document.getElementById("widget.device_name").value;
+    var belonged_com = document.getElementById("widget.belonged_com").value;
+    var factor_name = document.getElementById("widget.factor_name").value;
+    var ascii_cmd = document.getElementById("widget.ascii_cmd").value;
+    var server_center = document.getElementById("widget.server_center").value;
+    var enabled = document.getElementById("widget.enabled").checked;
+    var page_type = document.getElementById("page_type").value;
+
+    if (belonged_com == "No Interface Is Enabled") {
+        alert("No Interface Is Enabled, please enabled the interface first.");
+        return;
+    }
+
+    if (page_type == "0") {
+        var table = document.getElementsByTagName("table")[0];
+        table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
+            "        <td style='text-align:center' name='order'>"+ (order.length > 0 ? order : "-") + "</td>\n" +
+            "        <td style='text-align:center' name='device_name'>"+ (device_name.length > 0 ? device_name : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='belonged_com'>"+ (belonged_com.length > 0 ? belonged_com : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='factor_name'>"+ (factor_name.length > 0 ? factor_name : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='ascii_cmd'>"+ (ascii_cmd.length > 0 ? ascii_cmd : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='server_center'>"+ (server_center.length > 0 ? server_center : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='enabled'>"+ enabled +"</td>\n" +
+            "        <td><a href=\"javascript:void(0);\" onclick=\"editDataAscii(this);\" >Edit</a></td>\n" +
+            "        <td><a href=\"javascript:void(0);\" onclick=\"delDataAscii(this);\" >Del</a></td>\n" +
+            "    </tr>";
+    } else {
+        var table = document.getElementById("table_ascii");
+        var num = 0;
+        table.rows[Number(page_type)].cells[num++].innerHTML = (order.length > 0 ? order : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (device_name.length > 0 ? device_name : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (belonged_com.length > 0 ? belonged_com : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (factor_name.length > 0 ? factor_name : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (ascii_cmd.length > 0 ? ascii_cmd : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (server_center.length > 0 ? server_center : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = enabled;
+    }
+
+    result = getTableDataAscii();
+    var json_data = JSON.stringify(result);
+    $('#hidTD').val(json_data);
+    closeBox();
+}
+
+function delDataAscii(object) {
+    var table = object.parentNode.parentNode.parentNode;
+    var tr = object.parentNode.parentNode;
+    table.removeChild(tr);
+
+    var result = getTableDataAscii();
+    var json_data = JSON.stringify(result);
+    $('#hidTD').val(json_data);
+}
+
+function editDataAscii(object) {
+    var row = $(object).parent().parent().parent().prevAll().length + 1;
+    document.getElementById("page_type").value = row;
+    var num = 0;
+    var value = $(object).parent().parent().find("td");
+    var order = value.eq(num++).text();
+    var device_name = value.eq(num++).text();
+    var belonged_com = value.eq(num++).text();
+    var factor_name = value.eq(num++).text();
+    var ascii_cmd = value.eq(num++).text();
+    var server_center = value.eq(num++).text();
+    var enabled = value.eq(num++).text();
+
+    document.getElementById("widget.order").value = order;
+    document.getElementById("widget.device_name").value = device_name;
+    document.getElementById("widget.belonged_com").value = belonged_com;
+    document.getElementById("widget.factor_name").value = factor_name;
+    document.getElementById("widget.ascii_cmd").value = ascii_cmd;
+    document.getElementById("widget.server_center").value = server_center;
     if (enabled == "true") {
         document.getElementById("widget.enabled").checked = true;
     } else {

@@ -7,8 +7,8 @@ function DisplayInterfaces()
 {   
     $model = getModel();
     $status = new StatusMessages();
-	$com_proto = array('Modbus', 'Transparent', 'FX', 'MC');
-    $tcp_proto = array('Modbus', 'Transparent', 'S7', 'FX', 'MC');
+	$com_proto = array('Modbus', 'Transparent', 'FX', 'MC', 'ASCII');
+    $tcp_proto = array('Modbus', 'Transparent', 'S7', 'FX', 'MC', 'ASCII');
 
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['saveinterfacesettings']) || isset($_POST['applyinterfacesettings'])) {

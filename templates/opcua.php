@@ -75,6 +75,12 @@
                 </div>
 
                 <div class="cbi-value">
+                  <label class="cbi-value-title"><?php echo _("Maximum Historical Value"); ?></label>
+                  <input type="text" class="cbi-input-text" name="max_value" id="max_value"/>
+                  <label class="cbi-value-description"><?php echo _("Minimum is 1"); ?></label>
+                </div>
+
+                <div class="cbi-value">
                   <label class="cbi-value-title"><?php echo _("Security Policy"); ?></label>
                   <select id="security_policy" name="security_policy" class="cbi-input-select" onchange="securityChange(this)">
                     <option value="0" selected=""><?php echo _("None"); ?></option>

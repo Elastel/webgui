@@ -101,6 +101,27 @@ if ($type == "basic") {
         $dctdata['accuracy'][$i] = $accuracy[$i];
         $dctdata['enabled'][$i] = ($enabled[$i] == '1') ? 'true' : 'false';
     }
+} else if ($type == "ascii") {
+    exec("sudo /usr/sbin/uci_get_count dct ascii", $ascii_count);
+    $dctdata['count'] = $ascii_count[0];
+    
+    for ($i = 0; $i < number_format($ascii_count[0]); $i++) {
+        exec("sudo /usr/local/bin/uci get dct.@ascii[$i].order", $order);
+        exec("sudo /usr/local/bin/uci get dct.@ascii[$i].device_name", $device_name);
+        exec("sudo /usr/local/bin/uci get dct.@ascii[$i].belonged_com", $belonged_com);
+        exec("sudo /usr/local/bin/uci get dct.@ascii[$i].factor_name", $factor_name);
+        exec("sudo /usr/local/bin/uci get dct.@ascii[$i].ascii_cmd", $ascii_cmd);
+        exec("sudo /usr/local/bin/uci get dct.@ascii[$i].server_center", $server_center);
+        exec("sudo /usr/local/bin/uci get dct.@ascii[$i].enabled", $enabled);
+
+        $dctdata['order'][$i] = $order[$i];
+        $dctdata['device_name'][$i] = $device_name[$i];
+        $dctdata['belonged_com'][$i] = $belonged_com[$i];
+        $dctdata['factor_name'][$i] = $factor_name[$i];
+        $dctdata['ascii_cmd'][$i] = $ascii_cmd[$i];
+        $dctdata['server_center'][$i] = $server_center[$i];
+        $dctdata['enabled'][$i] = ($enabled[$i] == '1') ? 'true' : 'false';
+    }
 } else if ($type == "s7") {
     $reg_type_value = array("I", "Q", "M", "DB", "V", "C", "T");
     $word_len_value = array("Bit", "Byte", "Word", "DWord", "Real", "Counter", "Timer");
@@ -376,7 +397,7 @@ if ($type == "basic") {
         }
     }
 } else if ($type == 'opcua') {
-    $arr = array('port', 'anonymous', 'username', 'password', 'security_policy', 
+    $arr = array('port', 'anonymous', 'max_value', 'username', 'password', 'security_policy', 
     'certificate', 'private_key');
     unset($enabled);
     exec('/usr/local/bin/uci get dct.opcua.enabled', $enabled);
