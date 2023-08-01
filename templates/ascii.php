@@ -48,13 +48,15 @@
                     <th class="th cbi-section-table-cell"><?php echo _("Device Name"); ?></th>
                     <th class="th cbi-section-table-cell"><?php echo _("Belonged Interface"); ?></th>
                     <th class="th cbi-section-table-cell"><?php echo _("Channel Name"); ?></th>
-                    <th class="th cbi-section-table-cell"><?php echo _("ASCII Tx Command"); ?></th>
+                    <th class="th cbi-section-table-cell"><?php echo _("Tx Command"); ?></th>
+                    <th class="th cbi-section-table-cell"><?php echo _("Command Format"); ?></th>
                     <th class="th cbi-section-table-cell"><?php echo _("Reporting Center"); ?></th>
                     <th class="th cbi-section-table-cell"><?php echo _("Enable"); ?></th>
                     <th class="th cbi-section-table-cell cbi-section-actions"></th>
                     <th class="th cbi-section-table-cell cbi-section-actions"></th>
                   </tr>
                   <tr class="tr cbi-section-table-descr">
+                    <th class="th cbi-section-table-cell" ></th>
                     <th class="th cbi-section-table-cell" ></th>
                     <th class="th cbi-section-table-cell" ></th>
                     <th class="th cbi-section-table-cell" ></th>
@@ -165,15 +167,16 @@
       <input id="widget.factor_name" type="text" class="cbi-input-text">
     </div>
 
-    <!-- <div class="cbi-value">
-      <label class="cbi-value-title" for="widget.alias_name"><?php //echo _("Alias Name"); ?></label>
-      <input id="widget.alias_name" type="text" class="cbi-input-text">
-      <label class="cbi-value-description"><?php //echo _("Multiple Aliases Are Separated By Semicolon"); ?></label>
-    </div> -->
-
     <div class="cbi-value">
-      <label class="cbi-value-title" for="widget.ascii_cmd"><?php echo _("ASCII Tx Command"); ?></label>
-      <input id="widget.ascii_cmd" type="text" class="cbi-input-text">
+      <label class="cbi-value-title" for="widget.tx_cmd"><?php echo _("Tx Command"); ?></label>
+      <input id="widget.tx_cmd" type="text" class="cbi-input-text">
+    </div>
+    <div class="cbi-value">
+      <label class="cbi-value-title"><?php echo _("Command Format"); ?></label>
+      <select id="widget.cmd_format" name="widget.cmd_format" class="cbi-input-select">
+        <option value="hex">HEX</option>
+        <option value="ascii">ASCII</option>
+      </select>
     </div>
 
     <div class="cbi-value">

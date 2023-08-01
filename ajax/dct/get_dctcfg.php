@@ -110,7 +110,8 @@ if ($type == "basic") {
         exec("sudo /usr/local/bin/uci get dct.@ascii[$i].device_name", $device_name);
         exec("sudo /usr/local/bin/uci get dct.@ascii[$i].belonged_com", $belonged_com);
         exec("sudo /usr/local/bin/uci get dct.@ascii[$i].factor_name", $factor_name);
-        exec("sudo /usr/local/bin/uci get dct.@ascii[$i].ascii_cmd", $ascii_cmd);
+        exec("sudo /usr/local/bin/uci get dct.@ascii[$i].tx_cmd", $tx_cmd);
+        exec("sudo /usr/local/bin/uci get dct.@ascii[$i].cmd_format", $cmd_format);
         exec("sudo /usr/local/bin/uci get dct.@ascii[$i].server_center", $server_center);
         exec("sudo /usr/local/bin/uci get dct.@ascii[$i].enabled", $enabled);
 
@@ -118,7 +119,8 @@ if ($type == "basic") {
         $dctdata['device_name'][$i] = $device_name[$i];
         $dctdata['belonged_com'][$i] = $belonged_com[$i];
         $dctdata['factor_name'][$i] = $factor_name[$i];
-        $dctdata['ascii_cmd'][$i] = $ascii_cmd[$i];
+        $dctdata['tx_cmd'][$i] = $tx_cmd[$i];
+        $dctdata['cmd_format'][$i] = $cmd_format[$i];
         $dctdata['server_center'][$i] = $server_center[$i];
         $dctdata['enabled'][$i] = ($enabled[$i] == '1') ? 'true' : 'false';
     }

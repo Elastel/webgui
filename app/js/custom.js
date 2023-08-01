@@ -971,7 +971,8 @@ function loadAsciiConfig() {
                 "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
                 "        <td style='text-align:center' name='belonged_com'>"+ (jsonData.belonged_com[i] != null ? jsonData.belonged_com[i] : "-") +"</td>\n" +
                 "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='ascii_cmd'>"+ (jsonData.ascii_cmd[i] != null ? jsonData.ascii_cmd[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='tx_cmd'>"+ (jsonData.tx_cmd[i] != null ? jsonData.tx_cmd[i] : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='cmd_format'>"+ (jsonData.cmd_format[i] != null ? jsonData.cmd_format[i] : "-") +"</td>\n" +
                 "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
                 "        <td style='text-align:center' name='enabled'>"+ jsonData.enabled[i] +"</td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"editDataAscii(this);\" >Edit</a></td>\n" +
@@ -1882,9 +1883,10 @@ function getTableDataAscii() {
             'device_name':$(tds[1]).html(),
             'belonged_com':$(tds[2]).html(),
             'factor_name':$(tds[3]).html(),
-            'ascii_cmd':$(tds[4]).html(),
-            'server_center':$(tds[5]).html(),
-            'enabled':$(tds[6]).html()
+            'tx_cmd':$(tds[4]).html(),
+            'cmd_format':$(tds[5]).html(),
+            'server_center':$(tds[6]).html(),
+            'enabled':$(tds[7]).html()
         });
         }
     }
@@ -1898,7 +1900,8 @@ function saveDataAscii() {
     var device_name = document.getElementById("widget.device_name").value;
     var belonged_com = document.getElementById("widget.belonged_com").value;
     var factor_name = document.getElementById("widget.factor_name").value;
-    var ascii_cmd = document.getElementById("widget.ascii_cmd").value;
+    var tx_cmd = document.getElementById("widget.tx_cmd").value;
+    var cmd_format = document.getElementById("widget.cmd_format").value;
     var server_center = document.getElementById("widget.server_center").value;
     var enabled = document.getElementById("widget.enabled").checked;
     var page_type = document.getElementById("page_type").value;
@@ -1915,7 +1918,8 @@ function saveDataAscii() {
             "        <td style='text-align:center' name='device_name'>"+ (device_name.length > 0 ? device_name : "-") +"</td>\n" +
             "        <td style='text-align:center' name='belonged_com'>"+ (belonged_com.length > 0 ? belonged_com : "-") +"</td>\n" +
             "        <td style='text-align:center' name='factor_name'>"+ (factor_name.length > 0 ? factor_name : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='ascii_cmd'>"+ (ascii_cmd.length > 0 ? ascii_cmd : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='tx_cmd'>"+ (tx_cmd.length > 0 ? tx_cmd : "-") +"</td>\n" +
+            "        <td style='text-align:center' name='cmd_format'>"+ (cmd_format.length > 0 ? cmd_format : "-") +"</td>\n" +
             "        <td style='text-align:center' name='server_center'>"+ (server_center.length > 0 ? server_center : "-") +"</td>\n" +
             "        <td style='text-align:center' name='enabled'>"+ enabled +"</td>\n" +
             "        <td><a href=\"javascript:void(0);\" onclick=\"editDataAscii(this);\" >Edit</a></td>\n" +
@@ -1928,7 +1932,8 @@ function saveDataAscii() {
         table.rows[Number(page_type)].cells[num++].innerHTML = (device_name.length > 0 ? device_name : "-");
         table.rows[Number(page_type)].cells[num++].innerHTML = (belonged_com.length > 0 ? belonged_com : "-");
         table.rows[Number(page_type)].cells[num++].innerHTML = (factor_name.length > 0 ? factor_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (ascii_cmd.length > 0 ? ascii_cmd : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (tx_cmd.length > 0 ? tx_cmd : "-");
+        table.rows[Number(page_type)].cells[num++].innerHTML = (cmd_format.length > 0 ? cmd_format : "-");
         table.rows[Number(page_type)].cells[num++].innerHTML = (server_center.length > 0 ? server_center : "-");
         table.rows[Number(page_type)].cells[num++].innerHTML = enabled;
     }
@@ -1958,7 +1963,8 @@ function editDataAscii(object) {
     var device_name = value.eq(num++).text();
     var belonged_com = value.eq(num++).text();
     var factor_name = value.eq(num++).text();
-    var ascii_cmd = value.eq(num++).text();
+    var tx_cmd = value.eq(num++).text();
+    var cmd_format = value.eq(num++).text();
     var server_center = value.eq(num++).text();
     var enabled = value.eq(num++).text();
 
@@ -1966,7 +1972,8 @@ function editDataAscii(object) {
     document.getElementById("widget.device_name").value = device_name;
     document.getElementById("widget.belonged_com").value = belonged_com;
     document.getElementById("widget.factor_name").value = factor_name;
-    document.getElementById("widget.ascii_cmd").value = ascii_cmd;
+    document.getElementById("widget.tx_cmd").value = tx_cmd;
+    document.getElementById("widget.cmd_format").value = cmd_format;
     document.getElementById("widget.server_center").value = server_center;
     if (enabled == "true") {
         document.getElementById("widget.enabled").checked = true;
