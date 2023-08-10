@@ -1306,9 +1306,9 @@ $('#ovpn-userpw,#ovpn-certs').on('click', function (e) {
     }
 });
 
-$(document).ready(function(){
-  $("#PanelManual").hide();
-});
+// $(document).ready(function(){
+//   $("#PanelManual").hide();
+// });
 
 $('#wg-upload,#wg-manual').on('click', function (e) {
     if (this.id == 'wg-upload') {
@@ -3309,3 +3309,60 @@ function editTraffic(object) {
 
     openBoxTraffic();
 }
+
+$(document).ready(function(){
+    $('.sidebar li a').each(function(){
+        if ($($(this))[0].href == String(window.location)) {
+        $(this).parent().addClass('active');
+        }
+    });
+
+    $('.nav-item').each(function() {
+        if ($(this).hasClass('active')) {
+            var id = $($(this))[0].id;
+            if (id == "dct_basic" || id == "interfaces" || id == "modbus" || id == "s7" ||
+                id == "server" || id == "io" || id == "bacnet" || id == "fx" || id == "datadisplay" ||
+                id == "opcua" || id == "mc" || id == "ascii") {
+            $('#navbar-collapse-dct').addClass('show')
+            $('#dct').removeClass('collapsed');
+            } else if (id == "ddns" || id == "macchina") {
+            $('#navbar-collapse-remote').addClass('show');
+            $('#remote').removeClass('collapsed');
+            } else if (id == "wan" || id == "lan" || id == "wifi" || id == "wifi_client" || 
+            id == "online_detection" || id == "lorawan" || id == "firewall") {
+            $('#navbar-collapse-network').addClass('show');
+            $('#network').removeClass('collapsed');
+            } else if (id == "openvpn" || id == "wireguard") {
+            $('#navbar-collapse-vpn').addClass('show');
+            $('#vpn').removeClass('collapsed');
+            } else if (id == "terminal" || id == "gps") {
+            $('#navbar-collapse-services').addClass('show');
+            $('#services').removeClass('collapsed');
+            }
+        }
+    });
+
+    function itemChange(id) {
+        var idArr = ['dct', 'remote', 'network', 'vpn', 'services'];
+        if (id.includes('page_')) {
+        var key = id.slice(5);
+        // console.log(key);
+        if (idArr.includes(key)) {
+            idArr.forEach(function (info) {
+                if (id != 'page_' + info) {
+                // console.log("info:" + info);
+                if ($('#navbar-collapse-' + info).hasClass('show')) {
+                    $('#navbar-collapse-' + info).removeClass('show');
+                    $('#' + info).addClass('collapsed');
+                }
+                }
+            });
+        }
+        }
+    }
+
+    $('.nav-item').click(function() {
+        var id = $($(this))[0].id;
+        itemChange(id);
+    });
+});

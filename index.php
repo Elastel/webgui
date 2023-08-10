@@ -1,57 +1,5 @@
 <?php
-require 'includes/csrf.php';
-ensureCSRFSessionToken();
-
-require_once 'includes/config.php';
-require_once 'includes/defaults.php';
-require_once RASPI_CONFIG.'/raspap.php';
-require_once 'includes/locale.php';
-require_once 'includes/functions.php';
-require_once 'includes/dashboard.php';
-require_once 'includes/authenticate.php';
-require_once 'includes/admin.php';
-require_once 'includes/dhcp.php';
-require_once 'includes/hostapd.php';
-require_once 'includes/adblock.php';
-require_once 'includes/system.php';
-require_once 'includes/sysstats.php';
-require_once 'includes/configure_client.php';
-require_once 'includes/networking.php';
-require_once 'includes/themes.php';
-require_once 'includes/data_usage.php';
-require_once 'includes/about.php';
-require_once 'includes/openvpn.php';
-require_once 'includes/wireguard.php';
-require_once 'includes/torproxy.php';
-require_once 'includes/basic.php';
-require_once 'includes/interfaces.php';
-require_once 'includes/modbus.php';
-require_once 'includes/s7.php';
-require_once 'includes/fx.php';
-require_once 'includes/io.php';
-require_once 'includes/server.php';
-require_once 'includes/ddns.php';
-require_once 'includes/bacnet.php';
-require_once 'includes/datadisplay.php';
-require_once 'includes/detection.php';
-require_once 'includes/macchina.php';
-require_once 'includes/opcua.php';
-require_once 'includes/lorawan.php';
-require_once 'includes/terminal.php';
-require_once 'includes/gps.php';
-require_once 'includes/mc.php';
-require_once 'includes/firewall.php';
-require_once 'includes/ascii.php';
-
-$config = getConfig();
-$model = getModel();
-$output = $return = 0;
-$page = $_SERVER['PATH_INFO'];
-
-$theme_url = getThemeOpt();
-$toggleState = getSidebarState();
-//$bridgedEnabled = getBridgedState();
-
+require_once 'includes/includes.php';
 ?><!DOCTYPE html>
 <html lang="en">
   <head>
@@ -79,9 +27,6 @@ $toggleState = getSidebarState();
     <!-- Custom Fonts -->
     <link href="dist/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
 
-    <!-- RaspAP Fonts -->
-    <link href="dist/raspap/css/style.css" rel="stylesheet" type="text/css">
-
     <!-- Custom CSS -->
     <link href="<?php echo $theme_url; ?>" title="main" rel="stylesheet">
 
@@ -95,12 +40,6 @@ $toggleState = getSidebarState();
     <meta name="msapplication-config" content="app/icons/browserconfig.xml">
     <meta name="msapplication-TileColor" content="#b91d47">
     <meta name="theme-color" content="#ffffff">
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
   </head>
   <body id="page-top" style="font-family:'Arial','Microsoft YaHei','黑体','宋体',sans-serif">
     <!-- Page Wrapper -->
@@ -111,7 +50,7 @@ $toggleState = getSidebarState();
         <hr class="sidebar-divider my-0">
         <div class="row">
           <div class="col-xs ml-3 sidebar-brand-icon">
-            <img src="app/img/raspAP-logo.php" class="navbar-logo" width="64" height="64">
+            <img src="app/img/elastel.php" class="navbar-logo" width="64" height="64">
           </div>
           <div class="col-xs ml-2 cbi-model"><?php echo _($model);?></div>
         </div>
@@ -207,42 +146,18 @@ $toggleState = getSidebarState();
             <?php endif; ?>
           </div>
         </li>
-          <?php if (RASPI_TORPROXY_ENABLED) : ?>
         <li class="nav-item">
-           <a class="nav-link" href="torproxy_conf"><i class="fas fa-eye-slash fa-fw mr-2"></i><span class="nav-label"><?php echo _("TOR proxy"); ?></a>
+          <a class="nav-link" href="auth_conf"><i class="fas fa-user-lock fa-fw mr-2"></i><span class="nav-label"><?php echo _("Authentication"); ?></a>
         </li>
-          <?php endif; ?>
-          <?php if (RASPI_CONFAUTH_ENABLED) : ?>
-        <li class="nav-item">
-        <a class="nav-link" href="auth_conf"><i class="fas fa-user-lock fa-fw mr-2"></i><span class="nav-label"><?php echo _("Authentication"); ?></a>
-        </li>
-          <?php endif; ?>
-          <?php if (RASPI_CHANGETHEME_ENABLED) : ?>
-        <li class="nav-item">
-          <a class="nav-link" href="theme_conf"><i class="fas fa-paint-brush fa-fw mr-2"></i><span class="nav-label"><?php echo _("Change Theme"); ?></a>
-        </li>
-          <?php endif; ?>
-          <?php if (RASPI_VNSTAT_ENABLED) : ?>
-        <li class="nav-item">
-          <a class="nav-link" href="data_use"><i class="fas fa-chart-bar fa-fw mr-2"></i><span class="nav-label"><?php echo _("Data usage"); ?></a>
-        </li>
-          <?php endif; ?>
-          <?php if (RASPI_SYSTEM_ENABLED) : ?>
         <li class="nav-item">
           <a class="nav-link" href="system_info"><i class="fas fa-cube fa-fw mr-2"></i><span class="nav-label"><?php echo _("System"); ?></a>
         </li>
-          <?php endif; ?>
-         <li class="nav-item">
+        <li class="nav-item">
           <a class="nav-link" href="about"><i class="fas fa-info-circle fa-fw mr-2"></i><span class="nav-label"><?php echo _("About Elastel"); ?></a>
         </li>
 
         <!-- Divider -->
         <hr class="sidebar-divider d-none d-md-block">
-
-        <!-- Sidebar Toggler (Sidebar) -->
-        <!-- <div class="text-center d-none d-md-block">
-          <button class="rounded-circle border-0" id="sidebarToggle"></button>
-        </div> -->
       </ul>
       <!-- End of Sidebar -->
 
@@ -253,128 +168,10 @@ $toggleState = getSidebarState();
       <div id="content">
         <!-- Begin Page Content -->
         <div class="container-fluid">
-        <div class="load" id="loading" name="loading"></div>
-        <?php
-          $extraFooterScripts = array();
-          // handle page actions
-          switch ($page) {
-          case "/wlan0_info":
-            DisplayDashboard($extraFooterScripts);
-            break;
-          case "/dhcpd_conf":
-            DisplayDHCPConfig();
-            break;
-          case "/wpa_conf":
-            DisplayWPAConfig();
-            break;
-          case "/network_conf":
-            DisplayNetworkingConfig();
-            break;
-          case "/hostapd_conf":
-            DisplayHostAPDConfig();
-            break;
-          case "/detection_conf":
-            DisplayDetectionConfig();
-            break;
-          case "/adblock_conf":
-            DisplayAdBlockConfig();
-            break;
-          case "/openvpn":
-            DisplayOpenVPNConfig();
-            break;
-          case "/wireguard":
-            DisplayWireGuardConfig();
-            break;
-          case "/torproxy_conf":
-            DisplayTorProxyConfig();
-            break;
-          case "/auth_conf":
-            DisplayAuthConfig($config['admin_user'], $config['admin_pass']);
-            break;
-          case "/save_hostapd_conf":
-            SaveTORAndVPNConfig();
-            break;
-          case "/theme_conf":
-            DisplayThemeConfig($extraFooterScripts);
-            break;
-          case "/data_use":
-            DisplayDataUsage($extraFooterScripts);
-            break;
-          case "/system_info":
-            DisplaySystem();
-            break;
-          case "/about":
-            DisplayAbout();
-            break;
-          case "/basic_conf":
-            DisplayBasic();
-            break;
-          case "/interfaces_conf":
-            DisplayInterfaces();
-            break;
-          case "/modbus_conf":
-            DisplayModbus();
-            break;
-          case "/ascii_conf":
-            DisplayAscii();
-            break;
-          case "/s7_conf":
-            DisplayS7();
-            break;
-          case "/fx_conf":
-            DisplayFx();
-            break;
-          case "/mc_conf":
-            DisplayMc();
-            break;
-          case "/io_conf":
-            DisplayIO();
-            break;
-          case "/server_conf":
-            DisplayServer();
-            break;
-          case "/ddns":
-            DisplayDDNS();
-            break;
-          case "/opcua":
-            DisplayOpcua();
-            break;
-          case "/bacnet":
-            DisplayBACnet();
-            break;
-          case "/datadisplay":
-            dataDisplay();
-            break;
-          case "/macchina":
-            DisplayMacchina();
-            break;
-          case "/lorawan_conf":
-            DisplayLorawan();
-            break;
-          case "/terminal":
-            DisplayTerminal();
-            break;
-          case "/gps":
-            DisplayGps();
-            break;
-          case "/firewall_conf":
-            DisplayFirewall();
-            break;
-          default:
-            DisplayDashboard($extraFooterScripts);
-          }
-          ?>
+          <div class="load" id="loading" name="loading"></div>
+          <?php handlePageActions($page) ?>
         </div><!-- /.container-fluid -->
       </div><!-- End of Main Content -->
-      <!-- Footer -->
-      <footer class="sticky-footer bg-grey-100">
-        <div class="container my-auto">
-          <div class="copyright text-center my-auto">
-            <span></span>
-          </div>
-        </div>
-      </footer>
-      <!-- End Footer -->
     </div><!-- End of Page Wrapper -->
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top" style="display: inline;">
@@ -396,7 +193,7 @@ $toggleState = getSidebarState();
     <!-- SB-Admin-2 JavaScript -->
     <script src="dist/sb-admin-2/js/sb-admin-2.js"></script>
 
-    <!-- Custom RaspAP JS -->
+    <!-- Custom JS -->
     <script src="app/js/custom.js"></script>
 
     <?php
@@ -410,63 +207,4 @@ $toggleState = getSidebarState();
     }
     ?>
   </body>
-
-<script type="text/javascript">
-$(document).ready(function(){
-  $('.sidebar li a').each(function(){
-    if ($($(this))[0].href == String(window.location)) {
-      $(this).parent().addClass('active');
-    }
-  });
-
-  $('.nav-item').each(function() {
-      if ($(this).hasClass('active')) {
-        var id = $($(this))[0].id;
-        if (id == "dct_basic" || id == "interfaces" || id == "modbus" || id == "s7" ||
-            id == "server" || id == "io" || id == "bacnet" || id == "fx" || id == "datadisplay" ||
-            id == "opcua" || id == "mc" || id == "ascii") {
-          $('#navbar-collapse-dct').addClass('show')
-          $('#dct').removeClass('collapsed');
-        } else if (id == "ddns" || id == "macchina") {
-          $('#navbar-collapse-remote').addClass('show');
-          $('#remote').removeClass('collapsed');
-        } else if (id == "wan" || id == "lan" || id == "wifi" || id == "wifi_client" || 
-          id == "online_detection" || id == "lorawan" || id == "firewall") {
-          $('#navbar-collapse-network').addClass('show');
-          $('#network').removeClass('collapsed');
-        } else if (id == "openvpn" || id == "wireguard") {
-          $('#navbar-collapse-vpn').addClass('show');
-          $('#vpn').removeClass('collapsed');
-        } else if (id == "terminal" || id == "gps") {
-          $('#navbar-collapse-services').addClass('show');
-          $('#services').removeClass('collapsed');
-        }
-      }
-  });
-
-  function itemChange(id) {
-    var idArr = ['dct', 'remote', 'network', 'vpn', 'services'];
-    if (id.includes('page_')) {
-      var key = id.slice(5);
-      // console.log(key);
-      if (idArr.includes(key)) {
-        idArr.forEach(function (info) {
-            if (id != 'page_' + info) {
-              // console.log("info:" + info);
-              if ($('#navbar-collapse-' + info).hasClass('show')) {
-                  $('#navbar-collapse-' + info).removeClass('show');
-                  $('#' + info).addClass('collapsed');
-              }
-            }
-        });
-      }
-    }
-  }
-
-  $('.nav-item').click(function() {
-    var id = $($(this))[0].id;
-    itemChange(id);
-  });
-});
-</script>
 </html>

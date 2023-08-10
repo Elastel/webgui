@@ -838,3 +838,114 @@ function getModel()
     return $model[0];
 }
 
+function handlePageActions($page)
+{
+    $extraFooterScripts = array();
+    // handle page actions
+    switch ($page) {
+        case "/wlan0_info":
+            DisplayDashboard($extraFooterScripts);
+            break;
+        case "/dhcpd_conf":
+            DisplayDHCPConfig();
+            break;
+        case "/wpa_conf":
+            DisplayWPAConfig();
+            break;
+        case "/network_conf":
+            DisplayNetworkingConfig();
+            break;
+        case "/hostapd_conf":
+            DisplayHostAPDConfig();
+            break;
+        case "/detection_conf":
+            DisplayDetectionConfig();
+            break;
+        case "/adblock_conf":
+            DisplayAdBlockConfig();
+            break;
+        case "/openvpn":
+            DisplayOpenVPNConfig();
+            break;
+        case "/wireguard":
+            DisplayWireGuardConfig();
+            break;
+        case "/torproxy_conf":
+            DisplayTorProxyConfig();
+            break;
+        case "/auth_conf":
+            DisplayAuthConfig($config['admin_user'], $config['admin_pass']);
+            break;
+        case "/save_hostapd_conf":
+            SaveTORAndVPNConfig();
+            break;
+        case "/theme_conf":
+            DisplayThemeConfig($extraFooterScripts);
+            break;
+        case "/data_use":
+            DisplayDataUsage($extraFooterScripts);
+            break;
+        case "/system_info":
+            DisplaySystem();
+            break;
+        case "/about":
+            DisplayAbout();
+            break;
+        case "/basic_conf":
+            DisplayBasic();
+            break;
+        case "/interfaces_conf":
+            DisplayInterfaces();
+            break;
+        case "/modbus_conf":
+            DisplayModbus();
+            break;
+        case "/ascii_conf":
+            DisplayAscii();
+            break;
+        case "/s7_conf":
+            DisplayS7();
+            break;
+        case "/fx_conf":
+            DisplayFx();
+            break;
+        case "/mc_conf":
+            DisplayMc();
+            break;
+        case "/io_conf":
+            DisplayIO();
+            break;
+        case "/server_conf":
+            DisplayServer();
+            break;
+        case "/ddns":
+            DisplayDDNS();
+            break;
+        case "/opcua":
+            DisplayOpcua();
+            break;
+        case "/bacnet":
+            DisplayBACnet();
+            break;
+        case "/datadisplay":
+            dataDisplay();
+            break;
+        case "/macchina":
+            DisplayMacchina();
+            break;
+        case "/lorawan_conf":
+            DisplayLorawan();
+            break;
+        case "/terminal":
+            DisplayTerminal();
+            break;
+        case "/gps":
+            DisplayGps();
+            break;
+        case "/firewall_conf":
+            DisplayFirewall();
+            break;
+        default:
+            DisplayDashboard($extraFooterScripts);
+    }
+}
