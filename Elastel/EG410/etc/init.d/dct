@@ -2,6 +2,7 @@
 
 PROG=/usr/sbin/dctd
 BACNET_PROG=/usr/sbin/bacserv
+BACCLI_PROG=/usr/sbin/baccli
 
 do_start()
 {
@@ -13,9 +14,14 @@ do_start()
 	$PROG >/dev/null &
 
 	bacnet_enabled=$(uci get dct.bacnet.enabled)
-	[ "$bacnet_enabled" = "1" ] || return
+	[ "$bacnet_enabled" = "1" ] && {
+		$BACNET_PROG >/dev/null &
+	}
 
-	$BACNET_PROG >/dev/null &
+	baccli_enabled=$(uci get dct.bacnet_client.enabled)
+	[ "$baccli_enabled" = "1" ] && {
+		$BACCLI_PROG >/dev/null &
+	}
 }
 
 do_stop()
@@ -32,6 +38,13 @@ do_stop()
 	[ -n "$(pgrep bacserv)" ] && {
 		sleep 1
 		kill -9 $(pgrep bacserv)
+	}
+
+	killall -q baccli
+	sleep 1
+	[ -n "$(pgrep baccli)" ] && {
+		sleep 1
+		kill -9 $(pgrep baccli)
 	}
 }
 

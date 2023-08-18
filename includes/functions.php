@@ -945,6 +945,9 @@ function handlePageActions($page)
         case "/firewall_conf":
             DisplayFirewall();
             break;
+        case "/bacnet_client":
+            DisplayBACnetClient();
+            break;
         default:
             DisplayDashboard($extraFooterScripts);
     }

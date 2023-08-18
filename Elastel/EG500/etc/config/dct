@@ -33,6 +33,8 @@ config setting 'server'
 
 config setting 'bacnet'
 
+config setting 'bacnet_client'
+
 config setting 'opcua'
 
 config state 'connection'

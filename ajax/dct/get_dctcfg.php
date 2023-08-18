@@ -419,7 +419,48 @@ if ($type == "basic") {
             }
         }
     }
-}  else if ($type == 'datadisplay') {
+} else if ($type == 'bacnet_client') {
+    $arr = array('ip_address', 'port', 'device_id', 'name');
+    unset($enabled);
+    exec('/usr/local/bin/uci get dct.bacnet_client.enabled', $enabled);
+    $dctdata['enabled'] = $enabled[0];
+    if ($enabled[0] == '1') {
+        foreach ($arr as $info) {
+            unset($val);
+            exec('sudo /usr/local/bin/uci get dct.bacnet_client.' . $info, $val);
+            $dctdata[$info] = $val[0];
+        }
+    }
+
+    exec("sudo /usr/sbin/uci_get_count dct baccli", $baccli_count);
+    $dctdata['count'] = $baccli_count[0];
+    
+    for ($i = 0; $i < number_format($baccli_count[0]); $i++) {
+        exec("sudo /usr/local/bin/uci get dct.@baccli[$i].order", $order);
+        exec("sudo /usr/local/bin/uci get dct.@baccli[$i].device_name", $device_name);
+        exec("sudo /usr/local/bin/uci get dct.@baccli[$i].factor_name", $factor_name);
+        exec("sudo /usr/local/bin/uci get dct.@baccli[$i].object_id", $object_id);
+        exec("sudo /usr/local/bin/uci get dct.@baccli[$i].server_center", $server_center);
+        exec("sudo /usr/local/bin/uci get dct.@baccli[$i].operator", $operator);
+        exec("sudo /usr/local/bin/uci get dct.@baccli[$i].operand", $operand);
+        exec("sudo /usr/local/bin/uci get dct.@baccli[$i].ex", $ex);
+        exec("sudo /usr/local/bin/uci get dct.@baccli[$i].accuracy", $accuracy);
+        exec("sudo /usr/local/bin/uci get dct.@baccli[$i].enabled", $baccli_enabled);
+
+        $dctdata['order'][$i] = $order[$i];
+        $dctdata['device_name'][$i] = $device_name[$i];
+        $dctdata['factor_name'][$i] = $factor_name[$i];
+        $dctdata['object_id'][$i] = $object_id[$i];
+        $dctdata['server_center'][$i] = $server_center[$i];
+        $dctdata['operator'][$i] = $operator[$i];
+        $dctdata['operand'][$i] = $operand[$i];
+        $dctdata['ex'][$i] = $ex[$i];
+        $dctdata['accuracy'][$i] = $accuracy[$i];
+        $dctdata['baccli_enabled'][$i] = ($baccli_enabled[$i] == '1') ? 'true' : 'false';
+    }
+
+
+} else if ($type == 'datadisplay') {
     exec('cat /tmp/webshow', $dctdata);
     if ($dctdata[0] != NULL){
         echo $dctdata[0];
