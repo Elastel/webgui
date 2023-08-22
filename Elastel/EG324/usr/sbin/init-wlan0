@@ -44,6 +44,9 @@ if [ $WIFI_CLINET_ENABLE = "1" ]; then
 else
 	if [ $WIFI_ENABLE = "1" ]; then
 		brctl addif br0 wlan0
+		ifconfig wlan0 down
+		sleep 1
+		ifconfig wlan0 up 0.0.0.0
 		sleep 1
 		rm /etc/systemd/system/hostapd.service
 		systemctl unmask hostapd.service

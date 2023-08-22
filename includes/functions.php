@@ -838,9 +838,8 @@ function getModel()
     return $model[0];
 }
 
-function handlePageActions($page)
+function handlePageActions($extraFooterScripts, $page)
 {
-    $extraFooterScripts = array();
     // handle page actions
     switch ($page) {
         case "/wlan0_info":

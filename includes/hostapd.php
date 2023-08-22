@@ -394,10 +394,6 @@ function updateHostapdConfig($ignore_broadcast_ssid,$wifiAPEnable,$bridgedEnable
         if ($ret[0] == '1') {
             exec('sudo /usr/local/bin/uci set wifi.wifi_client.enabled=0');
             exec("sudo /usr/bin/killall wpa_supplicant");
-
-            if ($model == "EG324") {
-                exec('sudo reboot');
-            }
         }
         
         if (isset($_POST['disable_wifi_ap'])) {
@@ -465,8 +461,12 @@ function updateHostapdConfig($ignore_broadcast_ssid,$wifiAPEnable,$bridgedEnable
     if (isset($_POST['max_num_sta'])) {
         $config.= 'max_num_sta='.$_POST['max_num_sta'].PHP_EOL;
     }
+
     file_put_contents("/tmp/hostapddata", $config);
     system("sudo cp /tmp/hostapddata " . RASPI_HOSTAPD_CONFIG, $result);
+    if ($model == "EG324") {
+        exec("sudo /bin/sed -i 's/^'ieee80211n'/#&/' /etc/hostapd/hostapd.conf");
+    }
     return $result;
 }
 

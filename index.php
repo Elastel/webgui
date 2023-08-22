@@ -170,7 +170,10 @@ require_once 'includes/includes.php';
         <!-- Begin Page Content -->
         <div class="container-fluid">
           <div class="load" id="loading" name="loading"></div>
-          <?php handlePageActions($page) ?>
+          <?php
+            $extraFooterScripts = array();
+            handlePageActions($extraFooterScripts, $page);
+          ?>
         </div><!-- /.container-fluid -->
       </div><!-- End of Main Content -->
     </div><!-- End of Page Wrapper -->
