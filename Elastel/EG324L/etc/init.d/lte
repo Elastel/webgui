@@ -5,8 +5,6 @@ STOP_PROG=/usr/sbin/stop_diald
 
 do_start()
 {
-	mount -t tmpfs tmpfs /var/state/ -o size=10m
-
 	local proto lte_interface
 
 	proto=$(uci get network.swan.proto)
