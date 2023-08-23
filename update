@@ -43,7 +43,7 @@ sleep 1
 if [ "$1" == "reset" ]; then
     echo $1
     sudo cp $path/config/hostapd.conf /etc/hostapd/hostapd.conf
-    if [ "$model" = "EG324" -o "$model" = "EG324L" ]; then
+    if [ "$model" = "EG324" ]; then
         sed -i "s/nl80211/rtl871xdrv/g" /etc/hostapd/hostapd.conf
     fi
     sudo cp $path/config/90_raspap.conf /etc/sysctl.d/90_raspap.conf
@@ -60,6 +60,7 @@ if [ "$1" == "reset" ]; then
         # reset wifi ssid
         sub_mac=$(ifconfig eth0 | grep ether | awk '{print $2}' | cut -f 5-6 -d ":" | tr -d ":")
     else
+        sudo cp $path/Elastel/$model/etc/WebTunnelAgent.properties /etc/WebTunnelAgent.properties
         sub_mac=$(ifconfig eth0 | grep HWaddr | awk '{print $5}' | cut -f 5-6 -d ":" | tr -d ":")
     fi
 
@@ -103,13 +104,17 @@ else
         sudo rm /etc/init.d/S90dct
         sudo rm /etc/init.d/S90edaemon
         sudo rm /etc/init.d/S90ddns
-        sleep 1
+        sudo rm /etc/init.d/S90init-wifi
+	sudo rm /etc/init.d/S90macchina
+	sleep 1
         sudo ln -s /etc/init.d/terminal /etc/init.d/S90terminal
         sudo ln -s /etc/init.d/failover /etc/init.d/S90failover
         sudo ln -s /etc/init.d/lte /etc/init.d/S90lte
         sudo ln -s /etc/init.d/dct /etc/init.d/S90dct
         sudo ln -s /etc/init.d/edaemon /etc/init.d/S90edaemon
         sudo ln -s /etc/init.d/ddns /etc/init.d/S90ddns
+	sudo ln -s /etc/init.d/init-wifi /etc/init.d/S90init-wifi
+	suod ln -s /etc/init.d/macchina /etc/init.d/S90macchina
 fi
 
 if [ $model = "EG500" -o  $model = "EG410" ]; then

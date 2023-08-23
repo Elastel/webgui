@@ -111,9 +111,7 @@ require_once 'includes/includes.php';
           <div class="collapse navbar-collapse" id="navbar-collapse-remote">
             <ul class="nav navbar-nav navbar-right">
               <li class="nav-item" name="ddns" id="ddns"> <a class="nav-link" href="ddns"><?php echo _("DDNS"); ?></a></li>
-              <?php if ($model != "EG324L") : ?>
               <li class="nav-item" name="macchina" id="macchina"> <a class="nav-link" href="macchina"><?php echo _("Macchina"); ?></a></li>
-              <?php endif; ?>
             </ul>
           </div>
         </li>
