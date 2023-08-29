@@ -588,7 +588,7 @@ function loadDataDisplay() {
 }
 
 function loadBACnetConfig() {
-    $.get('ajax/dct/get_dctcfg.php?type=bacnet',function(data){
+    $.get('ajax/dct/get_dctcfg.php?type=bacser',function(data){
         jsonData = JSON.parse(data);
         var arr = ['port', 'device_id', 'object_name'];
 
@@ -799,7 +799,7 @@ function setDHCPToggles(state) {
 
 function loadChannel() {
     $.get('ajax/networking/get_channel.php',function(data){
-        jsonData = JSON.parse(data);
+        var jsonData = JSON.parse(data);
         loadChannelSelect(jsonData);
     });
 }
@@ -807,7 +807,7 @@ function loadChannel() {
 function loadBasicConfig() {
     $('#loading').show();
     $.get('ajax/dct/get_dctcfg.php?type=basic',function(data){
-        jsonData = JSON.parse(data);
+        var jsonData = JSON.parse(data);
         var arr = ['collect_period', 'report_period', 'cache_enabled', 'cache_day', 'minute_enabled',
         'minute_period', 'hour_enabled', 'day_enabled'];
 
@@ -851,26 +851,26 @@ function loadBasicConfig() {
 
 function loadInterfacesConfig() {
     $('#loading').show();
-    $.get('ajax/dct/get_dctcfg.php?type=interfaces',function(data){
-        jsonData = JSON.parse(data);
+    $.get('ajax/dct/get_dctcfg.php?type=interface',function(data) {
+        var jsonData = JSON.parse(data);
         var arrCom = ['baudrate', 'databit', 'stopbit', 'parity', 'com_frame_interval',
                     'com_proto', 'com_cmd_interval', 'com_report_center'];
 
         for (var i = 1; i <= 4; i++) {
-            $('#com_enabled' + i).val(jsonData.com_enabled[i]);
-            if (jsonData.com_enabled[i] == '1') {
+            $('#com_enabled' + i).val(jsonData['com_enabled' + i]);
+            if (jsonData['com_enabled' + i] == '1') {
                 $('#page_com' + i).show();
                 $('#com_enable' + i).prop('checked', true);
 
                 arrCom.forEach(function (info) {
-                    if (jsonData[info][i] == null) {
+                    if (jsonData[info + i] == null) {
                         return true;    // continue: return true; break: return false
                     }
 
-                    $('#' + info + i).val(jsonData[info][i]);
+                    $('#' + info + i).val(jsonData[info + i]);
                 })
 
-                if (jsonData.com_proto[i] == '1') {
+                if (jsonData['com_proto' + i] == '1') {
                     //$('#com_report_center' + i).val(jsonData.com_report_center[i]);
                     $('#com_page_protocol_modbus' + i).hide();
                     $('#com_page_protocol_transparent' + i).show();
@@ -889,26 +889,26 @@ function loadInterfacesConfig() {
                     'tcp_report_center', 'rack', 'slot'];
 
         for (var i = 1; i <= 5; i++) {
-            $('#tcp_enabled' + i).val(jsonData.tcp_enabled[i]);
-            if (jsonData.tcp_enabled[i] == '1') {
+            $('#tcp_enabled' + i).val(jsonData['tcp_enabled' + i]);
+            if (jsonData['tcp_enabled' + i] == '1') {
                 $('#page_tcp' + i).show();
                 $('#tcp_enable' + i).prop('checked', true);
 
                 arrTcp.forEach(function (info) {
-                    if (jsonData[info][i] == null) {
+                    if (jsonData[info + i] == null) {
                         return true;    // continue: return true; break: return false
                     }
 
-                    $('#' + info + i).val(jsonData[info][i]);
+                    $('#' + info + i).val(jsonData[info + i]);
                 })
 
-                if (jsonData.tcp_proto[i] == '2') {
+                if (jsonData['tcp_proto' + i] == '2') {
                     //$('#rack' + i).val(jsonData.rack[i]);
                     //$('#slot' + i).val(jsonData.slot[i]);
                     $('#tcp_page_protocol_modbus' + i).hide();
                     $('#tcp_page_protocol_transparent' + i).hide(); 
                     $('#tcp_page_protocol_s7' + i).show(); 
-                } else if (jsonData.tcp_proto[i] == '1') {
+                } else if (jsonData['tcp_proto' + i] == '1') {
                     //$('#tcp_report_center' + i).val(jsonData.tcp_report_center[i]);
                     $('#tcp_page_protocol_modbus' + i).hide();
                     $('#tcp_page_protocol_transparent' + i).show(); 
@@ -932,25 +932,32 @@ function loadInterfacesConfig() {
 function loadModbusConfig() {
     $('#loading').show();
     $.get('ajax/dct/get_dctcfg.php?type=modbus',function(data){
-        jsonData = JSON.parse(data);
-        for (var i = 0; i < Number(jsonData.count); i++) {
+        var jsonData = JSON.parse(data);
+        var data_type_value = ['Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
+                            'Unsigned 32Bits ABCD', 'Unsigned 32Bits BADC', 'Unsigned 32Bits CDAB', 'Unsigned 32Bits DCBA',
+                            'Signed 32Bits ABCD', 'Signed 32Bits BADC', 'Signed 32Bits CDAB', 'Signed 32Bits DCBA',
+                            'Float ABCD', 'Float BADC', 'Float CDAB', 'Float DCBA'];
+
+        var len = Number(jsonData.length);
+
+        for (var i = 0; i < len; i++) {
             var table = document.getElementsByTagName("table")[0];
             table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='order'>"+ (jsonData.order[i] != null ? jsonData.order[i] : "-") + "</td>\n" +
-                "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='belonged_com'>"+ (jsonData.belonged_com[i] != null ? jsonData.belonged_com[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='device_id'>"+ (jsonData.device_id[i] != null ? jsonData.device_id[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='function_code'>"+ (jsonData.function_code[i] != null ? jsonData.function_code[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_addr'>"+ (jsonData.reg_addr[i] != null ? jsonData.reg_addr[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_count'>"+ (jsonData.reg_count[i] != null ? jsonData.reg_count[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='data_type'>"+ jsonData.data_type[i] +"</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='operator'>"+ jsonData.operator[i] +"</td>\n" +
-                "        <td style='display:none' name='operand'>"+ (jsonData.operand[i] != null ? jsonData.operand[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='ex'>"+ (jsonData.ex[i] != null ? jsonData.ex[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='accuracy'>"+ jsonData.accuracy[i] +"</td>\n" +
-                "        <td style='text-align:center' name='enabled'>"+ jsonData.enabled[i] +"</td>\n" +
+                "        <td style='text-align:center' name='order'>"+ (jsonData[i].order != null ? jsonData[i].order : "-") + "</td>\n" +
+                "        <td style='text-align:center' name='device_name'>"+ (jsonData[i].device_name != null ? jsonData[i].device_name : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='belonged_com'>"+ (jsonData[i].belonged_com != null ? jsonData[i].belonged_com : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='factor_name'>"+ (jsonData[i].factor_name != null ? jsonData[i].factor_name : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='device_id'>"+ (jsonData[i].device_id != null ? jsonData[i].device_id : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='function_code'>"+ (jsonData[i].function_code != null ? jsonData[i].function_code : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='reg_addr'>"+ (jsonData[i].reg_addr != null ? jsonData[i].reg_addr : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='reg_count'>"+ (jsonData[i].reg_count != null ? jsonData[i].reg_count : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='data_type'>"+ data_type_value[Number(jsonData[i].data_type)] +"</td>\n" +
+                "        <td style='text-align:center' name='server_center'>"+ (jsonData[i].server_center != null ? jsonData[i].server_center : "-") +"</td>\n" +
+                "        <td style='display:none' name='operator'>"+ jsonData[i].operator +"</td>\n" +
+                "        <td style='display:none' name='operand'>"+ (jsonData[i].operand != null ? jsonData[i].operand : "-") +"</td>\n" +
+                "        <td style='display:none' name='ex'>"+ (jsonData[i].ex != null ? jsonData[i].ex : "-") +"</td>\n" +
+                "        <td style='display:none' name='accuracy'>"+ jsonData[i].accuracy +"</td>\n" +
+                "        <td style='text-align:center' name='enabled'>"+ (jsonData[i].enabled == "1" ? true : false) +"</td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"editData(this);\" >Edit</a></td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"delData(this);\" >Del</a></td>\n" +
                 "    </tr>";
@@ -966,18 +973,20 @@ function loadModbusConfig() {
 function loadAsciiConfig() {
     $('#loading').show();
     $.get('ajax/dct/get_dctcfg.php?type=ascii',function(data){
-        jsonData = JSON.parse(data);
-        for (var i = 0; i < Number(jsonData.count); i++) {
+        var jsonData = JSON.parse(data);
+        var len = Number(jsonData.length);
+
+        for (var i = 0; i < len; i++) {
             var table = document.getElementsByTagName("table")[0];
             table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='order'>"+ (jsonData.order[i] != null ? jsonData.order[i] : "-") + "</td>\n" +
-                "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='belonged_com'>"+ (jsonData.belonged_com[i] != null ? jsonData.belonged_com[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='tx_cmd'>"+ (jsonData.tx_cmd[i] != null ? jsonData.tx_cmd[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='cmd_format'>"+ (jsonData.cmd_format[i] != null ? jsonData.cmd_format[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='enabled'>"+ jsonData.enabled[i] +"</td>\n" +
+                "        <td style='text-align:center' name='order'>"+ ( jsonData[i].order != null ?  jsonData[i].order : "-") + "</td>\n" +
+                "        <td style='text-align:center' name='device_name'>"+ ( jsonData[i].device_name != null ?  jsonData[i].device_name : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='belonged_com'>"+ ( jsonData[i].belonged_com != null ?  jsonData[i].belonged_com : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='factor_name'>"+ ( jsonData[i].factor_name != null ?  jsonData[i].factor_name : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='tx_cmd'>"+ ( jsonData[i].tx_cmd != null ?  jsonData[i].tx_cmd : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='cmd_format'>"+ ( jsonData[i].cmd_format != null ?  jsonData[i].cmd_format : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='server_center'>"+ ( jsonData[i].server_center != null ?  jsonData[i].server_center : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='enabled'>"+ (jsonData[i].enabled == "1" ? true : false) +"</td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"editDataAscii(this);\" >Edit</a></td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"delDataAscii(this);\" >Del</a></td>\n" +
                 "    </tr>";
@@ -993,24 +1002,28 @@ function loadAsciiConfig() {
 function loadS7Config() {
     $('#loading').show();
     $.get('ajax/dct/get_dctcfg.php?type=s7',function(data){
-        jsonData = JSON.parse(data);
-        for (var i = 0; i < Number(jsonData.count); i++) {
+        var jsonData = JSON.parse(data);
+        var reg_type_value = ['I', 'Q', 'M', 'DB', 'V', 'C', 'T'];
+        var word_len_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real', 'Counter', 'Timer'];
+        var len = Number(jsonData.length);
+
+        for (var i = 0; i < len; i++) {
             var table = document.getElementsByTagName("table")[0];
             table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='order'>"+ (jsonData.order[i] != null ? jsonData.order[i] : "-") + "</td>\n" +
-                "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='belonged_com'>"+ (jsonData.belonged_com[i] != null ? jsonData.belonged_com[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_type'>"+ (jsonData.reg_type[i] != null ? jsonData.reg_type[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_addr'>"+ (jsonData.reg_addr[i] != null ? jsonData.reg_addr[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_count'>"+ (jsonData.reg_count[i] != null ? jsonData.reg_count[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='word_len'>"+ jsonData.word_len[i] +"</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='operator'>"+ jsonData.operator[i] +"</td>\n" +
-                "        <td style='display:none' name='operand'>"+ (jsonData.operand[i] != null ? jsonData.operand[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='ex'>"+ (jsonData.ex[i] != null ? jsonData.ex[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='accuracy'>"+ jsonData.accuracy[i] +"</td>\n" +
-                "        <td style='text-align:center' name='enabled'>"+ jsonData.enabled[i] +"</td>\n" +
+                "        <td style='text-align:center' name='order'>"+ (jsonData[i].order != null ? jsonData[i].order : "-") + "</td>\n" +
+                "        <td style='text-align:center' name='device_name'>"+ (jsonData[i].device_name != null ? jsonData[i].device_name : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='belonged_com'>"+ (jsonData[i].belonged_com != null ? jsonData[i].belonged_com : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='factor_name'>"+ (jsonData[i].factor_name != null ? jsonData[i].factor_name : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='reg_type'>"+ reg_type_value[Number(jsonData[i].reg_type)] +"</td>\n" +
+                "        <td style='text-align:center' name='reg_addr'>"+ (jsonData[i].reg_addr != null ? jsonData[i].reg_addr : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='reg_count'>"+ (jsonData[i].reg_count != null ? jsonData[i].reg_count : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='word_len'>"+ word_len_value[Number(jsonData[i].word_len)] +"</td>\n" +
+                "        <td style='text-align:center' name='server_center'>"+ (jsonData[i].server_center != null ? jsonData[i].server_center : "-") +"</td>\n" +
+                "        <td style='display:none' name='operator'>"+ jsonData[i].operator +"</td>\n" +
+                "        <td style='display:none' name='operand'>"+ (jsonData[i].operand != null ? jsonData[i].operand : "-") +"</td>\n" +
+                "        <td style='display:none' name='ex'>"+ (jsonData[i].ex != null ? jsonData[i].ex : "-") +"</td>\n" +
+                "        <td style='display:none' name='accuracy'>"+ jsonData[i].accuracy +"</td>\n" +
+                "        <td style='text-align:center' name='enabled'>"+ (jsonData[i].enabled == "1" ? true : false) +"</td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"editS7Data(this);\" >Edit</a></td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"delS7Data(this);\" >Del</a></td>\n" +
                 "    </tr>";
@@ -1026,24 +1039,28 @@ function loadS7Config() {
 function loadFxConfig() {
     $('#loading').show();
     $.get('ajax/dct/get_dctcfg.php?type=fx',function(data){
-        jsonData = JSON.parse(data);
-        for (var i = 0; i < Number(jsonData.count); i++) {
+        var jsonData = JSON.parse(data);
+        var reg_type_value = ['X', 'Y', 'M', 'S', 'D'];
+        var data_type_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real'];
+        var len = Number(jsonData.length);
+
+        for (var i = 0; i < len; i++) {
             var table = document.getElementsByTagName("table")[0];
             table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='order'>"+ (jsonData.order[i] != null ? jsonData.order[i] : "-") + "</td>\n" +
-                "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='belonged_com'>"+ (jsonData.belonged_com[i] != null ? jsonData.belonged_com[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_type'>"+ (jsonData.reg_type[i] != null ? jsonData.reg_type[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_addr'>"+ (jsonData.reg_addr[i] != null ? jsonData.reg_addr[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_count'>"+ (jsonData.reg_count[i] != null ? jsonData.reg_count[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='data_type'>"+ jsonData.data_type[i] +"</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='operator'>"+ jsonData.operator[i] +"</td>\n" +
-                "        <td style='display:none' name='operand'>"+ (jsonData.operand[i] != null ? jsonData.operand[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='ex'>"+ (jsonData.ex[i] != null ? jsonData.ex[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='accuracy'>"+ jsonData.accuracy[i] +"</td>\n" +
-                "        <td style='text-align:center' name='enabled'>"+ jsonData.enabled[i] +"</td>\n" +
+                "        <td style='text-align:center' name='order'>"+ (jsonData[i].order != null ? jsonData[i].order : "-") + "</td>\n" +
+                "        <td style='text-align:center' name='device_name'>"+ (jsonData[i].device_name != null ? jsonData[i].device_name : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='belonged_com'>"+ (jsonData[i].belonged_com != null ? jsonData[i].belonged_com : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='factor_name'>"+ (jsonData[i].factor_name != null ? jsonData[i].factor_name : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='reg_type'>"+ reg_type_value[Number(jsonData[i].reg_type)] +"</td>\n" +
+                "        <td style='text-align:center' name='reg_addr'>"+ (jsonData[i].reg_addr != null ? jsonData[i].reg_addr : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='reg_count'>"+ (jsonData[i].reg_count != null ? jsonData[i].reg_count : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='data_type'>"+ data_type_value[Number(jsonData[i].data_type)] +"</td>\n" +
+                "        <td style='text-align:center' name='server_center'>"+ (jsonData[i].server_center != null ? jsonData[i].server_center : "-") +"</td>\n" +
+                "        <td style='display:none' name='operator'>"+ jsonData[i].operator +"</td>\n" +
+                "        <td style='display:none' name='operand'>"+ (jsonData[i].operand != null ? jsonData[i].operand : "-") +"</td>\n" +
+                "        <td style='display:none' name='ex'>"+ (jsonData[i].ex != null ? jsonData[i].ex : "-") +"</td>\n" +
+                "        <td style='display:none' name='accuracy'>"+ jsonData[i].accuracy +"</td>\n" +
+                "        <td style='text-align:center' name='enabled'>"+ (jsonData[i].enabled == "1" ? true : false) +"</td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"editFxData(this);\" >Edit</a></td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"delFxData(this);\" >Del</a></td>\n" +
                 "    </tr>";
@@ -1059,24 +1076,27 @@ function loadFxConfig() {
 function loadMcConfig() {
     $('#loading').show();
     $.get('ajax/dct/get_dctcfg.php?type=mc',function(data){
-        jsonData = JSON.parse(data);
-        for (var i = 0; i < Number(jsonData.count); i++) {
+        var jsonData = JSON.parse(data);
+        var data_type_value = ['Bit', 'Int', 'Float'];
+        var len = Number(jsonData.length);
+
+        for (var i = 0; i < len; i++) {
             var table = document.getElementsByTagName("table")[0];
             table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='order'>"+ (jsonData.order[i] != null ? jsonData.order[i] : "-") + "</td>\n" +
-                "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='belonged_com'>"+ (jsonData.belonged_com[i] != null ? jsonData.belonged_com[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='data_area'>"+ (jsonData.data_area[i] != null ? jsonData.data_area[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='start_addr'>"+ (jsonData.start_addr[i] != null ? jsonData.start_addr[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_count'>"+ (jsonData.reg_count[i] != null ? jsonData.reg_count[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='data_type'>"+ jsonData.data_type[i] +"</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='operator'>"+ jsonData.operator[i] +"</td>\n" +
-                "        <td style='display:none' name='operand'>"+ (jsonData.operand[i] != null ? jsonData.operand[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='ex'>"+ (jsonData.ex[i] != null ? jsonData.ex[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='accuracy'>"+ jsonData.accuracy[i] +"</td>\n" +
-                "        <td style='text-align:center' name='enabled'>"+ jsonData.enabled[i] +"</td>\n" +
+                "        <td style='text-align:center' name='order'>"+ (jsonData[i].order != null ? jsonData[i].order : "-") + "</td>\n" +
+                "        <td style='text-align:center' name='device_name'>"+ (jsonData[i].device_name != null ? jsonData[i].device_name : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='belonged_com'>"+ (jsonData[i].belonged_com != null ? jsonData[i].belonged_com : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='factor_name'>"+ (jsonData[i].factor_name != null ? jsonData[i].factor_name : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='data_area'>"+ (jsonData[i].data_area != null ? jsonData[i].data_area : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='start_addr'>"+ (jsonData[i].start_addr != null ? jsonData[i].start_addr : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='reg_count'>"+ (jsonData[i].reg_count != null ? jsonData[i].reg_count : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='data_type'>"+ data_type_value[Number(jsonData[i].data_type)] +"</td>\n" +
+                "        <td style='text-align:center' name='server_center'>"+ (jsonData[i].server_center != null ? jsonData[i].server_center : "-") +"</td>\n" +
+                "        <td style='display:none' name='operator'>"+ jsonData[i].operator +"</td>\n" +
+                "        <td style='display:none' name='operand'>"+ (jsonData[i].operand != null ? jsonData[i].operand : "-") +"</td>\n" +
+                "        <td style='display:none' name='ex'>"+ (jsonData[i].ex != null ? jsonData[i].ex : "-") +"</td>\n" +
+                "        <td style='display:none' name='accuracy'>"+ jsonData[i].accuracy +"</td>\n" +
+                "        <td style='text-align:center' name='enabled'>"+ (jsonData[i].enabled == "1" ? true : false) +"</td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"editMcData(this);\" >Edit</a></td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"delMcData(this);\" >Del</a></td>\n" +
                 "    </tr>";
@@ -1092,24 +1112,27 @@ function loadMcConfig() {
 function loadADCConfig() {
     $('#loading').show();
     $.get('ajax/dct/get_dctcfg.php?type=adc',function(data){
-        jsonData = JSON.parse(data);
+        var jsonData = JSON.parse(data);
+        var cap_type_value = ['4-20mA', '0-10V'];
+        var len = Number(jsonData.length);
         var model = document.getElementById("model").value;
+
         if (model == "EG500") {
-            for (var i = 0; i < Number(jsonData.count); i++) {
+            for (var i = 0; i < len; i++) {
                 var table = document.getElementsByTagName("table")[0];
                 table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                    "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
-                    "        <td style='text-align:center' name='index'>"+ jsonData.index[i] + "</td>\n" +
-                    "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
-                    "        <td style='text-align:center' name='cap_type'>"+ jsonData.cap_type[i] + "</td>\n" +
-                    "        <td style='text-align:center' name='range_down'>"+ (jsonData.range_down[i] != null ? jsonData.range_down[i] : "-") +"</td>\n" +
-                    "        <td style='text-align:center' name='range_up'>"+ (jsonData.range_up[i] != null ? jsonData.range_up[i] : "-") +"</td>\n" +
-                    "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
-                    "        <td style='display:none' name='operator'>"+ jsonData.operator[i] +"</td>\n" +
-                    "        <td style='display:none' name='operand'>"+ (jsonData.operand[i] != null ? jsonData.operand[i] : "-") +"</td>\n" +
-                    "        <td style='display:none' name='ex'>"+ (jsonData.ex[i] != null ? jsonData.ex[i] : "-") +"</td>\n" +
-                    "        <td style='display:none' name='accuracy'>"+ jsonData.accuracy[i] +"</td>\n" +
-                    "        <td style='text-align:center' name='enabled'>"+ jsonData.enabled[i] +"</td>\n" +
+                    "        <td style='text-align:center' name='device_name'>"+ (jsonData[i].device_name != null ? jsonData[i].device_name : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='index'>"+ jsonData[i].index + "</td>\n" +
+                    "        <td style='text-align:center' name='factor_name'>"+ (jsonData[i].factor_name != null ? jsonData[i].factor_name : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='cap_type'>"+ cap_type_value[Number(jsonData[i].cap_type)] + "</td>\n" +
+                    "        <td style='text-align:center' name='range_down'>"+ (jsonData[i].range_down != null ? jsonData[i].range_down : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='range_up'>"+ (jsonData[i].range_up != null ? jsonData[i].range_up : "-") +"</td>\n" +
+                    "        <td style='text-align:center' name='server_center'>"+ (jsonData[i].server_center != null ? jsonData[i].server_center : "-") +"</td>\n" +
+                    "        <td style='display:none' name='operator'>"+ jsonData[i].operator +"</td>\n" +
+                    "        <td style='display:none' name='operand'>"+ (jsonData[i].operand != null ? jsonData[i].operand : "-") +"</td>\n" +
+                    "        <td style='display:none' name='ex'>"+ (jsonData[i].ex != null ? jsonData[i].ex : "-") +"</td>\n" +
+                    "        <td style='display:none' name='accuracy'>"+ jsonData[i].accuracy +"</td>\n" +
+                    "        <td style='text-align:center' name='enabled'>"+ (jsonData[i].enabled == "1" ? true : false) +"</td>\n" +
                     "        <td><a href=\"javascript:void(0);\" onclick=\"editDataADC(this);\" >Edit</a></td>\n" +
                     "        <td><a href=\"javascript:void(0);\" onclick=\"delDataADC(this);\" >Del</a></td>\n" +
                     "    </tr>";
@@ -1127,7 +1150,7 @@ function loadADCConfig() {
 function loadDIConfig() {
     $('#loading').show();
     $.get('ajax/dct/get_dctcfg.php?type=di',function(data){
-        jsonData = JSON.parse(data);
+        var jsonData = JSON.parse(data);
         var model = document.getElementById("model").value;
         var table_num = [];
         if (model == "EG500") {
@@ -1136,21 +1159,25 @@ function loadDIConfig() {
             table_num = 0;
         }
 
-        for (var i = 0; i < Number(jsonData.count); i++) {
+        var mode_value = ['Counting Mode', 'Status Mode'];
+        var method_value = ['Rising Edge', 'Falling Edge'];
+        var len = Number(jsonData.length);
+
+        for (var i = 0; i < len; i++) {
             var table = document.getElementsByTagName("table")[table_num];
             table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='index'>"+ jsonData.index[i] +"</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='mode'>"+ jsonData.mode[i] +"</td>\n" +
-                "        <td style='text-align:center' name='count_method'>" + jsonData.count_method[i] + "</td>\n" +
-                "        <td style='text-align:center' name='debounce_interval'>"+ (jsonData.debounce_interval[i] != null ? jsonData.debounce_interval[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='operator'>"+ jsonData.operator[i] +"</td>\n" +
-                "        <td style='display:none' name='operand'>"+ (jsonData.operand[i] != null ? jsonData.operand[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='ex'>"+ (jsonData.ex[i] != null ? jsonData.ex[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='accuracy'>"+ jsonData.accuracy[i] +"</td>\n" +
-                "        <td style='text-align:center' name='enabled'>"+ jsonData.enabled[i] +"</td>\n" +
+                "        <td style='text-align:center' name='device_name'>"+ (jsonData[i].device_name != null ? jsonData[i].device_name : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='index'>"+ jsonData[i].index +"</td>\n" +
+                "        <td style='text-align:center' name='factor_name'>"+ (jsonData[i].factor_name != null ? jsonData[i].factor_name : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='mode'>"+ mode_value[Number(jsonData[i].mode)] +"</td>\n" +
+                "        <td style='text-align:center' name='count_method'>" + (jsonData[i].count_method != null ? method_value[Number(jsonData[i].count_method)] : "-")  + "</td>\n" +
+                "        <td style='text-align:center' name='debounce_interval'>"+ (jsonData[i].debounce_interval != null ? jsonData[i].debounce_interval : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='server_center'>"+ (jsonData[i].server_center != null ? jsonData[i].server_center : "-") +"</td>\n" +
+                "        <td style='display:none' name='operator'>"+ jsonData[i].operator +"</td>\n" +
+                "        <td style='display:none' name='operand'>"+ (jsonData[i].operand != null ? jsonData[i].operand : "-") +"</td>\n" +
+                "        <td style='display:none' name='ex'>"+ (jsonData[i].ex != null ? jsonData[i].ex : "-") +"</td>\n" +
+                "        <td style='display:none' name='accuracy'>"+ jsonData[i].accuracy +"</td>\n" +
+                "        <td style='text-align:center' name='enabled'>"+ (jsonData[i].enabled == "1" ? true : false) +"</td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"editDataDI(this);\" >Edit</a></td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"delDataDI(this);\" >Del</a></td>\n" +
                 "    </tr>";
@@ -1167,7 +1194,7 @@ function loadDIConfig() {
 function loadDOConfig() {
     $('#loading').show();
     $.get('ajax/dct/get_dctcfg.php?type=do',function(data){
-        jsonData = JSON.parse(data);
+        var jsonData = JSON.parse(data);
         var model = document.getElementById("model").value;
         var table_num = [];
         if (model == "EG500") {
@@ -1175,21 +1202,23 @@ function loadDOConfig() {
         } else if (model == "EG410") {
             table_num = 1;
         }
+        var status_value = ['Open', 'Close'];
+        var len = Number(jsonData.length);
 
-        for (var i = 0; i < Number(jsonData.count); i++) {
+        for (var i = 0; i < len; i++) {
             var table = document.getElementsByTagName("table")[table_num];
             table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='index'>"+ jsonData.index[i] + "</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='init_status'>"+ jsonData.init_status[i] + "</td>\n" +
-                "        <td style='text-align:center' name='cur_status'>"+ jsonData.cur_status[i] + "</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='operator'>"+ jsonData.operator[i] +"</td>\n" +
-                "        <td style='display:none' name='operand'>"+ (jsonData.operand[i] != null ? jsonData.operand[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='ex'>"+ (jsonData.ex[i] != null ? jsonData.ex[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='accuracy'>"+ jsonData.accuracy[i] +"</td>\n" +
-                "        <td style='text-align:center' name='enabled'>"+ jsonData.enabled[i] +"</td>\n" +
+                "        <td style='text-align:center' name='device_name'>"+ (jsonData[i].device_name != null ? jsonData[i].device_name : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='index'>"+ jsonData[i].index + "</td>\n" +
+                "        <td style='text-align:center' name='factor_name'>"+ (jsonData[i].factor_name != null ? jsonData[i].factor_name : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='init_status'>"+ status_value[Number(jsonData[i].init_status)] + "</td>\n" +
+                "        <td style='text-align:center' name='cur_status'>"+ status_value[Number(jsonData[i].cur_status)] + "</td>\n" +
+                "        <td style='text-align:center' name='server_center'>"+ (jsonData[i].server_center != null ? jsonData[i].server_center : "-") +"</td>\n" +
+                "        <td style='display:none' name='operator'>"+ jsonData[i].operator +"</td>\n" +
+                "        <td style='display:none' name='operand'>"+ (jsonData[i].operand != null ? jsonData[i].operand : "-") +"</td>\n" +
+                "        <td style='display:none' name='ex'>"+ (jsonData[i].ex != null ? jsonData[i].ex : "-") +"</td>\n" +
+                "        <td style='display:none' name='accuracy'>"+ jsonData[i].accuracy +"</td>\n" +
+                "        <td style='text-align:center' name='enabled'>"+ (jsonData[i].enabled == "1" ? true : false) +"</td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"editDataDO(this);\" >Edit</a></td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"delDataDO(this);\" >Del</a></td>\n" +
                 "    </tr>";
@@ -1204,8 +1233,8 @@ function loadDOConfig() {
 }
 
 function loadBACnetClientConfig() {
-    $.get('ajax/dct/get_dctcfg.php?type=bacnet_client',function(data){
-        jsonData = JSON.parse(data);
+    $.get('ajax/dct/get_dctcfg.php?type=baccli',function(data){
+        var jsonData = JSON.parse(data);
         if (jsonData == null)
             return;
 
@@ -1229,19 +1258,22 @@ function loadBACnetClientConfig() {
             $('#bacnet_disable').prop('checked', true);
         }
 
-        for (var i = 0; i < Number(jsonData.count); i++) {
+        var tmpData = jsonData.baccli;
+        var len = Number(tmpData.length);
+
+        for (var i = 0; i < len; i++) {
             var table = document.getElementsByTagName("table")[0];
             table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='order'>"+ (jsonData.order[i] != null ? jsonData.order[i] : "-") + "</td>\n" +
-                "        <td style='text-align:center' name='device_name'>"+ (jsonData.device_name[i] != null ? jsonData.device_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ (jsonData.factor_name[i] != null ? jsonData.factor_name[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='object_id'>"+ (jsonData.object_id[i] != null ? jsonData.object_id[i] : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ (jsonData.server_center[i] != null ? jsonData.server_center[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='operator'>"+ jsonData.operator[i] +"</td>\n" +
-                "        <td style='display:none' name='operand'>"+ (jsonData.operand[i] != null ? jsonData.operand[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='ex'>"+ (jsonData.ex[i] != null ? jsonData.ex[i] : "-") +"</td>\n" +
-                "        <td style='display:none' name='accuracy'>"+ jsonData.accuracy[i] +"</td>\n" +
-                "        <td style='text-align:center' name='enabled'>"+ jsonData.baccli_enabled[i] +"</td>\n" +
+                "        <td style='text-align:center' name='order'>"+ (tmpData[i].order != null ? tmpData[i].order : "-") + "</td>\n" +
+                "        <td style='text-align:center' name='device_name'>"+ (tmpData[i].device_name != null ? tmpData[i].device_name : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='factor_name'>"+ (tmpData[i].factor_name != null ? tmpData[i].factor_name : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='object_id'>"+ (tmpData[i].object_id != null ? tmpData[i].object_id : "-") +"</td>\n" +
+                "        <td style='text-align:center' name='server_center'>"+ (tmpData[i].server_center != null ? tmpData[i].server_center : "-") +"</td>\n" +
+                "        <td style='display:none' name='operator'>"+ tmpData[i].operator +"</td>\n" +
+                "        <td style='display:none' name='operand'>"+ (tmpData[i].operand != null ? tmpData[i].operand : "-") +"</td>\n" +
+                "        <td style='display:none' name='ex'>"+ (tmpData[i].ex != null ? tmpData[i].ex : "-") +"</td>\n" +
+                "        <td style='display:none' name='accuracy'>"+ tmpData[i].accuracy +"</td>\n" +
+                "        <td style='text-align:center' name='enabled'>"+ (tmpData[i].enabled == "1" ? true : false) +"</td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"editDataBaccli(this);\" >Edit</a></td>\n" +
                 "        <td><a href=\"javascript:void(0);\" onclick=\"delDataBaccli(this);\" >Del</a></td>\n" +
                 "    </tr>";
@@ -1257,7 +1289,7 @@ function loadBACnetClientConfig() {
 function loadServerConfig() {
     $('#loading').show();
     $.get('ajax/dct/get_dctcfg.php?type=server',function(data){
-        jsonData = JSON.parse(data);
+        var jsonData = JSON.parse(data);
 
         var arr = ["proto", "encap_type", "server_addr", "http_url", "server_port", "cache_enabled", 
         "register_packet", "register_packet_hex", "heartbeat_packet", "heartbeat_packet_hex", "heartbeat_interval",
@@ -1267,28 +1299,28 @@ function loadServerConfig() {
         "mn", "st", "pw"];
 
         for (var i = 1; i <= 5; i++) {
-            $('#enabled' + i).val(jsonData.enabled[i]);
-            if (jsonData.enabled[i] == '1') {
+            $('#enabled' + i).val(jsonData['enabled' + i]);
+            if (jsonData['enabled' + i] == '1') {
                 $('#page_server' + i).show();
                 $('#enable' + i).prop('checked', true);
                 arr.forEach(function (info) {
                     if (info == "cache_enabled" || info == "register_packet_hex" || info == "heartbeat_packet_hex" ||
                         info == "mqtt_tls_enabled" ||  info == "self_define_var") {
-                        $('#' + info + i).prop('checked', (jsonData[info][i] == '1') ? true:false);
+                        $('#' + info + i).prop('checked', (jsonData[info + i] == '1') ? true:false);
                     } else if (info == "mqtt_ca") {
-                        if (jsonData.ca_file_exists[i] == '1') {
-                            $('#ca_text' + i).html(jsonData.mqtt_ca[i]);
+                        if (jsonData['mqtt_ca' + i]) {
+                            $('#ca_text' + i).html(jsonData['mqtt_ca' + i]);
                         }
                     } else if (info == "mqtt_cert") {
-                        if (jsonData.cer_file_exists[i] == '1') {
-                            $('#cer_text' + i).html(jsonData.mqtt_cert[i]);
+                        if (jsonData['mqtt_cert' + i]) {
+                            $('#cer_text' + i).html(jsonData['mqtt_cert' + i]);
                         }
                     } else if (info == "mqtt_key") {
-                        if (jsonData.key_file_exists[i] == '1') {
-                            $('#key_text' + i).html(jsonData.mqtt_key[i]);
+                        if (jsonData['mqtt_key' + i]) {
+                            $('#key_text' + i).html(jsonData['mqtt_key' + i]);
                         }
                     } else {
-                        $('#' + info + i).val(jsonData[info][i]);
+                        $('#' + info + i).val(jsonData[info + i]);
                     }
                     protocolChange(i);
                 });           

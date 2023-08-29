@@ -131,7 +131,7 @@ function saveDO($status)
             exec("sudo /usr/local/bin/uci delete dct.@do[$i]");
             exec("sudo /usr/local/bin/uci add dct do");
             foreach ($things as $key=>$val) {
-                if ($key == "init_status") {
+                if ($key == "init_status" || $key == "cur_status") {
                     $status_num = array_search($val, $status_value);
                     exec("sudo /usr/local/bin/uci set dct.@do[$i].$key=$status_num");
                 } else if ($key == "enabled") {
