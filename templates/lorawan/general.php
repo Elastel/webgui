@@ -44,7 +44,8 @@
             <option value="0"><?php echo _("Europe 868MHz(863~870)--EU868"); ?></option>
             <option value="1"><?php echo _("China 490MHz--CN490"); ?></option>
             <option value="2"><?php echo _("United States 915MHz(902~928)--US915"); ?></option>
-            <option value="3"><?php echo _("Asia 920~923MHz--AS923"); ?></option>
+            <option value="3"><?php echo _("Australia 915MHz(915~928)--AU915"); ?></option>
+            <option value="4"><?php echo _("Asia 920~923MHz--AS923"); ?></option>
         </select>
     </div>
   </div><!-- /.row -->

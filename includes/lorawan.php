@@ -101,14 +101,16 @@ function saveLorawanConfig($status)
         exec("sudo mv /tmp/global_conf.json /etc/global_conf.json");
 
         $status->addMessage('lorawan configuration updated ', 'success');
+        exec("sudo /usr/local/bin/uci set loragw.loragw.frequency=" .$_POST['frequency']);
     } else {
         exec("sudo /usr/local/bin/uci get loragw.loragw.type", $cur_type);
         if ($cur_type[0] != "1") {
             $status->addMessage('Type service must be lorawan service first ', 'danger');
+        } else {
+            exec("sudo /usr/local/bin/uci set loragw.loragw.frequency=" .$_POST['frequency']);
         }
     }
 
     exec("sudo /usr/local/bin/uci set loragw.loragw.type=" .$_POST['type']);
-    exec("sudo /usr/local/bin/uci set loragw.loragw.frequency=" .$_POST['frequency']);
     exec("sudo /usr/local/bin/uci commit loragw");
 }
