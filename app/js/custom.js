@@ -3119,10 +3119,10 @@ function freqPlanChange() {
         $('#radio0_tx_max').val('928000000');
         $('#radio1_frequency').val('905000000');
     } else if (a == '3') { // AU915
-        $('#radio0_frequency').val('917300000');
-        $('#radio0_tx_min').val('923000000');
+        $('#radio0_frequency').val('917200000');
+        $('#radio0_tx_min').val('915000000');
         $('#radio0_tx_max').val('928000000');
-        $('#radio1_frequency').val('918000000');
+        $('#radio1_frequency').val('917900000');
     }  else if (a == '4') { // AS923
         $('#radio0_frequency').val('922300000');
         $('#radio0_tx_min').val('920000000');
