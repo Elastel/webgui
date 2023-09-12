@@ -84,6 +84,7 @@ function saveOpcuaConfig($status)
         }
 
         exec("sudo /usr/local/bin/uci set dct.opcua.max_value=" .$_POST['max_value']);
+        exec("sudo /usr/local/bin/uci set dct.opcua.enable_database=" .$_POST['enable_database']);
         
         exec("sudo /usr/local/bin/uci set dct.opcua.security_policy=" .$_POST['security_policy']);
         if ($_POST['security_policy'] != '0') {

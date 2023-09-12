@@ -81,6 +81,11 @@
                 </div>
 
                 <div class="cbi-value">
+                  <label class="cbi-value-title" for="enable_database"><?php echo _("Enable Database"); ?></label>
+                  <input id="enable_database" type="checkbox" name="enable_database" value="1">
+                </div>
+
+                <div class="cbi-value">
                   <label class="cbi-value-title"><?php echo _("Security Policy"); ?></label>
                   <select id="security_policy" name="security_policy" class="cbi-input-select" onchange="securityChange(this)">
                     <option value="0" selected=""><?php echo _("None"); ?></option>

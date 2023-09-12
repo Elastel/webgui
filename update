@@ -68,6 +68,7 @@ if [ "$1" == "reset" ]; then
     sed -i "s/ssid.*/ssid=$ssid/" /etc/hostapd/hostapd.conf
 fi
 
+sudo cp $path/config/elastel_config.json /etc/elastel_config.json
 sudo cp $path/config/rules.v4 /etc/iptables/rules.v4
 sudo cp $path/installers/service*.sh /etc/raspap/hostapd
 sudo cp $path/Elastel/$model/etc/init.d/* /etc/init.d/
