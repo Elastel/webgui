@@ -838,6 +838,16 @@ function getModel()
     return $model[0];
 }
 
+function isBinExists($name)
+{
+    exec("which $name", $path);
+    if ($path[0] == null) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 function handlePageActions($extraFooterScripts, $page)
 {
     // handle page actions
@@ -946,6 +956,12 @@ function handlePageActions($extraFooterScripts, $page)
             break;
         case "/bacnet_client":
             DisplayBACnetClient();
+            break;
+        case "/nodered":
+            DisplayNodered();
+            break;
+        case "/docker":
+            DisplayDocker();
             break;
         default:
             DisplayDashboard($extraFooterScripts);

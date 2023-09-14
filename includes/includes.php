@@ -50,6 +50,8 @@ require_once 'includes/mc.php';
 require_once 'includes/firewall.php';
 require_once 'includes/ascii.php';
 require_once 'includes/bacnet_client.php';
+require_once 'includes/nodered.php';
+require_once 'includes/docker.php';
 
 $config = getConfig();
 $model = getModel();

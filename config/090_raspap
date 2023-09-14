@@ -109,3 +109,6 @@ www-data ALL=(ALL) NOPASSWD:/bin/cp /tmp/resolv.conf /etc/resolv.conf
 www-data ALL=(ALL) NOPASSWD:/etc/init.d/gps *
 www-data ALL=(ALL) NOPASSWD:/etc/init.d/firewall *
 www-data ALL=(ALL) NOPASSWD:/bin/sed -i * /etc/hostapd/hostapd.conf
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl * docker.service
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl * nodered.service
+www-data ALL=(ALL) NOPASSWD:/usr/bin/docker *

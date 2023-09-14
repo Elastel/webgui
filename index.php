@@ -137,12 +137,16 @@ require_once 'includes/includes.php';
           <div class="collapse navbar-collapse" id="navbar-collapse-services">
             <ul class="nav navbar-nav navbar-right">
               <li class="nav-item" name="terminal" id="terminal"> <a class="nav-link" href="terminal"><?php echo _("Terminal"); ?></a></li>
-            </ul>
-            <?php if ($model == "EG500" || $model == "EG410") : ?>
-            <ul class="nav navbar-nav navbar-right">
+              <?php if ($model == "EG500" || $model == "EG410") : ?>
               <li class="nav-item" name="gps" id="gps"> <a class="nav-link" href="gps"><?php echo _("GPS Location"); ?></a></li>
+              <?php endif; ?>
+              <?php if(isBinExists("node-red")) : ?>
+              <li class="nav-item" name="nodered" id="nodered"> <a class="nav-link" href="nodered"><?php echo _("Node Red"); ?></a></li>
+              <?php endif; ?>
+              <?php if(isBinExists("dockerd")) : ?>
+              <li class="nav-item" name="docker" id="docker"> <a class="nav-link" href="docker"><?php echo _("Docker"); ?></a></li>
+              <?php endif; ?>
             </ul>
-            <?php endif; ?>
           </div>
         </li>
         <li class="nav-item">

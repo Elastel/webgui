@@ -3535,21 +3535,21 @@ $(document).ready(function(){
             if (id == "dct_basic" || id == "interfaces" || id == "modbus" || id == "s7" ||
                 id == "server" || id == "io" || id == "bacnet" || id == "fx" || id == "datadisplay" ||
                 id == "opcua" || id == "mc" || id == "ascii" || id == "bacnet_client") {
-            $('#navbar-collapse-dct').addClass('show')
-            $('#dct').removeClass('collapsed');
+                $('#navbar-collapse-dct').addClass('show')
+                $('#dct').removeClass('collapsed');
             } else if (id == "ddns" || id == "macchina") {
-            $('#navbar-collapse-remote').addClass('show');
-            $('#remote').removeClass('collapsed');
+                $('#navbar-collapse-remote').addClass('show');
+                $('#remote').removeClass('collapsed');
             } else if (id == "wan" || id == "lan" || id == "wifi" || id == "wifi_client" || 
             id == "online_detection" || id == "lorawan" || id == "firewall") {
-            $('#navbar-collapse-network').addClass('show');
-            $('#network').removeClass('collapsed');
+                $('#navbar-collapse-network').addClass('show');
+                $('#network').removeClass('collapsed');
             } else if (id == "openvpn" || id == "wireguard") {
-            $('#navbar-collapse-vpn').addClass('show');
-            $('#vpn').removeClass('collapsed');
-            } else if (id == "terminal" || id == "gps") {
-            $('#navbar-collapse-services').addClass('show');
-            $('#services').removeClass('collapsed');
+                $('#navbar-collapse-vpn').addClass('show');
+                $('#vpn').removeClass('collapsed');
+            } else if (id == "terminal" || id == "gps" || id == "nodered" || id == "docker") {
+                $('#navbar-collapse-services').addClass('show');
+                $('#services').removeClass('collapsed');
             }
         }
     });
