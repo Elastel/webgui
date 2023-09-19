@@ -65,6 +65,7 @@
                     <div class="cbi-value">
                         <label class="cbi-value-title"><?php echo _("URL"); ?></label>
                         <input type="text" class="cbi-input-text" name="url" id="url" value="<?php echo _(($url[0] != null) ? $url[0] : ""); ?>"/>
+                        <a class="cbi-value-description" href="https://remote.macchina.io" target="_blank"><?php echo _("remote.macchina.io"); ?></a>
                     </div>
 
                     <div class="cbi-value">
