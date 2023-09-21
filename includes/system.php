@@ -71,6 +71,22 @@ function DisplaySystem()
     $status = new StatusMessages();
     $model = getModel();
 
+    if (isset($_POST['applyProperties'])) {
+        if (isset($_POST['hostname'])) {
+            exec("cat /proc/sys/kernel/hostname", $buff);
+            $old_hostname = $buff[0];
+            $new_hostname = $_POST['hostname'];
+            exec("sudo hostnamectl set-hostname $new_hostname");
+            exec("sudo sed -i 's/$old_hostname/$new_hostname/g' /etc/hosts");
+        }
+
+        if (isset($_POST['timezones'])) {
+            exec("sudo timedatectl set-timezone " . $_POST['timezones']);
+        }
+
+        $status->addMessage('Update success', 'success');
+    }
+
     if (isset($_POST['SaveLanguage'])) {
         if (isset($_POST['locale'])) {
             $_SESSION['locale'] = $_POST['locale'];
@@ -160,7 +176,7 @@ function DisplaySystem()
     #fetch system status variables.
     $system = new \RaspAP\System\Sysinfo;
 
-    $hostname = $system->hostname();
+    // $hostname = $system->hostname();
     $uptime   = $system->uptime();
     $cores    = $system->processorCount();
 
@@ -211,6 +227,17 @@ function DisplaySystem()
         $hostapd_led = "service-status-down";
     }
 
+    // properties
+    exec("date '+%Y-%m-%d %H:%M:%S'", $tmp);
+    $current_time = $tmp[0];
+
+    exec("cat /etc/timezone", $cur_timezone);
+    $_SESSION['timezones'] = $cur_timezone[0];
+
+    unset($tmp);
+    exec("cat /proc/sys/kernel/hostname", $tmp);
+    $cur_hostname = $tmp[0];
+
     echo renderTemplate("system", compact(
         "arrLocales",
         "status",
@@ -229,6 +256,8 @@ function DisplaySystem()
         "cputemp_led",
         "hostapd",
         "hostapd_status",
-        "hostapd_led"
+        "hostapd_led",
+        "current_time",
+        "cur_hostname"
     ));
 }

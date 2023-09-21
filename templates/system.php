@@ -14,12 +14,14 @@
         <?php echo CSRFTokenFieldTag() ?>
         <ul class="nav nav-tabs" role="tablist">
           <li role="presentation" class="nav-item"><a class="nav-link active" id="basictab" href="#basic" aria-controls="basic" role="tab" data-toggle="tab"><?php echo _("Basic"); ?></a></li>
+          <li role="presentation" class="nav-item"><a class="nav-link" id="propertiestab" href="#properties" aria-controls="properties" role="tab" data-toggle="tab"><?php echo _("System Properties"); ?></a></li>
           <li role="presentation" class="nav-item"><a class="nav-link" id="languagetab" href="#language" aria-controls="language" role="tab" data-toggle="tab"><?php echo _("Language"); ?></a></li>
           <li role="presentation" class="nav-item"><a class="nav-link" id="advancedtab" href="#advanced" aria-controls="advanced" role="tab" data-toggle="tab"><?php echo _("Advanced"); ?></a></li>
         </ul>
           <!-- Tab panes -->
           <div class="tab-content">
             <?php echo renderTemplate("system/basic", $__template_data) ?>
+            <?php echo renderTemplate("system/properties", $__template_data) ?>
             <?php echo renderTemplate("system/language", $__template_data) ?>
             <?php echo renderTemplate("system/advanced", $__template_data) ?>
           </div><!-- /.tab-content -->

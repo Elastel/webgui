@@ -112,3 +112,6 @@ www-data ALL=(ALL) NOPASSWD:/bin/sed -i * /etc/hostapd/hostapd.conf
 www-data ALL=(ALL) NOPASSWD:/bin/systemctl * docker.service
 www-data ALL=(ALL) NOPASSWD:/bin/systemctl * nodered.service
 www-data ALL=(ALL) NOPASSWD:/usr/bin/docker *
+www-data ALL=(ALL) NOPASSWD:/usr/bin/timedatectl *
+www-data ALL=(ALL) NOPASSWD:/usr/bin/hostnamectl *
+www-data ALL=(ALL) NOPASSWD:/bin/sed -i * /etc/hosts
