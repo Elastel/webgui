@@ -50,7 +50,6 @@
 
               <div class="cbi-value">
                   <label class="cbi-value-title"><?php echo _("Interface"); ?></label>
-                  <?php $interface_list = array('br0', 'eth0'); ?>
                   <?php SelectorOptionsCustom('interface', $interface_list, $interface[0], 'interface') ?>
               </div>
             </div>

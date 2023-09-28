@@ -32,6 +32,8 @@ function DisplayTerminal()
 
     exec('sudo /usr/local/bin/uci get terminal.terminal.port', $port);
     exec('sudo /usr/local/bin/uci get terminal.terminal.interface', $interface);
+    exec("ip -o link show | awk -F': ' '{print $2}'", $interface_list);
+    sort($interface_list); 
 
     if ($port[0] == null) {
         $prot[0] = '7681';
@@ -41,17 +43,18 @@ function DisplayTerminal()
         $interface[0] = 'br0';
     }
 
-    if ($interface[0] == 'br0') {
-        exec('ifconfig br0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep -v "255.255."', $ip);
+    if ($interface[0] != null) {
+        exec('ifconfig ' . $interface[0] . ' | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep -v "255.255."', $ip);
     } else {
-        exec('ifconfig eth0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep -v "255.255."', $ip);
+        exec('ifconfig br0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep -v "255.255."', $ip);
     }
 
     echo renderTemplate('terminal', compact(
         'status',
         'port',
         'interface',
-        'ip'
+        'ip',
+        'interface_list'
     ));
 }
 
