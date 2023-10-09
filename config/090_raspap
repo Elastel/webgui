@@ -115,3 +115,6 @@ www-data ALL=(ALL) NOPASSWD:/usr/bin/docker *
 www-data ALL=(ALL) NOPASSWD:/usr/bin/timedatectl *
 www-data ALL=(ALL) NOPASSWD:/usr/bin/hostnamectl *
 www-data ALL=(ALL) NOPASSWD:/bin/sed -i * /etc/hosts
+www-data ALL=(ALL) NOPASSWD:/bin/mv /tmp/lorawan/* /etc/basic_station/*
+www-data ALL=(ALL) NOPASSWD:/bin/mv /tmp/* /etc/basic_station/*
+www-data ALL=(ALL) NOPASSWD:/bin/rm /etc/basic_station/*

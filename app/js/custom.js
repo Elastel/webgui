@@ -468,14 +468,19 @@ function loadOpenvpn() {
 function loadDataLorawan(){
     $.get('ajax/networking/get_loragw.php?type=lorawan', function(data) {
         jsonData = JSON.parse(data);
-        var general = ['server_address', 'serv_port_up', 'serv_port_down', 'gateway_ID',
-        'keepalive_interval', 'stat_interval', 'frequency'];
 
-        if (jsonData['type'] == '1') {
-            $('#type').val('1');
+        var type = jsonData['type'];
+
+        if (type != null) {
+            $('#type').val(type);
         } else {
             $('#type').val('0');
         }
+
+        typeChangeLorawan();
+        
+        var general = ['server_address', 'serv_port_up', 'serv_port_down', 'gateway_ID',
+        'keepalive_interval', 'stat_interval', 'frequency'];
 
         general.forEach(function (info) {
             if (info == null) {
@@ -532,6 +537,27 @@ function loadDataLorawan(){
                     $('#' + info + i).val(jsonData[info + i]);
                 }
             })
+        }
+
+        // $general = array('protocol', 'uri', 'auth_mode', 'client_token');
+        if (type == '2')
+            $('#gateway_ID').val(jsonData['gateway_ID_station']);
+
+        $('#protocol').val(jsonData['protocol']);
+        $('#uri').val(jsonData['uri']);
+        $('#auth_mode').val(jsonData['auth_mode']);
+        modeChange();
+    
+        if (jsonData['lora_ca']) {
+            $('#ca_text').html(jsonData['lora_ca']);
+        }
+
+        if (jsonData['lora_crt']) {
+            $('#crt_text').html(jsonData['lora_crt']);
+        }
+
+        if (jsonData['lora_key']) {
+            $('#key_text').html(jsonData['lora_key']);
         }
     });
 }
@@ -3578,3 +3604,48 @@ $(document).ready(function(){
         itemChange(id);
     });
 });
+
+function typeChangeLorawan() {
+    var type = document.getElementById('type').value;
+    if (type == '0') {
+        $('#page_eui').hide();
+        $('#page_packet_forwarder').hide();
+        $('#page_basic_station').hide();
+    } else if (type == '1') {
+        $('#page_eui').show();
+        $('#page_packet_forwarder').show();
+        $('#page_basic_station').hide();
+    } else if (type == '2') {
+        modeChange();
+        $('#page_eui').show();
+        $('#page_packet_forwarder').hide();
+        $('#page_basic_station').show();
+    }
+}
+
+function modeChange() {
+    var mode = document.getElementById('auth_mode').value;
+
+    if (mode == '0') {
+        $('#page_one').hide();
+        $('#page_two').hide();
+    } else if (mode == '1') {
+        $('#page_one').show();
+        $('#page_two').show();
+    } else if (mode == '2') {
+        $('#page_one').hide();
+        $('#page_two').show();
+    }
+}
+
+function caFileChangeLora() {
+    $('#ca_text').html($('#lora_ca')[0].files[0].name);
+}
+
+function cerFileChangeLora() {
+    $('#crt_text').html($('#lora_crt')[0].files[0].name);
+}
+
+function keyFileChangeLora() {
+    $('#key_text').html($('#lora_key')[0].files[0].name);
+}

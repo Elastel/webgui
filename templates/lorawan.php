@@ -38,7 +38,7 @@
       </div><!-- ./card-header -->
       <div class="card-body">
           <?php $status->showMessages(); ?>
-          <form method="POST" action="lorawan_conf" role="form">
+          <form role="form" action="lorawan_conf" enctype="multipart/form-data" method="POST">
           <?php echo CSRFTokenFieldTag() ?>
 
           <div class="cbi-section">

@@ -4,11 +4,15 @@ do_start()
 {
 	local enabled
 
-        enabled=$(uci get loragw.loragw.type)
-        [ "$enabled" = "1" ] || return
+	enabled=$(uci get loragw.loragw.type)
 
+	[ "$enabled" = "1" ] && {
+		/usr/sbin/lora_pkt_fwd -c /etc/global_conf.json &
+	}
 
-	/usr/sbin/lora_pkt_fwd -c /etc/global_conf.json &
+	[ "$enabled" = "2" ] && {
+		 /usr/sbin/station -h /etc/basic_station/ &
+	}
 }
 
 do_stop()
@@ -18,6 +22,13 @@ do_stop()
 	[ -n "$(pgrep lora_pkt_fwd)" ] && {
 		sleep 1
 		kill -9 $(pgrep lora_pkt_fwd)
+	}
+
+	killall -q station
+	sleep 1
+	[ -n "$(pgrep station)" ] && {
+		sleep 1
+		kill -9 $(pgrep station)
 	}
 }
 

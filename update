@@ -52,6 +52,7 @@ if [ "$1" == "reset" ]; then
     sudo cp $path/config/dhcpcd.conf /etc/dhcpcd.conf
     sudo cp $path/config/defaults.json /etc/raspap/networking/
     sudo cp $path/Elastel/$model/etc/config/* /etc/config/
+    sudo cp $path/Elastel/$model/etc/basic_station /etc/ -r
     sleep 1
     if [ $model != "EG324L" ]; then
         sudo cp $path/config/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
@@ -87,6 +88,7 @@ if [ $model != "EG324L" ]; then
         sudo rm /etc/rc5.d/S10macchina
         sudo rm /etc/rc5.d/S10gps
         sudo rm /etc/rc5.d/S10firewall
+        sudo rm /etc/rc5.d/S10loragw
         sleep 1
         sudo ln -s /etc/init.d/init-wifi /etc/rc5.d/S01init-wifi
         sudo ln -s /etc/init.d/terminal /etc/rc5.d/S01terminal
@@ -98,6 +100,7 @@ if [ $model != "EG324L" ]; then
         sudo ln -s /etc/init.d/macchina /etc/rc5.d/S10macchina
         sudo ln -s /etc/init.d/gps /etc/rc5.d/S10gps
         sudo ln -s /etc/init.d/firewall /etc/rc5.d/S10firewall
+        sudo ln -s /etc/init.d/loragw /etc/rc5.d/S10loragw
 else
         sudo rm /etc/init.d/S90terminal
         sudo rm /etc/init.d/S90failover
@@ -142,6 +145,8 @@ sleep 1
 sudo /etc/init.d/terminal stop
 sleep 1
 sudo /etc/init.d/gps stop
+sleep 1
+sudo /etc/init.d/loragw stop
 sleep 1
 
 if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" ]]; then
