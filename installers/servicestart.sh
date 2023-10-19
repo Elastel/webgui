@@ -59,10 +59,26 @@ fi
 if [ $interface = "br0" -o  $interface = "uap0" ]; then
     lan_mac_conf=$(uci get network.lan.mac)
     cur_mac=$(cat /sys/class/net/br0/address)
-    if [[ "$lan_mac_conf" != "$cur_mac" ]]; then
+    if [[ -n "$lan_mac_conf" ]]; then
+        if [[ "$lan_mac_conf" != "$cur_mac" ]]; then
+            ifconfig br0 down
+            ifconfig br0 hw ether $lan_mac_conf
+            ifconfig br0 up
+
+            ifconfig eth1 down
+            ifconfig eth1 hw ether $lan_mac_conf
+            ifconfig eth1 up
+        fi
+    else
+        eth0_mac=$(cat /sys/class/net/eth0/address)
+        eth1_mac=$(echo $eth0_mac | awk -F: '{print $1":"$2":"$3":"$4":"$5":"$NF+1}')
         ifconfig br0 down
-        ifconfig br0 hw ether $lan_mac_conf
+        ifconfig br0 hw ether $eth1_mac
         ifconfig br0 up
+
+        ifconfig eth1 down
+        ifconfig eth1 hw ether $eth1_mac
+        ifconfig eth1 up
     fi
 fi
 
