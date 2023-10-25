@@ -96,6 +96,10 @@
                 </div>
                 <div id="page_security" name="page_security">
                   <div class="cbi-value">
+                    <label class="cbi-value-title"><?php echo _("URI"); ?></label>
+                    <input type="text" class="cbi-input-text" name="uri" id="uri"/>
+                  </div>
+                  <div class="cbi-value">
                     <label class="cbi-value-title"><?php echo _("Certificate"); ?></label>
                     <label for="certificate" class="cbi-file-lable">
                         <input type="button" class="cbi-file-btn" id="cert_btn" value="<?php echo _("Choose file"); ?>">
@@ -110,6 +114,15 @@
                         <input type="button" class="cbi-file-btn" id="key_btn" value="<?php echo _("Choose file"); ?>">
                         <span id="key_text"><?php echo _("No file chosen"); ?></span>
                         <input type="file" class="cbi-file" name="private_key" id="private_key" onchange="keyChange()">
+                    </label>
+                  </div>
+
+                  <div class="cbi-value">
+                    <label class="cbi-value-title"><?php echo _("Trust Client Certificate"); ?></label>
+                    <label for="key" class="cbi-file-lable">
+                        <input type="button" class="cbi-file-btn" id="trust_btn" value="<?php echo _("Choose file"); ?>">
+                        <span id="trust_text"><?php echo _("No file chosen"); ?></span>
+                        <input type="file" multiple="multiple" class="cbi-file" name="trust_crt[]" id="trust_crt" onchange="trustChange()">
                     </label>
                   </div>
                 </div>
@@ -163,6 +176,18 @@
 
   function keyChange() {
     $('#key_text').html($('#private_key')[0].files[0].name);
+  }
+
+  function trustChange() {
+    var file = $('#trust_crt')[0].files;
+    var str = '';
+    for (var i = 0, len = file.length; i < len; i++) {
+      str += file[i].name;
+      if (i < len - 1)
+        str += ";";
+    }
+
+    $('#trust_text').html(str);
   }
 </script>
 

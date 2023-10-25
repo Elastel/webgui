@@ -640,33 +640,33 @@ function loadBACnetConfig() {
 function loadOpcuaConfig() {
     $.get('ajax/dct/get_dctcfg.php?type=opcua',function(data){
         jsonData = JSON.parse(data);
-        var arr = ['port', 'anonymous', 'max_value','enable_database', 'username', 'password', 'security_policy',
-        'certificate', 'private_key'];
-
         $('#enabled').val(jsonData.enabled);
         if (jsonData.enabled == '1') {
             $('#page_opcua').show();
             $('#opcua_enable').prop('checked', true);
 
-            arr.forEach(function (info) {
-                if (info == null) {
+			for(var key in jsonData){
+                if (key == null) {
                     return true;    // continue: return true; break: return false
                 }
-
-                if (info == 'anonymous' || info == 'enable_database') {
-                    $('#' + info).prop('checked', (jsonData[info] == '1') ? true:false);
-                } else if (info == 'certificate') {
-                    if (jsonData[info]) {
-                        $('#cert_text').html(jsonData[info]);
+                if (key == 'anonymous' || key == 'enable_database') {
+                    $('#' + key).prop('checked', (jsonData[key] == '1') ? true:false);
+                } else if (key == 'certificate') {
+                    if (jsonData[key]) {
+                        $('#cert_text').html(jsonData[key]);
                     }
-                } else if (info == 'private_key') {
-                    if (jsonData[info]) {
-                        $('#key_text').html(jsonData[info]);
+                } else if (key == 'private_key') {
+                    if (jsonData[key]) {
+                        $('#key_text').html(jsonData[key]);
                     }
-                }  else {
-                    $('#' + info).val(jsonData[info]);
+                } else if (key == 'trust_crt') {
+                    if (jsonData[key]) {
+                        $('#trust_text').html(jsonData[key]);
+                    }
+                } else {
+                    $('#' + key).val(jsonData[key]);
                 }
-            })
+            }
         } else {
             $('#page_opcua').hide();
             $('#opcua_disable').prop('checked', true);

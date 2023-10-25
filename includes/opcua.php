@@ -37,7 +37,7 @@ function saveFileUpload($status, $file)
 
         $upload = \RaspAP\Uploader\Upload::factory('opcua', $tmp_destdir);
         $upload->set_max_file_size(64*KB);
-        $upload->set_allowed_mime_types(array('text/plain'));
+        $upload->set_allowed_mime_types(array('text/plain', 'application/octet-stream'));
         $upload->file($file);
 
         $validation = new validation;
@@ -88,6 +88,7 @@ function saveOpcuaConfig($status)
         
         exec("sudo /usr/local/bin/uci set dct.opcua.security_policy=" .$_POST['security_policy']);
         if ($_POST['security_policy'] != '0') {
+            exec("sudo /usr/local/bin/uci set dct.opcua.uri=" .$_POST['uri']);
             if (strlen($_FILES['certificate']['name']) > 0) {
                 if (is_uploaded_file($_FILES['certificate']['tmp_name'])) {
                     saveFileUpload($status, $_FILES['certificate']);
@@ -103,6 +104,22 @@ function saveOpcuaConfig($status)
 
                 $keyName = $_FILES['private_key']['name'];
                 exec("sudo /usr/local/bin/uci set dct.opcua.private_key=" . $keyName);
+            }
+
+            if (strlen($_FILES['trust_crt']['name'][0]) > 0) {
+                $count = count($_FILES['trust_crt']['name']);
+                for ($i = 0; $i < $count; $i++) {
+                    if (is_uploaded_file($_FILES['trust_crt']['tmp_name'][$i])) {
+                        $tmp_config = $_FILES['trust_crt']['tmp_name'][$i];
+                        system("sudo mv $tmp_config /etc/ssl/opcua/" . $_FILES['trust_crt']['name'][$i]);
+                        system("sudo chmod 644 /etc/ssl/opcua/" . $_FILES['trust_crt']['name'][$i]);
+                        $trustName .= $_FILES['trust_crt']['name'][$i];
+                        if ($i < ($count - 1))
+                            $trustName .= ";";
+                    }    
+                }
+
+                exec("sudo /usr/local/bin/uci set dct.opcua.trust_crt='$trustName'");
             }
         }
     }
