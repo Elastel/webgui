@@ -51,11 +51,11 @@
             </ul>
             <!-- Tab panes -->
             <div class="tab-content">
-                <?php echo renderTemplate("dct/server1", $__template_data); ?>
-                <?php echo renderTemplate("dct/server2", $__template_data); ?>
-                <?php echo renderTemplate("dct/server3", $__template_data); ?>
-                <?php echo renderTemplate("dct/server4", $__template_data); ?>
-                <?php echo renderTemplate("dct/server5", $__template_data); ?>
+                <?php page_server(1); ?>
+                <?php page_server(2); ?>
+                <?php page_server(3); ?>
+                <?php page_server(4); ?>
+                <?php page_server(5); ?>
             </div><!-- /.tab-content -->
           </div>
           <?php echo $buttons ?>

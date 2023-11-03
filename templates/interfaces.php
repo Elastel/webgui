@@ -57,10 +57,10 @@
             </ul>
             <!-- Tab panes -->
             <div class="tab-content">
-                <?php echo renderTemplate("dct/interface_com1", $__template_data); ?>
-                <?php echo renderTemplate("dct/interface_com2", $__template_data); ?>
-                <?php echo renderTemplate("dct/interface_com3", $__template_data); ?>
-                <?php echo renderTemplate("dct/interface_com4", $__template_data); ?>
+                <?php page_interface_com(1, $com_proto);?>
+                <?php page_interface_com(2, $com_proto);?>
+                <?php page_interface_com(3, $com_proto);?>
+                <?php page_interface_com(4, $com_proto);?>
             </div><!-- /.tab-content -->
           </div>
           <?php } ?>
@@ -76,11 +76,11 @@
             </ul>
             <!-- Tab panes -->
             <div class="tab-content">
-                <?php echo renderTemplate("dct/interface_tcp1", $__template_data); ?>
-                <?php echo renderTemplate("dct/interface_tcp2", $__template_data); ?>
-                <?php echo renderTemplate("dct/interface_tcp3", $__template_data); ?>
-                <?php echo renderTemplate("dct/interface_tcp4", $__template_data); ?>
-                <?php echo renderTemplate("dct/interface_tcp5", $__template_data); ?>
+                <?php page_interface_tcp(1, $tcp_proto);?>
+                <?php page_interface_tcp(2, $tcp_proto);?>
+                <?php page_interface_tcp(3, $tcp_proto);?>
+                <?php page_interface_tcp(4, $tcp_proto);?>
+                <?php page_interface_tcp(5, $tcp_proto);?>
             </div><!-- /.tab-content -->
           </div>
           <?php echo $buttons ?>
