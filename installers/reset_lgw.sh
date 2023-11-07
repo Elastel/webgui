@@ -11,7 +11,15 @@
 # GPIO mapping has to be adapted with HW
 #
 
-SX1302_RESET_PIN=6
+FW_MODEL=$(cat /etc/fw_model)
+
+if [ $FW_MODEL = "EG500" ]; then
+    SX1302_RESET_PIN=6
+elif [ $FW_MODEL = "EG410" ]; then
+    SX1302_RESET_PIN=5
+else
+    SX1302_RESET_PIN=25
+fi
 
 WAIT_GPIO() {
     sleep 0.1
@@ -29,8 +37,13 @@ reset() {
     echo "CoreCell reset through GPIO$SX1302_RESET_PIN..."
 
     # write output for SX1302 CoreCell reset
-    echo "1" > /sys/class/gpio/gpio$SX1302_RESET_PIN/value; WAIT_GPIO
-    echo "0" > /sys/class/gpio/gpio$SX1302_RESET_PIN/value; WAIT_GPIO
+    if [ $FW_MODEL = "ElastBox400" ]; then
+        echo "0" > /sys/class/gpio/gpio$SX1302_RESET_PIN/value; WAIT_GPIO
+        echo "1" > /sys/class/gpio/gpio$SX1302_RESET_PIN/value; WAIT_GPIO
+    else
+        echo "1" > /sys/class/gpio/gpio$SX1302_RESET_PIN/value; WAIT_GPIO
+        echo "0" > /sys/class/gpio/gpio$SX1302_RESET_PIN/value; WAIT_GPIO
+    fi
 }
 
 term() {

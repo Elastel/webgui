@@ -121,7 +121,7 @@ else
 	suod ln -s /etc/init.d/macchina /etc/init.d/S90macchina
 fi
 
-if [ $model = "EG500" -o  $model = "EG410" ]; then
+if [[ $model = "EG500" || $model = "EG410" || $model = "ElastBox400" ]]; then
         if [ ! -n "$(grep 'pcf8563' /boot/config.txt)"  ]; then
                 echo "not pcf8563"
                 sudo bash -c "echo 'dtoverlay=i2c-rtc,pcf8563' >> /boot/config.txt"
@@ -131,6 +131,7 @@ if [ $model = "EG500" -o  $model = "EG410" ]; then
         sudo rm /etc/rc5.d/S10loragw
         sudo ln -s /etc/init.d/loragw /etc/rc5.d/S10loragw
         sudo /etc/init.d/loragw stop
+        sudo cp $path/installers/reset_lgw.sh /usr/sbin/
 fi
 
 sleep 1
@@ -154,16 +155,8 @@ if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" ]]; then
 elif [ $bit = "32" ]; then
 	sudo cp -r $path/Elastel/$model/32/usr/* /usr/
 fi
-sleep 1
-if [ $model = "EG410" ]; then
-	sudo sed -i "s/SX1302_RESET_PIN=6/SX1302_RESET_PIN=5/" /usr/sbin/reset_lgw.sh
-        if [ ! -e /dev/ttyACM0 ]; then
-                sudo cp $path/Elastel/$model/EG410_a/dctd /usr/sbin/dctd
-        fi
-fi
 
 sleep 1
-
 
 if [ $model != "EG324" -a $model != "EG324L" ]; then
 	echo -e "Start feed dog"
