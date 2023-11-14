@@ -119,3 +119,7 @@ www-data ALL=(ALL) NOPASSWD:/bin/chmod 644 /etc/ssl/opcua/*
 www-data ALL=(ALL) NOPASSWD:/bin/mv /tmp/lorawan/* /etc/basic_station/*
 www-data ALL=(ALL) NOPASSWD:/bin/mv /tmp/* /etc/basic_station/*
 www-data ALL=(ALL) NOPASSWD:/bin/rm /etc/basic_station/*
+www-data ALL=(ALL) NOPASSWD:/bin/sed -i * /etc/openvpn/client/*.ovpn
+www-data ALL=(ALL) NOPASSWD:/bin/sed -i * /etc/openvpn/server/*.ovpn
+www-data ALL=(ALL) NOPASSWD:/bin/rm /etc/openvpn/client/*
+www-data ALL=(ALL) NOPASSWD:/bin/rm /etc/openvpn/server/*

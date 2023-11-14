@@ -81,7 +81,6 @@ function saveOpenVpnConfig($status)
         if ($_POST['type'] == 'config') {
             $role = $_POST['role'];
             exec('sudo /usr/local/bin/uci set openvpn.openvpn.role=' . $role);
-            exec('sudo /usr/local/bin/uci set openvpn.openvpn.auth_type=' . $_POST['auth_type']);
 
             saveConfigs($status, $role);
 
@@ -114,19 +113,28 @@ function saveOpenVpnConfig($status)
                     SaveOpenvpnUpload($status, $_FILES['key'], $role);
                 }
             }
-
-            if ($_POST['auth_type'] == 'user_pass') {
-                saveUserPass($status, $role);
-            }
         } else if ($_POST['type'] == 'ovpn') {
             $role = $_POST['role'];
             exec('sudo /usr/local/bin/uci set openvpn.openvpn.role=' . $role);
             if (strlen($_FILES['ovpn']['name']) > 0) {
                 if (is_uploaded_file($_FILES['ovpn']['tmp_name'])) {
                     SaveOVPNConfig($status, $_FILES['ovpn'], $role);
+                    exec('sudo /usr/local/bin/uci set openvpn.openvpn.ovpn_file=' . $_FILES['ovpn']['name']);
+                }
+            }
+
+            if (strlen($_POST['text_user_pwd']) > 5) {
+                exec('sudo /usr/local/bin/uci get openvpn.openvpn.ovpn_file', $ovpn_file);
+                $ovpn_path = "/etc/openvpn/$role/" . $ovpn_file[0];
+                if ($role == 'client') {
+                    exec("sudo sed -i 's/^auth-user-pass.*/auth-user-pass \/etc\/openvpn\/client\/login.conf/g' $ovpn_path");
+                } else {
+                    exec("sudo sed -i 's/^auth-user-pass-verify.*/auth-user-pass-verify \/etc\/openvpn\/server\/checkpsw.sh via-env/g' $ovpn_path");
                 }
             }
         }
+
+        saveUserPass($status, $role);
     }
 }
 
@@ -188,7 +196,8 @@ function saveConfigs($status, $role)
     $cfg[] = 'persist-key' . PHP_EOL;
     $cfg[] = 'persist-tun' . PHP_EOL;
     $cfg[] = 'verb 3' . PHP_EOL;
-    $cfg[] = 'log /var/log/openvpn.log' . PHP_EOL;
+    $cfg[] = 'log /var/log/openvpn/openvpn.log' . PHP_EOL;
+    $cfg[] = 'status /var/log/openvpn/openvpn-status.log' . PHP_EOL;
 
     if (isset($_POST['proto'])) {
         $cfg[] = 'proto '.$_POST['proto'] . PHP_EOL;
@@ -230,18 +239,22 @@ function saveConfigs($status, $role)
         $cfg[] = 'dh ' .$dh_path . PHP_EOL;
     }
 
-    if ($_POST['auth_type'] == 'cert') {
-        if (strlen($_FILES['cert']['name']) > 0) {
-            $cfg[] = 'cert /etc/openvpn/' .$role . '/' .$_FILES['cert']['name'] . PHP_EOL;
-        } else if ($cert_path = isFileExist($role, 'cert')) {
-            $cfg[] = 'cert ' .$cert_path . PHP_EOL;
-        }
-        if (strlen($_FILES['key']['name']) > 0) {
-            $cfg[] = 'key /etc/openvpn/' .$role . '/' .$_FILES['key']['name'] . PHP_EOL;
-        } else if ($key_path = isFileExist($role, 'key')) {
-            $cfg[] = 'key ' .$key_path . PHP_EOL;
-        }
-    } else {
+    if (strlen($_FILES['cert']['name']) > 0) {
+        $cfg[] = 'cert /etc/openvpn/' .$role . '/' .$_FILES['cert']['name'] . PHP_EOL;
+    } else if ($cert_path = isFileExist($role, 'cert')) {
+        $cfg[] = 'cert ' .$cert_path . PHP_EOL;
+    }
+    if (strlen($_FILES['key']['name']) > 0) {
+        $cfg[] = 'key /etc/openvpn/' .$role . '/' .$_FILES['key']['name'] . PHP_EOL;
+    } else if ($key_path = isFileExist($role, 'key')) {
+        $cfg[] = 'key ' .$key_path . PHP_EOL;
+    }
+
+    if ($_POST['proto'] == 'udp') {
+        $cfg[] = 'explicit-exit-notify 1' . PHP_EOL;
+    }
+    
+    if (strlen($_POST['text_user_pwd']) > 5) {
         if ($role == 'client') {
             $cfg[] = 'auth-user-pass /etc/openvpn/client/login.conf' . PHP_EOL;
         } else {
@@ -257,7 +270,7 @@ function saveConfigs($status, $role)
             }
             $cfg[] = 'script-security 3' . PHP_EOL;
             $cfg[] = 'username-as-common-name' . PHP_EOL;
-            $cfg[] = 'verify-client-cert none' . PHP_EOL;
+            //     $cfg[] = 'verify-client-cert none' . PHP_EOL;
             $cfg[] = 'auth-user-pass-verify /etc/openvpn/server/checkpsw.sh via-env' . PHP_EOL;
         }
     }
@@ -277,25 +290,28 @@ function saveConfigs($status, $role)
 
 function saveUserPass($status, $role)
 {   
-    if (isset($_POST['username'])) {
-        $authUser = strip_tags(trim($_POST['username']));
-    }
-    if (isset($_POST['password'])) {
-        $authPassword = strip_tags(trim($_POST['password']));
+    if (strlen($_POST['text_user_pwd']) > 5) {
+        $authUserPwd = strip_tags(trim($_POST['text_user_pwd']));
+    } else {
+        if ($role == 'client') {
+            exec("sudo rm /etc/openvpn/client/login.conf");
+        } else {
+            exec("sudo rm /etc/openvpn/server/psw-file");
+        }
+        return;
     }
 
-    if (!empty($authUser) && !empty($authPassword)) {
-        exec("sudo /usr/local/bin/uci set openvpn.openvpn.username=" . $authUser);
-        exec("sudo /usr/local/bin/uci set openvpn.openvpn.password=" . $authPassword);
+    if (!empty($authUserPwd)) {
         $tmp_authdata = '/tmp/vpnAuthData';
         if ($role == 'client') {
-            $auth = $authUser .PHP_EOL . $authPassword .PHP_EOL;
+            $parts = explode(' ', $authUserPwd);
+            $auth = $parts[0] . PHP_EOL . $parts[1] . PHP_EOL;
             file_put_contents($tmp_authdata, $auth);
             chmod($tmp_authdata, 0644);
             $login_path = '/etc/openvpn/'. $role . '/login.conf';
             system("sudo mv $tmp_authdata $login_path", $return);
         } else {
-            $auth = $authUser . ' ' . $authPassword .PHP_EOL;
+            $auth = $authUserPwd .PHP_EOL;
             file_put_contents($tmp_authdata, $auth);
             chmod($tmp_authdata, 0644);
             $login_path = '/etc/openvpn/'. $role . '/psw-file';
@@ -322,7 +338,7 @@ function SaveOpenvpnUpload($status, $file, $role)
 
         $upload = \RaspAP\Uploader\Upload::factory('vpn' . $num, $tmp_destdir);
         $upload->set_max_file_size(64*KB);
-        $upload->set_allowed_mime_types(array('text/plain'));
+        $upload->set_allowed_mime_types(array('text/plain', 'application/octet-stream'));
         $upload->file($file);
 
         $validation = new validation;

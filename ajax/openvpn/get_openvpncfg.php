@@ -11,8 +11,6 @@ if ($type[0] == 'config') {
     $vpndata['type'] = 'config';
     exec("sudo /usr/local/bin/uci get openvpn.openvpn.role", $role);
     $vpndata['role'] = $role[0];
-    exec("sudo /usr/local/bin/uci get openvpn.openvpn.auth_type", $auth_type);
-    $vpndata['auth_type'] = $auth_type[0];
 
     $conf = file_get_contents('/etc/openvpn/' . $role[0] . '/' . $role[0] . '.conf');
     preg_match('/proto\s(.*)/', $conf, $proto);
@@ -80,12 +78,15 @@ if ($type[0] == 'config') {
             $vpndata['key'] = $arrkey[1];
         }
     }
-    if ($auth_type[0] == 'user_pass') {
-        exec("sudo /usr/local/bin/uci get openvpn.openvpn.username", $username);
-        exec("sudo /usr/local/bin/uci get openvpn.openvpn.password", $password);
-        $vpndata['username'] = $username[0];
-        $vpndata['password'] = $password[0];
+
+    if ($role[0] == 'client') {
+        $user_pwd = file_get_contents('/etc/openvpn/' . $role[0] . '/' . 'login.conf');
+    } else {
+        $user_pwd = file_get_contents('/etc/openvpn/' . $role[0] . '/' . 'psw-file');
     }
+
+    if ($user_pwd != null)
+        $vpndata['text_user_pwd'] = $user_pwd;
 
     $vpndata['proto'] = $proto[1];
     $vpndata['port'] = $port[1];
@@ -111,6 +112,15 @@ if ($type[0] == 'config') {
     if (file_exists('/etc/openvpn/' . $role[0] . '/' . $ovpn_file[0])) {
         $vpndata['ovpn'] = $ovpn_file[0];
     }
+
+    if ($role[0] == 'client') {
+        $user_pwd = file_get_contents('/etc/openvpn/' . $role[0] . '/login.conf');
+    } else {
+        $user_pwd = file_get_contents('/etc/openvpn/' . $role[0] . '/psw-file');
+    }
+
+    if ($user_pwd != null)
+        $vpndata['text_user_pwd'] = $user_pwd;
 } else {
     $vpndata['type'] = 'off';
 }

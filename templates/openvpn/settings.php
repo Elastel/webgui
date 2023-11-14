@@ -18,14 +18,6 @@
     </div>
     
     <div id="page_config" name="page_config">
-      <!-- <div class="cbi-value">
-        <label class="cbi-value-title"><?php echo _("Topology"); ?></label>
-        <select id="topology" name="topology" class="cbi-input-select">
-          <option value="p2p">p2p</option>
-          <option value="subnet">subnet</option>
-        </select>
-      </div> -->
-
       <div class="cbi-value">
         <label class="cbi-value-title"><?php echo _("Protocol"); ?></label>
         <select id="proto" name="proto" class="cbi-input-select">
@@ -72,11 +64,33 @@
       </div>
 
       <div class="cbi-value">
-        <label class="cbi-value-title"><?php echo _("Authentication Type"); ?></label>
-        <select id="auth_type" name="auth_type" class="cbi-input-select" onchange="authTypeChange()">
-          <option value="cert">Certificate</option>
-          <option value="user_pass">Username/Password</option>
+        <label class="cbi-value-title"><?php echo _("Cipher Algorithm"); ?></label>
+        <select id="cipher" name="cipher" class="cbi-input-select">
+          <option value="none">None</option>
+          <?php 
+            foreach ($cipher as $info) {
+              echo ("<option value=$info>$info</option>");
+            }
+          ?>
         </select>
+      </div>
+
+      <div class="cbi-value">
+        <label class="cbi-value-title"><?php echo _("Authentication algorithm"); ?></label>
+        <select id="auth" name="auth" class="cbi-input-select">
+          <option value="none">None</option>
+          <?php 
+            foreach ($auth as $info) {
+              echo ("<option value=$info>$info</option>");
+            }
+          ?>
+          <option value="ignore">Ignore</option>
+        </select>
+      </div>
+
+      <div class="cbi-value">
+        <label class="cbi-value-title"><?php echo _("LZO Compression"); ?></label>
+        <input type="checkbox" class="cbi-input-checkbox" name="comp_lzo" id="comp_lzo" value="1"/>
       </div>
 
       <div class="cbi-value">
@@ -126,47 +140,6 @@
           </label>
         </div>
       </div>
-
-      <div name="page_user_pass" id="page_user_pass">
-        <div class="cbi-value">
-          <label class="cbi-value-title"><?php echo _("Username"); ?></label>
-          <input type="text" class="cbi-input-text" name="username" id="username"/>
-        </div>
-        <div class="cbi-value">
-          <label class="cbi-value-title"><?php echo _("Password"); ?></label>
-          <input type="text" class="cbi-input-text" name="password" id="password"/>
-        </div>
-      </div>
-
-      <div class="cbi-value">
-        <label class="cbi-value-title"><?php echo _("Cipher Algorithm"); ?></label>
-        <select id="cipher" name="cipher" class="cbi-input-select">
-          <option value="none">None</option>
-          <?php 
-            foreach ($cipher as $info) {
-              echo ("<option value=$info>$info</option>");
-            }
-          ?>
-        </select>
-      </div>
-
-      <div class="cbi-value">
-        <label class="cbi-value-title"><?php echo _("Authentication algorithm"); ?></label>
-        <select id="auth" name="auth" class="cbi-input-select">
-          <option value="none">None</option>
-          <?php 
-            foreach ($auth as $info) {
-              echo ("<option value=$info>$info</option>");
-            }
-          ?>
-          <option value="ignore">Ignore</option>
-        </select>
-      </div>
-
-      <div class="cbi-value">
-        <label class="cbi-value-title"><?php echo _("LZO Compression"); ?></label>
-        <input type="checkbox" class="cbi-input-checkbox" name="comp_lzo" id="comp_lzo" value="1"/>
-      </div>
     </div>
 
     <div id="page_ovpn" name="page_ovpn">
@@ -179,6 +152,12 @@
         </label>
       </div>
     </div>
+
+    <div class="cbi-value" id="page_user_pwd" name="page_user_pwd">
+      <label class="cbi-value-title"><?php echo _("Username&Password"); ?></label>
+      <textarea name="text_user_pwd" id="text_user_pwd" style="vertical-align: middle;" cols="30" rows="5"></textarea>
+      <label class="cbi-value-description"><?php echo _("eg: username passwd"); ?></label>
+    </div>
   </div>
 </div>
 
@@ -190,16 +169,18 @@
       $('#page_config').show();
       $('#page_ovpn').hide();
       $('#page_role').show();
+      $('#page_user_pwd').show();
       roleChange();
-      authTypeChange();
     } else if (type == "ovpn") {
       $('#page_config').hide();
       $('#page_ovpn').show();
       $('#page_role').show();
+      $('#page_user_pwd').show();
     } else {
       $('#page_config').hide();
       $('#page_ovpn').hide();
       $('#page_role').hide();
+      $('#page_user_pwd').hide();
     }
   }
 
@@ -214,30 +195,10 @@
       $('#page_server').show();
     }
 
-    authTypeChange();
-  }
-
-  function authTypeChange() {
-    var auth_type = document.getElementById("auth_type").value;
-    var role = document.getElementById("role").value;
-
-    if (auth_type == "cert") {
-      $('#page_cert').show();
-      $('#page_user_pass').hide();
-      if (role == 'server') {
-        $('#page_dh').show();
-      } else {
-        $('#page_dh').hide();
-      }
+    if (role == 'server') {
+      $('#page_dh').show();
     } else {
-      $('#page_user_pass').show();
-      if (role == 'server') {
-        $('#page_cert').show();
-        $('#page_dh').show();
-      } else {
-        $('#page_cert').hide();
-        $('#page_dh').hide();
-      }
+      $('#page_dh').hide();
     }
   }
 

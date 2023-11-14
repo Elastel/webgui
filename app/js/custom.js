@@ -404,16 +404,18 @@ function loadOpenvpn() {
     getOpenvpnStatus();
     setInterval(getOpenvpnStatus, 60000);
     $.get('ajax/openvpn/get_openvpncfg.php', function(data) {
-        //console.log(data);
+        // console.log(data);
         jsonData = JSON.parse(data);
         if (jsonData['type'] != 'off') {
             $('#page_role').show();
             if (jsonData['type'] == 'config') {
                 $('#page_config').show();
                 $('#page_ovpn').hide();
+                $('#page_user_pwd').show();
             } else {
                 $('#page_config').hide();
                 $('#page_ovpn').show();
+                $('#page_user_pwd').show();
             }
 
             if (jsonData['role'] == 'client') {
@@ -424,23 +426,10 @@ function loadOpenvpn() {
                 $('#page_server').show();
             }
 
-            if (jsonData['auth_type'] == 'cert') {
-                $('#page_cert').show();
-                $('#page_user_pass').hide();
-                if (jsonData['role'] == 'server') {
-                    $('#page_dh').show();
-                } else {
-                    $('#page_dh').hide();
-                }
+            if (jsonData['role'] == 'server') {
+                $('#page_dh').show();
             } else {
-                $('#page_user_pass').show();
-                if (jsonData['role'] == 'server') {
-                    $('#page_cert').show();
-                    $('#page_dh').show();
-                } else {
-                    $('#page_cert').hide();
-                    $('#page_dh').hide();
-                }
+                $('#page_dh').hide();
             }
 
             for(var key in jsonData){ 
@@ -450,7 +439,7 @@ function loadOpenvpn() {
                 //console.log(key + ":" + jsonData[key]);
                 if (key == 'ca' || key == 'ta' || key == 'cert' || key == 'key' || key == 'ovpn' || key == 'dh') {
                     $('#' + key + '_text').html(jsonData[key]); 
-                } else if (key == 'comp_lzo') {
+                } else if (key == 'comp_lzo' || key == 'enable_auth') {
                     $('#' + key).prop('checked', (jsonData[key] == '1') ? true:false);
                 } else {
                     $('#' + key).val(jsonData[key]); 
@@ -460,6 +449,7 @@ function loadOpenvpn() {
             $('#page_role').hide();
             $('#page_config').hide();
             $('#page_ovpn').hide();
+            $('#page_user_pwd').hide();
         }
         
     });
@@ -880,7 +870,7 @@ function loadInterfacesConfig() {
     $.get('ajax/dct/get_dctcfg.php?type=interface',function(data) {
         var jsonData = JSON.parse(data);
         var arrCom = ['baudrate', 'databit', 'stopbit', 'parity', 'com_frame_interval',
-                    'com_proto', 'com_cmd_interval', 'com_report_center'];
+					'com_proto', 'com_cmd_interval', 'com_report_center'];
 
         for (var i = 1; i <= 4; i++) {
             $('#com_enabled' + i).val(jsonData['com_enabled' + i]);
