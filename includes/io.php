@@ -22,6 +22,16 @@ function DisplayIO()
         }
     }
 
+    if ( isset($_POST['upload']) ) {
+        if (strlen($_FILES['upload_file']['name']) > 0) {
+            if (is_uploaded_file($_FILES['upload_file']['tmp_name'])) {
+                save_import_file($_POST['page_im_ex_name'], $status, $_FILES['upload_file']);
+            } else {
+                $status->addMessage('fail to upload file', 'danger');
+            }
+        }
+    }
+
     echo renderTemplate("io", compact('status', "model"));
 }
 

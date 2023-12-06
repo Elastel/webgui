@@ -69,6 +69,7 @@
                 </table>
               <div class="cbi-section-create">
                 <input type="button" class="cbi-button-add" name="popBox" value="Add" onclick="addData()">
+                <?php conf_im_ex('Ascii'); ?>
               </div>
             </div>
             <?php echo $buttons ?>
@@ -78,6 +79,7 @@
   </div><!-- col-lg-12 -->
 </div>
 
+<?php page_im_ex('Ascii');?>
 <div id="popLayer"></div>
 <div id="popBox" style="overflow:auto">
   <input hidden="hidden" name="page_type" id="page_type" value="0">

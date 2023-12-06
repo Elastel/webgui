@@ -21,6 +21,16 @@ function DisplayMc()
         }
     }
 
+    if ( isset($_POST['upload']) ) {
+        if (strlen($_FILES['upload_file']['name']) > 0) {
+            if (is_uploaded_file($_FILES['upload_file']['tmp_name'])) {
+                save_import_file('mc', $status, $_FILES['upload_file']);
+            } else {
+                $status->addMessage('fail to upload file', 'danger');
+            }
+        }
+    }
+
     echo renderTemplate("mc", compact('status'));
 }
 

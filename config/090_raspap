@@ -123,3 +123,5 @@ www-data ALL=(ALL) NOPASSWD:/bin/sed -i * /etc/openvpn/client/*.ovpn
 www-data ALL=(ALL) NOPASSWD:/bin/sed -i * /etc/openvpn/server/*.ovpn
 www-data ALL=(ALL) NOPASSWD:/bin/rm /etc/openvpn/client/*
 www-data ALL=(ALL) NOPASSWD:/bin/rm /etc/openvpn/server/*
+www-data ALL=(ALL) NOPASSWD:/usr/sbin/conf_im_ex export *
+www-data ALL=(ALL) NOPASSWD:/usr/sbin/conf_im_ex import *

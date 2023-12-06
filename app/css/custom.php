@@ -378,6 +378,7 @@ canvas#divDBChartBandwidthhourly {
 }
 
 #popLayer,
+#confLayer,
 #forwards_popLayer,
 #traffic_popLayer {
   display: none;
@@ -394,6 +395,7 @@ canvas#divDBChartBandwidthhourly {
 }
 
 #popBox,
+#confBox,
 #forwards_popBox,
 #traffic_popBox {
   display: none;
@@ -401,6 +403,21 @@ canvas#divDBChartBandwidthhourly {
   z-index: 11;
   width: 85%;
   height: 85%;
+  position:fixed;
+  top:0rem;
+  right:0;
+  left:0;
+  bottom:0;
+  padding: 1em;
+  margin: 3em auto;
+}
+
+#confBox {
+  display: none;
+  background-color: #FFFFFF;
+  z-index: 11;
+  width: 50%;
+  height: 50%;
   position:fixed;
   top:0rem;
   right:0;
@@ -544,4 +561,34 @@ canvas#divDBChartBandwidthhourly {
   width: 30rem;
   font-size: 0.8em;
   color: #858796;
+}
+
+.conf-btn{
+  font-size: 1rem;
+	display: inline-block;
+	width: auto !important;
+	padding: 0 .8rem;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	transition: all .2s ease-in-out;
+	text-align: center;
+	vertical-align: middle;
+	white-space: nowrap;
+	text-decoration: none;
+	text-transform: uppercase;
+	color: rgba(0, 0, 0, .87);
+	border: 0;
+	border-radius: .2rem;
+	background-color: #f0f0f0;
+	background-image: none;
+	-webkit-appearance: none;
+	-ms-touch-action: manipulation;
+	touch-action: manipulation;
+}
+.conf-btn:hover {
+  background-color: #E81123;
+  border: 0;
 }

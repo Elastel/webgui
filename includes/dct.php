@@ -173,7 +173,7 @@ echo         "</select>
               <label class=\"cbi-value-title\">"; echo _("Connection Status"); echo "</label>";
               $count = $num - 1;
               exec("uci -P /var/state get dct.connection.tcp_status$count", $status);
-echo         "<label id=\"connect_status$num\" name=\"connect_status$num\">"; echo _(($status[0] != null) ? $status[0] : "-"); echo "</label>
+echo         "<label id=\"connect_status$num\" name=\"connect_status$num\">"; echo _(empty($status) ? "-" : $status[0]); echo "</label>
             </div>
           </div><!-- /.page_tcp -->
         </div><!-- /.row -->
@@ -427,10 +427,91 @@ echo "<div class=\"tab-pane $active\" id=\"server$num\">
                 <label class=\"cbi-value-title\">"; echo _("Connection Status"); echo "</label>";
                 $count = $num - 1;
                 exec("uci -P /var/state get dct.connection.status$count", $status);
-                echo "<label id=\"connect_status$num\" name=\"connect_status$num\">"; echo _(($status[0] != null) ? $status[0] : "-"); echo "</label>
+                echo "<label id=\"connect_status$num\" name=\"connect_status$num\">"; echo _(empty($status) ? "-" : $status[0]); echo "</label>
               </div>
             </div>
           </div><!-- /.page_server -->
         </div><!-- /.row -->
       </div><!-- /.tab-pane | basic tab -->";
+}
+
+function conf_im_ex($conf_name) {
+  echo "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp";
+  echo "<input type=\"button\" class=\"cbi-button-add\" name=\"confBox\" value=\"Configure Import Export\" onclick=\"conf_im_ex('$conf_name')\">";
+}
+
+function page_im_ex($conf_name) {
+  $conf_name_lower = strtolower($conf_name);
+  echo "<div id=\"confLayer\"></div>
+  <div id=\"confBox\" style=\"overflow:auto\">
+    <div style=\"margin-top: -1rem; margin-right: -1rem; text-align: right !important;\">
+      <button class=\"conf-btn\" onclick=\"closeConfBox()\">";echo _("X");echo "</button>
+    </div>
+    </br>
+    <div class=\"card\">
+      <div class=\"card-header\">
+        <h4 id=\"title\" >";echo _("$conf_name Configure Import Export");echo "</h4>
+      </div>
+      </br></br></br>
+      <div class=\"cbi-value\">
+        <label class=\"cbi-value-title\">";echo _("Configure Export"); echo "</label>
+        <input type=\"submit\" class=\"btn btn-success\" value=\""; echo _("Export"); echo "\" name=\"export\" onclick=\"downloadFile('$conf_name')\">
+      </div>
+      </br></br>
+      <form method=\"POST\" action=\"" . $conf_name_lower . "_conf\" enctype=\"multipart/form-data\" role=\"form\">";
+      echo CSRFTokenFieldTag();    
+      echo "<div class=\"cbi-value\">
+          <input hidden=\"hidden\" name=\"page_im_ex_name\" id=\"page_im_ex_name\" value=\"0\">
+          <label class=\"cbi-value-title\">"; echo _("Configure Import"); echo "</label>
+          <label for=\"upload\" class=\"cbi-file-lable\">
+            <input type=\"file\" name=\"upload_file\" id=\"upload_file\">
+            <input type=\"submit\" value=\"Upload\" name=\"upload\" data-toggle=\"modal\" data-target=\"#hostapdModal\">
+          </label>
+        </div>
+      </form>
+      </br></br></br>
+    </div>
+  </div>";
+}
+
+function save_import_file($section, $status, $file) {
+  define('KB', 1024);
+    $tmp_destdir = '/tmp/';
+    $auth_flag = 0;
+
+    try {
+        // If undefined or multiple files, treat as invalid
+        if (!isset($file['error']) || is_array($file['error'])) {
+            throw new RuntimeException('Invalid parameters');
+        }
+
+        $upload = \RaspAP\Uploader\Upload::factory('import', $tmp_destdir);
+        $upload->set_max_file_size(2048*KB);
+        $upload->set_allowed_mime_types(array('text/plain', 'application/octet-stream'));
+        $upload->file($file);
+        $validation = new validation;
+        $upload->callbacks($validation, array('check_name_length'));
+        $results = $upload->upload();
+
+        if (!empty($results['errors'])) {
+            throw new RuntimeException($results['errors'][0]);
+        }
+
+        // Valid upload, get file contents
+        $file_path = $results['full_path'];
+        $new_file_path = '/tmp/config_import.csv';
+        system("sudo mv $file_path $new_file_path");
+        
+        if (file_exists($new_file_path)) {
+            $status->addMessage('file uploaded successfully', 'info');
+            exec("sudo conf_im_ex import $section");
+        } else {
+            $status->addMessage('fail to upload file', 'danger');
+        }
+
+        return $status;
+    } catch (RuntimeException $e) {
+        $status->addMessage($e->getMessage(), 'danger');
+        return $status;
+    }
 }

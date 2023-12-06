@@ -1801,14 +1801,38 @@ function openBox() {
     selectOperator();
 }
 
+function openConfBox() {
+    $('#confBox').show();
+    $('#confLayer').show();
+    document.getElementById("confBox").scrollTop = 0;
+}
+
 function closeBox() {
     $('#popBox').hide();
     $('#popLayer').hide();
 }
 
+function closeConfBox() {
+    $('#confBox').hide();
+    $('#confLayer').hide();
+}
+
 function addData() {
     openBox();
     document.getElementById("page_type").value = "0"; /* 0 is add. other is edit */
+}
+
+function conf_im_ex(conf_name) {
+    document.getElementById('title').innerHTML = conf_name + ' Configure Import Export';
+    openConfBox();
+    if (conf_name == "ADC") {
+        document.getElementById("page_im_ex_name").value = "adc";
+    } else if (conf_name == "DI") {
+        document.getElementById("page_im_ex_name").value = "di";
+        selectMode();
+    } else if (conf_name == "DO") {
+        document.getElementById("page_im_ex_name").value = "do";
+    }
 }
 
 // modbus
@@ -3638,4 +3662,38 @@ function cerFileChangeLora() {
 
 function keyFileChangeLora() {
     $('#key_text').html($('#lora_key')[0].files[0].name);
+}
+
+
+function downloadFile(conf_name) {
+    let lowerConfName;
+    if (conf_name == 'IO') {
+        lowerConfName = document.getElementById("page_im_ex_name").value;
+    } else {
+        lowerConfName = conf_name.toLowerCase();
+    }
+    
+    var req = new XMLHttpRequest();
+    var url = 'ajax/dct/get_dctcfg.php?type=download_' + lowerConfName;
+    req.open('get', url, true);
+    req.responseType = 'blob';
+    req.setRequestHeader('Content-type', 'text/plain; charset=UTF-8');
+    req.onreadystatechange = function (event) {
+        if(req.readyState == 4 && req.status == 200) {
+            var blob = req.response;
+            var link=document.createElement('a');
+            link.href=window.URL.createObjectURL(blob);
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = ('0' + (now.getMonth() + 1)).slice(-2);
+            const day = ('0' + now.getDate()).slice(-2);
+            const hours = ('0' + now.getHours()).slice(-2);
+            const minutes = ('0' + now.getMinutes()).slice(-2);
+            const seconds = ('0' + now.getSeconds()).slice(-2);
+            const formattedTime = year + month + day + hours + minutes;
+            link.download = lowerConfName + '_' + formattedTime + '.csv';
+            link.click();
+        }
+    }
+    req.send();
 }

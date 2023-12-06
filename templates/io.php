@@ -80,6 +80,7 @@
                   </table>
                   <div class="cbi-section-create">
                     <input type="button" class="cbi-button-add" name="btnADC" value="ADD" onclick="addDataIO(this)">
+                    <?php conf_im_ex('ADC'); ?>
                   </div>
                 </div>
               <?php } ?>
@@ -123,6 +124,7 @@
                 </table>
                 <div class="cbi-section-create">
                   <input type="button" class="cbi-button-add" name="btnDI" value="ADD" onclick="addDataIO(this)">
+                  <?php conf_im_ex('DI'); ?>
                 </div>
               </div>
 
@@ -163,6 +165,7 @@
                 </table>
                 <div class="cbi-section-create">
                   <input type="button" class="cbi-button-add" name="btnDO" value="ADD" onclick="addDataIO(this)">
+                  <?php conf_im_ex('DO'); ?>
                 </div>
               </div>
             <?php echo $buttons ?>
@@ -172,6 +175,7 @@
   </div><!-- col-lg-12 -->
 </div>
 
+<?php page_im_ex('IO');?>
 <div id="popLayer"></div>
 <div id="popBox" style="overflow:auto">
   <input hidden="hidden" name="page_type" id="page_type" value="0">

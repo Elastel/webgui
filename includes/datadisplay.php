@@ -9,7 +9,7 @@ require_once 'includes/functions.php';
 function dataDisplay()
 {
     echo renderTemplate(
-        "datadisplay", compact('')
+        "datadisplay"
     );
 }
 

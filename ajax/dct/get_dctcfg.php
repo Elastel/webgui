@@ -11,6 +11,11 @@ if ($type == 'datadisplay') {
     }  else {
         echo "{}";
     }
+} else if (strstr($type, 'download')) {
+    $arr = explode("_", $type);
+    exec('sudo conf_im_ex export ' . $arr[1]);
+    exec('cat /tmp/config_export.csv', $data);
+    echo implode(PHP_EOL, $data);
 } else {
     if ($type == 'interface' || $type == 'server')
         exec("/usr/sbin/get_config dct name $type 5", $data);
