@@ -88,13 +88,26 @@ function saveOpcuaConfig($status)
         
         exec("sudo /usr/local/bin/uci set dct.opcua.security_policy=" .$_POST['security_policy']);
         if ($_POST['security_policy'] != '0') {
-            exec("sudo /usr/local/bin/uci set dct.opcua.uri=" .$_POST['uri']);
             if (strlen($_FILES['certificate']['name']) > 0) {
                 if (is_uploaded_file($_FILES['certificate']['tmp_name'])) {
                     saveFileUpload($status, $_FILES['certificate']);
                 }
                 $certName = $_FILES['certificate']['name'];
-                exec("sudo /usr/local/bin/uci set dct.opcua.certificate=" . $certName);
+                exec("sudo /usr/local/bin/uci set dct.opcua.certificate='$certName'");
+            }
+
+            // get uri
+            if ($_POST['uri'] == null) {
+                exec("sudo /usr/local/bin/uci get dct.opcua.certificate", $certFile);
+                $uri_path = "/etc/ssl/opcua/$certFile[0]";
+                if (!is_dir($uri_path)) {
+                    exec("data=$(openssl x509 -in $uri_path -inform der -noout -text | grep URI) && echo $" . '{data#*URI:}' . " | awk -F ' ' '{print $0}'", $uri);
+                    if (strlen($uri[0]) > 0) {
+                        exec("sudo /usr/local/bin/uci set dct.opcua.uri=$uri[0]");
+                    }
+                }
+            } else {
+                exec("sudo /usr/local/bin/uci set dct.opcua.uri=" .$_POST['uri']);
             }
 
             if (strlen($_FILES['private_key']['name']) > 0) {
@@ -103,7 +116,7 @@ function saveOpcuaConfig($status)
                 }
 
                 $keyName = $_FILES['private_key']['name'];
-                exec("sudo /usr/local/bin/uci set dct.opcua.private_key=" . $keyName);
+                exec("sudo /usr/local/bin/uci set dct.opcua.private_key='$keyName'");
             }
 
             if (strlen($_FILES['trust_crt']['name'][0]) > 0) {

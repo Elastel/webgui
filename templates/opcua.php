@@ -98,6 +98,7 @@
                   <div class="cbi-value">
                     <label class="cbi-value-title"><?php echo _("URI"); ?></label>
                     <input type="text" class="cbi-input-text" name="uri" id="uri"/>
+                    <label class="cbi-value-description"><?php echo _("If left blank, it will be automatically filled in"); ?></label>
                   </div>
                   <div class="cbi-value">
                     <label class="cbi-value-title"><?php echo _("Certificate"); ?></label>
