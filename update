@@ -61,6 +61,10 @@ if [ "$1" == "reset" ]; then
         # reset wifi ssid
         sub_mac=$(ifconfig eth0 | grep ether | awk '{print $2}' | cut -f 5-6 -d ":" | tr -d ":")
     else
+        if [ -f /etc/init.d/S42htset ]; then
+                sudo rm /etc/init.d/S42htset
+                sudo rm -r /etc/htset
+        fi
         sudo cp $path/Elastel/$model/etc/WebTunnelAgent.properties /etc/WebTunnelAgent.properties
         sub_mac=$(ifconfig eth0 | grep HWaddr | awk '{print $5}' | cut -f 5-6 -d ":" | tr -d ":")
     fi
@@ -118,7 +122,7 @@ else
         sudo ln -s /etc/init.d/edaemon /etc/init.d/S90edaemon
         sudo ln -s /etc/init.d/ddns /etc/init.d/S90ddns
 	sudo ln -s /etc/init.d/init-wifi /etc/init.d/S90init-wifi
-	suod ln -s /etc/init.d/macchina /etc/init.d/S90macchina
+	sudo ln -s /etc/init.d/macchina /etc/init.d/S90macchina
 fi
 
 if [[ $model = "EG500" || $model = "EG410" || $model = "ElastBox400" ]]; then

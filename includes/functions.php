@@ -848,7 +848,7 @@ function isBinExists($name)
     }
 }
 
-function handlePageActions($extraFooterScripts, $page)
+function handlePageActions($extraFooterScripts, $page, $config)
 {
     // handle page actions
     switch ($page) {

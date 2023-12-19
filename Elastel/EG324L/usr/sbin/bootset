@@ -1,0 +1,33 @@
+#!/bin/sh
+
+
+echo V > /dev/watchdog
+
+/bin/mount -t tmpfs tmpfs /mnt/sd -o ro,size=4k
+/bin/mount -t tmpfs tmpfs /mnt/udisk -o ro,size=4k
+/bin/mount -t tmpfs tmpfs /var/state/ -o size=10m
+
+/usr/sbin/brctl addbr br0
+/usr/sbin/brctl addif br0 eth1
+
+wan_multi=$(uci get network.wan.wan_multi)
+if [ $wan_multi == '1' ]; then
+	/usr/sbin/brctl addif br0 eth0
+fi
+
+/sbin/ifconfig eth0 up
+/sbin/ifconfig eth1 up
+
+sbin/modprobe option
+sbin/modprobe tun
+
+echo /sbin/mdev > /proc/sys/kernel/hotplug
+/sbin/mdev -s
+
+/sbin/ifconfig lo 127.0.0.1
+/etc/htnet/dns/setdns.script
+
+#/usr/sbin/init-wlan0 &
+free_arp &
+sysrst &
+

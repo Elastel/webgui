@@ -174,7 +174,7 @@ require_once 'includes/includes.php';
           <div class="load" id="loading" name="loading"></div>
           <?php
             $extraFooterScripts = array();
-            handlePageActions($extraFooterScripts, $page);
+            handlePageActions($extraFooterScripts, $page, $config);
           ?>
         </div><!-- /.container-fluid -->
       </div><!-- End of Main Content -->
