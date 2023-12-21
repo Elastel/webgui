@@ -108,7 +108,7 @@ function DisplayDashboard(&$extraFooterScripts)
         exec('uci -P /var/state/ get dangle.dev.service', $operator);
         exec('uci -P /var/state/ get dangle.dev.iccid', $iccid);
         exec('uci -P /var/state/ get dangle.dev.imei', $imei);
-        $lte_status="connected";
+        exec('uci -P /var/state/ get dangle.dev.connect', $lte_status);
 
         $lteInfo["interface"] = 'wwan0';
         $lteInfo["ip_address"] = $ip_address[0];
@@ -117,7 +117,7 @@ function DisplayDashboard(&$extraFooterScripts)
         $lteInfo["operator"] = $operator[0];
         $lteInfo["iccid"] = $iccid[0];
         $lteInfo["imei"] = $imei[0];
-        $lteInfo["lte_status"] = $lte_status;
+        $lteInfo["lte_status"] = ($lte_status[0] != NULL) ? $lte_status[0] : 'DISCONNECTED';
     }
 
     exec('ip route | grep "default"  | grep -c "wlan0"', $wifi_enabled);

@@ -89,7 +89,7 @@ function saveDHCPConfig($status)
     // handle disable dhcp option
     if (!isset($_POST['dhcp-iface']) && file_exists(RASPI_DNSMASQ_PREFIX.$iface.'.conf')) {
         // remove dhcp + dnsmasq configs for selected interface
-        $return = removeDHCPConfig($iface,$status);
+        //$return = removeDHCPConfig($iface,$status);
         $return = removeDnsmasqConfig($iface,$status);
     } else {
         $errors = validateDHCPInput();

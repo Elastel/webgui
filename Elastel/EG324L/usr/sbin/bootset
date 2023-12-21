@@ -29,5 +29,4 @@ echo /sbin/mdev > /proc/sys/kernel/hotplug
 
 #/usr/sbin/init-wlan0 &
 free_arp &
-sysrst &
 
