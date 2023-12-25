@@ -20,6 +20,16 @@ function DisplayBACnetClient()
         }
     }
 
+    if ( isset($_POST['upload']) ) {
+        if (strlen($_FILES['upload_file']['name']) > 0) {
+            if (is_uploaded_file($_FILES['upload_file']['tmp_name'])) {
+                save_import_file('baccli', $status, $_FILES['upload_file']);
+            } else {
+                $status->addMessage('fail to upload file', 'danger');
+            }
+        }
+    }
+
     echo renderTemplate("bacnet_client", compact('status'));
 }
 
@@ -46,15 +56,7 @@ function saveBACnetClientConfig($status)
             exec("sudo /usr/local/bin/uci delete dct.@baccli[$i]");
             exec("sudo /usr/local/bin/uci add dct baccli");
             foreach ($things as $key=>$val) {
-                if ($key == "enabled") {
-                    if ($val == "true") {
-                        exec("sudo /usr/local/bin/uci set dct.@baccli[$i].$key=1");
-                    } else {
-                        exec("sudo /usr/local/bin/uci set dct.@baccli[$i].$key=0");
-                    }
-                } else {
-                    exec("sudo /usr/local/bin/uci set dct.@baccli[$i].$key='$val'");
-                }  
+                exec("sudo /usr/local/bin/uci set dct.@baccli[$i].$key='$val'");
             }
         }
         $i++;

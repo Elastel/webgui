@@ -1,30 +1,13 @@
-<?php ob_start() ?>
-  <?php if (!RASPI_MONITOR_ENABLED) : ?>
-      <div class="cbi-page-actions">
-        <input type="submit" class="btn btn-outline btn-primary" value="<?php echo _("Save settings"); ?>" name="savesettings" />
-        <input type="submit" class="btn btn-success" value="<?php echo _("Apply settings"); $msg=_("Restarting Macchina"); ?>" data-toggle="modal" data-target="#hostapdModal" name="applysettings" />
-      </div>
-  <?php endif ?>
-  <!-- Modal -->
-  <div class="modal fade" id="hostapdModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <div class="modal-title" id="ModalLabel"><i class="fas fa-sync-alt mr-2"></i><?php echo $msg ?></div>
-        </div>
-        <div class="modal-body">
-          <div class="col-md-12 mb-3 mt-1"><?php echo _("Executing Macchina start") ?>...</div>
-          <div class="progress" style="height: 20px;">
-            <div class="progress-bar bg-info" role="progressbar" id="progressBar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="9"></div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline btn-primary" data-dismiss="modal"><?php echo _("Close"); ?></button>
-        </div>
-      </div>
-    </div>
-  </div>
-<?php $buttons = ob_get_clean(); ob_end_clean() ?>
+<?php 
+  ob_start();
+  if (!RASPI_MONITOR_ENABLED) :
+    BtnSaveApplyCustom('savesettings', 'applysettings');
+  endif;
+  $msg = _('Restarting Macchina');
+  page_progressbar($msg, _("Executing Macchina start"));
+  $buttons = ob_get_clean(); 
+  ob_end_clean();
+?>
 
 <div class="row">
   <div class="col-lg-12">

@@ -48,12 +48,13 @@ if (isset($interface)) {
     // fetch dhcpcd.conf settings for interface
     $conf = file_get_contents(RASPI_DHCPCD_CONFIG);
     preg_match('/^#\sRaspAP\s'.$interface.'\s.*?(?=\s*+$)/ms', $conf, $matched);
-    // preg_match('/metric\s(\d*)/', $matched[0], $metric);
-    preg_match('/static\sip_address=(.*)/', $matched[0], $static_ip);
-    preg_match('/static\srouters=(.*)/', $matched[0], $static_routers);
-    preg_match('/static\sdomain_name_server=(.*)/', $matched[0], $static_dns);
-    preg_match('/fallback\sstatic_'.$interface.'/', $matched[0], $fallback);
-    preg_match('/(?:no)?gateway/', $matched[0], $gateway);
+    $data = getBetweenStrings($matched[0], "RaspAP");
+    // preg_match('/metric\s(\d*)/',$data, $metric);
+    preg_match('/static\sip_address=(.*)/',$data, $static_ip);
+    preg_match('/static\srouters=(.*)/',$data, $static_routers);
+    preg_match('/static\sdomain_name_server=(.*)/',$data, $static_dns);
+    preg_match('/fallback\sstatic_'.$interface.'/',$data, $fallback);
+    preg_match('/(?:no)?gateway/',$data, $gateway);
     exec("sudo /usr/local/bin/uci get network.wan.metric", $metric);
     $dhcpdata['Metric'] = $metric[0];
     $dhcpdata['StaticIP'] = strpos($static_ip[1],'/') ?  substr($static_ip[1], 0, strpos($static_ip[1],'/')) : $static_ip[1];

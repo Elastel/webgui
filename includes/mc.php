@@ -56,12 +56,6 @@ function saveMcConfig($status)
                 if ($key == "data_type") {
                     $data_type_num = array_search($val, $data_type_value);
                     exec("sudo /usr/local/bin/uci set dct.@mc[$i].$key=$data_type_num");
-                } else if ($key == "enabled") {
-                    if ($val == "true") {
-                        exec("sudo /usr/local/bin/uci set dct.@mc[$i].$key=1");
-                    } else {
-                        exec("sudo /usr/local/bin/uci set dct.@mc[$i].$key=0");
-                    }
                 } else {
                     exec("sudo /usr/local/bin/uci set dct.@mc[$i].$key='$val'");
                 }  

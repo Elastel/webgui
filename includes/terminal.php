@@ -32,8 +32,13 @@ function DisplayTerminal()
 
     exec('sudo /usr/local/bin/uci get terminal.terminal.port', $port);
     exec('sudo /usr/local/bin/uci get terminal.terminal.interface', $interface);
-    exec("ip -o link show | awk -F': ' '{print $2}'", $interface_list);
-    sort($interface_list); 
+    exec("ip -o link show | awk -F': ' '{print $2}'", $tmp);
+    sort($tmp);
+
+    $interface_list = array();
+    foreach ($tmp as $value) {
+        $interface_list["$value"] = $value;
+    }
 
     if ($port[0] == null) {
         $prot[0] = '7681';

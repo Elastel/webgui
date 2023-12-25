@@ -51,15 +51,7 @@ function saveAsciiConfig($status)
             exec("sudo /usr/local/bin/uci delete dct.@ascii[$i]");
             exec("sudo /usr/local/bin/uci add dct ascii");
             foreach ($things as $key=>$val) {
-                if ($key == "enabled") {
-                    if ($val == "true") {
-                        exec("sudo /usr/local/bin/uci set dct.@ascii[$i].$key=1");
-                    } else {
-                        exec("sudo /usr/local/bin/uci set dct.@ascii[$i].$key=0");
-                    }
-                } else {
-                    exec("sudo /usr/local/bin/uci set dct.@ascii[$i].$key='$val'");
-                }  
+                exec("sudo /usr/local/bin/uci set dct.@ascii[$i].$key='$val'");
             }
         }
         $i++;

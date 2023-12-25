@@ -1,30 +1,13 @@
-<?php ob_start() ?>
-  <?php if (!RASPI_MONITOR_ENABLED) : ?>
-      <div class="cbi-page-actions">
-        <input type="submit" class="btn btn-outline btn-primary" value="<?php echo _("Save settings"); ?>" name="savesettings" />
-        <input type="submit" class="btn btn-success" value="<?php echo _("Apply settings"); $msg=_("Restarting OPC UA Server"); ?>" data-toggle="modal" data-target="#hostapdModal" name="applysettings" />
-      </div>
-  <?php endif ?>
-  <!-- Modal -->
-  <div class="modal fade" id="hostapdModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <div class="modal-title" id="ModalLabel"><i class="fas fa-sync-alt mr-2"></i><?php echo $msg ?></div>
-        </div>
-        <div class="modal-body">
-          <div class="col-md-12 mb-3 mt-1"><?php echo _("Executing dct start") ?>...</div>
-          <div class="progress" style="height: 20px;">
-            <div class="progress-bar bg-info" role="progressbar" id="progressBar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="9"></div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline btn-primary" data-dismiss="modal"><?php echo _("Close"); ?></button>
-        </div>
-      </div>
-    </div>
-  </div>
-<?php $buttons = ob_get_clean(); ob_end_clean() ?>
+<?php 
+  ob_start();
+  if (!RASPI_MONITOR_ENABLED) :
+    BtnSaveApplyCustom('savesettings', 'applysettings');
+  endif;
+  $msg = _('Restarting OPC UA Server');
+  page_progressbar($msg, _("Executing dct start"));
+  $buttons = ob_get_clean(); 
+  ob_end_clean();
+?>
 
 <div class="row">
   <div class="col-lg-12">
@@ -39,156 +22,44 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form role="form" action="opcua" enctype="multipart/form-data" method="POST">
-          <?php echo CSRFTokenFieldTag() ?>
-            <div class="cbi-section cbi-tblsection">
-              <div class="cbi-value">
-                <label class="cbi-value-title"><?php echo _("OPC UA Server"); ?></label>
-                <input class="cbi-input-radio" id="opcua_enable" name="enabled" value="1" type="radio" checked onchange="enableOpcua(true)">
-                <label ><?php echo _("Enable"); ?></label>
+          <?php echo CSRFTokenFieldTag();
+            echo '<div class="cbi-section cbi-tblsection">';
 
-                <input class="cbi-input-radio" id="opcua_disable" name="enabled" value="0" type="radio" onchange="enableOpcua(false)">
-                <label ><?php echo _("Disable"); ?></label>
-              </div>
+            RadioControlCustom(_('OPC UA Server'), 'enabled', 'opcua', 'enableOpcua');
+            echo '<div id="page_opcua" name="page_opcua">';
 
-              <div id="page_opcua" name="page_opcua">
-                <div class="cbi-value">
-                  <label class="cbi-value-title"><?php echo _("Port"); ?></label>
-                  <input type="text" class="cbi-input-text" name="port" id="port"/>
-                  <label class="cbi-value-description"><?php echo _("1~65535"); ?></label>
-                </div> 
+            InputControlCustom(_('Port'), 'port', 'port', _('1~65535'));
 
-                <div class="cbi-value">
-                  <label class="cbi-value-title" for="anonymous"><?php echo _("Anonymous"); ?></label>
-                  <input id="anonymous" type="checkbox" name="anonymous" onchange="anonymousCheck(this)" value="1">
-                </div>
+            CheckboxControlCustom(_('Anonymous'), 'anonymous', 'anonymous', null, null, 'anonymousCheck(this)');
 
-                <div id="page_anonymous" name="page_anonymous">
-                  <div class="cbi-value">
-                    <label class="cbi-value-title"><?php echo _("Username"); ?></label>
-                    <input type="text" class="cbi-input-text" name="username" id="username"/>
-                  </div>
+            echo '<div id="page_anonymous" name="page_anonymous">';
+            InputControlCustom(_('Username'), 'username', 'username');
+            InputControlCustom(_('Password'), 'password', 'password');
+            echo '</div>';
 
-                  <div class="cbi-value">
-                    <label class="cbi-value-title"><?php echo _("Password"); ?></label>
-                    <input type="text" class="cbi-input-text" name="password" id="password"/>
-                  </div>
-                </div>
+            InputControlCustom(_('Maximum Historical Value'), 'max_value', 'max_value', _('Minimum is 1'));
 
-                <div class="cbi-value">
-                  <label class="cbi-value-title"><?php echo _("Maximum Historical Value"); ?></label>
-                  <input type="text" class="cbi-input-text" name="max_value" id="max_value"/>
-                  <label class="cbi-value-description"><?php echo _("Minimum is 1"); ?></label>
-                </div>
+            CheckboxControlCustom(_('Enable Database'), 'enable_database', 'enable_database');
 
-                <div class="cbi-value">
-                  <label class="cbi-value-title" for="enable_database"><?php echo _("Enable Database"); ?></label>
-                  <input id="enable_database" type="checkbox" name="enable_database" value="1">
-                </div>
+            $policy_list = [_('None'), 'basic128', 'basic256', 'basic256sha256'];
+            SelectControlCustom(_('Security Policy'), 'security_policy', $policy_list, $policy_list[0], 'security_policy', null, 'securityChange(this)');
 
-                <div class="cbi-value">
-                  <label class="cbi-value-title"><?php echo _("Security Policy"); ?></label>
-                  <select id="security_policy" name="security_policy" class="cbi-input-select" onchange="securityChange(this)">
-                    <option value="0" selected=""><?php echo _("None"); ?></option>
-                    <option value="1">basic128</option>
-                    <option value="2">basic256</option>
-                    <option value="3">basic256sha256</option>
-                  </select>
-                </div>
-                <div id="page_security" name="page_security">
-                  <div class="cbi-value">
-                    <label class="cbi-value-title"><?php echo _("URI"); ?></label>
-                    <input type="text" class="cbi-input-text" name="uri" id="uri"/>
-                    <label class="cbi-value-description"><?php echo _("If left blank, it will be automatically filled in"); ?></label>
-                  </div>
-                  <div class="cbi-value">
-                    <label class="cbi-value-title"><?php echo _("Certificate"); ?></label>
-                    <label for="certificate" class="cbi-file-lable">
-                        <input type="button" class="cbi-file-btn" id="cert_btn" value="<?php echo _("Choose file"); ?>">
-                        <span id="cert_text"><?php echo _("No file chosen"); ?></span>
-                        <input type="file" class="cbi-file" name="certificate" id="certificate" onchange="certChange()">
-                    </label>
-                  </div>
+            echo '<div id="page_security" name="page_security">';
+            InputControlCustom(_('URI'), 'uri', 'uri', _('If left blank, it will be automatically filled in'));
 
-                  <div class="cbi-value">
-                    <label class="cbi-value-title"><?php echo _("Private Key"); ?></label>
-                    <label for="key" class="cbi-file-lable">
-                        <input type="button" class="cbi-file-btn" id="key_btn" value="<?php echo _("Choose file"); ?>">
-                        <span id="key_text"><?php echo _("No file chosen"); ?></span>
-                        <input type="file" class="cbi-file" name="private_key" id="private_key" onchange="keyChange()">
-                    </label>
-                  </div>
+            UploadFileControlCustom(_('Certificate'), 'cert_btn', 'cert_text', 'certificate', 'certificate', 'certChange()');
 
-                  <div class="cbi-value">
-                    <label class="cbi-value-title"><?php echo _("Trust Client Certificate"); ?></label>
-                    <label for="key" class="cbi-file-lable">
-                        <input type="button" class="cbi-file-btn" id="trust_btn" value="<?php echo _("Choose file"); ?>">
-                        <span id="trust_text"><?php echo _("No file chosen"); ?></span>
-                        <input type="file" multiple="multiple" class="cbi-file" name="trust_crt[]" id="trust_crt" onchange="trustChange()">
-                    </label>
-                  </div>
-                </div>
-              </div>
+            UploadFileControlCustom(_('Private Key'), 'key_btn', 'key_text', 'private_key', 'private_key', 'keyChange()');
+
+            UploadFileControlCustom(_('Trust Client Certificate'), 'trust_btn', 'trust_text', 'trust_crt[]', 'trust_crt', 'trustChange()');
+            echo '</div>
             </div>
-            <?php echo $buttons ?>
+            </div>';
+            echo $buttons;
+          ?>
           </form>
       </div><!-- card-body -->
     </div><!-- card -->
   </div><!-- col-lg-12 -->
 </div>
-<script type="text/javascript">
-  function anonymousCheck(check) {
-    if (check.checked == true)  {
-      $('#page_anonymous').hide();
-    } else {
-      $('#page_anonymous').show();
-    }
-  }
-
-  function enableOpcua(state) {
-    if (state) {
-      $('#page_opcua').show();
-      if ($('#security_policy').val() == "0") {
-        $('#page_security').hide();
-      } else {
-        $('#page_security').show();
-      }
-
-      if ($('#anonymous').is(':checked')) {
-        $('#page_anonymous').hide();
-      } else {
-        $('#page_anonymous').show();
-      }
-    } else {
-      $('#page_opcua').hide();
-    }
-  }
-
-  function securityChange(state) {
-    if (state.value == '0') {
-      $('#page_security').hide();
-    } else {
-      $('#page_security').show();
-    }
-  }
-
-  function certChange() {
-    $('#cert_text').html($('#certificate')[0].files[0].name);
-  }
-
-  function keyChange() {
-    $('#key_text').html($('#private_key')[0].files[0].name);
-  }
-
-  function trustChange() {
-    var file = $('#trust_crt')[0].files;
-    var str = '';
-    for (var i = 0, len = file.length; i < len; i++) {
-      str += file[i].name;
-      if (i < len - 1)
-        str += ";";
-    }
-
-    $('#trust_text').html(str);
-  }
-</script>
 

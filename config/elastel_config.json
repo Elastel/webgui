@@ -46,7 +46,7 @@
 						"self_define_var", "var_name1_", "var_value1_", "var_name2_", "var_value2_", "var_name3_", "var_value3_",
 						"mn", "st", "pw"],
     "bacnet_client_option" : ["enabled", "ip_address", "port", "device_id", "name"],
-    "baccli_option" : ["order", "device_name", "factor_name", "object_id", "object_instance", "server_center",
+    "baccli_option" : ["order", "device_name", "factor_name", "object_id", "server_center",
 						"operator", "operand", "ex", "accuracy", "enabled"],
     "opcua_option" : ["enabled", "port", "anonymous", "max_value", "enable_database", "username", "password", "security_policy",
 						"uri", "certificate", "private_key", "trust_crt"],

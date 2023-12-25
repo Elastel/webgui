@@ -1,5 +1,93 @@
 <?php
-function page_interface_com($num, $com_proto) {
+
+abstract class ComProtoEnum {
+  const COM_PROTO_MODBUS = 0;
+  const COM_PROTO_TRANSPARENT = 1;
+  const COM_PROTO_FX = 2;
+  const COM_PROTO_MC = 3;
+  const COM_PROTO_ASCII = 4;
+};
+
+abstract class TcpProtoEnum {
+  const TCP_PROTO_MODBUS = 0;
+  const TCP_PROTO_TRANSPARENT = 1;
+  const TCP_PROTO_S7 = 2;
+  const TCP_PROTO_FX = 3;
+  const TCP_PROTO_MC = 4;
+  const TCP_PROTO_ASCII = 5;
+};
+
+function get_belonged_interface($com_proto, $tcp_proto)
+{
+  $option_list = array();
+  $i = 0;
+  exec("sudo uci get dct.com.enabled1", $com1_enable);
+  exec("sudo uci get dct.com.enabled2", $com2_enable);
+  exec("sudo uci get dct.com.enabled3", $com3_enable);
+  exec("sudo uci get dct.com.enabled4", $com4_enable);
+  
+  exec("sudo uci get dct.com.proto1", $com1_proto);
+  exec("sudo uci get dct.com.proto2", $com2_proto);
+  exec("sudo uci get dct.com.proto3", $com3_proto);
+  exec("sudo uci get dct.com.proto4", $com4_proto);
+
+  exec("sudo uci get dct.tcp_server.enabled1", $tcp1_enable);
+  exec("sudo uci get dct.tcp_server.enabled2", $tcp2_enable);
+  exec("sudo uci get dct.tcp_server.enabled3", $tcp3_enable);
+  exec("sudo uci get dct.tcp_server.enabled4", $tcp4_enable);
+  exec("sudo uci get dct.tcp_server.enabled5", $tcp5_enable);
+  
+  exec("sudo uci get dct.tcp_server.proto1", $tcp1_proto);
+  exec("sudo uci get dct.tcp_server.proto2", $tcp2_proto);
+  exec("sudo uci get dct.tcp_server.proto3", $tcp3_proto);
+  exec("sudo uci get dct.tcp_server.proto4", $tcp4_proto);
+  exec("sudo uci get dct.tcp_server.proto5", $tcp5_proto);
+
+  if ($com1_enable[0] == "1" && $com1_proto[0] == $com_proto) {
+    $option_list["COM1"] = "COM1";
+  }
+  if ($com2_enable[0] == "1" && $com2_proto[0] == $com_proto) {
+    $option_list["COM2"] = "COM2";
+  }
+  if ($com3_enable[0] == "1" && $com3_proto[0] == $com_proto) {
+    $option_list["COM3"] = "COM3";
+  }
+  if ($com4_enable[0] == "1" && $com4_proto[0] == $com_proto) {
+    $option_list["COM4"] = "COM4";
+  }  
+  if ($tcp1_enable[0] == "1" && $tcp1_proto[0] == $tcp_proto) {
+    $option_list["TCP1"] = "TCP1";
+  }
+  if ($tcp2_enable[0] == "1" && $tcp2_proto[0] == $tcp_proto) {
+    $option_list["TCP2"] = "TCP2";
+  }
+  if ($tcp3_enable[0] == "1" && $tcp3_proto[0] == $tcp_proto) {
+    $option_list["TCP3"] = "TCP3";
+  }
+  if ($tcp4_enable[0] == "1" && $tcp4_proto[0] == $tcp_proto) {
+    $option_list["TCP4"] = "TCP4";
+  }
+  if ($tcp5_enable[0] == "1" && $tcp5_proto[0] == $tcp_proto) {
+    $option_list["TCP5"] = "TCP5";
+  }
+
+  if (($com1_enable[0] == null || $com1_enable[0]  == "0"  || $com1_proto[0] != $com_proto) &&
+    ($com2_enable[0] == null || $com2_enable[0]  == "0" || $com2_proto[0] != $com_proto) &&
+    ($com3_enable[0] == null || $com3_enable[0]  == "0" || $com3_proto[0] != $com_proto) &&
+    ($com4_enable[0] == null || $com4_enable[0]  == "0" || $com4_proto[0] != $com_proto) &&
+    ($tcp1_enable[0] == null || $tcp1_enable[0]  == "0" || $tcp1_proto[0] != $tcp_proto) &&
+    ($tcp2_enable[0] == null || $tcp2_enable[0]  == "0" || $tcp2_proto[0] != $tcp_proto) &&
+    ($tcp3_enable[0] == null || $tcp3_enable[0]  == "0" || $tcp3_proto[0] != $tcp_proto) &&
+    ($tcp4_enable[0] == null || $tcp4_enable[0]  == "0" || $tcp4_proto[0] != $tcp_proto) &&
+    ($tcp5_enable[0] == null || $tcp5_enable[0]  == "0" || $tcp5_proto[0] != $tcp_proto)) {
+      $option_list["No Interface Is Enabled"] = _("No Interface Is Enabled");
+  }
+  
+  return $option_list;
+}
+
+function page_interface_com($num, $com_proto)
+{
 
 if ($num == 1)
     $active = "active";
@@ -97,7 +185,8 @@ echo "      </select>
 ";
 }
 
-function page_interface_tcp($num, $tcp_proto) {
+function page_interface_tcp($num, $tcp_proto)
+{
   if ($num == 1)
     $active = "active";
   else
@@ -180,7 +269,8 @@ echo         "<label id=\"connect_status$num\" name=\"connect_status$num\">"; ec
       </div><!-- /.tab-pane | basic tab -->";
 }
 
-function page_server($num) {
+function page_server($num)
+{
   if ($num == 1)
     $active = "active";
   else
@@ -435,7 +525,8 @@ echo "<div class=\"tab-pane $active\" id=\"server$num\">
       </div><!-- /.tab-pane | basic tab -->";
 }
 
-function conf_im_ex($conf_name) {
+function conf_im_ex($conf_name)
+{
   echo "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp";
   echo "<input type=\"button\" class=\"cbi-button-add\" name=\"confBox\" value=\"Configure Import Export\" onclick=\"conf_im_ex('$conf_name')\">";
 }
@@ -514,4 +605,54 @@ function save_import_file($section, $status, $file) {
         $status->addMessage($e->getMessage(), 'danger');
         return $status;
     }
+}
+
+function page_table_title($section, $option_list) {
+  echo "<table class=\"table cbi-section-table\" name=\"table_$section\" id=\"table_$section\">
+      <tr class=\"tr cbi-section-table-titles\">";
+
+  $name_buf = '';
+  $descr_buf = '';
+  
+  for ($i = 0; $i < count($option_list); $i++) {
+    $name = _($option_list[$i]['name']);
+    $descr = _($option_list[$i]['descr']);
+    $style = strlen($option_list[$i]['style']) > 0 ? "style=\"". $option_list[$i]['style'] ."\"" : '';
+    $name_buf .= "<th class=\"th cbi-section-table-cell\" $style>$name</th>";
+    $descr_buf .= "<th class=\"th cbi-section-table-cell\" $style>$descr</th>";
+    unset($name);
+    unset($style);
+    unset($descr);
+  }
+  echo $name_buf;
+  echo "<th class=\"th cbi-section-table-cell cbi-section-actions\"></th>
+        <th class=\"th cbi-section-table-cell cbi-section-actions\"></th>
+      </tr>
+      <tr class=\"tr cbi-section-table-descr\">";
+  echo $descr_buf;
+  echo "<th class=\"th cbi-section-table-cell cbi-section-actions\"></th>
+        <th class=\"th cbi-section-table-cell cbi-section-actions\"></th>
+      </tr>
+    </table>";
+}
+
+function page_progressbar($title, $content) {
+  echo '<div class="modal fade" id="hostapdModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title" id="ModalLabel"><i class="fas fa-sync-alt mr-2"></i>' . $title . '</div>
+        </div>
+        <div class="modal-body">
+          <div class="col-md-12 mb-3 mt-1">'. $content . '...</div>
+          <div class="progress" style="height: 20px;">
+            <div class="progress-bar bg-info" role="progressbar" id="progressBar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="9"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline btn-primary" data-dismiss="modal">' . _("Close") .'</button>
+        </div>
+      </div>
+    </div>
+  </div>';
 }

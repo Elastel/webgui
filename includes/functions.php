@@ -410,32 +410,6 @@ function SelectorOptions($name, $options, $selected = null, $id = null, $event =
     echo '</select>' , PHP_EOL;
 }
 
-function SelectorOptionsCustom($name, $options, $selected = null, $id = null, $event = null, $disabled = null)
-{
-    echo '<select class="cbi-input-select" name="'.htmlspecialchars($name, ENT_QUOTES).'"';
-    if (isset($id)) {
-        echo ' id="' . htmlspecialchars($id, ENT_QUOTES) .'"';
-    }
-    if (isset($event)) {
-        echo ' onChange="' . htmlspecialchars($event, ENT_QUOTES).'()"';
-    }
-    echo '>' , PHP_EOL;
-    foreach ($options as $opt => $label) {
-        $select = '';
-        $key = isAssoc($options) ? $opt : $label;
-        if ($key == $selected) {
-            $select = ' selected="selected"';
-        }
-        if ($key == $disabled) {
-            $disabled = ' disabled';
-        }
-        echo '<option value="'.htmlspecialchars($key, ENT_QUOTES).'"'.$select.$disabled.'>'.
-            htmlspecialchars($label, ENT_QUOTES).'</option>' , PHP_EOL;
-    }
-
-    echo '</select>' , PHP_EOL;
-}
-
 /**
  *
  * @param  string $input
@@ -848,6 +822,15 @@ function isBinExists($name)
     }
 }
 
+function getBetweenStrings($src, $string)
+{
+    $tmp = strstr($src, $string);
+    $substring = substr($tmp, strlen($string));
+    $dest = strstr($substring, $string, true);
+
+    return $dest != null ? $dest : $tmp;
+}
+
 function handlePageActions($extraFooterScripts, $page, $config)
 {
     // handle page actions
@@ -954,7 +937,7 @@ function handlePageActions($extraFooterScripts, $page, $config)
         case "/firewall_conf":
             DisplayFirewall();
             break;
-        case "/bacnet_client":
+        case "/baccli_conf":
             DisplayBACnetClient();
             break;
         case "/nodered":
@@ -966,4 +949,134 @@ function handlePageActions($extraFooterScripts, $page, $config)
         default:
             DisplayDashboard($extraFooterScripts);
     }
+}
+
+function InputControlCustom($title, $name, $id = null, $descr = null, $event = null)
+{
+    echo '<div class="cbi-value">
+      <label class="cbi-value-title">'.htmlspecialchars($title, ENT_QUOTES).'</label>' , PHP_EOL;
+    echo '<input type="text" class="cbi-input-text" name="'.htmlspecialchars($name, ENT_QUOTES).'"';
+    if (isset($id)) {
+        echo ' id="'.htmlspecialchars($id, ENT_QUOTES).'"';
+    }
+    if (isset($event)) {
+        echo ' onChange="' . htmlspecialchars($event, ENT_QUOTES). '"';
+    }
+    echo '>' , PHP_EOL;
+    if (isset($descr)) {
+        echo '<label class="cbi-value-description">' . htmlspecialchars($descr, ENT_QUOTES) . '</label>';
+    }
+    echo '</div>';
+}
+
+function SelectControlCustom($title, $name, $options, $selected = null, $id = null, $descr = null, $event = null, $disabled = null)
+{
+    echo '<div class="cbi-value">
+        <label class="cbi-value-title">' . htmlspecialchars($title, ENT_QUOTES) . '</label>' , PHP_EOL;
+    echo '<select class="cbi-input-select" name="'.htmlspecialchars($name, ENT_QUOTES).'"';
+    if (isset($id)) {
+        echo ' id="'.htmlspecialchars($id, ENT_QUOTES).'"';
+    }
+    if (isset($event)) {
+        echo ' onChange="' . htmlspecialchars($event, ENT_QUOTES). '"';
+    }
+    echo '>' , PHP_EOL;
+    if (is_array($options)) {
+        foreach ($options as $opt => $label) {
+            $select = '';
+            // $key = isAssoc($options) ? $opt : $label;
+            if ($label == $selected) {
+                $select = ' selected="selected"';
+            }
+            if ($label == $disabled) {
+                $disabled = ' disabled';
+            }
+            echo '<option value="'.htmlspecialchars($opt, ENT_QUOTES).'"'.$select.$disabled.'>'.
+                htmlspecialchars($label, ENT_QUOTES).'</option>' , PHP_EOL;
+        }
+    }
+
+    echo '</select>' , PHP_EOL;
+    if (isset($descr)) {
+        echo '<label class="cbi-value-description">' . htmlspecialchars($descr, ENT_QUOTES) . '</label>';
+    }
+    echo '</div>' , PHP_EOL;
+}
+
+function CheckboxControlCustom($title, $name, $id = null, $checked = null, $descr = null, $event = null)
+{
+    echo '<div class="cbi-value">
+      <label class="cbi-value-title">'.htmlspecialchars($title, ENT_QUOTES).'</label>' , PHP_EOL;
+    echo '<input type="checkbox" value="1" ';
+    if (isset($checked)) {
+        echo htmlspecialchars($checked, ENT_QUOTES);
+    }
+    echo ' name="'.htmlspecialchars($name, ENT_QUOTES).'"';
+    if (isset($id)) {
+        echo ' id="'.htmlspecialchars($id, ENT_QUOTES).'"';
+    }
+    if (isset($event)) {
+        echo ' onChange="' . htmlspecialchars($event, ENT_QUOTES). '"';
+    }
+    echo '>' , PHP_EOL;
+    if (isset($descr)) {
+        echo '<label class="cbi-value-description">' . htmlspecialchars($descr, ENT_QUOTES) . '</label>';
+    }
+    echo '</div>';
+}
+
+function LabelControlCustom($title, $name, $id = null, $descr = null, $event = null)
+{
+    echo '<div class="cbi-value">
+        <label class="cbi-value-title">'.htmlspecialchars($title, ENT_QUOTES).'</label>' , PHP_EOL;
+    echo '<label name="'.htmlspecialchars($name, ENT_QUOTES).'"';
+    if (isset($id)) {
+        echo ' id="'.htmlspecialchars($id, ENT_QUOTES).'"';
+    }
+    if (isset($event)) {
+        echo ' onChange="' . htmlspecialchars($event, ENT_QUOTES). '"';
+    }
+    echo '>' , PHP_EOL;
+    if (isset($descr)) {
+        echo '<label class="cbi-value-description">' . htmlspecialchars($descr, ENT_QUOTES) . '</label>';
+    }
+    echo '</div>';
+}
+
+function RadioControlCustom($title, $name, $id, $event, $descr = null)
+{
+    echo '<div class="cbi-value">
+        <label class="cbi-value-title">'.htmlspecialchars($title, ENT_QUOTES).'</label>' , PHP_EOL;
+    echo '<input class="cbi-input-radio" id="'.htmlspecialchars($id, ENT_QUOTES).'_enable" ';
+    echo 'name="'.htmlspecialchars($name, ENT_QUOTES).'" value="1" type="radio" checked ';
+    echo 'onchange="' . htmlspecialchars($event, ENT_QUOTES). '(true)">';
+    echo '<label >' . _('Enable') . '</label>';
+    echo PHP_EOL;
+    echo '<input class="cbi-input-radio" id="'.htmlspecialchars($id, ENT_QUOTES).'_disable" ';
+    echo 'name="'.htmlspecialchars($name, ENT_QUOTES).'" value="0" type="radio" ';
+    echo 'onchange="' . htmlspecialchars($event, ENT_QUOTES). '(false)">';
+    echo '<label >' . _('Disable') . '</label>';
+    echo '</div>';
+}
+
+function UploadFileControlCustom($title, $btn_id, $text_id, $file_name, $file_id, $event)
+{
+    echo '<div class="cbi-value">
+    <label class="cbi-value-title">'.htmlspecialchars($title, ENT_QUOTES).'</label>' , PHP_EOL;
+    echo '<label class="cbi-file-lable">
+        <input type="button" class="cbi-file-btn" id="'.htmlspecialchars($btn_id, ENT_QUOTES).'" value="'._("Choose file").'">
+        <span id="'.htmlspecialchars($text_id, ENT_QUOTES).'">'._("No file chosen").'></span>
+        <input type="file" class="cbi-file" name="'.htmlspecialchars($file_name, ENT_QUOTES).
+        '" id="'.htmlspecialchars($file_id, ENT_QUOTES).
+        '" onchange="' . htmlspecialchars($event, ENT_QUOTES). '">
+    </label>
+    </div>';
+}
+
+function BtnSaveApplyCustom($save_name, $apply_name)
+{
+    echo '<div class="cbi-page-actions">
+        <input type="submit" class="btn btn-outline btn-primary" value="' . _("Save settings") . '" name="'.htmlspecialchars($save_name, ENT_QUOTES).'" />
+        <input type="submit" class="btn btn-success" value="' . _("Apply settings") . '" data-toggle="modal" data-target="#hostapdModal" name="'.htmlspecialchars($apply_name, ENT_QUOTES).'" />
+    </div>';
 }

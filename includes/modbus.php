@@ -58,12 +58,6 @@ function saveModbusConfig($status)
                 if ($key == "data_type") {
                     $data_type_num = array_search($val, $data_type_value);
                     exec("sudo /usr/local/bin/uci set dct.@modbus[$i].$key=$data_type_num");
-                } else if ($key == "enabled") {
-                    if ($val == "true") {
-                        exec("sudo /usr/local/bin/uci set dct.@modbus[$i].$key=1");
-                    } else {
-                        exec("sudo /usr/local/bin/uci set dct.@modbus[$i].$key=0");
-                    }
                 } else {
                     exec("sudo /usr/local/bin/uci set dct.@modbus[$i].$key='$val'");
                 }  

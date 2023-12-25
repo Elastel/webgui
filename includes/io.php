@@ -32,7 +32,59 @@ function DisplayIO()
         }
     }
 
-    echo renderTemplate("io", compact('status', "model"));
+    // 判断串口是否有有外接io设备的配置
+    $adc_index_count = 0;
+    $di_index_count = 0;
+    $do_index_count = 0;
+    $com_count = 4;
+
+    switch ($model) {
+        case "EG500":
+            $adc_index_count += 3;
+            $di_index_count += 6;
+            $do_index_count += 6;
+            $com_count = 2;
+            break;
+        case "EG410":
+            $di_index_count += 2;
+            $do_index_count += 2;
+            $com_count = 2;
+            break;
+    }
+
+    for ($i = 1; $i <= $com_count; $i++) {
+        unset($enabled);
+        exec("sudo uci get dct.com.enabled$i", $enabled);
+        if ($enabled[0] != '1') {
+            continue;
+        }
+        exec("sudo uci get dct.com.proto$i", $com_proto);
+        if ($com_proto[0] == '5') {
+            exec("sudo uci get dct.com.controller_model$i", $controller_model);
+
+            switch($controller_model[0]) {
+                case '0':
+                    $di_index_count += 2;
+                    $do_index_count += 2;
+                    break;
+                case '1':
+                    $adc_index_count += 2;
+                    $di_index_count += 2;
+                    $do_index_count += 2;
+                    break;
+                case '2':
+                    $adc_index_count += 4;
+                    $di_index_count += 4;
+                    $do_index_count += 4;
+                    break;
+            }
+         }
+
+        unset($com_proto);
+        unset($controller_model);
+    }
+
+    echo renderTemplate("io", compact('status', "model", 'adc_index_count', 'di_index_count', 'do_index_count'));
 }
 
 function saveADC($status)
@@ -56,12 +108,6 @@ function saveADC($status)
                 if ($key == "cap_type") {
                     $cap_type_num = array_search($val, $cap_type_value);
                     exec("sudo /usr/local/bin/uci set dct.@adc[$i].$key=$cap_type_num");
-                } else if ($key == "enabled") {
-                    if ($val == "true") {
-                        exec("sudo /usr/local/bin/uci set dct.@adc[$i].$key=1");
-                    } else {
-                        exec("sudo /usr/local/bin/uci set dct.@adc[$i].$key=0");
-                    }
                 } else {
                     exec("sudo /usr/local/bin/uci set dct.@adc[$i].$key='$val'");
                 }  
@@ -102,12 +148,6 @@ function saveDI($status)
                 } else if ($key == "count_method") {
                     $method_num = array_search($val, $method_value);
                     exec("sudo /usr/local/bin/uci set dct.@di[$i].$key=$method_num");
-                } else if ($key == "enabled") {
-                    if ($val == "true") {
-                        exec("sudo /usr/local/bin/uci set dct.@di[$i].$key=1");
-                    } else {
-                        exec("sudo /usr/local/bin/uci set dct.@di[$i].$key=0");
-                    }
                 } else {
                     exec("sudo /usr/local/bin/uci set dct.@di[$i].$key='$val'");
                 }  
@@ -144,12 +184,6 @@ function saveDO($status)
                 if ($key == "init_status" || $key == "cur_status") {
                     $status_num = array_search($val, $status_value);
                     exec("sudo /usr/local/bin/uci set dct.@do[$i].$key=$status_num");
-                } else if ($key == "enabled") {
-                    if ($val == "true") {
-                        exec("sudo /usr/local/bin/uci set dct.@do[$i].$key=1");
-                    } else {
-                        exec("sudo /usr/local/bin/uci set dct.@do[$i].$key=0");
-                    }
                 } else {
                     exec("sudo /usr/local/bin/uci set dct.@do[$i].$key='$val'");
                 }  

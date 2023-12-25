@@ -61,12 +61,6 @@ function saveS7Config($status)
                 } else if ($key == "word_len") {
                     $word_len_num = array_search($val, $word_len_value);
                     exec("sudo /usr/local/bin/uci set dct.@s7[$i].$key=$word_len_num");
-                } else if ($key == "enabled") {
-                    if ($val == "true") {
-                        exec("sudo /usr/local/bin/uci set dct.@s7[$i].$key=1");
-                    } else {
-                        exec("sudo /usr/local/bin/uci set dct.@s7[$i].$key=0");
-                    }
                 } else {
                     exec("sudo /usr/local/bin/uci set dct.@s7[$i].$key='$val'");
                 }  

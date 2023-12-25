@@ -192,7 +192,7 @@ function contentLoaded() {
             loadDIConfig();
             loadDOConfig();
             break;
-        case "bacnet_client":
+        case "baccli_conf":
             loadBACnetClientConfig();
             break;
         case "server_conf":
@@ -947,216 +947,252 @@ function loadInterfacesConfig() {
 
 function loadModbusConfig() {
     $('#loading').show();
-    $.get('ajax/dct/get_dctcfg.php?type=modbus',function(data){
+    var table_name = 'modbus';
+    $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
+        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'device_id', 
+                        'function_code', 'reg_addr', 'reg_count', 'data_type', 'server_center', 
+                        'operator', 'operand', 'ex', 'accuracy', 'enabled'];
         var data_type_value = ['Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
                             'Unsigned 32Bits ABCD', 'Unsigned 32Bits BADC', 'Unsigned 32Bits CDAB', 'Unsigned 32Bits DCBA',
                             'Signed 32Bits ABCD', 'Signed 32Bits BADC', 'Signed 32Bits CDAB', 'Signed 32Bits DCBA',
                             'Float ABCD', 'Float BADC', 'Float CDAB', 'Float DCBA'];
 
+        
         var len = Number(jsonData.length);
-
         for (var i = 0; i < len; i++) {
-            var table = document.getElementsByTagName("table")[0];
-            table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='order'>"+ (jsonData[i].order != null ? jsonData[i].order : "-") + "</td>\n" +
-                "        <td style='text-align:center' name='device_name'>"+ (jsonData[i].device_name != null ? jsonData[i].device_name : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='belonged_com'>"+ (jsonData[i].belonged_com != null ? jsonData[i].belonged_com : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ (jsonData[i].factor_name != null ? jsonData[i].factor_name : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='device_id'>"+ (jsonData[i].device_id != null ? jsonData[i].device_id : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='function_code'>"+ (jsonData[i].function_code != null ? jsonData[i].function_code : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_addr'>"+ (jsonData[i].reg_addr != null ? jsonData[i].reg_addr : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_count'>"+ (jsonData[i].reg_count != null ? jsonData[i].reg_count : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='data_type'>"+ data_type_value[Number(jsonData[i].data_type)] +"</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ (jsonData[i].server_center != null ? jsonData[i].server_center : "-") +"</td>\n" +
-                "        <td style='display:none' name='operator'>"+ jsonData[i].operator +"</td>\n" +
-                "        <td style='display:none' name='operand'>"+ (jsonData[i].operand != null ? jsonData[i].operand : "-") +"</td>\n" +
-                "        <td style='display:none' name='ex'>"+ (jsonData[i].ex != null ? jsonData[i].ex : "-") +"</td>\n" +
-                "        <td style='display:none' name='accuracy'>"+ jsonData[i].accuracy +"</td>\n" +
-                "        <td style='text-align:center' name='enabled'>"+ (jsonData[i].enabled == "1" ? true : false) +"</td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"editData(this);\" >Edit</a></td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"delData(this);\" >Del</a></td>\n" +
-                "    </tr>";
+            var table = document.getElementById("table_" + table_name);
+            var contents = '';
+            contents += '<tr  class="tr cbi-section-table-descr">\n';
+            for (key in jsonData[i]) {
+                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
+                    contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+                } else if (key == 'data_type') {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (data_type_value[Number(jsonData[i][key])]) +'</td>\n';
+                } else if (key == 'enabled') {
+                    contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
+                } else {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+                }
+            }
+            contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
+                '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
+                '   </tr>';
+            table.innerHTML += contents;
         }
 
-        var result = get_table_data();
+        var result = get_table_data(table_name, option_list);
         var json_data = JSON.stringify(result);
-        $('#hidTD').val(json_data);
+        $('#hidTD_'+table_name).val(json_data);
+        $('#option_list_'+table_name).val(option_list);
         $('#loading').hide();
     });
 }
 
 function loadAsciiConfig() {
     $('#loading').show();
-    $.get('ajax/dct/get_dctcfg.php?type=ascii',function(data){
+    var table_name = 'ascii';
+    $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
+        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'tx_cmd', 
+                        'cmd_format', 'server_center', 'enabled'];
+
         var len = Number(jsonData.length);
 
         for (var i = 0; i < len; i++) {
-            var table = document.getElementsByTagName("table")[0];
-            table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='order'>"+ ( jsonData[i].order != null ?  jsonData[i].order : "-") + "</td>\n" +
-                "        <td style='text-align:center' name='device_name'>"+ ( jsonData[i].device_name != null ?  jsonData[i].device_name : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='belonged_com'>"+ ( jsonData[i].belonged_com != null ?  jsonData[i].belonged_com : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ ( jsonData[i].factor_name != null ?  jsonData[i].factor_name : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='tx_cmd'>"+ ( jsonData[i].tx_cmd != null ?  jsonData[i].tx_cmd : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='cmd_format'>"+ ( jsonData[i].cmd_format != null ?  jsonData[i].cmd_format : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ ( jsonData[i].server_center != null ?  jsonData[i].server_center : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='enabled'>"+ (jsonData[i].enabled == "1" ? true : false) +"</td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"editDataAscii(this);\" >Edit</a></td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"delDataAscii(this);\" >Del</a></td>\n" +
-                "    </tr>";
+            var table = document.getElementById("table_" + table_name);
+
+            var contents = '';
+            contents += '<tr  class="tr cbi-section-table-descr">\n';
+            for (key in jsonData[i]) {
+                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
+                    contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+                } else if (key == 'data_type') {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (data_type_value[Number(jsonData[i][key])]) +'</td>\n';
+                } else if (key == 'enabled') {
+                    contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
+                } else {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+                }
+            }
+            contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
+                '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
+                '   </tr>';
+            table.innerHTML += contents;
         }
 
-        var result = getTableDataAscii();
+        var result = get_table_data(table_name, option_list);
         var json_data = JSON.stringify(result);
-        $('#hidTD').val(json_data);
+        $('#hidTD_'+table_name).val(json_data);
+        $('#option_list_'+table_name).val(option_list);
         $('#loading').hide();
     });
 }
 
 function loadS7Config() {
     $('#loading').show();
-    $.get('ajax/dct/get_dctcfg.php?type=s7',function(data){
+    var table_name = 's7';
+    $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
+        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'reg_type', 
+                        'reg_addr', 'reg_count', 'word_len', 'server_center', 
+                        'operator', 'operand', 'ex', 'accuracy', 'enabled'];
         var reg_type_value = ['I', 'Q', 'M', 'DB', 'V', 'C', 'T'];
         var word_len_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real', 'Counter', 'Timer'];
         var len = Number(jsonData.length);
 
         for (var i = 0; i < len; i++) {
-            var table = document.getElementsByTagName("table")[0];
-            table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='order'>"+ (jsonData[i].order != null ? jsonData[i].order : "-") + "</td>\n" +
-                "        <td style='text-align:center' name='device_name'>"+ (jsonData[i].device_name != null ? jsonData[i].device_name : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='belonged_com'>"+ (jsonData[i].belonged_com != null ? jsonData[i].belonged_com : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ (jsonData[i].factor_name != null ? jsonData[i].factor_name : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_type'>"+ reg_type_value[Number(jsonData[i].reg_type)] +"</td>\n" +
-                "        <td style='text-align:center' name='reg_addr'>"+ (jsonData[i].reg_addr != null ? jsonData[i].reg_addr : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_count'>"+ (jsonData[i].reg_count != null ? jsonData[i].reg_count : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='word_len'>"+ word_len_value[Number(jsonData[i].word_len)] +"</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ (jsonData[i].server_center != null ? jsonData[i].server_center : "-") +"</td>\n" +
-                "        <td style='display:none' name='operator'>"+ jsonData[i].operator +"</td>\n" +
-                "        <td style='display:none' name='operand'>"+ (jsonData[i].operand != null ? jsonData[i].operand : "-") +"</td>\n" +
-                "        <td style='display:none' name='ex'>"+ (jsonData[i].ex != null ? jsonData[i].ex : "-") +"</td>\n" +
-                "        <td style='display:none' name='accuracy'>"+ jsonData[i].accuracy +"</td>\n" +
-                "        <td style='text-align:center' name='enabled'>"+ (jsonData[i].enabled == "1" ? true : false) +"</td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"editS7Data(this);\" >Edit</a></td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"delS7Data(this);\" >Del</a></td>\n" +
-                "    </tr>";
+            var table = document.getElementById("table_" + table_name);
+            var contents = '';
+            contents += '<tr  class="tr cbi-section-table-descr">\n';
+            for (key in jsonData[i]) {
+                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
+                    contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+                } else if (key == 'reg_type') {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (reg_type_value[Number(jsonData[i][key])]) +'</td>\n';
+                } else if (key == 'word_len') {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (word_len_value[Number(jsonData[i][key])]) +'</td>\n';
+                } else if (key == 'enabled') {
+                    contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
+                } else {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+                }
+            }
+            contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
+                '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
+                '   </tr>';
+            table.innerHTML += contents;
         }
 
-        var result = get_table_data_s7();
+        var result = get_table_data(table_name, option_list);
         var json_data = JSON.stringify(result);
-        $('#hidTD').val(json_data);
+        $('#hidTD_'+table_name).val(json_data);
+        $('#option_list_'+table_name).val(option_list);
         $('#loading').hide();
     });
 }
 
 function loadFxConfig() {
     $('#loading').show();
-    $.get('ajax/dct/get_dctcfg.php?type=fx',function(data){
+    var table_name = 'fx';
+    $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
+        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'reg_type', 
+                        'reg_addr', 'reg_count', 'data_type', 'server_center', 
+                        'operator', 'operand', 'ex', 'accuracy', 'enabled'];
         var reg_type_value = ['X', 'Y', 'M', 'S', 'D'];
         var data_type_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real'];
         var len = Number(jsonData.length);
 
         for (var i = 0; i < len; i++) {
-            var table = document.getElementsByTagName("table")[0];
-            table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='order'>"+ (jsonData[i].order != null ? jsonData[i].order : "-") + "</td>\n" +
-                "        <td style='text-align:center' name='device_name'>"+ (jsonData[i].device_name != null ? jsonData[i].device_name : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='belonged_com'>"+ (jsonData[i].belonged_com != null ? jsonData[i].belonged_com : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ (jsonData[i].factor_name != null ? jsonData[i].factor_name : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_type'>"+ reg_type_value[Number(jsonData[i].reg_type)] +"</td>\n" +
-                "        <td style='text-align:center' name='reg_addr'>"+ (jsonData[i].reg_addr != null ? jsonData[i].reg_addr : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_count'>"+ (jsonData[i].reg_count != null ? jsonData[i].reg_count : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='data_type'>"+ data_type_value[Number(jsonData[i].data_type)] +"</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ (jsonData[i].server_center != null ? jsonData[i].server_center : "-") +"</td>\n" +
-                "        <td style='display:none' name='operator'>"+ jsonData[i].operator +"</td>\n" +
-                "        <td style='display:none' name='operand'>"+ (jsonData[i].operand != null ? jsonData[i].operand : "-") +"</td>\n" +
-                "        <td style='display:none' name='ex'>"+ (jsonData[i].ex != null ? jsonData[i].ex : "-") +"</td>\n" +
-                "        <td style='display:none' name='accuracy'>"+ jsonData[i].accuracy +"</td>\n" +
-                "        <td style='text-align:center' name='enabled'>"+ (jsonData[i].enabled == "1" ? true : false) +"</td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"editFxData(this);\" >Edit</a></td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"delFxData(this);\" >Del</a></td>\n" +
-                "    </tr>";
+            var table = document.getElementById("table_" + table_name);
+            var contents = '';
+            contents += '<tr  class="tr cbi-section-table-descr">\n';
+            for (key in jsonData[i]) {
+                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
+                    contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+                } else if (key == 'reg_type') {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (reg_type_value[Number(jsonData[i][key])]) +'</td>\n';
+                } else if (key == 'data_type') {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (data_type_value[Number(jsonData[i][key])]) +'</td>\n';
+                } else if (key == 'enabled') {
+                    contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
+                } else {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+                }
+            }
+            contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
+                '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
+                '   </tr>';
+            table.innerHTML += contents;
         }
 
-        var result = getTableDataFx();
+        var result = get_table_data(table_name, option_list);
         var json_data = JSON.stringify(result);
-        $('#hidTD').val(json_data);
+        $('#hidTD_'+table_name).val(json_data);
+        $('#option_list_'+table_name).val(option_list);
         $('#loading').hide();
     });
 }
 
 function loadMcConfig() {
     $('#loading').show();
-    $.get('ajax/dct/get_dctcfg.php?type=mc',function(data){
+    var table_name = 'mc';
+    $.get('ajax/dct/get_dctcfg.php?type=' + table_name, function(data){
         var jsonData = JSON.parse(data);
+        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'data_area', 
+                        'start_addr', 'reg_count', 'data_type', 'server_center', 
+                        'operator', 'operand', 'ex', 'accuracy', 'enabled'];
         var data_type_value = ['Bit', 'Int', 'Float'];
         var len = Number(jsonData.length);
 
         for (var i = 0; i < len; i++) {
-            var table = document.getElementsByTagName("table")[0];
-            table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='order'>"+ (jsonData[i].order != null ? jsonData[i].order : "-") + "</td>\n" +
-                "        <td style='text-align:center' name='device_name'>"+ (jsonData[i].device_name != null ? jsonData[i].device_name : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='belonged_com'>"+ (jsonData[i].belonged_com != null ? jsonData[i].belonged_com : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ (jsonData[i].factor_name != null ? jsonData[i].factor_name : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='data_area'>"+ (jsonData[i].data_area != null ? jsonData[i].data_area : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='start_addr'>"+ (jsonData[i].start_addr != null ? jsonData[i].start_addr : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='reg_count'>"+ (jsonData[i].reg_count != null ? jsonData[i].reg_count : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='data_type'>"+ data_type_value[Number(jsonData[i].data_type)] +"</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ (jsonData[i].server_center != null ? jsonData[i].server_center : "-") +"</td>\n" +
-                "        <td style='display:none' name='operator'>"+ jsonData[i].operator +"</td>\n" +
-                "        <td style='display:none' name='operand'>"+ (jsonData[i].operand != null ? jsonData[i].operand : "-") +"</td>\n" +
-                "        <td style='display:none' name='ex'>"+ (jsonData[i].ex != null ? jsonData[i].ex : "-") +"</td>\n" +
-                "        <td style='display:none' name='accuracy'>"+ jsonData[i].accuracy +"</td>\n" +
-                "        <td style='text-align:center' name='enabled'>"+ (jsonData[i].enabled == "1" ? true : false) +"</td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"editMcData(this);\" >Edit</a></td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"delMcData(this);\" >Del</a></td>\n" +
-                "    </tr>";
+            var table = document.getElementById("table_" + table_name);
+            var contents = '';
+            contents += '<tr  class="tr cbi-section-table-descr">\n';
+            for (key in jsonData[i]) {
+                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
+                    contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+                } else if (key == 'data_type') {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (data_type_value[Number(jsonData[i][key])]) +'</td>\n';
+                } else if (key == 'enabled') {
+                    contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
+                } else {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+                }
+            }
+            contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
+                '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
+                '   </tr>';
+            table.innerHTML += contents;
         }
 
-        var result = getTableDataMc();
+        var result = get_table_data(table_name, option_list);
         var json_data = JSON.stringify(result);
-        $('#hidTD').val(json_data);
+        $('#hidTD_'+table_name).val(json_data);
+        $('#option_list_'+table_name).val(option_list);
         $('#loading').hide();
     });
 }
 
 function loadADCConfig() {
     $('#loading').show();
-    $.get('ajax/dct/get_dctcfg.php?type=adc',function(data){
+    var table_name = 'adc';
+    $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
+        var option_list = ['device_name', 'index', 'factor_name', 'cap_type', 
+                        'range_down', 'range_up', 'server_center', 
+                        'operator', 'operand', 'ex', 'accuracy', 'enabled'];
         var cap_type_value = ['4-20mA', '0-10V'];
         var len = Number(jsonData.length);
         var model = document.getElementById("model").value;
 
         if (model == "EG500") {
             for (var i = 0; i < len; i++) {
-                var table = document.getElementsByTagName("table")[0];
-                table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                    "        <td style='text-align:center' name='device_name'>"+ (jsonData[i].device_name != null ? jsonData[i].device_name : "-") +"</td>\n" +
-                    "        <td style='text-align:center' name='index'>"+ jsonData[i].index + "</td>\n" +
-                    "        <td style='text-align:center' name='factor_name'>"+ (jsonData[i].factor_name != null ? jsonData[i].factor_name : "-") +"</td>\n" +
-                    "        <td style='text-align:center' name='cap_type'>"+ cap_type_value[Number(jsonData[i].cap_type)] + "</td>\n" +
-                    "        <td style='text-align:center' name='range_down'>"+ (jsonData[i].range_down != null ? jsonData[i].range_down : "-") +"</td>\n" +
-                    "        <td style='text-align:center' name='range_up'>"+ (jsonData[i].range_up != null ? jsonData[i].range_up : "-") +"</td>\n" +
-                    "        <td style='text-align:center' name='server_center'>"+ (jsonData[i].server_center != null ? jsonData[i].server_center : "-") +"</td>\n" +
-                    "        <td style='display:none' name='operator'>"+ jsonData[i].operator +"</td>\n" +
-                    "        <td style='display:none' name='operand'>"+ (jsonData[i].operand != null ? jsonData[i].operand : "-") +"</td>\n" +
-                    "        <td style='display:none' name='ex'>"+ (jsonData[i].ex != null ? jsonData[i].ex : "-") +"</td>\n" +
-                    "        <td style='display:none' name='accuracy'>"+ jsonData[i].accuracy +"</td>\n" +
-                    "        <td style='text-align:center' name='enabled'>"+ (jsonData[i].enabled == "1" ? true : false) +"</td>\n" +
-                    "        <td><a href=\"javascript:void(0);\" onclick=\"editDataADC(this);\" >Edit</a></td>\n" +
-                    "        <td><a href=\"javascript:void(0);\" onclick=\"delDataADC(this);\" >Del</a></td>\n" +
-                    "    </tr>";
+                var table = document.getElementById("table_" + table_name);
+                var contents = '';
+                contents += '<tr  class="tr cbi-section-table-descr">\n';
+                for (key in jsonData[i]) {
+                    if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
+                        contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+                    } else if (key == 'cap_type') {
+                        contents += '   <td style="text-align:center" name="'+key+'">'+ (cap_type_value[Number(jsonData[i][key])]) +'</td>\n';
+                    } else if (key == 'enabled') {
+                        contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
+                    } else {
+                        contents += '   <td style="text-align:center" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+                    }
+                }
+                contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
+                    '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
+                    '   </tr>';
+                table.innerHTML += contents;
             }
 
-            var result = getTableDataADC();
+            var result = get_table_data(table_name, option_list);
             var json_data = JSON.stringify(result);
-            $('#hidTDADC').val(json_data);
+            $('#hidTD_'+table_name).val(json_data);
+            $('#option_list_'+table_name).val(option_list);
         }
 
         $('#loading').hide();
@@ -1165,8 +1201,12 @@ function loadADCConfig() {
 
 function loadDIConfig() {
     $('#loading').show();
-    $.get('ajax/dct/get_dctcfg.php?type=di',function(data){
+    var table_name = 'di';
+    $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
+        var option_list = ['device_name', 'index', 'factor_name', 'mode', 
+                        'count_method', 'debounce_interval', 'server_center', 
+                        'operator', 'operand', 'ex', 'accuracy', 'enabled'];
         var model = document.getElementById("model").value;
         var table_num = [];
         if (model == "EG500") {
@@ -1180,28 +1220,32 @@ function loadDIConfig() {
         var len = Number(jsonData.length);
 
         for (var i = 0; i < len; i++) {
-            var table = document.getElementsByTagName("table")[table_num];
-            table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='device_name'>"+ (jsonData[i].device_name != null ? jsonData[i].device_name : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='index'>"+ jsonData[i].index +"</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ (jsonData[i].factor_name != null ? jsonData[i].factor_name : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='mode'>"+ mode_value[Number(jsonData[i].mode)] +"</td>\n" +
-                "        <td style='text-align:center' name='count_method'>" + (jsonData[i].count_method != null ? method_value[Number(jsonData[i].count_method)] : "-")  + "</td>\n" +
-                "        <td style='text-align:center' name='debounce_interval'>"+ (jsonData[i].debounce_interval != null ? jsonData[i].debounce_interval : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ (jsonData[i].server_center != null ? jsonData[i].server_center : "-") +"</td>\n" +
-                "        <td style='display:none' name='operator'>"+ jsonData[i].operator +"</td>\n" +
-                "        <td style='display:none' name='operand'>"+ (jsonData[i].operand != null ? jsonData[i].operand : "-") +"</td>\n" +
-                "        <td style='display:none' name='ex'>"+ (jsonData[i].ex != null ? jsonData[i].ex : "-") +"</td>\n" +
-                "        <td style='display:none' name='accuracy'>"+ jsonData[i].accuracy +"</td>\n" +
-                "        <td style='text-align:center' name='enabled'>"+ (jsonData[i].enabled == "1" ? true : false) +"</td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"editDataDI(this);\" >Edit</a></td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"delDataDI(this);\" >Del</a></td>\n" +
-                "    </tr>";
+            var table = document.getElementById("table_" + table_name);
+            var contents = '';
+            contents += '<tr  class="tr cbi-section-table-descr">\n';
+            for (key in jsonData[i]) {
+                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
+                    contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+                } else if (key == 'mode') {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (mode_value[Number(jsonData[i][key])]) +'</td>\n';
+                } else if (key == 'count_method') {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (method_value[Number(jsonData[i][key])]) +'</td>\n';
+                } else if (key == 'enabled') {
+                    contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
+                } else {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+                }
+            }
+            contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
+                '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
+                '   </tr>';
+            table.innerHTML += contents;
         }
 
-        var result = getTableDataDI();
+        var result = get_table_data(table_name, option_list);
         var json_data = JSON.stringify(result);
-        $('#hidTDDI').val(json_data);
+        $('#hidTD_'+table_name).val(json_data);
+        $('#option_list_'+table_name).val(option_list);
 
         $('#loading').hide();
     });
@@ -1209,8 +1253,11 @@ function loadDIConfig() {
 
 function loadDOConfig() {
     $('#loading').show();
-    $.get('ajax/dct/get_dctcfg.php?type=do',function(data){
+    var table_name = 'do';
+    $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
+        var option_list = ['device_name', 'index', 'factor_name', 'init_status', 
+                        'cur_status', 'server_center', 'operator', 'operand', 'ex', 'accuracy', 'enabled'];
         var model = document.getElementById("model").value;
         var table_num = [];
         if (model == "EG500") {
@@ -1222,39 +1269,43 @@ function loadDOConfig() {
         var len = Number(jsonData.length);
 
         for (var i = 0; i < len; i++) {
-            var table = document.getElementsByTagName("table")[table_num];
-            table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='device_name'>"+ (jsonData[i].device_name != null ? jsonData[i].device_name : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='index'>"+ jsonData[i].index + "</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ (jsonData[i].factor_name != null ? jsonData[i].factor_name : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='init_status'>"+ status_value[Number(jsonData[i].init_status)] + "</td>\n" +
-                "        <td style='text-align:center' name='cur_status'>"+ status_value[Number(jsonData[i].cur_status)] + "</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ (jsonData[i].server_center != null ? jsonData[i].server_center : "-") +"</td>\n" +
-                "        <td style='display:none' name='operator'>"+ jsonData[i].operator +"</td>\n" +
-                "        <td style='display:none' name='operand'>"+ (jsonData[i].operand != null ? jsonData[i].operand : "-") +"</td>\n" +
-                "        <td style='display:none' name='ex'>"+ (jsonData[i].ex != null ? jsonData[i].ex : "-") +"</td>\n" +
-                "        <td style='display:none' name='accuracy'>"+ jsonData[i].accuracy +"</td>\n" +
-                "        <td style='text-align:center' name='enabled'>"+ (jsonData[i].enabled == "1" ? true : false) +"</td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"editDataDO(this);\" >Edit</a></td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"delDataDO(this);\" >Del</a></td>\n" +
-                "    </tr>";
+            var table = document.getElementById("table_" + table_name);
+            var contents = '';
+            contents += '<tr  class="tr cbi-section-table-descr">\n';
+            for (key in jsonData[i]) {
+                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
+                    contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+                } else if (key == 'init_status' || key == 'cur_status') {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (status_value[Number(jsonData[i][key])]) +'</td>\n';
+                } else if (key == 'enabled') {
+                    contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
+                } else {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+                }
+            }
+            contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
+                '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
+                '   </tr>';
+            table.innerHTML += contents;
         }
 
-        var result = getTableDataDO();
+        var result = get_table_data(table_name, option_list);
         var json_data = JSON.stringify(result);
-        $('#hidTDDO').val(json_data);
+        $('#hidTD_'+table_name).val(json_data);
+        $('#option_list_'+table_name).val(option_list);
 
         $('#loading').hide();
     });
 }
 
 function loadBACnetClientConfig() {
-    $.get('ajax/dct/get_dctcfg.php?type=baccli',function(data){
+    $('#loading').show();
+    var table_name = 'baccli';
+    $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
         if (jsonData == null)
             return;
 
-        $('#loading').show();
         var arr = ['ip_address', 'port', 'device_id', 'name'];
 
         $('#enabled').val(jsonData.enabled);
@@ -1275,29 +1326,35 @@ function loadBACnetClientConfig() {
         }
 
         var tmpData = jsonData.baccli;
+        var option_list = ['order', 'device_name', 'factor_name', 'object_id', 
+                        'server_center', 'operator', 'operand', 'ex', 'accuracy', 'enabled'];
         var len = Number(tmpData.length);
 
         for (var i = 0; i < len; i++) {
-            var table = document.getElementsByTagName("table")[0];
-            table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-                "        <td style='text-align:center' name='order'>"+ (tmpData[i].order != null ? tmpData[i].order : "-") + "</td>\n" +
-                "        <td style='text-align:center' name='device_name'>"+ (tmpData[i].device_name != null ? tmpData[i].device_name : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='factor_name'>"+ (tmpData[i].factor_name != null ? tmpData[i].factor_name : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='object_id'>"+ (tmpData[i].object_id != null ? tmpData[i].object_id : "-") +"</td>\n" +
-                "        <td style='text-align:center' name='server_center'>"+ (tmpData[i].server_center != null ? tmpData[i].server_center : "-") +"</td>\n" +
-                "        <td style='display:none' name='operator'>"+ tmpData[i].operator +"</td>\n" +
-                "        <td style='display:none' name='operand'>"+ (tmpData[i].operand != null ? tmpData[i].operand : "-") +"</td>\n" +
-                "        <td style='display:none' name='ex'>"+ (tmpData[i].ex != null ? tmpData[i].ex : "-") +"</td>\n" +
-                "        <td style='display:none' name='accuracy'>"+ tmpData[i].accuracy +"</td>\n" +
-                "        <td style='text-align:center' name='enabled'>"+ (tmpData[i].enabled == "1" ? true : false) +"</td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"editDataBaccli(this);\" >Edit</a></td>\n" +
-                "        <td><a href=\"javascript:void(0);\" onclick=\"delDataBaccli(this);\" >Del</a></td>\n" +
-                "    </tr>";
+            var table = document.getElementById("table_" + table_name);
+            var contents = '';
+            contents += '<tr  class="tr cbi-section-table-descr">\n';
+            for (key in tmpData[i]) {
+                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
+                    contents += '   <td style="display:none" name="'+key+'">'+ (tmpData[i][key] != null ? tmpData[i][key] : "-") +'</td>\n';
+                } else if (key == 'enabled') {
+                    contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + (table_name == 'baccli' ? '_baccli' : '') + '" ' +
+                    (tmpData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
+                } else {
+                    contents += '   <td style="text-align:center" name="'+key+'">'+ (tmpData[i][key] != null ? tmpData[i][key] : "-") +'</td>\n';
+                }
+            }
+            contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
+                '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
+                '   </tr>';
+            table.innerHTML += contents;
         }
 
-        var result = getTableDataBaccli();
+        var result = get_table_data(table_name, option_list);
         var json_data = JSON.stringify(result);
-        $('#hidTD').val(json_data);
+        $('#hidTD_'+table_name).val(json_data);
+        $('#option_list_'+table_name).val(option_list);
+
         $('#loading').hide();
     });
 }
@@ -1775,9 +1832,9 @@ function keyFileChange(num) {
     $('#key_text' + num).html($('#mqtt_key' + num)[0].files[0].name);
 }
 
-function selectOperator() {
-    if (document.getElementById("widget.operator")) {
-        var operator = document.getElementById("widget.operator").value;
+function selectOperator(table_name) {
+    if (document.getElementById(table_name+'.operator')) {
+        var operator = document.getElementById(table_name+'.operator').value;
 
         $('#page_operand').hide();
         $('#page_ex').hide();
@@ -1794,11 +1851,11 @@ function selectOperator() {
     }
 }
 
-function openBox() {
+function openBox(table_name) {
     $('#popBox').show();
     $('#popLayer').show();
     document.getElementById("popBox").scrollTop = 0;
-    selectOperator();
+    selectOperator(table_name);
 }
 
 function openConfBox() {
@@ -1817,8 +1874,8 @@ function closeConfBox() {
     $('#confLayer').hide();
 }
 
-function addData() {
-    openBox();
+function addData(table_name) {
+    openBox(table_name);
     document.getElementById("page_type").value = "0"; /* 0 is add. other is edit */
 }
 
@@ -1836,749 +1893,207 @@ function conf_im_ex(conf_name) {
 }
 
 // modbus
-
-function get_table_data() {
-    var tr = $("#table_modbus tr");
+function get_table_data(table_name, option_list) {
+    var tr = $('#table_' + table_name + ' tr');
     var result = [];
     for (var i = 2; i < tr.length; i++) {
         var tds = $(tr[i]).find("td");
         if (tds.length > 0) {
-        result.push({
-            'order':$(tds[0]).html(), 
-            'device_name':$(tds[1]).html(),
-            'belonged_com':$(tds[2]).html(),
-            'factor_name':$(tds[3]).html(),
-            'device_id':$(tds[4]).html(),
-            'function_code':$(tds[5]).html(),
-            'reg_addr':$(tds[6]).html(),
-            'reg_count':$(tds[7]).html(),
-            'data_type':$(tds[8]).html(),
-            'server_center':$(tds[9]).html(),
-            'operator':$(tds[10]).html(),
-            'operand':$(tds[11]).html(),
-            'ex':$(tds[12]).html(),
-            'accuracy':$(tds[13]).html(),
-            'enabled':$(tds[14]).html()
-        });
+            var tmp = [];
+            var num = 0;
+            tmp += '{';
+            option_list.forEach(function (option) {
+                if (option == 'enabled') {
+                    tmp += '"' + option + '":"' + ($($(tds[num++]).find('input'))[0].checked ? 1 : 0) + '",';
+                } else {
+                    tmp += '"' + option + '":"' + $(tds[num++]).html() + '",';
+                }
+            })
+
+            tmp = tmp.slice(-1) === "," ? tmp.slice(0, -1) + "}" : tmp + "}";
+            var obj = JSON.parse(tmp);
+            result.push(obj);
         }
     }
 
     return result;
 }
 
-function saveData() {
+function saveData(table_name) {
     var result = [];
-    var order = document.getElementById("widget.order").value;
-    var device_name = document.getElementById("widget.device_name").value;
-    var belonged_com = document.getElementById("widget.belonged_com").value;
-    var factor_name = document.getElementById("widget.factor_name").value;
-    var device_id = document.getElementById("widget.device_id").value;
-    var function_code = document.getElementById("widget.function_code").value;
-    var reg_addr = document.getElementById("widget.reg_addr").value;
-    var reg_count = document.getElementById("widget.reg_count").value;
-    var data_type = document.getElementById("widget.data_type").value;
-    var server_center = document.getElementById("widget.server_center").value;
-    var operator = document.getElementById("widget.operator").value;
-    var operand = document.getElementById("widget.operand").value;
-    var ex = document.getElementById("widget.ex").value;
-    var accuracy = document.getElementById("widget.accuracy").value;
-    var enabled = document.getElementById("widget.enabled").checked;
+    var option_value = [];
+    var io_type;
+    var data_type_value = [];
+    var reg_type_value = [];
+    var word_len_value = [];
+    var cap_type_value = ['4-20mA', '0-10V'];
+    var mode_value = ['Counting Mode', 'Status Mode'];
+    var count_method_value = ['Rising Edge', 'Falling Edge'];
+    var status_value = ['Open', 'Close'];
+
+    if (table_name == 'modbus') {
+        data_type_value = ['Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
+        'Unsigned 32Bits ABCD', 'Unsigned 32Bits BADC', 'Unsigned 32Bits CDAB', 'Unsigned 32Bits DCBA',
+        'Signed 32Bits ABCD', 'Signed 32Bits BADC', 'Signed 32Bits CDAB', 'Signed 32Bits DCBA',
+        'Float ABCD', 'Float BADC', 'Float CDAB', 'Float DCBA'];
+    } else if (table_name == 'fx') {
+        data_type_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real'];
+        reg_type_value = ['X', 'Y', 'M', 'S', 'D'];
+    } else if (table_name == 's7') {
+        reg_type_value = ['I', 'Q', 'M', 'DB', 'V', 'C', 'T'];
+        word_len_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real', 'Counter', 'Timer'];
+    } else if (table_name == 'mc') {
+        data_type_value = ['Bit', 'Int', 'Float'];
+    }
+
     var page_type = document.getElementById("page_type").value;
-    var data_type_value = new Array("Unsigned 16Bits AB", "Unsigned 16Bits BA", "Signed 16Bits AB", "Signed 16Bits BA",
-                            "Unsigned 32Bits ABCD", "Unsigned 32Bits BADC", "Unsigned 32Bits CDAB", "Unsigned 32Bits DCBA",
-                            "Signed 32Bits ABCD", "Signed 32Bits BADC", "Signed 32Bits CDAB", "Signed 32Bits DCBA",
-                            "Float ABCD", "Float BADC", "Float CDAB", "Float DCBA");
-    var data_type_num = Number(data_type);
-    data_type = data_type_value[data_type_num];
+    var tmp = $('#option_list_'+table_name).val();
+    var option_list = tmp.split(",");
 
-    if (belonged_com == "No Interface Is Enabled") {
-        alert("No Interface Is Enabled, please enabled the interface first.");
-        return;
+    if (table_name == 'adc' || table_name == 'di' || table_name == 'do') {
+        io_type = table_name;
+        table_name = 'io';
     }
 
-    if (page_type == "0") {
-        var table = document.getElementsByTagName("table")[0];
-        table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-            "        <td style='text-align:center' name='order'>"+ (order.length > 0 ? order : "-") + "</td>\n" +
-            "        <td style='text-align:center' name='device_name'>"+ (device_name.length > 0 ? device_name : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='belonged_com'>"+ (belonged_com.length > 0 ? belonged_com : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='factor_name'>"+ (factor_name.length > 0 ? factor_name : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='device_id'>"+ (device_id.length > 0 ? device_id : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='function_code'>"+ (function_code.length > 0 ? function_code : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='reg_addr'>"+ (reg_addr.length > 0 ? reg_addr : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='reg_count'>"+ (reg_count.length > 0 ? reg_count : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='data_type'>"+ data_type +"</td>\n" +
-            "        <td style='text-align:center' name='server_center'>"+ (server_center.length > 0 ? server_center : "-") +"</td>\n" +
-            "        <td style='display:none' name='operator'>"+ operator +"</td>\n" +
-            "        <td style='display:none' name='operand'>"+ (operand.length > 0 ? operand : "-") +"</td>\n" +
-            "        <td style='display:none' name='ex'>"+ (ex.length > 0 ? ex : "-") +"</td>\n" +
-            "        <td style='display:none' name='accuracy'>"+ accuracy +"</td>\n" +
-            "        <td style='text-align:center' name='enabled'>"+ enabled +"</td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"editData(this);\" >Edit</a></td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"delData(this);\" >Del</a></td>\n" +
-            "    </tr>";
-    } else {
-        var table = document.getElementById("table_modbus");
-        var num = 0;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (order.length > 0 ? order : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (device_name.length > 0 ? device_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (belonged_com.length > 0 ? belonged_com : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (factor_name.length > 0 ? factor_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (device_id.length > 0 ? device_id : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (function_code.length > 0 ? function_code : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (reg_addr.length > 0 ? reg_addr : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (reg_count.length > 0 ? reg_count : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = data_type;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (server_center.length > 0 ? server_center : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = operator;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (operand.length > 0 ? operand : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (ex.length > 0 ? ex : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = accuracy;
-        table.rows[Number(page_type)].cells[num++].innerHTML = enabled;
-    }
-
-    result = get_table_data();
-    var json_data = JSON.stringify(result);
-    $('#hidTD').val(json_data);
-    closeBox();
-}
-
-function delData(object) {
-    var table = object.parentNode.parentNode.parentNode;
-    var tr = object.parentNode.parentNode;
-    table.removeChild(tr);
-
-    var result = get_table_data();
-    var json_data = JSON.stringify(result);
-    $('#hidTD').val(json_data);
-}
-
-function editData(object) {
-    var row = $(object).parent().parent().parent().prevAll().length + 1;
-    document.getElementById("page_type").value = row;
-    var num = 0;
-    var value = $(object).parent().parent().find("td");
-    var order = value.eq(num++).text();
-    var device_name = value.eq(num++).text();
-    var belonged_com = value.eq(num++).text();
-    var factor_name = value.eq(num++).text();
-    var device_id = value.eq(num++).text();
-    var function_code = value.eq(num++).text();
-    var reg_addr = value.eq(num++).text();
-    var reg_count = value.eq(num++).text();
-    var data_type = value.eq(num++).text();
-    var server_center = value.eq(num++).text();
-    var operator = value.eq(num++).text();
-    var operand = value.eq(num++).text();
-    var ex = value.eq(num++).text();
-    var accuracy = value.eq(num++).text();
-    var enabled = value.eq(num++).text();
-
-    document.getElementById("widget.order").value = order;
-    document.getElementById("widget.device_name").value = device_name;
-    document.getElementById("widget.belonged_com").value = belonged_com;
-    document.getElementById("widget.factor_name").value = factor_name;
-    document.getElementById("widget.device_id").value = device_id;
-    document.getElementById("widget.function_code").value = function_code;
-    document.getElementById("widget.reg_addr").value = reg_addr;
-    document.getElementById("widget.reg_count").value = reg_count;
-    setSelectByText("widget.data_type", data_type);
-    document.getElementById("widget.server_center").value = server_center;
-    document.getElementById("widget.operator").value = operator;
-    document.getElementById("widget.operand").value = operand;
-    document.getElementById("widget.ex").value = ex;
-    document.getElementById("widget.accuracy").value = accuracy;
-    if (enabled == "true") {
-        document.getElementById("widget.enabled").checked = true;
-    } else {
-        document.getElementById("widget.enabled").checked = false;
-    }
-
-    openBox();
-}
-
-// ascii
-function getTableDataAscii() {
-    var tr = $("#table_ascii tr");
-    var result = [];
-    for (var i = 2; i < tr.length; i++) {
-        var tds = $(tr[i]).find("td");
-        if (tds.length > 0) {
-        result.push({
-            'order':$(tds[0]).html(), 
-            'device_name':$(tds[1]).html(),
-            'belonged_com':$(tds[2]).html(),
-            'factor_name':$(tds[3]).html(),
-            'tx_cmd':$(tds[4]).html(),
-            'cmd_format':$(tds[5]).html(),
-            'server_center':$(tds[6]).html(),
-            'enabled':$(tds[7]).html()
-        });
+    option_list.forEach(function (option) {
+        if (option == 'data_type') {
+            option_value[option] = data_type_value[Number(document.getElementById(table_name + '.'  + option).value)];
+        } else if (option == 'reg_type') {
+            option_value[option] = reg_type_value[Number(document.getElementById(table_name + '.'  + option).value)];
+        } else if (option == 'word_len') {
+            option_value[option] = word_len_value[Number(document.getElementById(table_name + '.'  + option).value)];
+        } else if (option == 'cap_type') {
+            option_value[option] = cap_type_value[Number(document.getElementById(table_name + '.'  + option).value)];
+        } else if (option == 'mode') {
+            option_value[option] = mode_value[Number(document.getElementById(table_name + '.'  + option).value)];
+        } else if (option == 'count_method') {
+            option_value[option] = count_method_value[Number(document.getElementById(table_name + '.'  + option).value)];
+        } else if (option == 'init_status') {
+            option_value[option] = status_value[Number(document.getElementById(table_name + '.'  + option).value)];
+        } else if (option == 'cur_status') {
+            option_value[option] = status_value[Number(document.getElementById(table_name + '.'  + option).innerHTML)];
+        } else if (option == 'enabled') {
+            option_value[option] = document.getElementById(table_name + '.'  + option).checked ? '1' : '0';
+        } else if (option == 'index') {
+            option_value[option] = document.getElementById(table_name + '.'  + option + '.' + io_type).value;
+        } else {
+            option_value[option] = document.getElementById(table_name + '.'  + option).value;
         }
-    }
+        
+    })
 
-    return result;
-}
-
-function saveDataAscii() {
-    var result = [];
-    var order = document.getElementById("widget.order").value;
-    var device_name = document.getElementById("widget.device_name").value;
-    var belonged_com = document.getElementById("widget.belonged_com").value;
-    var factor_name = document.getElementById("widget.factor_name").value;
-    var tx_cmd = document.getElementById("widget.tx_cmd").value;
-    var cmd_format = document.getElementById("widget.cmd_format").value;
-    var server_center = document.getElementById("widget.server_center").value;
-    var enabled = document.getElementById("widget.enabled").checked;
-    var page_type = document.getElementById("page_type").value;
-
-    if (belonged_com == "No Interface Is Enabled") {
+    if (option_value['belonged_com'] == "No Interface Is Enabled") {
         alert("No Interface Is Enabled, please enabled the interface first.");
         return;
     }
 
+    if (table_name == 'io')
+        table_name = io_type;
+
+    var table = document.getElementById("table_" + table_name);
     if (page_type == "0") {
-        var table = document.getElementsByTagName("table")[0];
-        table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-            "        <td style='text-align:center' name='order'>"+ (order.length > 0 ? order : "-") + "</td>\n" +
-            "        <td style='text-align:center' name='device_name'>"+ (device_name.length > 0 ? device_name : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='belonged_com'>"+ (belonged_com.length > 0 ? belonged_com : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='factor_name'>"+ (factor_name.length > 0 ? factor_name : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='tx_cmd'>"+ (tx_cmd.length > 0 ? tx_cmd : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='cmd_format'>"+ (cmd_format.length > 0 ? cmd_format : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='server_center'>"+ (server_center.length > 0 ? server_center : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='enabled'>"+ enabled +"</td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"editDataAscii(this);\" >Edit</a></td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"delDataAscii(this);\" >Del</a></td>\n" +
-            "    </tr>";
+        var contents = '';
+        contents += '<tr  class="tr cbi-section-table-descr">\n';
+        option_list.forEach(function(option){
+            // console.log(option);
+            if (option == 'operator' || option == 'operand' || option == 'ex' || option == 'accuracy') {
+                contents += '   <td style="display:none" name="'+option+'">'+ (option_value[option].length > 0 ? option_value[option] : "-") +'</td>\n';
+            } else if (option == 'enabled') {
+                contents += '   <td style="text-align:center"><input type="checkbox" name="' + option + (table_name == 'baccli' ? '_baccli' : '') +'" ' +
+                (option_value[option] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
+            } else {
+                contents += '   <td style="text-align:center" name="'+option+'">'+ (option_value[option].length > 0 ? option_value[option] : "-") +'</td>\n';
+            }
+        })
+        contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
+            '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
+            '   </tr>';
+        table.innerHTML += contents;
     } else {
-        var table = document.getElementById("table_ascii");
         var num = 0;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (order.length > 0 ? order : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (device_name.length > 0 ? device_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (belonged_com.length > 0 ? belonged_com : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (factor_name.length > 0 ? factor_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (tx_cmd.length > 0 ? tx_cmd : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (cmd_format.length > 0 ? cmd_format : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (server_center.length > 0 ? server_center : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = enabled;
+        option_list.forEach(function (option){
+            if (option == 'enabled') {
+                // 获取所有的checkbox元素
+                var checkboxes = table.getElementsByTagName("input");
+                // 遍历checkbox元素
+                for (var i = 0; i < checkboxes.length; i++) {
+                    // 判断是否为checkbox类型
+                    if (checkboxes[i].type === "checkbox") {
+                        if (i == Number(page_type) - 2) {
+                            checkboxes[i].checked = option_value[option] == '1' ? true : false;
+                            break;
+                        }    
+                    }
+                }
+            } else {
+                table.rows[Number(page_type)].cells[num++].innerHTML = (option_value[option].length > 0 ? option_value[option] : "-");
+            }
+        })
     }
 
-    result = getTableDataAscii();
+    result = get_table_data(table_name, option_list);
+    // console.log(result);
     var json_data = JSON.stringify(result);
-    $('#hidTD').val(json_data);
+    $('#hidTD_'+table_name).val(json_data);
     closeBox();
 }
 
-function delDataAscii(object) {
-    var table = object.parentNode.parentNode.parentNode;
-    var tr = object.parentNode.parentNode;
-    table.removeChild(tr);
+function updateData(table_name) {
+    var tmp = $('#option_list_'+table_name).val();
+    var option_list = tmp.split(",");
 
-    var result = getTableDataAscii();
+    var result = get_table_data(table_name, option_list);
     var json_data = JSON.stringify(result);
-    $('#hidTD').val(json_data);
+    $('#hidTD_'+table_name).val(json_data);
 }
 
-function editDataAscii(object) {
+function delData(object, table_name) {
+    var table = object.parentNode.parentNode.parentNode;
+    var tr = object.parentNode.parentNode;
+    var tmp = $('#option_list_'+table_name).val();
+
+    var option_list = tmp.split(",");
+    table.removeChild(tr);
+
+    var result = get_table_data(table_name, option_list);
+    var json_data = JSON.stringify(result);
+    $('#hidTD_'+table_name).val(json_data);
+}
+
+function editData(object, table_name) {
     var row = $(object).parent().parent().parent().prevAll().length + 1;
     document.getElementById("page_type").value = row;
     var num = 0;
+    var tmp = $('#option_list_'+table_name).val();
+    var option_list = tmp.split(",");
     var value = $(object).parent().parent().find("td");
-    var order = value.eq(num++).text();
-    var device_name = value.eq(num++).text();
-    var belonged_com = value.eq(num++).text();
-    var factor_name = value.eq(num++).text();
-    var tx_cmd = value.eq(num++).text();
-    var cmd_format = value.eq(num++).text();
-    var server_center = value.eq(num++).text();
-    var enabled = value.eq(num++).text();
+    var io_type;
 
-    document.getElementById("widget.order").value = order;
-    document.getElementById("widget.device_name").value = device_name;
-    document.getElementById("widget.belonged_com").value = belonged_com;
-    document.getElementById("widget.factor_name").value = factor_name;
-    document.getElementById("widget.tx_cmd").value = tx_cmd;
-    document.getElementById("widget.cmd_format").value = cmd_format;
-    document.getElementById("widget.server_center").value = server_center;
-    if (enabled == "true") {
-        document.getElementById("widget.enabled").checked = true;
-    } else {
-        document.getElementById("widget.enabled").checked = false;
+    if (table_name == 'adc' || table_name == 'di' || table_name == 'do') {
+        io_type = table_name;
+        table_name = 'io';
     }
 
-    openBox();
-}
-
-// S7
-function get_table_data_s7() {
-    var tr = $("#table_s7 tr");
-    var result = [];
-    for (var i = 2; i < tr.length; i++) {
-        var tds = $(tr[i]).find("td");
-        if (tds.length > 0) {
-            result.push({
-                'order':$(tds[0]).html(), 
-                'device_name':$(tds[1]).html(),
-                'belonged_com':$(tds[2]).html(),
-                'factor_name':$(tds[3]).html(),
-                'reg_type':$(tds[4]).html(),
-                'reg_addr':$(tds[5]).html(),
-                'reg_count':$(tds[6]).html(),
-                'word_len':$(tds[7]).html(),
-                'server_center':$(tds[8]).html(),
-                'operator':$(tds[9]).html(),
-                'operand':$(tds[10]).html(),
-                'ex':$(tds[11]).html(),
-                'accuracy':$(tds[12]).html(),
-                'enabled':$(tds[13]).html()
-            });
+    option_list.forEach(function(option) {
+        if (option == 'data_type' || option == 'reg_type' || option == 'word_len' || option == 'cap_type' ||
+            option == 'cap_type' || option == 'mode' || option == 'count_method' || option == 'init_status') {
+            setSelectByText(table_name + '.'  + option, value.eq(num++).text());
+        } else if (option == 'index') {
+            document.getElementById(table_name + '.'  + option + '.' + io_type).value = value.eq(num++).text();
+        } else if (option == 'enabled') {
+            document.getElementById(table_name + '.'  + option).checked = value.eq(num++).find("input")[0].checked;
+        } else {
+            document.getElementById(table_name + '.'  + option).value = value.eq(num++).text();
         }
-    }
-
-    return result;
-}
-  
-function delS7Data(object) {
-    var table = object.parentNode.parentNode.parentNode;
-    var tr = object.parentNode.parentNode;
-    table.removeChild(tr);
-
-    var result = get_table_data_s7();
-    var json_data = JSON.stringify(result);
-    $('#hidTD').val(json_data);
-}
-  
-function saveS7Data() {
-    var order = document.getElementById("widget.order").value;
-    var device_name = document.getElementById("widget.device_name").value;
-    var belonged_com = document.getElementById("widget.belonged_com").value;
-    var factor_name = document.getElementById("widget.factor_name").value;
-    var reg_type = document.getElementById("widget.reg_type").value;
-    var reg_addr = document.getElementById("widget.reg_addr").value;
-    var reg_count = document.getElementById("widget.reg_count").value;
-    var word_len = document.getElementById("widget.word_len").value;
-    var server_center = document.getElementById("widget.server_center").value;
-    var operator = document.getElementById("widget.operator").value;
-    var operand = document.getElementById("widget.operand").value;
-    var ex = document.getElementById("widget.ex").value;
-    var accuracy = document.getElementById("widget.accuracy").value;
-    var enabled = document.getElementById("widget.enabled").checked;
-    var page_type = document.getElementById("page_type").value;
-
-    var reg_type_value = new Array("I", "Q", "M", "DB", "V", "C", "T");
-    var reg_type_num = Number(reg_type);
-    reg_type = reg_type_value[reg_type_num]; 
-
-    var word_len_value = new Array("Bit", "Byte", "Word", "DWord", "Real", "Counter", "Timer");
-    var word_len_num = Number(word_len);
-    word_len = word_len_value[word_len_num];
-
-    if (belonged_com == "No Interface Is Enabled") {
-        alert("No Interface Is Enabled, please enabled the interface first.");
-        return;
-    }
-
-    if (page_type == "0") {
-        var table = document.getElementsByTagName("table")[0];
-        table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-            "        <td style='text-align:center'>"+ (order.length > 0 ? order : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (device_name.length > 0 ? device_name : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (belonged_com.length > 0 ? belonged_com : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (factor_name.length > 0 ? factor_name : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (reg_type.length > 0 ? reg_type : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (reg_addr.length > 0 ? reg_addr : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (reg_count.length > 0 ? reg_count : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ word_len +"</td>\n" +
-            "        <td style='text-align:center'>"+ (server_center.length > 0 ? server_center : "-") +"</td>\n" +
-            "        <td style='display:none'>"+ operator +"</td>\n" +
-            "        <td style='display:none'>"+ (operand.length > 0 ? operand : "-") +"</td>\n" +
-            "        <td style='display:none'>"+ (ex.length > 0 ? ex : "-") +"</td>\n" +
-            "        <td style='display:none'>"+ accuracy +"</td>\n" +
-            "        <td style='text-align:center'>"+ enabled +"</td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"editS7Data(this);\" >Edit</a></td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"delS7Data(this);\" >Del</a></td>\n" +
-            "    </tr>";
-    } else {
-        var table = document.getElementById("table_s7");
-        var num = 0;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (order.length > 0 ? order : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (device_name.length > 0 ? device_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (belonged_com.length > 0 ? belonged_com : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (factor_name.length > 0 ? factor_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (reg_type.length > 0 ? reg_type : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (reg_addr.length > 0 ? reg_addr : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (reg_count.length > 0 ? reg_count : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = word_len;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (server_center.length > 0 ? server_center : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = operator;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (operand.length > 0 ? operand : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (ex.length > 0 ? ex : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = accuracy;
-        table.rows[Number(page_type)].cells[num++].innerHTML = enabled;
-    }
-
-    result = get_table_data_s7();
-    var json_data = JSON.stringify(result);
-    $('#hidTD').val(json_data);
-    closeBox();
-}
-  
-function editS7Data(object) {
-    var row = $(object).parent().parent().parent().prevAll().length + 1;
-    var num = 0;
-    document.getElementById("page_type").value = row;
-
-    var value = $(object).parent().parent().find("td");
-    var order = value.eq(num++).text();
-    var device_name = value.eq(num++).text();
-    var belonged_com = value.eq(num++).text();
-    var factor_name = value.eq(num++).text();
-    var reg_type = value.eq(num++).text();
-    var reg_addr = value.eq(num++).text();
-    var reg_count = value.eq(num++).text();
-    var word_len = value.eq(num++).text();
-    var server_center = value.eq(num++).text();
-    var operator = value.eq(num++).text();
-    var operand = value.eq(num++).text();
-    var ex = value.eq(num++).text();
-    var accuracy = value.eq(num++).text();
-    var enabled = value.eq(num++).text();
-
-    document.getElementById("widget.order").value = order;
-    document.getElementById("widget.device_name").value = device_name;
-    document.getElementById("widget.belonged_com").value = belonged_com;
-    document.getElementById("widget.factor_name").value = factor_name;
-    setSelectByText("widget.reg_type", reg_type);
-    document.getElementById("widget.reg_addr").value = reg_addr;
-    document.getElementById("widget.reg_count").value = reg_count;
-    setSelectByText("widget.word_len", word_len);
-    document.getElementById("widget.server_center").value = server_center;
-    document.getElementById("widget.operator").value = operator;
-    document.getElementById("widget.operand").value = operand;
-    document.getElementById("widget.ex").value = ex;
-    document.getElementById("widget.accuracy").value = accuracy;
-    if (enabled == "true") {
-        document.getElementById("widget.enabled").checked = true;
-    } else {
-        document.getElementById("widget.enabled").checked = false;
-    }
-
-    openBox();
-}
-
-// FX
-function getTableDataFx() {
-    var tr = $("#table_fx tr");
-    var result = [];
-    for (var i = 2; i < tr.length; i++) {
-        var tds = $(tr[i]).find("td");
-        if (tds.length > 0) {
-            result.push({
-                'order':$(tds[0]).html(), 
-                'device_name':$(tds[1]).html(),
-                'belonged_com':$(tds[2]).html(),
-                'factor_name':$(tds[3]).html(),
-                'reg_type':$(tds[4]).html(),
-                'reg_addr':$(tds[5]).html(),
-                'reg_count':$(tds[6]).html(),
-                'data_type':$(tds[7]).html(),
-                'server_center':$(tds[8]).html(),
-                'operator':$(tds[9]).html(),
-                'operand':$(tds[10]).html(),
-                'ex':$(tds[11]).html(),
-                'accuracy':$(tds[12]).html(),
-                'enabled':$(tds[13]).html()
-            });
-        }
-    }
-
-    return result;
-}
-  
-function delFxData(object) {
-    var table = object.parentNode.parentNode.parentNode;
-    var tr = object.parentNode.parentNode;
-    table.removeChild(tr);
-
-    var result = getTableDataFx();
-    var json_data = JSON.stringify(result);
-    $('#hidTD').val(json_data);
-}
-  
-function saveFxData() {
-    var order = document.getElementById("widget.order").value;
-    var device_name = document.getElementById("widget.device_name").value;
-    var belonged_com = document.getElementById("widget.belonged_com").value;
-    var factor_name = document.getElementById("widget.factor_name").value;
-    var reg_type = document.getElementById("widget.reg_type").value;
-    var reg_addr = document.getElementById("widget.reg_addr").value;
-    var reg_count = document.getElementById("widget.reg_count").value;
-    var data_type = document.getElementById("widget.data_type").value;
-    var server_center = document.getElementById("widget.server_center").value;
-    var operator = document.getElementById("widget.operator").value;
-    var operand = document.getElementById("widget.operand").value;
-    var ex = document.getElementById("widget.ex").value;
-    var accuracy = document.getElementById("widget.accuracy").value;
-    var enabled = document.getElementById("widget.enabled").checked;
-    var page_type = document.getElementById("page_type").value;
-
-    var reg_type_value = new Array("X", "Y", "M", "S", "D");
-    var reg_type_num = Number(reg_type);
-    reg_type = reg_type_value[reg_type_num]; 
-
-    var data_type_value = new Array("Bit", "Byte", "Word", "DWord", "Real");
-    var data_type_num = Number(data_type);
-    data_type = data_type_value[data_type_num];
-
-    if (belonged_com == "No Interface Is Enabled") {
-        alert("No Interface Is Enabled, please enabled the interface first.");
-        return;
-    }
-
-    if (page_type == "0") {
-        var table = document.getElementsByTagName("table")[0];
-        table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-            "        <td style='text-align:center'>"+ (order.length > 0 ? order : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (device_name.length > 0 ? device_name : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (belonged_com.length > 0 ? belonged_com : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (factor_name.length > 0 ? factor_name : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (reg_type.length > 0 ? reg_type : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (reg_addr.length > 0 ? reg_addr : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (reg_count.length > 0 ? reg_count : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ data_type +"</td>\n" +
-            "        <td style='text-align:center'>"+ (server_center.length > 0 ? server_center : "-") +"</td>\n" +
-            "        <td style='display:none'>"+ operator +"</td>\n" +
-            "        <td style='display:none'>"+ (operand.length > 0 ? operand : "-") +"</td>\n" +
-            "        <td style='display:none'>"+ (ex.length > 0 ? ex : "-") +"</td>\n" +
-            "        <td style='display:none'>"+ accuracy +"</td>\n" +
-            "        <td style='text-align:center'>"+ enabled +"</td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"editFxData(this);\" >Edit</a></td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"delFxData(this);\" >Del</a></td>\n" +
-            "    </tr>";
-    } else {
-        var table = document.getElementById("table_fx");
-        var num = 0;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (order.length > 0 ? order : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (device_name.length > 0 ? device_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (belonged_com.length > 0 ? belonged_com : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (factor_name.length > 0 ? factor_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (reg_type.length > 0 ? reg_type : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (reg_addr.length > 0 ? reg_addr : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (reg_count.length > 0 ? reg_count : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = data_type;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (server_center.length > 0 ? server_center : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = operator;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (operand.length > 0 ? operand : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (ex.length > 0 ? ex : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = accuracy;
-        table.rows[Number(page_type)].cells[num++].innerHTML = enabled;
-    }
-
-    result = getTableDataFx();
-    var json_data = JSON.stringify(result);
-    $('#hidTD').val(json_data);
-    closeBox();
-}
-  
-function editFxData(object) {
-    var row = $(object).parent().parent().parent().prevAll().length + 1;
-    var num = 0;
-    document.getElementById("page_type").value = row;
-
-    var value = $(object).parent().parent().find("td");
-    var order = value.eq(num++).text();
-    var device_name = value.eq(num++).text();
-    var belonged_com = value.eq(num++).text();
-    var factor_name = value.eq(num++).text();
-    var reg_type = value.eq(num++).text();
-    var reg_addr = value.eq(num++).text();
-    var reg_count = value.eq(num++).text();
-    var data_type = value.eq(num++).text();
-    var server_center = value.eq(num++).text();
-    var operator = value.eq(num++).text();
-    var operand = value.eq(num++).text();
-    var ex = value.eq(num++).text();
-    var accuracy = value.eq(num++).text();
-    var enabled = value.eq(num++).text();
-
-    document.getElementById("widget.order").value = order;
-    document.getElementById("widget.device_name").value = device_name;
-    document.getElementById("widget.belonged_com").value = belonged_com;
-    document.getElementById("widget.factor_name").value = factor_name;
-    setSelectByText("widget.reg_type", reg_type);
-    document.getElementById("widget.reg_addr").value = reg_addr;
-    document.getElementById("widget.reg_count").value = reg_count;
-    setSelectByText("widget.data_type", data_type);
-    document.getElementById("widget.server_center").value = server_center;
-    document.getElementById("widget.operator").value = operator;
-    document.getElementById("widget.operand").value = operand;
-    document.getElementById("widget.ex").value = ex;
-    document.getElementById("widget.accuracy").value = accuracy;
-    if (enabled == "true") {
-        document.getElementById("widget.enabled").checked = true;
-    } else {
-        document.getElementById("widget.enabled").checked = false;
-    }
-
-    openBox();
-}
-
-// MC
-function getTableDataMc() {
-    var tr = $("#table_mc tr");
-    var result = [];
-    for (var i = 2; i < tr.length; i++) {
-        var tds = $(tr[i]).find("td");
-        if (tds.length > 0) {
-            result.push({
-                'order':$(tds[0]).html(), 
-                'device_name':$(tds[1]).html(),
-                'belonged_com':$(tds[2]).html(),
-                'factor_name':$(tds[3]).html(),
-                'data_area':$(tds[4]).html(),
-                'start_addr':$(tds[5]).html(),
-                'reg_count':$(tds[6]).html(),
-                'data_type':$(tds[7]).html(),
-                'server_center':$(tds[8]).html(),
-                'operator':$(tds[9]).html(),
-                'operand':$(tds[10]).html(),
-                'ex':$(tds[11]).html(),
-                'accuracy':$(tds[12]).html(),
-                'enabled':$(tds[13]).html()
-            });
-        }
-    }
-
-    return result;
-}
-  
-function delMcData(object) {
-    var table = object.parentNode.parentNode.parentNode;
-    var tr = object.parentNode.parentNode;
-    table.removeChild(tr);
-
-    var result = getTableDataMc();
-    var json_data = JSON.stringify(result);
-    $('#hidTD').val(json_data);
-}
-
-function saveMcData() {
-    var order = document.getElementById("widget.order").value;
-    var device_name = document.getElementById("widget.device_name").value;
-    var belonged_com = document.getElementById("widget.belonged_com").value;
-    var factor_name = document.getElementById("widget.factor_name").value;
-    var data_area = document.getElementById("widget.data_area").value;
-    var start_addr = document.getElementById("widget.start_addr").value;
-    var reg_count = document.getElementById("widget.reg_count").value;
-    var data_type = document.getElementById("widget.data_type").value;
-    var server_center = document.getElementById("widget.server_center").value;
-    var operator = document.getElementById("widget.operator").value;
-    var operand = document.getElementById("widget.operand").value;
-    var ex = document.getElementById("widget.ex").value;
-    var accuracy = document.getElementById("widget.accuracy").value;
-    var enabled = document.getElementById("widget.enabled").checked;
-    var page_type = document.getElementById("page_type").value;
-
-    var data_type_value = new Array("Bit", "Int", "Float");
-    var data_type_num = Number(data_type);
-    data_type = data_type_value[data_type_num];
-
-    if (belonged_com == "No Interface Is Enabled") {
-        alert("No Interface Is Enabled, please enabled the interface first.");
-        return;
-    }
-
-    if (page_type == "0") {
-        var table = document.getElementsByTagName("table")[0];
-        table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-            "        <td style='text-align:center'>"+ (order.length > 0 ? order : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (device_name.length > 0 ? device_name : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (belonged_com.length > 0 ? belonged_com : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (factor_name.length > 0 ? factor_name : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (data_area.length > 0 ? data_area : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (start_addr.length > 0 ? start_addr : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ (reg_count.length > 0 ? reg_count : "-") +"</td>\n" +
-            "        <td style='text-align:center'>"+ data_type +"</td>\n" +
-            "        <td style='text-align:center'>"+ (server_center.length > 0 ? server_center : "-") +"</td>\n" +
-            "        <td style='display:none'>"+ operator +"</td>\n" +
-            "        <td style='display:none'>"+ (operand.length > 0 ? operand : "-") +"</td>\n" +
-            "        <td style='display:none'>"+ (ex.length > 0 ? ex : "-") +"</td>\n" +
-            "        <td style='display:none'>"+ accuracy +"</td>\n" +
-            "        <td style='text-align:center'>"+ enabled +"</td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"editMcData(this);\" >Edit</a></td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"delMcData(this);\" >Del</a></td>\n" +
-            "    </tr>";
-    } else {
-        var table = document.getElementById("table_mc");
-        var num = 0;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (order.length > 0 ? order : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (device_name.length > 0 ? device_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (belonged_com.length > 0 ? belonged_com : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (factor_name.length > 0 ? factor_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (data_area.length > 0 ? data_area : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (start_addr.length > 0 ? start_addr : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (reg_count.length > 0 ? reg_count : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = data_type;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (server_center.length > 0 ? server_center : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = operator;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (operand.length > 0 ? operand : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (ex.length > 0 ? ex : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = accuracy;
-        table.rows[Number(page_type)].cells[num++].innerHTML = enabled;
-    }
-
-    result = getTableDataMc();
-    var json_data = JSON.stringify(result);
-    $('#hidTD').val(json_data);
-    closeBox();
-}
-
-function editMcData(object) {
-    var row = $(object).parent().parent().parent().prevAll().length + 1;
-    var num = 0;
-    document.getElementById("page_type").value = row;
-
-    var value = $(object).parent().parent().find("td");
-    var order = value.eq(num++).text();
-    var device_name = value.eq(num++).text();
-    var belonged_com = value.eq(num++).text();
-    var factor_name = value.eq(num++).text();
-    var data_area = value.eq(num++).text();
-    var start_addr = value.eq(num++).text();
-    var reg_count = value.eq(num++).text();
-    var data_type = value.eq(num++).text();
-    var server_center = value.eq(num++).text();
-    var operator = value.eq(num++).text();
-    var operand = value.eq(num++).text();
-    var ex = value.eq(num++).text();
-    var accuracy = value.eq(num++).text();
-    var enabled = value.eq(num++).text();
-
-    document.getElementById("widget.order").value = order;
-    document.getElementById("widget.device_name").value = device_name;
-    document.getElementById("widget.belonged_com").value = belonged_com;
-    document.getElementById("widget.factor_name").value = factor_name;
-    setSelectByText("widget.data_area", data_area);
-    document.getElementById("widget.start_addr").value = start_addr;
-    document.getElementById("widget.reg_count").value = reg_count;
-    setSelectByText("widget.data_type", data_type);
-    document.getElementById("widget.server_center").value = server_center;
-    document.getElementById("widget.operator").value = operator;
-    document.getElementById("widget.operand").value = operand;
-    document.getElementById("widget.ex").value = ex;
-    document.getElementById("widget.accuracy").value = accuracy;
-    if (enabled == "true") {
-        document.getElementById("widget.enabled").checked = true;
-    } else {
-        document.getElementById("widget.enabled").checked = false;
-    }
-
-    openBox();
+    })
+    
+    openBox(table_name);
+    if (table_name == 'io')
+        switchPage('btn' + io_type.toUpperCase());
 }
 
 function selectMode() {
-    var mode = document.getElementById("widget.mode").value;
+    var mode = document.getElementById("io.mode").value;
 
     if (mode == "0") {
 		$('#pageCount').show();
@@ -2597,7 +2112,6 @@ function switchPage(name) {
         $('#pageADCMod').show();
         $('#pageDIMod').hide();
         $('#pageDOMod').hide();
-
     } else if (name == "btnDI") {
         document.getElementById("popBoxTitle").innerHTML="DI Setting";
         document.getElementById("page_name").value = "1";
@@ -2620,459 +2134,25 @@ function switchPage(name) {
     }
 }
 
-function addDataIO(object) {
-    openBox();
+function addDataIO(object, table_name) {
+    openBox(table_name);
     document.getElementById("page_type").value = "0"; /* 0 is add. other is edit */
     var name = object.name;
     switchPage(name);
-}
-
-function getTableDataADC() {
-    var tr = $("#tableADC tr");
-    var result = [];
-    var num = 0;
-
-    for (var i = 2; i < tr.length; i++) {
-        var tds = $(tr[i]).find("td");
-        num = 0;
-        if (tds.length > 0) {
-        result.push({
-            'device_name':$(tds[num++]).html(),
-            'index':$(tds[num++]).html(),
-            'factor_name':$(tds[num++]).html(),
-            'cap_type':$(tds[num++]).html(),
-            'range_down':$(tds[num++]).html(),
-            'range_up':$(tds[num++]).html(),
-            'server_center':$(tds[num++]).html(),
-            'operator':$(tds[num++]).html(),
-            'operand':$(tds[num++]).html(),
-            'ex':$(tds[num++]).html(),
-            'accuracy':$(tds[num++]).html(),
-            'enabled':$(tds[num++]).html()
-        });
-        }
-    }
-
-    return result;
-}
-
-function getTableDataDI() {
-    var tr = $("#tableDI tr");
-    var result = [];
-    var num = 0;
-
-    for (var i = 2; i < tr.length; i++) {
-        var tds = $(tr[i]).find("td");
-        num = 0;
-        if (tds.length > 0) {
-        result.push({
-            'device_name':$(tds[num++]).html(),
-            'index':$(tds[num++]).html(),
-            'factor_name':$(tds[num++]).html(),
-            'mode':$(tds[num++]).html(),
-            'count_method':$(tds[num++]).html(),
-            'debounce_interval':$(tds[num++]).html(),
-            'server_center':$(tds[num++]).html(),
-            'operator':$(tds[num++]).html(),
-            'operand':$(tds[num++]).html(),
-            'ex':$(tds[num++]).html(),
-            'accuracy':$(tds[num++]).html(),
-            'enabled':$(tds[num++]).html()
-        });
-        }
-    }
-
-    return result;
-}
-
-function getTableDataDO() {
-    var tr = $("#tableDO tr");
-    var result = [];
-    var num = 0;
-
-    for (var i = 2; i < tr.length; i++) {
-        var tds = $(tr[i]).find("td");
-        num = 0;
-        if (tds.length > 0) {
-        result.push({
-            'device_name':$(tds[num++]).html(),
-            'index':$(tds[num++]).html(),
-            'factor_name':$(tds[num++]).html(),
-            'init_status':$(tds[num++]).html(),
-            'cur_status':$(tds[num++]).html(),
-            'server_center':$(tds[num++]).html(),
-            'operator':$(tds[num++]).html(),
-            'operand':$(tds[num++]).html(),
-            'ex':$(tds[num++]).html(),
-            'accuracy':$(tds[num++]).html(),
-            'enabled':$(tds[num++]).html()
-        });
-        }
-    }
-
-    return result;
-}
-
-function saveDataADC() {
-    var result = [];
-    var device_name = document.getElementById("widget.device_name").value;
-    var index = document.getElementById("widget.index.adc").value;
-    var factor_name = document.getElementById("widget.factor_name").value;
-    var cap_type = document.getElementById("widget.cap_type").value;
-    var range_down = document.getElementById("widget.range_down").value;
-    var range_up = document.getElementById("widget.range_up").value;
-    var server_center = document.getElementById("widget.server_center").value;
-    var operator = document.getElementById("widget.operator").value;
-    var operand = document.getElementById("widget.operand").value;
-    var ex = document.getElementById("widget.ex").value;
-    var accuracy = document.getElementById("widget.accuracy").value;
-    var enabled = document.getElementById("widget.enabled").checked;
-    var page_type = document.getElementById("page_type").value;
-    var cap_type_value = new Array("4-20mA", "0-10V");
-
-    var cap_type_num = Number(cap_type);
-    cap_type = cap_type_value[cap_type_num];
-
-    if (page_type == "0") {
-        var table = document.getElementsByTagName("table")[0];
-        table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-            "        <td style='text-align:center' name='device_name'>"+ (device_name.length > 0 ? device_name : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='index'>"+ (index.length > 0 ? index : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='factor_name'>"+ (factor_name.length > 0 ? factor_name : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='cap_type'>"+ (cap_type.length > 0 ? cap_type : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='range_down'>"+ (range_down.length > 0 ? range_down : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='range_up'>"+ (range_up.length > 0 ? range_up : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='server_center'>"+ (server_center.length > 0 ? server_center : "-") +"</td>\n" +
-            "        <td style='display:none' name='operator'>"+ operator +"</td>\n" +
-            "        <td style='display:none' name='operand'>"+ (operand.length > 0 ? operand : "-") +"</td>\n" +
-            "        <td style='display:none' name='ex'>"+ (ex.length > 0 ? ex : "-") +"</td>\n" +
-            "        <td style='display:none' name='accuracy'>"+ accuracy +"</td>\n" +
-            "        <td style='text-align:center' name='enabled'>"+ enabled +"</td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"editDataADC(this);\" >Edit</a></td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"delDataADC(this);\" >Del</a></td>\n" +
-            "    </tr>";
-    } else {
-        var table = document.getElementById("tableADC");
-        var num = 0;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (device_name.length > 0 ? device_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (index.length > 0 ? index : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (factor_name.length > 0 ? factor_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (cap_type.length > 0 ? cap_type : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (range_down.length > 0 ? range_down : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (range_up.length > 0 ? range_up : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (server_center.length > 0 ? server_center : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = operator;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (operand.length > 0 ? operand : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (ex.length > 0 ? ex : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = accuracy;
-        table.rows[Number(page_type)].cells[num++].innerHTML = enabled;
-    }
-
-    result = getTableDataADC();
-    var json_data = JSON.stringify(result);
-    $('#hidTDADC').val(json_data);
-}
-
-function saveDataDI() {
-    var result = [];
-    var device_name = document.getElementById("widget.device_name").value;
-    var index = document.getElementById("widget.index.di").value;
-    var factor_name = document.getElementById("widget.factor_name").value;
-    var mode = document.getElementById("widget.mode").value;
-    var count_method = document.getElementById("widget.count_method").value;
-    var debounce_interval = document.getElementById("widget.debounce_interval").value;
-    var server_center = document.getElementById("widget.server_center").value;
-    var operator = document.getElementById("widget.operator").value;
-    var operand = document.getElementById("widget.operand").value;
-    var ex = document.getElementById("widget.ex").value;
-    var accuracy = document.getElementById("widget.accuracy").value;
-    var enabled = document.getElementById("widget.enabled").checked;
-    var page_type = document.getElementById("page_type").value;
-    var mode_value = new Array("Counting Mode", "Status Mode");
-    var mode_num = Number(mode);
-
-    var method_value = new Array("Rising Edge", "Falling Edge");
-    var method_num = Number(count_method);
-
-    var model = document.getElementById("model").value;
-    var table_num = [];
-    if (model == "EG500") {
-        table_num = 1;
-    } else if (model == "EG410") {
-        table_num = 0;
-    }
-
-    if (mode == "1") {
-        count_method = "-";
-        debounce_interval = "-";
-    } else {
-        count_method = method_value[method_num];
-    }
-
-    mode = mode_value[mode_num];
-
-    if (page_type == "0") {
-        var table = document.getElementsByTagName("table")[table_num];
-        table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-            "        <td style='text-align:center' name='device_name'>"+ (device_name.length > 0 ? device_name : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='index'>"+ (index.length > 0 ? index : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='factor_name'>"+ (factor_name.length > 0 ? factor_name : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='mode'>"+ (mode.length > 0 ? mode : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='count_method'>"+ (count_method.length > 0 ? count_method : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='debounce_interval'>"+ (debounce_interval.length > 0 ? debounce_interval : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='server_center'>"+ (server_center.length > 0 ? server_center : "-") +"</td>\n" +
-            "        <td style='display:none' name='operator'>"+ operator +"</td>\n" +
-            "        <td style='display:none' name='operand'>"+ (operand.length > 0 ? operand : "-") +"</td>\n" +
-            "        <td style='display:none' name='ex'>"+ (ex.length > 0 ? ex : "-") +"</td>\n" +
-            "        <td style='display:none' name='accuracy'>"+ accuracy +"</td>\n" +
-            "        <td style='text-align:center' name='enabled'>"+ enabled +"</td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"editDataDI(this);\" >Edit</a></td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"delDataDI(this);\" >Del</a></td>\n" +
-            "    </tr>";
-    } else {
-        var table = document.getElementById("tableDI");
-        var num = 0;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (device_name.length > 0 ? device_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (index.length > 0 ? index : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (factor_name.length > 0 ? factor_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (mode.length > 0 ? mode : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (count_method.length > 0 ? count_method : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (debounce_interval.length > 0 ? debounce_interval : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (server_center.length > 0 ? server_center : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = operator;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (operand.length > 0 ? operand : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (ex.length > 0 ? ex : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = accuracy;
-        table.rows[Number(page_type)].cells[num++].innerHTML = enabled;
-    }
-
-    result = getTableDataDI();
-    var json_data = JSON.stringify(result);
-    $('#hidTDDI').val(json_data);
-}
-
-function saveDataDO() {
-    var result = [];
-    var device_name = document.getElementById("widget.device_name").value;
-    var index = document.getElementById("widget.index.do").value;
-    var factor_name = document.getElementById("widget.factor_name").value;
-    var init_status = document.getElementById("widget.init_status").value;
-    var cur_status = document.getElementById("widget.cur_status").innerHTML;
-    var server_center = document.getElementById("widget.server_center").value;
-    var operator = document.getElementById("widget.operator").value;
-    var operand = document.getElementById("widget.operand").value;
-    var ex = document.getElementById("widget.ex").value;
-    var accuracy = document.getElementById("widget.accuracy").value;
-    var enabled = document.getElementById("widget.enabled").checked;
-    var page_type = document.getElementById("page_type").value;
-    var status_value = new Array("Open", "Close");
-    var status_num = Number(init_status);
-
-    var model = document.getElementById("model").value;
-    var table_num = [];
-    if (model == "EG500") {
-        table_num = 2;
-    } else if (model == "EG410") {
-        table_num = 1;
-    }
-
-    init_status = status_value[status_num];
-
-    if (page_type == "0") {
-        var table = document.getElementsByTagName("table")[table_num];
-        table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-            "        <td style='text-align:center' name='device_name'>"+ (device_name.length > 0 ? device_name : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='index'>"+ (index.length > 0 ? index : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='factor_name'>"+ (factor_name.length > 0 ? factor_name : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='init_status'>"+ (init_status.length > 0 ? init_status : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='cur_status'>"+ (cur_status.length > 0 ? cur_status : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='server_center'>"+ (server_center.length > 0 ? server_center : "-") +"</td>\n" +
-            "        <td style='display:none' name='operator'>"+ operator +"</td>\n" +
-            "        <td style='display:none' name='operand'>"+ (operand.length > 0 ? operand : "-") +"</td>\n" +
-            "        <td style='display:none' name='ex'>"+ (ex.length > 0 ? ex : "-") +"</td>\n" +
-            "        <td style='display:none' name='accuracy'>"+ accuracy +"</td>\n" +
-            "        <td style='text-align:center' name='enabled'>"+ enabled +"</td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"editDataDO(this);\" >Edit</a></td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"delDataDO(this);\" >Del</a></td>\n" +
-            "    </tr>";
-    } else {
-        var table = document.getElementById("tableDO");
-        var num = 0;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (device_name.length > 0 ? device_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (index.length > 0 ? index : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (factor_name.length > 0 ? factor_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (init_status.length > 0 ? init_status : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (cur_status.length > 0 ? cur_status : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (server_center.length > 0 ? server_center : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = operator;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (operand.length > 0 ? operand : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (ex.length > 0 ? ex : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = accuracy;
-        table.rows[Number(page_type)].cells[num++].innerHTML = enabled;
-    }
-
-    result = getTableDataDO();
-    var json_data = JSON.stringify(result);
-    $('#hidTDDO').val(json_data); 
 }
 
 function saveDataIO() {
     var page_name = document.getElementById("page_name").value;
 
     if (page_name == "0") {
-        saveDataADC();
+        saveData('adc');
     } else if (page_name == "1") {
-        saveDataDI();
+        saveData('di');
     } else {
-        saveDataDO();
+        saveData('do');
     }
 
     closeBox();
-}
-
-function delDataADC(object) {
-    var table = object.parentNode.parentNode.parentNode;
-    var tr = object.parentNode.parentNode;
-    table.removeChild(tr);
-
-    var result = getTableDataADC();
-    var json_data = JSON.stringify(result);
-    $('#hidTDADC').val(json_data);
-}
-
-function delDataDI(object) {
-    var table = object.parentNode.parentNode.parentNode;
-    var tr = object.parentNode.parentNode;
-    table.removeChild(tr);
-
-    var result = getTableDataDI();
-    var json_data = JSON.stringify(result);
-    $('#hidTDDI').val(json_data);
-}
-
-function delDataDO(object) {
-    var table = object.parentNode.parentNode.parentNode;
-    var tr = object.parentNode.parentNode;
-    table.removeChild(tr);
-
-    var result = getTableDataDO();
-    var json_data = JSON.stringify(result);
-    $('#hidTDDO').val(json_data);
-}
-
-function editDataADC(object) {
-    var row = $(object).parent().parent().parent().prevAll().length + 1;
-    document.getElementById("page_type").value = row;
-    var num = 0;
-    var value = $(object).parent().parent().find("td");
-    var device_name = value.eq(num++).text();
-    var index = value.eq(num++).text();
-    var factor_name = value.eq(num++).text();
-    var cap_type = value.eq(num++).text();
-    var range_down = value.eq(num++).text();
-    var range_up = value.eq(num++).text();
-    var server_center = value.eq(num++).text();
-    var operator = value.eq(num++).text();
-    var operand = value.eq(num++).text();
-    var ex = value.eq(num++).text();
-    var accuracy = value.eq(num++).text();
-    var enabled = value.eq(num++).text();
-
-    document.getElementById("widget.device_name").value = device_name;
-    document.getElementById("widget.index.adc").value = index;
-    document.getElementById("widget.factor_name").value = factor_name;
-    setSelectByText("widget.cap_type", cap_type);
-    document.getElementById("widget.range_down").value = range_down;
-    document.getElementById("widget.range_up").value = range_up;
-    document.getElementById("widget.server_center").value = server_center;
-    document.getElementById("widget.operator").value = operator;
-    document.getElementById("widget.operand").value = operand;
-    document.getElementById("widget.ex").value = ex;
-    document.getElementById("widget.accuracy").value = accuracy;
-    if (enabled == "true") {
-        document.getElementById("widget.enabled").checked = true;
-    } else {
-        document.getElementById("widget.enabled").checked = false;
-    }
-
-    openBox();
-    switchPage("btnADC");
-}
-
-function editDataDI(object) {
-    var row = $(object).parent().parent().parent().prevAll().length + 1;
-    document.getElementById("page_type").value = row;
-    var num = 0;
-    var value = $(object).parent().parent().find("td");
-    var device_name = value.eq(num++).text();
-    var index = value.eq(num++).text();
-    var factor_name = value.eq(num++).text();
-    var mode = value.eq(num++).text();
-    var count_method = value.eq(num++).text();
-    var debounce_interval = value.eq(num++).text();
-    var server_center = value.eq(num++).text();
-    var operator = value.eq(num++).text();
-    var operand = value.eq(num++).text();
-    var ex = value.eq(num++).text();
-    var accuracy = value.eq(num++).text();
-    var enabled = value.eq(num++).text();
-
-    document.getElementById("widget.device_name").value = device_name;
-    document.getElementById("widget.index.di").value = index;
-    document.getElementById("widget.factor_name").value = factor_name;
-    setSelectByText("widget.mode", mode);
-    setSelectByText("widget.count_method", count_method);
-    document.getElementById("widget.debounce_interval").value = debounce_interval;
-    document.getElementById("widget.server_center").value = server_center;
-    document.getElementById("widget.operator").value = operator;
-    document.getElementById("widget.operand").value = operand;
-    document.getElementById("widget.ex").value = ex;
-    document.getElementById("widget.accuracy").value = accuracy;
-    if (enabled == "true") {
-        document.getElementById("widget.enabled").checked = true;
-    } else {
-        document.getElementById("widget.enabled").checked = false;
-    }
-
-    openBox();
-    switchPage("btnDI");
-}
-
-function editDataDO(object) {
-    var row = $(object).parent().parent().parent().prevAll().length + 1;
-    document.getElementById("page_type").value = row;
-    var num = 0;
-    var value = $(object).parent().parent().find("td");
-    var device_name = value.eq(num++).text();
-    var index = value.eq(num++).text();
-    var factor_name = value.eq(num++).text();
-    var init_status = value.eq(num++).text();
-    var cur_status = value.eq(num++).text();
-    var server_center = value.eq(num++).text();
-    var operator = value.eq(num++).text();
-    var operand = value.eq(num++).text();
-    var ex = value.eq(num++).text();
-    var accuracy = value.eq(num++).text();
-    var enabled = value.eq(num++).text();
-
-    document.getElementById("widget.device_name").value = device_name;
-    document.getElementById("widget.index.do").value = index;
-    document.getElementById("widget.factor_name").value = factor_name;
-    setSelectByText("widget.init_status", init_status);
-    document.getElementById("widget.cur_status").innerHTML = cur_status;
-    document.getElementById("widget.server_center").value = server_center;
-    document.getElementById("widget.operator").value = operator;
-    document.getElementById("widget.operand").value = operand;
-    document.getElementById("widget.ex").value = ex;
-    document.getElementById("widget.accuracy").value = accuracy;
-    if (enabled == "true") {
-        document.getElementById("widget.enabled").checked = true;
-    } else {
-        document.getElementById("widget.enabled").checked = false;
-    }
-
-    openBox();
-    switchPage("btnDO");
 }
 
 function setSelectByText(id, text)
@@ -3559,7 +2639,15 @@ function editDataBaccli(object) {
         document.getElementById("widget.enabled").checked = false;
     }
 
-    openBox();
+    openBox('widget');
+}
+
+function enableBACnet(state) {
+    if (state) {
+      $('#page_bacnet').show();
+    } else {
+      $('#page_bacnet').hide();
+    }
 }
 
 $(document).ready(function(){
@@ -3664,7 +2752,6 @@ function keyFileChangeLora() {
     $('#key_text').html($('#lora_key')[0].files[0].name);
 }
 
-
 function downloadFile(conf_name) {
     let lowerConfName;
     if (conf_name == 'IO') {
@@ -3697,3 +2784,84 @@ function downloadFile(conf_name) {
     }
     req.send();
 }
+
+function enableBasic(state) {
+    if (state) {
+      $('#page_basic').show();
+      enableCache(document.getElementById('cache_enabled'));
+      enableMinuteData(document.getElementById('minute_enabled'));
+    } else {
+      $('#page_basic').hide();
+    }
+}
+
+function enableCache(checkbox) {
+    if (checkbox.checked == true) {
+        $("#page_cache_days").show();
+    } else {
+        $("#page_cache_days").hide();
+    }
+}
+
+function enableMinuteData(checkbox) {
+    if (checkbox.checked == true) {
+        $("#page_minute_data").show();
+    } else {
+        $("#page_minute_data").hide();
+    }
+}
+
+function anonymousCheck(check) {
+    if (check.checked == true)  {
+      $('#page_anonymous').hide();
+    } else {
+      $('#page_anonymous').show();
+    }
+  }
+
+  function enableOpcua(state) {
+    if (state) {
+      $('#page_opcua').show();
+      if ($('#security_policy').val() == "0") {
+        $('#page_security').hide();
+      } else {
+        $('#page_security').show();
+      }
+
+      if ($('#anonymous').is(':checked')) {
+        $('#page_anonymous').hide();
+      } else {
+        $('#page_anonymous').show();
+      }
+    } else {
+      $('#page_opcua').hide();
+    }
+  }
+
+  function securityChange(state) {
+    if (state.value == '0') {
+      $('#page_security').hide();
+    } else {
+      $('#page_security').show();
+    }
+  }
+
+  function certChange() {
+    $('#cert_text').html($('#certificate')[0].files[0].name);
+  }
+
+  function keyChange() {
+    $('#key_text').html($('#private_key')[0].files[0].name);
+  }
+
+  function trustChange() {
+    var file = $('#trust_crt')[0].files;
+    var str = '';
+    for (var i = 0, len = file.length; i < len; i++) {
+      str += file[i].name;
+      if (i < len - 1)
+        str += ";";
+    }
+
+    $('#trust_text').html(str);
+  }

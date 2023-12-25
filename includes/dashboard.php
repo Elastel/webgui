@@ -64,12 +64,13 @@ function DisplayDashboard(&$extraFooterScripts)
     // fetch dhcpcd.conf settings for interface
     $conf = file_get_contents(RASPI_DHCPCD_CONFIG);
     preg_match('/^#\sRaspAP\seth0\s.*?(?=\s*+$)/ms', $conf, $matched);
-    preg_match('/metric\s(\d*)/', $matched[0], $metric);
-    preg_match('/static\sip_address=(.*)/', $matched[0], $static_ip);
-    preg_match('/static\srouters=(.*)/', $matched[0], $static_routers);
-    preg_match('/static\sdomain_name_server=(.*)/', $matched[0], $static_dns);
-    // preg_match('/fallback\sstatic_'.$interface.'/', $matched[0], $fallback);
-    preg_match('/(?:no)?gateway/', $matched[0], $gateway);
+    $data = getBetweenStrings($data, "RaspAP");
+    preg_match('/metric\s(\d*)/', $data, $metric);
+    preg_match('/static\sip_address=(.*)/', $data, $static_ip);
+    preg_match('/static\srouters=(.*)/', $data, $static_routers);
+    preg_match('/static\sdomain_name_server=(.*)/', $data, $static_dns);
+    // preg_match('/fallback\sstatic_'.$interface.'/', $data, $fallback);
+    preg_match('/(?:no)?gateway/', $data, $gateway);
     $dhcpdata['Metric'] = $metric[1];
     $dhcpdata['StaticIP'] = strpos($static_ip[1],'/') ?  substr($static_ip[1], 0, strpos($static_ip[1],'/')) : $static_ip[1];
     $dhcpdata['SubnetMask'] = cidr2mask($static_ip[1]);
