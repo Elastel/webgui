@@ -28,9 +28,9 @@
             RadioControlCustom(_('Data Collect'), 'enabled', 'basic', 'enableBasic');
             echo '<div id="page_basic" name="page_basic">';
 
-            InputControlCustom(_('Collect Period'), 'collect_period', 'collect_period', _('Seconds'));
+            InputControlCustom(_('Collect Period'), 'collect_period', 'collect_period', _('Seconds'), '5');
 
-            InputControlCustom(_('Report Period'), 'report_period', 'report_period', _('Seconds'));
+            InputControlCustom(_('Report Period'), 'report_period', 'report_period', _('Seconds'), '10');
 
             CheckboxControlCustom(_('Enable Cache'), 'cache_enabled', 'cache_enabled', null, _('Cache History Data'), 'enableCache(this)');
 

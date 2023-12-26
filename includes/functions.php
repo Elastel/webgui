@@ -951,13 +951,16 @@ function handlePageActions($extraFooterScripts, $page, $config)
     }
 }
 
-function InputControlCustom($title, $name, $id = null, $descr = null, $event = null)
+function InputControlCustom($title, $name, $id = null, $descr = null, $defaultValue = null, $event = null)
 {
     echo '<div class="cbi-value">
       <label class="cbi-value-title">'.htmlspecialchars($title, ENT_QUOTES).'</label>' , PHP_EOL;
     echo '<input type="text" class="cbi-input-text" name="'.htmlspecialchars($name, ENT_QUOTES).'"';
     if (isset($id)) {
         echo ' id="'.htmlspecialchars($id, ENT_QUOTES).'"';
+    }
+    if (isset($id)) {
+        echo ' value="'.htmlspecialchars($defaultValue, ENT_QUOTES).'"';
     }
     if (isset($event)) {
         echo ' onChange="' . htmlspecialchars($event, ENT_QUOTES). '"';
