@@ -39,6 +39,13 @@
             array("name"=>"Operation Expression", "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
             array("name"=>"Operand",              "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
             array("name"=>"Accuracy",             "style"=>"display:none", "descr"=>"0~6", "ctl"=>"select"),
+            array("name"=>"SMS&Email Reporting",  "style"=>"display:none", "descr"=>"", "ctl"=>""),
+            array("name"=>"Report Type",          "style"=>"display:none", "descr"=>"", "ctl"=>""),
+            array("name"=>"Alarm Up Limit",       "style"=>"display:none", "descr"=>"", "ctl"=>""),
+            array("name"=>"Alarm Down Limit",     "style"=>"display:none", "descr"=>"", "ctl"=>""),
+            array("name"=>"Phone Number",         "style"=>"display:none", "descr"=>"", "ctl"=>""),
+            array("name"=>"Email",                "style"=>"display:none", "descr"=>"", "ctl"=>""),
+            array("name"=>"Contents",             "style"=>"display:none", "descr"=>"", "ctl"=>""),
             array("name"=>"Enable",               "style"=>"", "descr"=>"", "ctl"=>"check"),
           );?>       
             <div class="cbi-section cbi-tblsection" id="page_s7" name="page_s7">
@@ -97,6 +104,28 @@
 
       $accuracy_list = ['0', '1', '2', '3', '4', '5', '6'];
       SelectControlCustom(_('Accuracy'), $table_name.'.accuracy', $accuracy_list, $accuracy_list[0], $table_name.'.accuracy', _('0 + - * /'));
+
+      CheckboxControlCustom(_('SMS&Email Reporting'), $table_name.'.sms_reporting', $table_name.'.sms_reporting', null, null, "enableAlarm('$table_name')");
+
+      echo '<div name="page_sms" id="page_sms">';
+      $report_type = ['Change reporting', 'Alarm reporting'];
+      SelectControlCustom(_('Report Type'), $table_name.'.report_type', $report_type, $report_type[0], $table_name.'.report_type', null, "selectReportType('$table_name')");
+      
+      echo '<div name="page_alarm" id="page_alarm">';
+      InputControlCustom(_('Alarm Up Limit'), $table_name.'.alarm_up', $table_name.'.alarm_up');
+
+      InputControlCustom(_('Alarm Down Limit'), $table_name.'.alarm_down', $table_name.'.alarm_down');
+      echo '</div>';
+      InputControlCustom(_('Phone Number'), $table_name.'.phone_num', $table_name.'.phone_num', _('Multiple Phones Are Separated By Comma'));
+
+      InputControlCustom(_('Email'), $table_name.'.email', $table_name.'.email', _('Multiple emails Are Separated By Comma'));
+      
+      InputControlCustom(_('Contents'), $table_name.'.contents', $table_name.'.contents');
+
+      InputControlCustom(_('Retry Interval'), $table_name.'.retry_interval', $table_name.'.retry_interval', _('Minutes, it must be a multiple of collect period'));
+
+      InputControlCustom(_('Again Interval'), $table_name.'.again_interval', $table_name.'.again_interval', _('Minutes, it must be a multiple of collect period'));
+      echo '</div>';
 
       CheckboxControlCustom(_('Enable'), $table_name.'.enabled', $table_name.'.enabled', 'checked');
     ?>

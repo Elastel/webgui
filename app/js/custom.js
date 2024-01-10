@@ -945,6 +945,94 @@ function loadInterfacesConfig() {
     });
 }
 
+function addSectionTable(table_name, jsonData, option_list) {
+    var mode = 0;
+    var data_type_value = [];
+    var reg_type_value = [];
+    var word_len_value = [];
+    var cap_type_value = ['4-20mA', '0-10V'];
+    var mode_value = ['Counting Mode', 'Status Mode'];
+    var count_method_value = ['Rising Edge', 'Falling Edge'];
+    var status_value = ['Open', 'Close'];
+
+    if (table_name == 'modbus') {
+        data_type_value = ['Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
+        'Unsigned 32Bits ABCD', 'Unsigned 32Bits BADC', 'Unsigned 32Bits CDAB', 'Unsigned 32Bits DCBA',
+        'Signed 32Bits ABCD', 'Signed 32Bits BADC', 'Signed 32Bits CDAB', 'Signed 32Bits DCBA',
+        'Float ABCD', 'Float BADC', 'Float CDAB', 'Float DCBA'];
+    } else if (table_name == 'fx') {
+        data_type_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real'];
+        reg_type_value = ['X', 'Y', 'M', 'S', 'D'];
+    } else if (table_name == 's7') {
+        reg_type_value = ['I', 'Q', 'M', 'DB', 'V', 'C', 'T'];
+        word_len_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real', 'Counter', 'Timer'];
+    } else if (table_name == 'mc') {
+        data_type_value = ['Bit', 'Int', 'Float'];
+    }
+    
+    var len = Number(jsonData.length);
+    for (var i = 0; i < len; i++) {
+        var table = document.getElementById("table_" + table_name);
+        var contents = '';
+        contents += '<tr  class="tr cbi-section-table-descr">\n';
+        
+        if (jsonData[i].hasOwnProperty('mode')) {
+            mode = Number(jsonData[i]['mode']);
+        }
+
+        option_list.forEach(function(key){
+            if (!jsonData[i].hasOwnProperty(key)) {
+                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy' ||
+                key == 'report_type' || key == 'alarm_up' || key == 'alarm_down' || key == 'phone_num' || 
+                key == 'email' || key == 'contents' || key == 'retry_interval' || key == 'again_interval') {
+                    contents += '   <td style="display:none" name="'+key+'">-</td>\n';
+                } else {
+                    contents += '   <td style="text-align:center" name="'+key+'">-</td>\n';
+                }
+                
+                return;
+            }
+
+            if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy' ||
+            key == 'report_type' || key == 'alarm_up' || key == 'alarm_down' || key == 'phone_num' || 
+            key == 'email' || key == 'contents' || key == 'retry_interval' || key == 'again_interval') {
+                contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+            } else if (key == 'data_type') {
+                contents += '   <td style="text-align:center" name="'+key+'">'+ (data_type_value[Number(jsonData[i][key])]) +'</td>\n';
+            } else if (key == 'reg_type') {
+                contents += '   <td style="text-align:center" name="'+key+'">'+ (reg_type_value[Number(jsonData[i][key])]) +'</td>\n';
+            } else if (key == 'word_len') {
+                contents += '   <td style="text-align:center" name="'+key+'">'+ (word_len_value[Number(jsonData[i][key])]) +'</td>\n';
+            } else if (key == 'cap_type') {
+                contents += '   <td style="text-align:center" name="'+key+'">'+ (cap_type_value[Number(jsonData[i][key])]) +'</td>\n';
+            } else if (key == 'mode') {
+                contents += '   <td style="text-align:center" name="'+key+'">'+ (mode_value[Number(jsonData[i][key])]) +'</td>\n';
+            } else if (key == 'count_method') {
+                contents += ('   <td style="text-align:center" name="'+key+'">'+ (((mode == 1) ? '-' : count_method_value[Number(jsonData[i][key])])) +'</td>\n');
+            } else if (key == 'init_status' || key == 'cur_status') {
+                contents += '   <td style="text-align:center" name="'+key+'">'+ (status_value[Number(jsonData[i][key])]) +'</td>\n';
+            } else if (key == 'enabled' || key == 'sms_reporting') {
+                contents += '   <td style="' + ((key == 'enabled') ? 'text-align:center' : 'display:none') + '"><input type="checkbox" name="' +
+                             key + (table_name == 'baccli' ? '_baccli' : '') + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + 
+                             ' onclick="updateData(\''+table_name+'\')"></td>\n';
+            } else {
+                contents += '   <td style="text-align:center" name="'+key+'">'+ ((mode == 1 && key == 'debounce_interval') ? '-' : jsonData[i][key]) +'</td>\n';
+            }
+
+        })
+        contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
+            '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
+            '   </tr>';
+        table.innerHTML += contents;
+    }
+
+    var result = get_table_data(table_name, option_list);
+    var json_data = JSON.stringify(result);
+    $('#hidTD_'+table_name).val(json_data);
+    $('#option_list_'+table_name).val(option_list);
+    $('#loading').hide();
+}
+
 function loadModbusConfig() {
     $('#loading').show();
     var table_name = 'modbus';
@@ -952,40 +1040,11 @@ function loadModbusConfig() {
         var jsonData = JSON.parse(data);
         var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'device_id', 
                         'function_code', 'reg_addr', 'reg_count', 'data_type', 'server_center', 
-                        'operator', 'operand', 'ex', 'accuracy', 'enabled'];
-        var data_type_value = ['Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
-                            'Unsigned 32Bits ABCD', 'Unsigned 32Bits BADC', 'Unsigned 32Bits CDAB', 'Unsigned 32Bits DCBA',
-                            'Signed 32Bits ABCD', 'Signed 32Bits BADC', 'Signed 32Bits CDAB', 'Signed 32Bits DCBA',
-                            'Float ABCD', 'Float BADC', 'Float CDAB', 'Float DCBA'];
+                        'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
+                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
+                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
 
-        
-        var len = Number(jsonData.length);
-        for (var i = 0; i < len; i++) {
-            var table = document.getElementById("table_" + table_name);
-            var contents = '';
-            contents += '<tr  class="tr cbi-section-table-descr">\n';
-            for (key in jsonData[i]) {
-                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
-                    contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-                } else if (key == 'data_type') {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (data_type_value[Number(jsonData[i][key])]) +'</td>\n';
-                } else if (key == 'enabled') {
-                    contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
-                } else {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-                }
-            }
-            contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
-                '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
-                '   </tr>';
-            table.innerHTML += contents;
-        }
-
-        var result = get_table_data(table_name, option_list);
-        var json_data = JSON.stringify(result);
-        $('#hidTD_'+table_name).val(json_data);
-        $('#option_list_'+table_name).val(option_list);
-        $('#loading').hide();
+        addSectionTable(table_name, jsonData, option_list);
     });
 }
 
@@ -997,35 +1056,7 @@ function loadAsciiConfig() {
         var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'tx_cmd', 
                         'cmd_format', 'server_center', 'enabled'];
 
-        var len = Number(jsonData.length);
-
-        for (var i = 0; i < len; i++) {
-            var table = document.getElementById("table_" + table_name);
-
-            var contents = '';
-            contents += '<tr  class="tr cbi-section-table-descr">\n';
-            for (key in jsonData[i]) {
-                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
-                    contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-                } else if (key == 'data_type') {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (data_type_value[Number(jsonData[i][key])]) +'</td>\n';
-                } else if (key == 'enabled') {
-                    contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
-                } else {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-                }
-            }
-            contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
-                '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
-                '   </tr>';
-            table.innerHTML += contents;
-        }
-
-        var result = get_table_data(table_name, option_list);
-        var json_data = JSON.stringify(result);
-        $('#hidTD_'+table_name).val(json_data);
-        $('#option_list_'+table_name).val(option_list);
-        $('#loading').hide();
+        addSectionTable(table_name, jsonData, option_list);
     });
 }
 
@@ -1036,39 +1067,10 @@ function loadS7Config() {
         var jsonData = JSON.parse(data);
         var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'reg_type', 
                         'reg_addr', 'reg_count', 'word_len', 'server_center', 
-                        'operator', 'operand', 'ex', 'accuracy', 'enabled'];
-        var reg_type_value = ['I', 'Q', 'M', 'DB', 'V', 'C', 'T'];
-        var word_len_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real', 'Counter', 'Timer'];
-        var len = Number(jsonData.length);
-
-        for (var i = 0; i < len; i++) {
-            var table = document.getElementById("table_" + table_name);
-            var contents = '';
-            contents += '<tr  class="tr cbi-section-table-descr">\n';
-            for (key in jsonData[i]) {
-                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
-                    contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-                } else if (key == 'reg_type') {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (reg_type_value[Number(jsonData[i][key])]) +'</td>\n';
-                } else if (key == 'word_len') {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (word_len_value[Number(jsonData[i][key])]) +'</td>\n';
-                } else if (key == 'enabled') {
-                    contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
-                } else {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-                }
-            }
-            contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
-                '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
-                '   </tr>';
-            table.innerHTML += contents;
-        }
-
-        var result = get_table_data(table_name, option_list);
-        var json_data = JSON.stringify(result);
-        $('#hidTD_'+table_name).val(json_data);
-        $('#option_list_'+table_name).val(option_list);
-        $('#loading').hide();
+                        'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
+                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
+                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
+        addSectionTable(table_name, jsonData, option_list);
     });
 }
 
@@ -1079,39 +1081,10 @@ function loadFxConfig() {
         var jsonData = JSON.parse(data);
         var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'reg_type', 
                         'reg_addr', 'reg_count', 'data_type', 'server_center', 
-                        'operator', 'operand', 'ex', 'accuracy', 'enabled'];
-        var reg_type_value = ['X', 'Y', 'M', 'S', 'D'];
-        var data_type_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real'];
-        var len = Number(jsonData.length);
-
-        for (var i = 0; i < len; i++) {
-            var table = document.getElementById("table_" + table_name);
-            var contents = '';
-            contents += '<tr  class="tr cbi-section-table-descr">\n';
-            for (key in jsonData[i]) {
-                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
-                    contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-                } else if (key == 'reg_type') {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (reg_type_value[Number(jsonData[i][key])]) +'</td>\n';
-                } else if (key == 'data_type') {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (data_type_value[Number(jsonData[i][key])]) +'</td>\n';
-                } else if (key == 'enabled') {
-                    contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
-                } else {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-                }
-            }
-            contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
-                '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
-                '   </tr>';
-            table.innerHTML += contents;
-        }
-
-        var result = get_table_data(table_name, option_list);
-        var json_data = JSON.stringify(result);
-        $('#hidTD_'+table_name).val(json_data);
-        $('#option_list_'+table_name).val(option_list);
-        $('#loading').hide();
+                        'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
+                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
+                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
+        addSectionTable(table_name, jsonData, option_list);
     });
 }
 
@@ -1122,36 +1095,10 @@ function loadMcConfig() {
         var jsonData = JSON.parse(data);
         var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'data_area', 
                         'start_addr', 'reg_count', 'data_type', 'server_center', 
-                        'operator', 'operand', 'ex', 'accuracy', 'enabled'];
-        var data_type_value = ['Bit', 'Int', 'Float'];
-        var len = Number(jsonData.length);
-
-        for (var i = 0; i < len; i++) {
-            var table = document.getElementById("table_" + table_name);
-            var contents = '';
-            contents += '<tr  class="tr cbi-section-table-descr">\n';
-            for (key in jsonData[i]) {
-                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
-                    contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-                } else if (key == 'data_type') {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (data_type_value[Number(jsonData[i][key])]) +'</td>\n';
-                } else if (key == 'enabled') {
-                    contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
-                } else {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-                }
-            }
-            contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
-                '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
-                '   </tr>';
-            table.innerHTML += contents;
-        }
-
-        var result = get_table_data(table_name, option_list);
-        var json_data = JSON.stringify(result);
-        $('#hidTD_'+table_name).val(json_data);
-        $('#option_list_'+table_name).val(option_list);
-        $('#loading').hide();
+                        'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
+                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
+                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
+        addSectionTable(table_name, jsonData, option_list);
     });
 }
 
@@ -1162,37 +1109,13 @@ function loadADCConfig() {
         var jsonData = JSON.parse(data);
         var option_list = ['device_name', 'index', 'factor_name', 'cap_type', 
                         'range_down', 'range_up', 'server_center', 
-                        'operator', 'operand', 'ex', 'accuracy', 'enabled'];
-        var cap_type_value = ['4-20mA', '0-10V'];
-        var len = Number(jsonData.length);
+                        'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
+                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
+                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
         var model = document.getElementById("model").value;
 
         if (model == "EG500") {
-            for (var i = 0; i < len; i++) {
-                var table = document.getElementById("table_" + table_name);
-                var contents = '';
-                contents += '<tr  class="tr cbi-section-table-descr">\n';
-                for (key in jsonData[i]) {
-                    if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
-                        contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-                    } else if (key == 'cap_type') {
-                        contents += '   <td style="text-align:center" name="'+key+'">'+ (cap_type_value[Number(jsonData[i][key])]) +'</td>\n';
-                    } else if (key == 'enabled') {
-                        contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
-                    } else {
-                        contents += '   <td style="text-align:center" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-                    }
-                }
-                contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
-                    '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
-                    '   </tr>';
-                table.innerHTML += contents;
-            }
-
-            var result = get_table_data(table_name, option_list);
-            var json_data = JSON.stringify(result);
-            $('#hidTD_'+table_name).val(json_data);
-            $('#option_list_'+table_name).val(option_list);
+            addSectionTable(table_name, jsonData, option_list);
         }
 
         $('#loading').hide();
@@ -1206,46 +1129,11 @@ function loadDIConfig() {
         var jsonData = JSON.parse(data);
         var option_list = ['device_name', 'index', 'factor_name', 'mode', 
                         'count_method', 'debounce_interval', 'server_center', 
-                        'operator', 'operand', 'ex', 'accuracy', 'enabled'];
-        var model = document.getElementById("model").value;
-        var table_num = [];
-        if (model == "EG500") {
-            table_num = 1;
-        } else if (model == "EG410") {
-            table_num = 0;
-        }
+                        'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
+                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
+                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
 
-        var mode_value = ['Counting Mode', 'Status Mode'];
-        var method_value = ['Rising Edge', 'Falling Edge'];
-        var len = Number(jsonData.length);
-
-        for (var i = 0; i < len; i++) {
-            var table = document.getElementById("table_" + table_name);
-            var contents = '';
-            contents += '<tr  class="tr cbi-section-table-descr">\n';
-            for (key in jsonData[i]) {
-                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
-                    contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-                } else if (key == 'mode') {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (mode_value[Number(jsonData[i][key])]) +'</td>\n';
-                } else if (key == 'count_method') {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (method_value[Number(jsonData[i][key])]) +'</td>\n';
-                } else if (key == 'enabled') {
-                    contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
-                } else {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-                }
-            }
-            contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
-                '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
-                '   </tr>';
-            table.innerHTML += contents;
-        }
-
-        var result = get_table_data(table_name, option_list);
-        var json_data = JSON.stringify(result);
-        $('#hidTD_'+table_name).val(json_data);
-        $('#option_list_'+table_name).val(option_list);
+        addSectionTable(table_name, jsonData, option_list);
 
         $('#loading').hide();
     });
@@ -1257,42 +1145,12 @@ function loadDOConfig() {
     $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
         var option_list = ['device_name', 'index', 'factor_name', 'init_status', 
-                        'cur_status', 'server_center', 'operator', 'operand', 'ex', 'accuracy', 'enabled'];
-        var model = document.getElementById("model").value;
-        var table_num = [];
-        if (model == "EG500") {
-            table_num = 2;
-        } else if (model == "EG410") {
-            table_num = 1;
-        }
-        var status_value = ['Open', 'Close'];
-        var len = Number(jsonData.length);
+                        'cur_status', 'server_center', 'operator', 'operand', 'ex',
+                         'accuracy', 'sms_reporting',
+                         'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
+                         'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
 
-        for (var i = 0; i < len; i++) {
-            var table = document.getElementById("table_" + table_name);
-            var contents = '';
-            contents += '<tr  class="tr cbi-section-table-descr">\n';
-            for (key in jsonData[i]) {
-                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
-                    contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-                } else if (key == 'init_status' || key == 'cur_status') {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (status_value[Number(jsonData[i][key])]) +'</td>\n';
-                } else if (key == 'enabled') {
-                    contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
-                } else {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-                }
-            }
-            contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
-                '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
-                '   </tr>';
-            table.innerHTML += contents;
-        }
-
-        var result = get_table_data(table_name, option_list);
-        var json_data = JSON.stringify(result);
-        $('#hidTD_'+table_name).val(json_data);
-        $('#option_list_'+table_name).val(option_list);
+        addSectionTable(table_name, jsonData, option_list);
 
         $('#loading').hide();
     });
@@ -1328,32 +1186,8 @@ function loadBACnetClientConfig() {
         var tmpData = jsonData.baccli;
         var option_list = ['order', 'device_name', 'factor_name', 'object_id', 
                         'server_center', 'operator', 'operand', 'ex', 'accuracy', 'enabled'];
-        var len = Number(tmpData.length);
 
-        for (var i = 0; i < len; i++) {
-            var table = document.getElementById("table_" + table_name);
-            var contents = '';
-            contents += '<tr  class="tr cbi-section-table-descr">\n';
-            for (key in tmpData[i]) {
-                if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy') {
-                    contents += '   <td style="display:none" name="'+key+'">'+ (tmpData[i][key] != null ? tmpData[i][key] : "-") +'</td>\n';
-                } else if (key == 'enabled') {
-                    contents += '   <td style="text-align:center"><input type="checkbox" name="' + key + (table_name == 'baccli' ? '_baccli' : '') + '" ' +
-                    (tmpData[i][key] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
-                } else {
-                    contents += '   <td style="text-align:center" name="'+key+'">'+ (tmpData[i][key] != null ? tmpData[i][key] : "-") +'</td>\n';
-                }
-            }
-            contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
-                '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
-                '   </tr>';
-            table.innerHTML += contents;
-        }
-
-        var result = get_table_data(table_name, option_list);
-        var json_data = JSON.stringify(result);
-        $('#hidTD_'+table_name).val(json_data);
-        $('#option_list_'+table_name).val(option_list);
+        addSectionTable(table_name, tmpData, option_list);
 
         $('#loading').hide();
     });
@@ -1877,6 +1711,7 @@ function closeConfBox() {
 function addData(table_name) {
     openBox(table_name);
     document.getElementById("page_type").value = "0"; /* 0 is add. other is edit */
+    enableAlarm(table_name);
 }
 
 function conf_im_ex(conf_name) {
@@ -1903,7 +1738,7 @@ function get_table_data(table_name, option_list) {
             var num = 0;
             tmp += '{';
             option_list.forEach(function (option) {
-                if (option == 'enabled') {
+                if (option == 'enabled' || option == 'sms_reporting') {
                     tmp += '"' + option + '":"' + ($($(tds[num++]).find('input'))[0].checked ? 1 : 0) + '",';
                 } else {
                     tmp += '"' + option + '":"' + $(tds[num++]).html() + '",';
@@ -1921,6 +1756,7 @@ function get_table_data(table_name, option_list) {
 
 function saveData(table_name) {
     var result = [];
+    var mode = 0;
     var option_value = [];
     var io_type;
     var data_type_value = [];
@@ -1955,6 +1791,10 @@ function saveData(table_name) {
         table_name = 'io';
     }
 
+    if (option_list.includes('mode')) {
+        mode = Number(document.getElementById(table_name + '.'  + 'mode').value);
+    }
+    
     option_list.forEach(function (option) {
         if (option == 'data_type') {
             option_value[option] = data_type_value[Number(document.getElementById(table_name + '.'  + option).value)];
@@ -1967,19 +1807,18 @@ function saveData(table_name) {
         } else if (option == 'mode') {
             option_value[option] = mode_value[Number(document.getElementById(table_name + '.'  + option).value)];
         } else if (option == 'count_method') {
-            option_value[option] = count_method_value[Number(document.getElementById(table_name + '.'  + option).value)];
+            option_value[option] = (mode == 1) ? '' : count_method_value[Number(document.getElementById(table_name + '.'  + option).value)];
         } else if (option == 'init_status') {
             option_value[option] = status_value[Number(document.getElementById(table_name + '.'  + option).value)];
         } else if (option == 'cur_status') {
             option_value[option] = status_value[Number(document.getElementById(table_name + '.'  + option).innerHTML)];
-        } else if (option == 'enabled') {
+        } else if (option == 'enabled' || option == 'sms_reporting') {
             option_value[option] = document.getElementById(table_name + '.'  + option).checked ? '1' : '0';
         } else if (option == 'index') {
             option_value[option] = document.getElementById(table_name + '.'  + option + '.' + io_type).value;
         } else {
-            option_value[option] = document.getElementById(table_name + '.'  + option).value;
+            option_value[option] = (mode == 1 && option == 'debounce_interval') ? '-' : document.getElementById(table_name + '.'  + option).value;
         }
-        
     })
 
     if (option_value['belonged_com'] == "No Interface Is Enabled") {
@@ -1996,10 +1835,12 @@ function saveData(table_name) {
         contents += '<tr  class="tr cbi-section-table-descr">\n';
         option_list.forEach(function(option){
             // console.log(option);
-            if (option == 'operator' || option == 'operand' || option == 'ex' || option == 'accuracy') {
+            if (option == 'operator' || option == 'operand' || option == 'ex' || option == 'accuracy' ||
+                option == 'report_type' || option == 'alarm_up' || option == 'alarm_down' || option == 'phone_num' || 
+                option == 'email' || option == 'contents' || option == 'retry_interval' || option == 'again_interval') {
                 contents += '   <td style="display:none" name="'+option+'">'+ (option_value[option].length > 0 ? option_value[option] : "-") +'</td>\n';
-            } else if (option == 'enabled') {
-                contents += '   <td style="text-align:center"><input type="checkbox" name="' + option + (table_name == 'baccli' ? '_baccli' : '') +'" ' +
+            } else if (option == 'enabled' || option == 'sms_reporting') {
+                contents += '   <td style="' + ((option == 'enabled') ? 'text-align:center' : 'display:none') + '"><input type="checkbox" name="' + option + (table_name == 'baccli' ? '_baccli' : '') +'" ' +
                 (option_value[option] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
             } else {
                 contents += '   <td style="text-align:center" name="'+option+'">'+ (option_value[option].length > 0 ? option_value[option] : "-") +'</td>\n';
@@ -2012,17 +1853,17 @@ function saveData(table_name) {
     } else {
         var num = 0;
         option_list.forEach(function (option){
-            if (option == 'enabled') {
+            if (option == 'enabled' || option == 'sms_reporting') {
                 // 获取所有的checkbox元素
-                var checkboxes = table.getElementsByTagName("input");
+                var trs = table.getElementsByTagName("tr");
+                var checkboxes = trs[page_type].getElementsByTagName("input");
                 // 遍历checkbox元素
                 for (var i = 0; i < checkboxes.length; i++) {
                     // 判断是否为checkbox类型
-                    if (checkboxes[i].type === "checkbox") {
-                        if (i == Number(page_type) - 2) {
-                            checkboxes[i].checked = option_value[option] == '1' ? true : false;
-                            break;
-                        }    
+                    if ((checkboxes[i].type === "checkbox" && checkboxes[i].name == option)) {
+                        checkboxes[i].checked = option_value[option] == '1' ? true : false;
+                        num++;
+                        break;  
                     }
                 }
             } else {
@@ -2032,7 +1873,6 @@ function saveData(table_name) {
     }
 
     result = get_table_data(table_name, option_list);
-    // console.log(result);
     var json_data = JSON.stringify(result);
     $('#hidTD_'+table_name).val(json_data);
     closeBox();
@@ -2080,7 +1920,7 @@ function editData(object, table_name) {
             setSelectByText(table_name + '.'  + option, value.eq(num++).text());
         } else if (option == 'index') {
             document.getElementById(table_name + '.'  + option + '.' + io_type).value = value.eq(num++).text();
-        } else if (option == 'enabled') {
+        } else if (option == 'enabled' || option == 'sms_reporting') {
             document.getElementById(table_name + '.'  + option).checked = value.eq(num++).find("input")[0].checked;
         } else {
             document.getElementById(table_name + '.'  + option).value = value.eq(num++).text();
@@ -2090,6 +1930,8 @@ function editData(object, table_name) {
     openBox(table_name);
     if (table_name == 'io')
         switchPage('btn' + io_type.toUpperCase());
+
+    enableAlarm(table_name);
 }
 
 function selectMode() {
@@ -2139,6 +1981,7 @@ function addDataIO(object, table_name) {
     document.getElementById("page_type").value = "0"; /* 0 is add. other is edit */
     var name = object.name;
     switchPage(name);
+    enableAlarm(table_name);
 }
 
 function saveDataIO() {
@@ -2521,127 +2364,6 @@ function editTraffic(object) {
     openBoxTraffic();
 }
 
-// bacnet_client
-function getTableDataBaccli() {
-    var tr = $("#table_baccli tr");
-    var result = [];
-    for (var i = 2; i < tr.length; i++) {
-        var tds = $(tr[i]).find("td");
-        if (tds.length > 0) {
-            var j = 0;
-            result.push({
-                'order':$(tds[j++]).html(), 
-                'device_name':$(tds[j++]).html(),
-                'factor_name':$(tds[j++]).html(),
-                'object_id':$(tds[j++]).html(),
-                'server_center':$(tds[j++]).html(),
-                'operator':$(tds[j++]).html(),
-                'operand':$(tds[j++]).html(),
-                'ex':$(tds[j++]).html(),
-                'accuracy':$(tds[j++]).html(),
-                'enabled':$(tds[j++]).html()
-            });
-        }
-    }
-
-    return result;
-}
-
-function saveDataBaccli() {
-    var result = [];
-    var order = document.getElementById("widget.order").value;
-    var device_name = document.getElementById("widget.device_name").value;
-    var factor_name = document.getElementById("widget.factor_name").value;
-    var object_id = document.getElementById("widget.object_id").value;
-    var server_center = document.getElementById("widget.server_center").value;
-    var operator = document.getElementById("widget.operator").value;
-    var operand = document.getElementById("widget.operand").value;
-    var ex = document.getElementById("widget.ex").value;
-    var accuracy = document.getElementById("widget.accuracy").value;
-    var enabled = document.getElementById("widget.enabled").checked;
-    var page_type = document.getElementById("page_type").value;
-
-    if (page_type == "0") {
-        var table = document.getElementsByTagName("table")[0];
-        table.innerHTML += "<tr  class=\"tr cbi-section-table-descr\">\n" +
-            "        <td style='text-align:center' name='order'>"+ (order.length > 0 ? order : "-") + "</td>\n" +
-            "        <td style='text-align:center' name='device_name'>"+ (device_name.length > 0 ? device_name : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='factor_name'>"+ (factor_name.length > 0 ? factor_name : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='object_id'>"+ (object_id.length > 0 ? object_id : "-") +"</td>\n" +
-            "        <td style='text-align:center' name='server_center'>"+ (server_center.length > 0 ? server_center : "-") +"</td>\n" +
-            "        <td style='display:none' name='operator'>"+ operator +"</td>\n" +
-            "        <td style='display:none' name='operand'>"+ (operand.length > 0 ? operand : "-") +"</td>\n" +
-            "        <td style='display:none' name='ex'>"+ (ex.length > 0 ? ex : "-") +"</td>\n" +
-            "        <td style='display:none' name='accuracy'>"+ accuracy +"</td>\n" +
-            "        <td style='text-align:center' name='enabled'>"+ enabled +"</td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"editDataBaccli(this);\" >Edit</a></td>\n" +
-            "        <td><a href=\"javascript:void(0);\" onclick=\"delDataBaccli(this);\" >Del</a></td>\n" +
-            "    </tr>";
-    } else {
-        var table = document.getElementById("table_baccli");
-        var num = 0;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (order.length > 0 ? order : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (device_name.length > 0 ? device_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (factor_name.length > 0 ? factor_name : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (object_id.length > 0 ? object_id : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (server_center.length > 0 ? server_center : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = operator;
-        table.rows[Number(page_type)].cells[num++].innerHTML = (operand.length > 0 ? operand : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = (ex.length > 0 ? ex : "-");
-        table.rows[Number(page_type)].cells[num++].innerHTML = accuracy;
-        table.rows[Number(page_type)].cells[num++].innerHTML = enabled;
-    }
-
-    result = getTableDataBaccli();
-    var json_data = JSON.stringify(result);
-    $('#hidTD').val(json_data);
-    closeBox();
-}
-
-function delDataBaccli(object) {
-    var table = object.parentNode.parentNode.parentNode;
-    var tr = object.parentNode.parentNode;
-    table.removeChild(tr);
-
-    var result = getTableDataBaccli();
-    var json_data = JSON.stringify(result);
-    $('#hidTD').val(json_data);
-}
-
-function editDataBaccli(object) {
-    var row = $(object).parent().parent().parent().prevAll().length + 1;
-    document.getElementById("page_type").value = row;
-    var num = 0;
-    var value = $(object).parent().parent().find("td");
-    var order = value.eq(num++).text();
-    var device_name = value.eq(num++).text();
-    var factor_name = value.eq(num++).text();
-    var object_id = value.eq(num++).text();
-    var server_center = value.eq(num++).text();
-    var operator = value.eq(num++).text();
-    var operand = value.eq(num++).text();
-    var ex = value.eq(num++).text();
-    var accuracy = value.eq(num++).text();
-    var enabled = value.eq(num++).text();
-
-    document.getElementById("widget.order").value = order;
-    document.getElementById("widget.device_name").value = device_name;
-    document.getElementById("widget.factor_name").value = factor_name;
-    document.getElementById("widget.object_id").value = object_id;
-    document.getElementById("widget.server_center").value = server_center;
-    document.getElementById("widget.operator").value = operator;
-    document.getElementById("widget.operand").value = operand;
-    document.getElementById("widget.ex").value = ex;
-    document.getElementById("widget.accuracy").value = accuracy;
-    if (enabled == "true") {
-        document.getElementById("widget.enabled").checked = true;
-    } else {
-        document.getElementById("widget.enabled").checked = false;
-    }
-
-    openBox('widget');
-}
-
 function enableBACnet(state) {
     if (state) {
       $('#page_bacnet').show();
@@ -2811,57 +2533,80 @@ function enableMinuteData(checkbox) {
     }
 }
 
+function enableAlarm(table_name) {
+    var checkbox = document.getElementById(table_name+'.sms_reporting')
+    if (checkbox.checked == true) {
+      $('#page_sms').show();
+      selectReportType(table_name);
+    } else {
+      $('#page_sms').hide();
+    }
+}
+
+function selectReportType(table_name) {
+    if (document.getElementById(table_name+'.report_type')) {
+        var operator = document.getElementById(table_name+'.report_type').value;
+
+        $('#page_alarm').hide();
+        if (operator == "0") {
+            $('#page_alarm').hide();
+        } else {
+            $('#page_alarm').show();
+        }
+    }
+}
+
 function anonymousCheck(check) {
     if (check.checked == true)  {
-      $('#page_anonymous').hide();
-    } else {
-      $('#page_anonymous').show();
-    }
-  }
-
-  function enableOpcua(state) {
-    if (state) {
-      $('#page_opcua').show();
-      if ($('#security_policy').val() == "0") {
-        $('#page_security').hide();
-      } else {
-        $('#page_security').show();
-      }
-
-      if ($('#anonymous').is(':checked')) {
         $('#page_anonymous').hide();
-      } else {
+    } else {
         $('#page_anonymous').show();
-      }
-    } else {
-      $('#page_opcua').hide();
     }
-  }
+}
 
-  function securityChange(state) {
+function enableOpcua(state) {
+    if (state) {
+        $('#page_opcua').show();
+        if ($('#security_policy').val() == "0") {
+        $('#page_security').hide();
+        } else {
+        $('#page_security').show();
+        }
+
+        if ($('#anonymous').is(':checked')) {
+        $('#page_anonymous').hide();
+        } else {
+        $('#page_anonymous').show();
+        }
+    } else {
+        $('#page_opcua').hide();
+    }
+}
+
+function securityChange(state) {
     if (state.value == '0') {
-      $('#page_security').hide();
+        $('#page_security').hide();
     } else {
-      $('#page_security').show();
+        $('#page_security').show();
     }
-  }
+}
 
-  function certChange() {
+function certChange() {
     $('#cert_text').html($('#certificate')[0].files[0].name);
-  }
+}
 
-  function keyChange() {
+function keyChange() {
     $('#key_text').html($('#private_key')[0].files[0].name);
-  }
+}
 
-  function trustChange() {
+function trustChange() {
     var file = $('#trust_crt')[0].files;
     var str = '';
     for (var i = 0, len = file.length; i < len; i++) {
-      str += file[i].name;
-      if (i < len - 1)
+        str += file[i].name;
+        if (i < len - 1)
         str += ";";
     }
 
     $('#trust_text').html(str);
-  }
+}

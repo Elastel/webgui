@@ -38,6 +38,29 @@ if [ $model == "EG500" -o $model == "EG410" -o $model == "ElastBox400" ]; then
         sudo systemctl disable nftables.service
 fi
 
+if [ $model != "EG324L" ]; then
+        #check msmtp
+        if ! type msmtp >/dev/null 2>&1; then
+                echo "msmtp is NOT installed!"
+                sudo apt-get install msmtp
+
+                if [ $? -ne 0 ] ; then
+                        echo "Failed to install msmtp."
+                        exit 4
+                fi
+        fi
+        #check mutt
+        if ! type mutt >/dev/null 2>&1; then
+                echo "mutt is NOT installed!"
+                sudo apt-get install mutt
+
+                if [ $? -ne 0 ] ; then
+                        echo "Failed to install mutt."
+                        exit 4
+                fi
+        fi
+fi
+
 sleep 1
 
 if [ "$1" == "reset" ]; then
@@ -50,6 +73,8 @@ if [ "$1" == "reset" ]; then
     sudo sysctl -p /etc/sysctl.d/90_raspap.conf
     sudo cp $path/config/090_br0.conf /etc/dnsmasq.d/090_br0.conf
     sudo cp $path/config/dhcpcd.conf /etc/dhcpcd.conf
+    sudo cp $path/config/Muttrc /etc/Muttrc
+    sudo cp $path/config/msmtprc /etc/msmtprc
     sudo cp $path/config/defaults.json /etc/raspap/networking/
     sudo cp $path/Elastel/$model/etc/config/* /etc/config/
     sudo cp $path/Elastel/$model/etc/basic_station /etc/ -r

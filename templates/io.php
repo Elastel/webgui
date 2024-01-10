@@ -36,6 +36,13 @@
                     array("name"=>"Operation Expression", "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Operand",              "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Accuracy",             "style"=>"display:none", "descr"=>"0~6", "ctl"=>"select"),
+                    array("name"=>"SMS&Email Reporting",  "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Report Type",          "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Alarm Up Limit",       "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Alarm Down Limit",     "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Phone Number",         "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Email",                "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Contents",             "style"=>"display:none", "descr"=>"", "ctl"=>""),
                     array("name"=>"Enable",               "style"=>"", "descr"=>"", "ctl"=>"check"),
                   );
             ?>
@@ -68,6 +75,13 @@
                     array("name"=>"Operation Expression", "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Operand",              "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Accuracy",             "style"=>"display:none", "descr"=>"0~6", "ctl"=>"select"),
+                    array("name"=>"SMS&Email Reporting",  "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Report Type",          "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Alarm Up Limit",       "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Alarm Down Limit",     "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Phone Number",         "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Email",                "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Contents",             "style"=>"display:none", "descr"=>"", "ctl"=>""),
                     array("name"=>"Enable",               "style"=>"", "descr"=>"", "ctl"=>"check"),
                   );
                   page_table_title('di', $arrDI);
@@ -94,6 +108,13 @@
                     array("name"=>"Operation Expression", "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Operand",              "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Accuracy",             "style"=>"display:none", "descr"=>"0~6", "ctl"=>"select"),
+                    array("name"=>"SMS&Email Reporting",  "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Report Type",          "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Alarm Up Limit",       "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Alarm Down Limit",     "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Phone Number",         "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Email",                "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                    array("name"=>"Contents",             "style"=>"display:none", "descr"=>"", "ctl"=>""),
                     array("name"=>"Enable",               "style"=>"", "descr"=>"", "ctl"=>"check"),
                   );
                   page_table_title('do', $arrDO);
@@ -177,7 +198,7 @@
       InputControlCustom(_('Reporting Center'), $table_name.'.server_center', $table_name.'.server_center', _('Multiple Servers Are Separated By Minus'));
 
       $operator_list = [_('None'), '+', '-', '*', '/', _('Expression')];
-      SelectControlCustom(_('Operator'), $table_name.'.operator', $operator_list, $operator_list[0], $table_name.'.operator', _('0 + - * /'), "selectOperator('io')");
+      SelectControlCustom(_('Operator'), $table_name.'.operator', $operator_list, $operator_list[0], $table_name.'.operator', _('0 + - * /'), "selectOperator('$table_name')");
     
       echo '<div name="page_operand" id="page_operand">';
       InputControlCustom(_('Operand'), $table_name.'.operand', $table_name.'.operand');
@@ -189,6 +210,28 @@
 
       $accuracy_list = ['0', '1', '2', '3', '4', '5', '6'];
       SelectControlCustom(_('Accuracy'), $table_name.'.accuracy', $accuracy_list, $accuracy_list[0], $table_name.'.accuracy', _('0 + - * /'));
+
+      CheckboxControlCustom(_('SMS&Email Reporting'), $table_name.'.sms_reporting', $table_name.'.sms_reporting', null, null, "enableAlarm('$table_name')");
+
+      echo '<div name="page_sms" id="page_sms">';
+      $report_type = ['Change reporting', 'Alarm reporting'];
+      SelectControlCustom(_('Report Type'), $table_name.'.report_type', $report_type, $report_type[0], $table_name.'.report_type', null, "selectReportType('$table_name')");
+      
+      echo '<div name="page_alarm" id="page_alarm">';
+      InputControlCustom(_('Alarm Up Limit'), $table_name.'.alarm_up', $table_name.'.alarm_up');
+
+      InputControlCustom(_('Alarm Down Limit'), $table_name.'.alarm_down', $table_name.'.alarm_down');
+      echo '</div>';
+      InputControlCustom(_('Phone Number'), $table_name.'.phone_num', $table_name.'.phone_num', _('Multiple Phones Are Separated By Comma'));
+
+      InputControlCustom(_('Email'), $table_name.'.email', $table_name.'.email', _('Multiple emails Are Separated By Comma'));
+      
+      InputControlCustom(_('Contents'), $table_name.'.contents', $table_name.'.contents');
+
+      InputControlCustom(_('Retry Interval'), $table_name.'.retry_interval', $table_name.'.retry_interval', _('Minutes, it must be a multiple of collect period'));
+
+      InputControlCustom(_('Again Interval'), $table_name.'.again_interval', $table_name.'.again_interval', _('Minutes, it must be a multiple of collect period'));
+      echo '</div>';
 
       CheckboxControlCustom(_('Enable'), $table_name.'.enabled', $table_name.'.enabled', 'checked');
     ?>
