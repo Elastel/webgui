@@ -955,6 +955,9 @@ function addSectionTable(table_name, jsonData, option_list) {
     var count_method_value = ['Rising Edge', 'Falling Edge'];
     var status_value = ['Open', 'Close'];
 
+    if (jsonData == null)
+        return;
+
     if (table_name == 'modbus') {
         data_type_value = ['Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
         'Unsigned 32Bits ABCD', 'Unsigned 32Bits BADC', 'Unsigned 32Bits CDAB', 'Unsigned 32Bits DCBA',
@@ -986,6 +989,10 @@ function addSectionTable(table_name, jsonData, option_list) {
                 key == 'report_type' || key == 'alarm_up' || key == 'alarm_down' || key == 'phone_num' || 
                 key == 'email' || key == 'contents' || key == 'retry_interval' || key == 'again_interval') {
                     contents += '   <td style="display:none" name="'+key+'">-</td>\n';
+                } else if (key == 'enabled' || key == 'sms_reporting') {
+                    contents += '   <td style="' + ((key == 'enabled') ? 'text-align:center' : 'display:none') + '"><input type="checkbox" name="' +
+                             key + (table_name == 'baccli' ? '_baccli' : '') + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + 
+                             ' onclick="updateData(\''+table_name+'\')"></td>\n';
                 } else {
                     contents += '   <td style="text-align:center" name="'+key+'">-</td>\n';
                 }
@@ -1030,7 +1037,6 @@ function addSectionTable(table_name, jsonData, option_list) {
     var json_data = JSON.stringify(result);
     $('#hidTD_'+table_name).val(json_data);
     $('#option_list_'+table_name).val(option_list);
-    $('#loading').hide();
 }
 
 function loadModbusConfig() {
@@ -1046,6 +1052,7 @@ function loadModbusConfig() {
 
         addSectionTable(table_name, jsonData, option_list);
     });
+    $('#loading').hide();
 }
 
 function loadAsciiConfig() {
@@ -1058,6 +1065,7 @@ function loadAsciiConfig() {
 
         addSectionTable(table_name, jsonData, option_list);
     });
+    $('#loading').hide();
 }
 
 function loadS7Config() {
@@ -1072,6 +1080,7 @@ function loadS7Config() {
                         'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
         addSectionTable(table_name, jsonData, option_list);
     });
+    $('#loading').hide();
 }
 
 function loadFxConfig() {
@@ -1086,6 +1095,7 @@ function loadFxConfig() {
                         'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
         addSectionTable(table_name, jsonData, option_list);
     });
+    $('#loading').hide();
 }
 
 function loadMcConfig() {
@@ -1100,6 +1110,7 @@ function loadMcConfig() {
                         'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
         addSectionTable(table_name, jsonData, option_list);
     });
+    $('#loading').hide();
 }
 
 function loadADCConfig() {

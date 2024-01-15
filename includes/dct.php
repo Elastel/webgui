@@ -595,6 +595,8 @@ function save_import_file($section, $status, $file) {
         
         if (file_exists($new_file_path)) {
             $status->addMessage('file uploaded successfully', 'info');
+            // 文件编码转换
+            exec("sudo dos2unix $new_file_path");
             exec("sudo conf_im_ex import $section");
         } else {
             $status->addMessage('fail to upload file', 'danger');

@@ -59,6 +59,16 @@ if [ $model != "EG324L" ]; then
                         exit 4
                 fi
         fi
+
+        if ! type dos2unix > /dev/null 2>&1; then
+                echo "dos2unix is NOT installed!"
+                sudo apt-get install dos2unix
+
+                if [ $? -ne 0 ] ; then
+                        echo "Failed to install dos2unix."
+                        exit 4
+                fi
+        fi
 fi
 
 sleep 1
