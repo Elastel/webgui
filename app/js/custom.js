@@ -955,6 +955,9 @@ function addSectionTable(table_name, jsonData, option_list) {
     var count_method_value = ['Rising Edge', 'Falling Edge'];
     var status_value = ['Open', 'Close'];
 
+    if (option_list != null)
+        $('#option_list_'+table_name).val(option_list);
+
     if (jsonData == null)
         return;
 
@@ -1036,7 +1039,6 @@ function addSectionTable(table_name, jsonData, option_list) {
     var result = get_table_data(table_name, option_list);
     var json_data = JSON.stringify(result);
     $('#hidTD_'+table_name).val(json_data);
-    $('#option_list_'+table_name).val(option_list);
 }
 
 function loadModbusConfig() {
@@ -2546,11 +2548,13 @@ function enableMinuteData(checkbox) {
 
 function enableAlarm(table_name) {
     var checkbox = document.getElementById(table_name+'.sms_reporting')
-    if (checkbox.checked == true) {
-      $('#page_sms').show();
-      selectReportType(table_name);
-    } else {
-      $('#page_sms').hide();
+    if (checkbox != null) {
+        if (checkbox.checked == true) {
+            $('#page_sms').show();
+            selectReportType(table_name);
+        } else {
+            $('#page_sms').hide();
+        }
     }
 }
 
