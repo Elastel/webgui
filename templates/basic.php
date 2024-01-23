@@ -28,7 +28,7 @@
             RadioControlCustom(_('Data Collect'), 'enabled', 'basic', 'enableBasic');
             echo '<div id="page_basic" name="page_basic">';
 
-            InputControlCustom(_('Collect Period'), 'collect_period', 'collect_period', _('Seconds'), '5');
+            InputControlCustom(_('Collect Period'), 'collect_period', 'collect_period', _('ms'), '30');
 
             InputControlCustom(_('Report Period'), 'report_period', 'report_period', _('Seconds'), '10');
 
