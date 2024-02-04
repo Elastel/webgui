@@ -50,7 +50,7 @@
                   </br>
                 <?php } ?>
                 <?php endforeach ?>
-                <?php if ($lteInfo['interface'] == "wwan0") { ?>
+                <?php if ($lteInfo['interface'] == "wwan0" || $lteInfo['interface'] == "usb0") { ?>
                   <h4 class="card-title"><?php echo _("LTE Network Status"); ?></h4>
                   <div class="row ml-1">
                     <div class="col-sm">

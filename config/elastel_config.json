@@ -15,6 +15,12 @@
 	"modbus_field" : ["Order", "Device Name", "Belonged Interface", "Factor Name", "Device ID", "Function Code", "Start Address",
 						"Count", "Data Type", "Reporting Center", "Operator", "Operand", "Operation Expression", "Accuracy", "SMS&Email Reporting",
 						"Report Type", "Alarm Up Limit", "Alarm Down Limit", "Phone Number", "Email", "Contents", "Retry Interval", "Again Interval", "Enable"],
+	"iec104_option" : ["order", "device_name", "belonged_com", "factor_name", "type_id", "start_addr", "common_addr",
+						"server_center", "operator", "operand", "ex", "accuracy", "sms_reporting",
+						"report_type", "alarm_up", "alarm_down", "phone_num", "email", "contents", "retry_interval", "again_interval", "enabled"],
+	"iec104_field" : ["Order", "Device Name", "Belonged Interface", "Factor Name", "Type ID", "Start IOA", "Common Address",
+						"Reporting Center", "Operator", "Operand", "Operation Expression", "Accuracy", "SMS&Email Reporting",
+						"Report Type", "Alarm Up Limit", "Alarm Down Limit", "Phone Number", "Email", "Contents", "Retry Interval", "Again Interval", "Enable"],
     "ascii_option" : ["order", "device_name", "belonged_com", "factor_name", "tx_cmd", "cmd_format", "server_center", "enabled"],
 	"ascii_field" : ["Order", "Device Name", "Belonged Interface", "Channel Name", "Tx Command", "Command Format", "Reporting Center", "Enable"],
     "s7_option" : ["order", "device_name", "belonged_com", "factor_name", "reg_type", "reg_addr", "reg_count", "word_len",
@@ -65,4 +71,5 @@
     "opcua_option" : ["enabled", "port", "anonymous", "max_value", "enable_database", "username", "password", "security_policy",
 						"uri", "certificate", "private_key", "trust_crt"],
     "bacnet_option" : ["enabled", "port", "device_id", "object_name"]
+	
 }

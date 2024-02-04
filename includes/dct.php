@@ -15,6 +15,7 @@ abstract class TcpProtoEnum {
   const TCP_PROTO_FX = 3;
   const TCP_PROTO_MC = 4;
   const TCP_PROTO_ASCII = 5;
+  const TCP_PROTO_IEC104 = 6;
 };
 
 function get_belonged_interface($com_proto, $tcp_proto)
@@ -86,187 +87,90 @@ function get_belonged_interface($com_proto, $tcp_proto)
   return $option_list;
 }
 
-function page_interface_com($num, $com_proto)
-{
-
-if ($num == 1)
-    $active = "active";
-else
-    $active = "fade";
-
-echo "
-    <div class=\"tab-pane $active\" id=\"com$num\">
-        <div class=\"row\">
-        <div class=\"cbi-value\">
-            <label class=\"cbi-value-title\"> ";echo _("Enabled"); echo "</label>
-            <input class=\"cbi-input-radio\" id=\"com_enable$num\" name=\"com_enabled$num\" value=\"1\" type=\"radio\" checked onchange=\"enableCom(true, $num)\">
-            <label >";echo _("Enable"); echo "</label>
-
-            <input class=\"cbi-input-radio\" id=\"com_disable$num\" name=\"com_enabled$num\" value=\"0\" type=\"radio\" onchange=\"enableCom(false, $num)\">
-            <label >"; echo _("Disable"); echo "</label>
-        </div>
-
-        <div id=\"page_com$num\" name=\"page_com$num\">
-        <div class=\"cbi-value\">
-            <label class=\"cbi-value-title\">"; echo _("Baudrate"); echo "</label>
-            <select id=\"baudrate$num\" name=\"baudrate$num\" class=\"cbi-input-select\">
-                <option value=\"1200\">1200</option> 
-                <option value=\"2400\">2400</option> 
-                <option value=\"4800\">4800</option> 
-                <option value=\"9600\" selected=\"\">9600</option>
-                <option value=\"19200\">19200</option>
-                <option value=\"38400\">38400</option>
-                <option value=\"57600\">57600</option>
-                <option value=\"115200\">115200</option>
-                <option value=\"230400\">230400</option>
-            </select>
-        </div>
-
-        <div class=\"cbi-value\">
-            <label class=\"cbi-value-title\">"; echo _("Databit"); echo "</label>
-            <select id=\"databit$num\" name=\"databit$num\" class=\"cbi-input-select\">
-            <option value=\"7\">7</option>
-            <option value=\"8\" selected=\"\">8</option>
-            </select>
-        </div>
-
-        <div class=\"cbi-value\">
-            <label class=\"cbi-value-title\">"; echo _("Stopbit"); echo "</label>
-            <select id=\"stopbit$num\" name=\"stopbit$num\" class=\"cbi-input-select\">
-                <option value=\"1\" selected=\"\">1</option>
-                <option value=\"2\">2</option>
-            </select>
-        </div>
-
-        <div class=\"cbi-value\">
-            <label class=\"cbi-value-title\">"; echo _("Parity"); echo "</label>
-            <select id=\"parity$num\" name=\"parity$num\" class=\"cbi-input-select\">
-                <option value=\"N\" selected=\"\">None</option>
-                <option value=\"O\">Odd</option>
-                <option value=\"E\">Even</option>
-            </select>
-        </div>
-
-        <div class=\"cbi-value\">
-            <label class=\"cbi-value-title\">"; echo _("Frame Interval"); echo "</label>
-            <input type=\"text\" class=\"cbi-input-text\" name=\"com_frame_interval$num\" id=\"com_frame_interval$num\" value=\"200\" />
-            <label class=\"cbi-value-description\">"; echo _("ms"); echo "</label>
-        </div>
-
-        <div class=\"cbi-value\">
-            <label class=\"cbi-value-title\">"; echo _("Protocol"); echo "</label>
-            <select id=\"com_proto$num\" name=\"com_proto$num\" class=\"cbi-input-select\" onchange=\"comProtocolChange($num)\">";
-            $i = 0;
-            foreach($com_proto as $proto):
-                if ($i == 0) {
-                    echo "<option value=\"$i\" selected=\"\">$proto</option>";
-                } else {
-                    echo "<option value=\"$i\">$proto</option>";
-                }
-                $i++;
-            endforeach;
-echo "      </select>
-        </div>
-
-        <div class=\"cbi-value\" id=\"com_page_protocol_modbus$num\" name=\"com_page_protocol_modbus$num\">
-            <label class=\"cbi-value-title\">"; echo _("Command Interval"); echo "</label>
-            <input type=\"text\" class=\"cbi-input-text\" name=\"com_cmd_interval$num\" id=\"com_cmd_interval$num\" value=\"2\" />
-            <label class=\"cbi-value-description\">"; echo _("ms"); echo "</label>
-        </div>
-
-        <div class=\"cbi-value\" id=\"com_page_protocol_transparent$num\" name=\"com_page_protocol_transparent$num\">
-            <label class=\"cbi-value-title\">"; echo _("Reporting Center"); echo "</label>
-            <input type=\"text\" class=\"cbi-input-text\" name=\"com_report_center$num\" id=\"com_report_center$num\" />
-            <label class=\"cbi-value-description\">1-2-3-4-5</label>
-        </div>
-        </div><!-- /.page_com -->
-    </div><!-- /.row -->
-    </div><!-- /.tab-pane | basic tab -->
-";
-}
-
-function page_interface_tcp($num, $tcp_proto)
+function page_interface_com($num)
 {
   if ($num == 1)
     $active = "active";
   else
     $active = "fade";
 
-echo "<div class=\"tab-pane $active\" id=\"tcp$num\">
-        <div class=\"row\">
-          <div class=\"cbi-value\">
-            <label class=\"cbi-value-title\">"; echo _("Enabled"); echo"</label>
-            <input class=\"cbi-input-radio\" id=\"tcp_enable$num\" name=\"tcp_enabled$num\" value=\"1\" type=\"radio\" checked onchange=\"enableTcp(true, $num)\">
-            <label >"; echo _("Enable"); echo"</label>
+  echo '<div class="tab-pane '.$active.'" id="com'.$num.'">
+        <div class="row">';
+  RadioControlCustom(_('Enabled'), 'com_enabled', 'com', 'enableCom', $num);
+  echo '<div id="page_com'.$num.'" name="page_com'.$num.'">';
 
-            <input class=\"cbi-input-radio\" id=\"tcp_disable$num\" name=\"tcp_enabled$num\" value=\"0\" type=\"radio\" onchange=\"enableTcp(false, $num)\">
-            <label >"; echo _("Disable"); echo"</label>
-          </div>
+  $baudrate_list = array('1200'=>'1200', '2400'=>'2400', '4800'=>'4800', '9600'=>'9600', '19200'=>'19200', '38400'=>'38400',
+                   '57600'=>'57600', '115200'=>'115200', '230400'=>'230400');
+  SelectControlCustom(_('Baudrate'), 'baudrate'.$num, $baudrate_list, $baudrate_list['9600'], 'baudrate'.$num);
 
-          <div id=\"page_tcp$num\" name=\"page_tcp$num\">
-            <div class=\"cbi-value\">
-              <label class=\"cbi-value-title\">"; echo _("Server Address"); echo"</label>
-              <input type=\"text\" class=\"cbi-input-text\" name=\"server_addr$num\" id=\"server_addr$num\" />
-            </div>
+  $databit_list = array('7'=>'7', '8'=>'9');
+  SelectControlCustom(_('Databit'), 'databit'.$num, $databit_list, $databit_list['8'], 'databit'.$num);
 
-            <div class=\"cbi-value\">
-              <label class=\"cbi-value-title\">"; echo _("Server Port"); echo"</label>
-              <input type=\"text\" class=\"cbi-input-text\" name=\"server_port$num\" id=\"server_port$num\" />
-            </div>
+  $stopbit_list = array('1'=>'1', '1'=>'1');
+  SelectControlCustom(_('Stopbit'), 'stopbit'.$num, $stopbit_list, $stopbit_list['1'], 'stopbit'.$num);
 
-            <div class=\"cbi-value\">
-              <label class=\"cbi-value-title\">"; echo _("Frame Interval"); echo"</label>
-              <input type=\"text\" class=\"cbi-input-text\" name=\"tcp_frame_interval$num\" id=\"tcp_frame_interval$num\" value=\"200\" />
-              <label class=\"cbi-value-description\">"; echo _("ms"); echo"</label>
-            </div>
+  $parity_list = array('N'=>'None', 'O'=>'Odd', 'E'=>'Even');
+  SelectControlCustom(_('Parity'), 'parity'.$num, $parity_list, $parity_list['N'], 'parity'.$num);
 
-            <div class=\"cbi-value\">
-              <label class=\"cbi-value-title\">"; echo _("Protocol"); echo"</label>
-              <select id=\"tcp_proto$num\" name=\"tcp_proto$num\" class=\"cbi-input-select\" onchange=\"tcpProtocolChange($num)\">";
-                 $i = 0;
-                foreach($tcp_proto as $proto):
-                  if ($i == 0) {
-                    echo "<option value=\"$i\" selected=\"\">$proto</option>";
-                  } else { 
-                    echo "<option value=\"$i\">$proto</option>";
-                  }
-                  $i++;
-                endforeach;
-echo         "</select>
-            </div>
+  InputControlCustom(_("Frame Interval"), 'com_frame_interval'.$num, 'com_frame_interval'.$num, _('ms'), 200);
 
-            <div class=\"cbi-value\" id=\"tcp_page_protocol_modbus$num\" name=\"tcp_page_protocol_modbus$num\">
-              <label class=\"cbi-value-title\">"; echo _("Command Interval"); echo"</label>
-              <input type=\"text\" class=\"cbi-input-text\" name=\"tcp_cmd_interval$num\" id=\"tcp_cmd_interval$num\" value=\"2\" />
-              <label class=\"cbi-value-description\">"; echo _("ms"); echo"</label>
-            </div>
+  $com_proto = array('Modbus', 'Transparent', 'FX', 'MC', 'ASCII');
+  SelectControlCustom(_('Protocol'), 'com_proto'.$num, $com_proto, $com_proto[0], 'com_proto'.$num, null, "comProtocolChange($num)");
 
-            <div class=\"cbi-value\" id=\"tcp_page_protocol_transparent$num\" name=\"tcp_page_protocol_transparent$num\">
-              <label class=\"cbi-value-title\">"; echo _("Reporting Center"); echo"</label>
-              <input type=\"text\" class=\"cbi-input-text\" name=\"tcp_report_center$num\" id=\"tcp_report_center$num\" />
-              <label class=\"cbi-value-description\">1-2-3-4-5</label>
-            </div>
+  echo '<div id="com_page_protocol_modbus'.$num.'" name="com_page_protocol_modbus'.$num.'">';
+  InputControlCustom(_("Command Interval"), 'com_cmd_interval'.$num, 'com_cmd_interval'.$num, _('ms'), 2);
+  echo '</div>';
 
-            <div id=\"tcp_page_protocol_s7$num\" name=\"tcp_page_protocol_s7$num\">
-              <div class=\"cbi-value\">
-                <label class=\"cbi-value-title\">"; echo _("Rack"); echo "</label>
-                <input type=\"text\" class=\"cbi-input-text\" name=\"rack$num\" id=\"rack$num\" />
-              </div>
-              <div class=\"cbi-value\">
-              <label class=\"cbi-value-title\">"; echo _("Slot"); echo "</label>
-              <input type=\"text\" class=\"cbi-input-text\" name=\"slot$num\" id=\"slot$num\" />
-              </div>
-            </div>
+  echo '<div id="com_page_protocol_transparent'.$num.'" name="com_page_protocol_transparent'.$num.'">';
+  InputControlCustom(_("Reporting Center"), 'com_report_center'.$num, 'com_report_center'.$num, _('1-2-3-4-5'));
+  echo '</div>';
 
-            <div class=\"cbi-value\">
-              <label class=\"cbi-value-title\">"; echo _("Connection Status"); echo "</label>";
-              $count = $num - 1;
-              exec("uci -P /var/state get dct.connection.tcp_status$count", $status);
-echo         "<label id=\"connect_status$num\" name=\"connect_status$num\">"; echo _(empty($status) ? "-" : $status[0]); echo "</label>
-            </div>
-          </div><!-- /.page_tcp -->
-        </div><!-- /.row -->
-      </div><!-- /.tab-pane | basic tab -->";
+echo '</div><!-- /.page_com -->
+    </div><!-- /.row -->
+    </div><!-- /.tab-pane | basic tab -->';
+}
+
+function page_interface_tcp($num)
+{
+  if ($num == 1)
+    $active = "active";
+  else
+    $active = "fade";
+
+  echo '<div class="tab-pane '.$active.'" id="tcp'.$num.'">
+        <div class="row">';
+  RadioControlCustom(_('Enabled'), 'tcp_enabled', 'tcp', 'enableTcp', $num);
+  echo '<div id="page_tcp'.$num.'" name="page_tcp'.$num.'">';
+
+  InputControlCustom(_("Server Address"), 'server_addr'.$num, 'server_addr'.$num);
+
+  InputControlCustom(_("Server Port"), 'server_port'.$num, 'server_port'.$num);
+
+  InputControlCustom(_("Frame Interval"), 'tcp_frame_interval'.$num, 'tcp_frame_interval'.$num, _('ms'), 200);
+
+  $tcp_proto = array('Modbus', 'Transparent', 'S7', 'FX', 'MC', 'ASCII', 'IEC104');
+  SelectControlCustom(_('Protocol'), 'tcp_proto'.$num, $tcp_proto, $tcp_proto[0], 'tcp_proto'.$num, null, "tcpProtocolChange($num)");
+
+  echo '<div id="tcp_page_protocol_modbus'.$num.'" name="tcp_page_protocol_modbus'.$num.'">';
+  InputControlCustom(_("Command Interval"), 'tcp_cmd_interval'.$num, 'tcp_cmd_interval'.$num, _('ms'), 2);
+  echo '</div>';
+
+  echo '<div id="tcp_page_protocol_transparent'.$num.'" name="tcp_page_protocol_transparent'.$num.'">';
+  InputControlCustom(_("Reporting Center"), 'tcp_report_center'.$num, 'tcp_report_center'.$num, _('1-2-3-4-5'));
+  echo '</div>';
+
+  echo '<div id="tcp_page_protocol_s7'.$num.'" name="tcp_page_protocol_s7'.$num.'">';
+  InputControlCustom(_("Rack"), 'rack'.$num, 'rack'.$num);
+  InputControlCustom(_("Slot"), 'slot'.$num, 'slot'.$num);
+  echo '</div>';
+
+  $count = $num - 1;
+  exec("uci -P /var/state get dct.connection.tcp_status$count", $status);
+  LabelControlCustom(_("Connection Status"), 'connect_status'.$num, 'connect_status'.$num, $status[0]);
+
+  echo '    </div><!-- /.page_tcp -->
+          </div><!-- /.row -->
+        </div><!-- /.tab-pane | basic tab -->';
 }
 
 function page_server($num)

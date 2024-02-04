@@ -187,6 +187,9 @@ function contentLoaded() {
         case "mc_conf":
             loadMcConfig();
             break;
+        case "iec104_conf":
+            loadIec104Config();
+            break;
         case "io_conf":
             loadADCConfig();
             loadDIConfig();
@@ -954,6 +957,9 @@ function addSectionTable(table_name, jsonData, option_list) {
     var mode_value = ['Counting Mode', 'Status Mode'];
     var count_method_value = ['Rising Edge', 'Falling Edge'];
     var status_value = ['Open', 'Close'];
+    var type_id_list = {'1':'M_SP_NA_1', '30':'M_SP_TB_1', '3':'M_DP_NA_1', '31':'M_DP_TB_1', '5':'M_ST_NA_1', '32':'M_ST_TB_1',
+    '7':'M_BO_NA_1', '33':'M_BO_TB_1', '9':'M_ME_NA_1', '34':'M_ME_TD_1', '21':'M_ME_ND_1', '11':'M_ME_NB_1', '35':'M_ME_TE_1', '13':'M_ME_NC_1', 
+    '36':'M_ME_TF_1', '15':'M_IT_NA_1', '37':'M_IT_TB_1', '38':'M_EP_TD_1'};
 
     if (option_list != null)
         $('#option_list_'+table_name).val(option_list);
@@ -972,7 +978,7 @@ function addSectionTable(table_name, jsonData, option_list) {
     } else if (table_name == 's7') {
         reg_type_value = ['I', 'Q', 'M', 'DB', 'V', 'C', 'T'];
         word_len_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real', 'Counter', 'Timer'];
-    } else if (table_name == 'mc') {
+    } else if (table_name == 'mc' || table_name == 'iec104') {
         data_type_value = ['Bit', 'Int', 'Float'];
     }
     
@@ -1007,6 +1013,8 @@ function addSectionTable(table_name, jsonData, option_list) {
             key == 'report_type' || key == 'alarm_up' || key == 'alarm_down' || key == 'phone_num' || 
             key == 'email' || key == 'contents' || key == 'retry_interval' || key == 'again_interval') {
                 contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
+            } else if (key == 'type_id') {
+                contents += '   <td style="text-align:center" name="'+key+'">'+ (type_id_list[Number(jsonData[i][key])]) +'</td>\n';
             } else if (key == 'data_type') {
                 contents += '   <td style="text-align:center" name="'+key+'">'+ (data_type_value[Number(jsonData[i][key])]) +'</td>\n';
             } else if (key == 'reg_type') {
@@ -1041,13 +1049,28 @@ function addSectionTable(table_name, jsonData, option_list) {
     $('#hidTD_'+table_name).val(json_data);
 }
 
+function loadIec104Config() {
+    $('#loading').show();
+    var table_name = 'iec104';
+    $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
+        var jsonData = JSON.parse(data);
+        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'type_id', 
+                        'start_addr', 'common_addr', 'server_center',
+                        'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
+                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
+                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
+        addSectionTable(table_name, jsonData, option_list);
+    });
+    $('#loading').hide();
+}
+
 function loadModbusConfig() {
     $('#loading').show();
     var table_name = 'modbus';
     $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
-        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'device_id', 
-                        'function_code', 'reg_addr', 'reg_count', 'data_type', 'server_center', 
+        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'type_id', 
+                        'start_addr', 'common_addr', 'data_type', 'server_center', 
                         'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
                         'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
                         'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
@@ -1779,6 +1802,9 @@ function saveData(table_name) {
     var mode_value = ['Counting Mode', 'Status Mode'];
     var count_method_value = ['Rising Edge', 'Falling Edge'];
     var status_value = ['Open', 'Close'];
+    var type_id_list = {'1':'M_SP_NA_1', '30':'M_SP_TB_1', '3':'M_DP_NA_1', '31':'M_DP_TB_1', '5':'M_ST_NA_1', '32':'M_ST_TB_1',
+    '7':'M_BO_NA_1', '33':'M_BO_TB_1', '9':'M_ME_NA_1', '34':'M_ME_TD_1', '21':'M_ME_ND_1', '11':'M_ME_NB_1', '35':'M_ME_TE_1', '13':'M_ME_NC_1', 
+    '36':'M_ME_TF_1', '15':'M_IT_NA_1', '37':'M_IT_TB_1', '38':'M_EP_TD_1'};
 
     if (table_name == 'modbus') {
         data_type_value = ['Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
@@ -1791,7 +1817,7 @@ function saveData(table_name) {
     } else if (table_name == 's7') {
         reg_type_value = ['I', 'Q', 'M', 'DB', 'V', 'C', 'T'];
         word_len_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real', 'Counter', 'Timer'];
-    } else if (table_name == 'mc') {
+    } else if (table_name == 'mc' || table_name == 'iec104') {
         data_type_value = ['Bit', 'Int', 'Float'];
     }
 
@@ -1829,6 +1855,8 @@ function saveData(table_name) {
             option_value[option] = document.getElementById(table_name + '.'  + option).checked ? '1' : '0';
         } else if (option == 'index') {
             option_value[option] = document.getElementById(table_name + '.'  + option + '.' + io_type).value;
+        } else if (option == 'type_id') {
+            option_value[option] = type_id_list[document.getElementById(table_name + '.'  + option).value];
         } else {
             option_value[option] = (mode == 1 && option == 'debounce_interval') ? '-' : document.getElementById(table_name + '.'  + option).value;
         }
@@ -1847,7 +1875,6 @@ function saveData(table_name) {
         var contents = '';
         contents += '<tr  class="tr cbi-section-table-descr">\n';
         option_list.forEach(function(option){
-            // console.log(option);
             if (option == 'operator' || option == 'operand' || option == 'ex' || option == 'accuracy' ||
                 option == 'report_type' || option == 'alarm_up' || option == 'alarm_down' || option == 'phone_num' || 
                 option == 'email' || option == 'contents' || option == 'retry_interval' || option == 'again_interval') {
@@ -1929,7 +1956,7 @@ function editData(object, table_name) {
 
     option_list.forEach(function(option) {
         if (option == 'data_type' || option == 'reg_type' || option == 'word_len' || option == 'cap_type' ||
-            option == 'cap_type' || option == 'mode' || option == 'count_method' || option == 'init_status') {
+            option == 'cap_type' || option == 'mode' || option == 'count_method' || option == 'init_status' || option == 'type_id') {
             setSelectByText(table_name + '.'  + option, value.eq(num++).text());
         } else if (option == 'index') {
             document.getElementById(table_name + '.'  + option + '.' + io_type).value = value.eq(num++).text();
@@ -2397,7 +2424,7 @@ $(document).ready(function(){
             var id = $($(this))[0].id;
             if (id == "dct_basic" || id == "interfaces" || id == "modbus" || id == "s7" ||
                 id == "server" || id == "io" || id == "bacnet" || id == "fx" || id == "datadisplay" ||
-                id == "opcua" || id == "mc" || id == "ascii" || id == "bacnet_client") {
+                id == "opcua" || id == "mc" || id == "ascii" || id == "bacnet_client" || id == 'iec104') {
                 $('#navbar-collapse-dct').addClass('show')
                 $('#dct').removeClass('collapsed');
             } else if (id == "ddns" || id == "macchina") {

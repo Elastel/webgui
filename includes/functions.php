@@ -904,6 +904,9 @@ function handlePageActions($extraFooterScripts, $page, $config)
         case "/mc_conf":
             DisplayMc();
             break;
+        case "/iec104_conf":
+            DisplayIEC104();
+            break;
         case "/io_conf":
             DisplayIO();
             break;
@@ -1028,7 +1031,7 @@ function CheckboxControlCustom($title, $name, $id = null, $checked = null, $desc
     echo '</div>';
 }
 
-function LabelControlCustom($title, $name, $id = null, $descr = null, $event = null)
+function LabelControlCustom($title, $name, $id = null, $value = null, $descr = null, $event = null)
 {
     echo '<div class="cbi-value">
         <label class="cbi-value-title">'.htmlspecialchars($title, ENT_QUOTES).'</label>' , PHP_EOL;
@@ -1039,25 +1042,27 @@ function LabelControlCustom($title, $name, $id = null, $descr = null, $event = n
     if (isset($event)) {
         echo ' onChange="' . htmlspecialchars($event, ENT_QUOTES). '"';
     }
-    echo '>' , PHP_EOL;
+    echo '>';
+    echo _(empty($value) ? '-' : $value);
+    echo '</label>', PHP_EOL;
     if (isset($descr)) {
         echo '<label class="cbi-value-description">' . htmlspecialchars($descr, ENT_QUOTES) . '</label>';
     }
     echo '</div>';
 }
 
-function RadioControlCustom($title, $name, $id, $event, $descr = null)
+function RadioControlCustom($title, $name, $id, $event, $num = null, $descr = null)
 {
     echo '<div class="cbi-value">
         <label class="cbi-value-title">'.htmlspecialchars($title, ENT_QUOTES).'</label>' , PHP_EOL;
-    echo '<input class="cbi-input-radio" id="'.htmlspecialchars($id, ENT_QUOTES).'_enable" ';
-    echo 'name="'.htmlspecialchars($name, ENT_QUOTES).'" value="1" type="radio" checked ';
-    echo 'onchange="' . htmlspecialchars($event, ENT_QUOTES). '(true)">';
+    echo '<input class="cbi-input-radio" id="'.htmlspecialchars($id, ENT_QUOTES).'_enable'.$num.'" ';
+    echo 'name="'.htmlspecialchars($name, ENT_QUOTES).$num.'" value="1" type="radio" checked ';
+    echo 'onchange="' . htmlspecialchars($event, ENT_QUOTES). '(true'.(($num != null)?(','.$num):'').')">';
     echo '<label >' . _('Enable') . '</label>';
     echo PHP_EOL;
-    echo '<input class="cbi-input-radio" id="'.htmlspecialchars($id, ENT_QUOTES).'_disable" ';
-    echo 'name="'.htmlspecialchars($name, ENT_QUOTES).'" value="0" type="radio" ';
-    echo 'onchange="' . htmlspecialchars($event, ENT_QUOTES). '(false)">';
+    echo '<input class="cbi-input-radio" id="'.htmlspecialchars($id, ENT_QUOTES).'_disable'.$num.'" ';
+    echo 'name="'.htmlspecialchars($name, ENT_QUOTES).$num.'" value="0" type="radio" ';
+    echo 'onchange="' . htmlspecialchars($event, ENT_QUOTES). '(false'.(($num != null)?(','.$num):'').')">';
     echo '<label >' . _('Disable') . '</label>';
     echo '</div>';
 }

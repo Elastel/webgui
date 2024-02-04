@@ -44,7 +44,8 @@ function DisplayDashboard(&$extraFooterScripts)
         $moreLink = "dhcpd_conf";
         exec('cat ' . RASPI_DNSMASQ_LEASES . '| grep -E $(iw dev ' . $apInterface . ' station dump | grep -oE ' . $MACPattern . ' | paste -sd "|")', $clients);
     }
-    
+
+    exec('uci get network.swan.ifname', $lte_ifname);
     exec("sudo uci get -P /var/state/ network.wan.link", $cur_interface);
     if ($cur_interface[0] == "eth0") {
         $ifaceStatus = "Wired";
@@ -52,7 +53,7 @@ function DisplayDashboard(&$extraFooterScripts)
     } else if ($cur_interface[0] == "wlan0") {
         $ifaceStatus = "WIFI";
         $statusIcon = "up";
-    } else if ($cur_interface[0] == "wwan0") {
+    } else if ($cur_interface[0] == $lte_ifname[0]) {
         $ifaceStatus = "LTE";
         $statusIcon = "up";
     } else {
@@ -100,18 +101,18 @@ function DisplayDashboard(&$extraFooterScripts)
         $routeInfo[0]['mac'] = $mac[0];
     }
     
-    exec('ip route | grep "default"  | grep -c "wwan0"', $enabled);
+    exec('ip route | grep "default"  | grep -c "'. $lte_ifname[0] .'"', $enabled);
     $lteInfo = array();
     if ($enabled[0] == "1") {
-        exec('ifconfig wwan0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep -v "255.255."', $ip_address);
-        exec('ifconfig wwan0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep "255.255."', $netmask);
+        exec('ifconfig '. $lte_ifname[0] .' | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep -v "255.255."', $ip_address);
+        exec('ifconfig '. $lte_ifname[0] .' | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep "255.255."', $netmask);
         exec('uci -P /var/state/ get dangle.dev.signal', $signal);
         exec('uci -P /var/state/ get dangle.dev.service', $operator);
         exec('uci -P /var/state/ get dangle.dev.iccid', $iccid);
         exec('uci -P /var/state/ get dangle.dev.imei', $imei);
         exec('uci -P /var/state/ get dangle.dev.connect', $lte_status);
 
-        $lteInfo["interface"] = 'wwan0';
+        $lteInfo["interface"] = $lte_ifname[0];
         $lteInfo["ip_address"] = $ip_address[0];
         $lteInfo["netmask"] = $netmask[0];
         $lteInfo["signal"] = $signal[0];
