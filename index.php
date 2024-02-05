@@ -1,7 +1,6 @@
 <?php
 require_once 'includes/includes.php';
 ?><!DOCTYPE html>
-<script src="app/js/pc.js"></script>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -125,7 +124,7 @@ require_once 'includes/includes.php';
           <div class="collapse navbar-collapse" id="navbar-collapse-vpn">
             <ul class="nav navbar-nav navbar-right">
               <li class="nav-item" name="openvpn" id="openvpn"> <a class="nav-link" href="openvpn"><?php echo _("OpenVPN"); ?></a></li>
-	            <?php if ($model != "EG324" && $model != "EG324L") : ?>
+	            <?php if ($model != "EG324L") : ?>
               <li class="nav-item" name="wireguard" id="wireguard"> <a class="nav-link" href="wireguard"><?php echo _("WireGuard"); ?></a></li>
 	            <?php endif; ?>
             </ul>

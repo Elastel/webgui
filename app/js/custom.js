@@ -1069,8 +1069,8 @@ function loadModbusConfig() {
     var table_name = 'modbus';
     $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
-        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'type_id', 
-                        'start_addr', 'common_addr', 'data_type', 'server_center', 
+        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'device_id', 
+                        "function_code", 'reg_addr', 'reg_count', 'data_type', 'server_center', 
                         'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
                         'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
                         'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
