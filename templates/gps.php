@@ -127,6 +127,10 @@
                     <label class="cbi-value-description"><?php echo _("Seconds"); ?></label>
                   </div>
                 </div>
+                <?php
+                $accuracy_list = ['0', '1', '2', '3', '4', '5', '6'];
+                SelectControlCustom(_('GPS Info Accuracy'), 'accuracy', $accuracy_list, $accuracy_list[0], 'accuracy', _('0~6'));
+                ?>
                 <div class="cbi-value">
                   <label class="cbi-value-title"><?php echo _("GPS Info"); ?></label>
                   <?php 

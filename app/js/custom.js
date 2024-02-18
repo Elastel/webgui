@@ -309,7 +309,7 @@ function loadGps() {
         jsonData = JSON.parse(data);
         var arr = ['output_mode', 'server_addr', 'server_port', 'report_mode', 'register_packet',
         'heartbeat_packet', 'report_interval', 'heartbeat_interval', 'baudrate', 'databit', 'stopbit',
-        'parity'];
+        'parity', 'accuracy'];
 
         $('#enabled').val(jsonData.enabled);
         if (jsonData.enabled == '1') {

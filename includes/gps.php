@@ -26,7 +26,7 @@ function saveGpsConfig($status)
 {
     $arrInfo = array('output_mode', 'server_addr', 'server_port', 'report_mode', 'register_packet',
         'heartbeat_packet', 'report_interval', 'heartbeat_interval', 'baudrate', 'databit', 'stopbit',
-        'parity');
+        'parity', 'accuracy');
 
     exec("sudo /usr/local/bin/uci set gps.conf.enabled=" .$_POST['enabled']);
     if ($_POST['enabled'] == "1") {
