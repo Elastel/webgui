@@ -103,7 +103,7 @@ function page_interface_com($num)
                    '57600'=>'57600', '115200'=>'115200', '230400'=>'230400');
   SelectControlCustom(_('Baudrate'), 'baudrate'.$num, $baudrate_list, $baudrate_list['9600'], 'baudrate'.$num);
 
-  $databit_list = array('7'=>'7', '8'=>'9');
+  $databit_list = array('7'=>'7', '8'=>'8');
   SelectControlCustom(_('Databit'), 'databit'.$num, $databit_list, $databit_list['8'], 'databit'.$num);
 
   $stopbit_list = array('1'=>'1', '1'=>'1');
