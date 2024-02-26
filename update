@@ -108,6 +108,10 @@ if [ "$1" == "reset" ]; then
     sed -i "s/ssid.*/ssid=$ssid/" /etc/hostapd/hostapd.conf
 fi
 
+sudo cp $path/config/cron-logrotate /etc/cron.d/
+sudo cp $path/config/logrotate-rsyslog /etc/logrotate.d/rsyslog
+sudo chown -R root:root /etc/logrotate.d/rsyslog
+sudo cp $path/config/journald.conf /etc/systemd/journald.conf
 sudo cp $path/config/elastel_config.json /etc/elastel_config.json
 sudo cp $path/config/rules.v4 /etc/iptables/rules.v4
 sudo cp $path/installers/service*.sh /etc/raspap/hostapd
@@ -219,5 +223,6 @@ elif [ $bit = "32" ]; then
 fi
 
 echo -e "Complete to update, it will reboot system."
+echo $(date +%F%n%T) > /etc/fw_date
 sleep 5
 sudo reboot
