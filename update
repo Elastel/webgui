@@ -145,6 +145,10 @@ if [ $model != "EG324L" ]; then
         sudo ln -s /etc/init.d/firewall /etc/rc5.d/S10firewall
         sudo ln -s /etc/init.d/loragw /etc/rc5.d/S10loragw
 else
+		result=$(ls /etc/ssl/certs/ | wc -l)
+		if [[ $result == "0" ]]; then
+			tar xzvf $path/config/certs.tar.gz -C /etc/ssl/
+		fi
         sudo rm /etc/init.d/S90terminal
         sudo rm /etc/init.d/S90failover
         sudo rm /etc/init.d/S90lte
