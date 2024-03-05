@@ -219,6 +219,7 @@ function DisplayDashboard(&$extraFooterScripts)
     exec("uname -r", $tmp);
     $kernel_version = $tmp[0];
 
+    unset($tmp);
     exec("date '+%Y-%m-%d %H:%M:%S'", $tmp);
     $local_time = $tmp[0];
 
