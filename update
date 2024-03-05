@@ -75,6 +75,7 @@ sleep 1
 
 if [ "$1" == "reset" ]; then
     echo $1
+    sudo cp $path/config/lighttpd.conf /etc/lighttpd/lighttpd.conf
     sudo cp $path/config/hostapd.conf /etc/hostapd/hostapd.conf
     if [ "$model" = "EG324" ]; then
         sed -i "s/nl80211/rtl871xdrv/g" /etc/hostapd/hostapd.conf

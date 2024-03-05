@@ -835,7 +835,7 @@ function handlePageActions($extraFooterScripts, $page, $config)
 {
     // handle page actions
     switch ($page) {
-        case "/wlan0_info":
+        case "/dashboard":
             DisplayDashboard($extraFooterScripts);
             break;
         case "/dhcpd_conf":

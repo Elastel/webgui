@@ -55,7 +55,7 @@ require_once 'includes/includes.php';
           <div class="col-xs ml-2 cbi-model"><?php echo _($model);?></div>
         </div>
         <li class="nav-item">
-          <a class="nav-link" href="wlan0_info"><i class="fas fa-tachometer-alt fa-fw mr-2"></i><span class="nav-label"><?php echo _("Dashboard"); ?></span></a>
+          <a class="nav-link" href="dashboard"><i class="fas fa-tachometer-alt fa-fw mr-2"></i><span class="nav-label"><?php echo _("Dashboard"); ?></span></a>
         </li>
         <li class="nav-item" id="page_network">
           <a class="nav-link navbar-toggle collapsed" id="network" href="#" data-toggle="collapse" data-target="#navbar-collapse-network">

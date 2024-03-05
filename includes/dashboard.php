@@ -3,6 +3,66 @@
 require_once 'includes/config.php';
 require_once 'includes/wifi_functions.php';
 require_once 'includes/functions.php';
+require_once 'app/lib/system.php';
+
+function get_revison()
+{
+    $dev_model = getModel();
+    // Lookup table from http://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/
+    if ($dev_model != "EG324") {
+        $revisions = array(
+        '0002' => 'Model B Revision 1.0',
+        '0003' => 'Model B Revision 1.0 + ECN0001',
+        '0004' => 'Model B Revision 2.0 (256 MB)',
+        '0005' => 'Model B Revision 2.0 (256 MB)',
+        '0006' => 'Model B Revision 2.0 (256 MB)',
+        '0007' => 'Model A',
+        '0008' => 'Model A',
+        '0009' => 'Model A',
+        '000d' => 'Model B Revision 2.0 (512 MB)',
+        '000e' => 'Model B Revision 2.0 (512 MB)',
+        '000f' => 'Model B Revision 2.0 (512 MB)',
+        '0010' => 'Model B+',
+        '0013' => 'Model B+',
+        '0011' => 'Compute Module',
+        '0012' => 'Model A+',
+        'a01041' => 'a01041',
+        'a21041' => 'a21041',
+        '900092' => 'PiZero 1.2',
+        '900093' => 'PiZero 1.3',
+        '9000c1' => 'PiZero W',
+        'a02082' => 'Pi 3 Model B',
+        'a22082' => 'Pi 3 Model B',
+        'a32082' => 'Pi 3 Model B',
+        'a52082' => 'Pi 3 Model B',
+        'a020d3' => 'Pi 3 Model B+',
+        'a220a0' => 'Compute Module 3',
+        'a020a0' => 'Compute Module 3',
+        'a02100' => 'Compute Module 3+',
+        'a03111' => 'Model 4B Revision 1.1 (1 GB)',
+        'b03111' => 'Model 4B Revision 1.1 (2 GB)',
+        'c03111' => 'Model 4B Revision 1.1 (4 GB)'
+        );
+
+        $cpuinfo_array = '';
+        exec('cat /proc/cpuinfo', $cpuinfo_array);
+        $rev = trim(array_pop(explode(':', array_pop(preg_grep("/^Revision/", $cpuinfo_array)))));
+        if (array_key_exists($rev, $revisions)) {
+            return $revisions[$rev];
+        } else {
+            exec('cat /proc/device-tree/model', $model);
+            if (isset($model[0])) {
+                return $model[0];
+            } else {
+                return 'Unknown Device';
+            }
+        }
+    } else {
+        exec('cat /proc/cpuinfo', $cpuinfo_array);
+        $rev = trim(array_pop(explode(':', array_pop(preg_grep("/^model name/", $cpuinfo_array)))));
+        return $rev;
+    }
+}
 
 /**
  * Show dashboard page.
@@ -103,23 +163,29 @@ function DisplayDashboard(&$extraFooterScripts)
     
     exec('ip route | grep "default"  | grep -c "'. $lte_ifname[0] .'"', $enabled);
     $lteInfo = array();
-    if ($enabled[0] == "1") {
+    if (file_exists("/dev/ttyUSB2")) {
         exec('ifconfig '. $lte_ifname[0] .' | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep -v "255.255."', $ip_address);
         exec('ifconfig '. $lte_ifname[0] .' | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep "255.255."', $netmask);
         exec('uci -P /var/state/ get dangle.dev.signal', $signal);
         exec('uci -P /var/state/ get dangle.dev.service', $operator);
         exec('uci -P /var/state/ get dangle.dev.iccid', $iccid);
         exec('uci -P /var/state/ get dangle.dev.imei', $imei);
+		exec('uci -P /var/state/ get dangle.dev.sim', $sim);
         exec('uci -P /var/state/ get dangle.dev.connect', $lte_status);
+		
+        if ($enabled[0] == '0') {
+            $lte_status[0] = "DISCONNECTED";
+        }
 
         $lteInfo["interface"] = $lte_ifname[0];
-        $lteInfo["ip_address"] = $ip_address[0];
-        $lteInfo["netmask"] = $netmask[0];
-        $lteInfo["signal"] = $signal[0];
-        $lteInfo["operator"] = $operator[0];
-        $lteInfo["iccid"] = $iccid[0];
-        $lteInfo["imei"] = $imei[0];
-        $lteInfo["lte_status"] = ($lte_status[0] != NULL) ? $lte_status[0] : 'DISCONNECTED';
+        $lteInfo["ip_address"] = $ip_address[0] ?? '-';
+        $lteInfo["netmask"] = $netmask[0] ?? '-';
+        $lteInfo["signal"] = $signal[0] ?? '-';
+        $lteInfo["operator"] = $operator[0] ?? '-';
+        $lteInfo["iccid"] = $iccid[0] ?? '-';
+        $lteInfo["imei"] = $imei[0] ?? '-';
+        $lteInfo["lte_status"] = $lte_status[0]  ?? "DISCONNECTED";
+		$lteInfo["sim"] = $sim[0] ?? '-';
     }
 
     exec('ip route | grep "default"  | grep -c "wlan0"', $wifi_enabled);
@@ -137,6 +203,75 @@ function DisplayDashboard(&$extraFooterScripts)
         $wifiInfo["gateway"] = $wifi_gateway[0];
     }
 
+    exec("cat /proc/sys/kernel/hostname", $tmp);
+    $cur_hostname = $tmp[0];
+
+    $model = getModel();
+    unset($tmp);
+    exec("cat /etc/fw_date", $tmp);
+    $fw_date = $tmp[0];
+
+    unset($tmp);
+    exec("uname -r", $tmp);
+    $kernel_version = $tmp[0];
+
+    unset($tmp);
+    exec("uname -r", $tmp);
+    $kernel_version = $tmp[0];
+
+    exec("date '+%Y-%m-%d %H:%M:%S'", $tmp);
+    $local_time = $tmp[0];
+
+    unset($tmp);
+    if ($model == 'EG324' || $model == 'EG324L') {
+        exec("cat /etc/sn", $tmp);
+        $sn = $tmp[0];
+    } else {
+        exec("cat /proc/cpuinfo | grep Serial | awk -F ':' '{print $2}'", $tmp);
+        $sn = $tmp[0];
+    }
+
+    $system = new \RaspAP\System\Sysinfo;
+    $uptime   = $system->uptime();
+    $cores    = $system->processorCount();
+
+    // mem used
+    $memused  = $system->usedMemory();
+    $memused_status = "primary";
+    if ($memused > 90) {
+        $memused_status = "danger";
+        $memused_led = "service-status-down";
+    } elseif ($memused > 75) {
+        $memused_status = "warning";
+        $memused_led = "service-status-warn";
+    } elseif ($memused >  0) {
+        $memused_status = "success";
+        $memused_led = "service-status-up";
+    }
+
+    // cpu load
+    $cpuload = $system->systemLoadPercentage();
+    if ($cpuload > 90) {
+        $cpuload_status = "danger";
+    } elseif ($cpuload > 75) {
+        $cpuload_status = "warning";
+    } elseif ($cpuload >=  0) {
+        $cpuload_status = "success";
+    }
+
+    // cpu temp
+    $cputemp = $system->systemTemperature();
+    if ($cputemp > 70) {
+        $cputemp_status = "danger";
+        $cputemp_led = "service-status-down";
+    } elseif ($cputemp > 50) {
+        $cputemp_status = "warning";
+        $cputemp_led = "service-status-warn";
+    } else {
+        $cputemp_status = "success";
+        $cputemp_led = "service-status-up";
+    }
+
     echo renderTemplate(
         "dashboard", compact(
             "clients",
@@ -147,7 +282,23 @@ function DisplayDashboard(&$extraFooterScripts)
             "routeInfo",
             "lteInfo",
             "statusIcon",
-            "wifiInfo"
+            "wifiInfo",
+            'cur_hostname',
+            'model',
+            'revision',
+            'kernel_version',
+            'sn',
+            'local_time',
+            'uptime',
+            "memused",
+            "memused_status",
+            "memused_led",
+            "cpuload",
+            "cpuload_status",
+            "cputemp",
+            "cputemp_status",
+            "cputemp_led",
+            'fw_date'
         )
     );
 }
