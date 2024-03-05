@@ -20,12 +20,25 @@ function DisplayBACnet()
         }
     }
 
-    echo renderTemplate("bacnet", compact('status'));
+    exec("ip -o link show | awk -F': ' '{print $2}'", $tmp);
+    sort($tmp);
+
+    $interface_list = array();
+    foreach ($tmp as $value) {
+        if ($value == 'eth1' || $value == 'docker0' ||  $value == 'lo' ||
+            strstr($value, 'veth') != NULL)
+            continue;
+
+        $interface_list["$value"] = $value;
+    }
+
+    echo renderTemplate("bacnet", compact('status', 'interface_list'));
 }
 
 function saveBACnetConfig($status)
 {
     exec("sudo /usr/local/bin/uci set dct.bacnet.enabled=" . $_POST['enabled']);
+    exec("sudo /usr/local/bin/uci set dct.bacnet.ifname=" .$_POST['ifname']);
     exec("sudo /usr/local/bin/uci set dct.bacnet.port=" .$_POST['port']);
     exec("sudo /usr/local/bin/uci set dct.bacnet.device_id=" .$_POST['device_id']);
     exec("sudo /usr/local/bin/uci set dct.bacnet.object_name=" .$_POST['object_name']);

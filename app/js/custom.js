@@ -625,7 +625,7 @@ function loadDataDisplay() {
 function loadBACnetConfig() {
     $.get('ajax/dct/get_dctcfg.php?type=bacnet',function(data){
         jsonData = JSON.parse(data);
-        var arr = ['port', 'device_id', 'object_name'];
+        var arr = ['ifname', 'port', 'device_id', 'object_name'];
 
         $('#enabled').val(jsonData.enabled);
         if (jsonData.enabled == '1') {

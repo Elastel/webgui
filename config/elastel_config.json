@@ -70,6 +70,6 @@
 						"operator", "operand", "ex", "accuracy", "enabled"],
     "opcua_option" : ["enabled", "port", "anonymous", "max_value", "enable_database", "username", "password", "security_policy",
 						"uri", "certificate", "private_key", "trust_crt"],
-    "bacnet_option" : ["enabled", "port", "device_id", "object_name"]
+    "bacnet_option" : ["enabled", "ifname", "port", "device_id", "object_name"]
 	
 }

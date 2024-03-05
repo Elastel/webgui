@@ -25,8 +25,11 @@
           <?php echo CSRFTokenFieldTag();
             echo '<div class="cbi-section cbi-tblsection">';
             RadioControlCustom(_('BACnet Server'), 'enabled', 'bacnet', 'enableBACnet');
-      
+
             echo '<div id="page_bacnet" name="page_bacnet">';
+
+            SelectControlCustom(_('Interface'), 'ifname', $interface_list, $interface[0], 'ifname');
+
             InputControlCustom(_('Port'), 'port', 'port', _('1~65535'));
 
             InputControlCustom(_('Device ID'), 'device_id', 'device_id', _('1~65535'));
