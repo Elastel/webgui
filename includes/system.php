@@ -145,9 +145,6 @@ function DisplaySystem()
     if (isset($_POST['RestartLighttpd'])) {
         $status->addMessage('Restarting lighttpd in 3 seconds...', 'info');
         exec('sudo /etc/raspap/lighttpd/configport.sh --restart');
-        // if ($model == "EG324L") {
-        //     shell_exec('/etc/init.d/S50lighttpd restart &> /dev/null');
-        // }
     }
     exec('cat '. RASPI_LIGHTTPD_CONFIG, $return);
     $conf = ParseConfig($return);

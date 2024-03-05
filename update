@@ -75,7 +75,6 @@ sleep 1
 
 if [ "$1" == "reset" ]; then
     echo $1
-    sudo cp $path/config/lighttpd.conf /etc/lighttpd/lighttpd.conf
     sudo cp $path/config/hostapd.conf /etc/hostapd/hostapd.conf
     if [ "$model" = "EG324" ]; then
         sed -i "s/nl80211/rtl871xdrv/g" /etc/hostapd/hostapd.conf
@@ -107,6 +106,7 @@ if [ "$1" == "reset" ]; then
 
     ssid="$model"_"$sub_mac"
     sed -i "s/ssid.*/ssid=$ssid/" /etc/hostapd/hostapd.conf
+    sudo /etc/raspap/lighttpd/configport.sh 80 '' /etc/lighttpd/lighttpd.conf
 fi
 
 sudo cp $path/config/cron-logrotate /etc/cron.d/
@@ -116,6 +116,7 @@ sudo cp $path/config/journald.conf /etc/systemd/journald.conf
 sudo cp $path/config/elastel_config.json /etc/elastel_config.json
 sudo cp $path/config/rules.v4 /etc/iptables/rules.v4
 sudo cp $path/installers/service*.sh /etc/raspap/hostapd
+sudo cp $path/installers/configport.sh /etc/raspap/lighttpd/
 sudo cp $path/Elastel/$model/etc/init.d/* /etc/init.d/
 sleep 1
 if [ $model != "EG324L" ]; then

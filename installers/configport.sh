@@ -11,6 +11,7 @@ set -o errtrace
 # Turn on traces, disabled by default
 #set -o xtrace
 
+model=$(cat /etc/fw_model)
 server_port=$1
 server_bind=$2
 lighttpd_conf=$3
@@ -32,12 +33,16 @@ done
 if [ "$restart_service" = 1 ]; then
     echo "Restarting lighttpd in 3 seconds..."
     sleep 3
-    systemctl restart lighttpd.service
+    if [ $model == "EG324L" ]; then
+        reboot
+    else
+        systemctl restart lighttpd.service
+    fi
 fi
 if [ -n "$server_port" ]; then
     echo "Changing lighttpd server.port to $server_port ..."
     sed -i "s/^\(server\.port *= *\)[0-9]*/\1$server_port/g" "$lighttpd_conf"
-    echo "RaspAP will now be available at port $server_port"
+    echo "Webgui will now be available at port $server_port"
     conf_change=1
 fi
 if [ -n "$server_bind" ]; then
@@ -45,7 +50,7 @@ if [ -n "$server_bind" ]; then
     grep -q 'server.bind' "$lighttpd_conf" && \
         sed -i "s/^\(server\.bind.*= \)\".*\"*/\1\"$server_bind\"/g" "$lighttpd_conf" || \
         printf "server.bind \t\t\t\t = \"$server_bind\"\n" >> "$lighttpd_conf"
-    echo "RaspAP will now be available at address $server_bind"
+    echo "Webgui will now be available at address $server_bind"
     conf_change=1
 fi
 if [ "$conf_change" == 1 ]; then
