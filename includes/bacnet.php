@@ -26,7 +26,7 @@ function DisplayBACnet()
     $interface_list = array();
     foreach ($tmp as $value) {
         if ($value == 'eth1' || $value == 'docker0' ||  $value == 'lo' ||
-            strstr($value, 'veth') != NULL)
+            strstr($value, 'veth') != NULL || strstr($value, '@NONE') != NULL)
             continue;
 
         $interface_list["$value"] = $value;
