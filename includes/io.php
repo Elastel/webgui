@@ -52,151 +52,31 @@ function DisplayIO()
             break;
     }
 
-    for ($i = 1; $i <= $com_count; $i++) {
-        unset($enabled);
-        exec("sudo uci get dct.com.enabled$i", $enabled);
-        if ($enabled[0] != '1') {
-            continue;
-        }
-        exec("sudo uci get dct.com.proto$i", $com_proto);
-        if ($com_proto[0] == '5') {
-            exec("sudo uci get dct.com.controller_model$i", $controller_model);
-
-            switch($controller_model[0]) {
-                case '0':
-                    $di_index_count += 2;
-                    $do_index_count += 2;
-                    break;
-                case '1':
-                    $adc_index_count += 2;
-                    $di_index_count += 2;
-                    $do_index_count += 2;
-                    break;
-                case '2':
-                    $adc_index_count += 4;
-                    $di_index_count += 4;
-                    $do_index_count += 4;
-                    break;
-            }
-         }
-
-        unset($com_proto);
-        unset($controller_model);
-    }
-
     echo renderTemplate("io", compact('status', "model", 'adc_index_count', 'di_index_count', 'do_index_count'));
 }
 
 function saveADC($status)
 {
     $data = $_POST['tableDataADC'];
-    $arr = json_decode($data, true);
-    $i = 0;
-    $cap_type_value = array("4-20mA", "0-10V");
-
-    exec("sudo /usr/sbin/uci_get_count dct adc", $count);
-
-    if ($count[0] == null || strlen($count[0]) <= 0) {
-        $count[0] = 0;
-    }
-
-    foreach ($arr as $list=>$things) {
-        if (is_array($things)) {
-            exec("sudo /usr/local/bin/uci delete dct.@adc[$i]");
-            exec("sudo /usr/local/bin/uci add dct adc");
-            foreach ($things as $key=>$val) {
-                if ($key == "cap_type") {
-                    $cap_type_num = array_search($val, $cap_type_value);
-                    exec("sudo /usr/local/bin/uci set dct.@adc[$i].$key=$cap_type_num");
-                } else {
-                    exec("sudo /usr/local/bin/uci set dct.@adc[$i].$key='$val'");
-                }  
-            }
-        }
-        $i++;
-    }
-
-    if (number_format($count[0]) > $i) {
-        for ($j = $i; $j < number_format($count[0]); $j++) {
-            exec("sudo /usr/local/bin/uci delete dct.@adc[$i]");
-        }
-    }
+    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
+    file_put_contents(ELASTEL_DCT_CONFIG_JSON, $data);
+    exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct adc');
 }
 
 function saveDI($status)
 {
     $data = $_POST['tableDataDI'];
-    $arr = json_decode($data, true);
-    $i = 0;
-    $mode_value = array("Counting Mode", "Status Mode");
-    $method_value = array("Rising Edge", "Falling Edge");
-
-    exec("sudo /usr/sbin/uci_get_count dct di", $count);
-
-    if ($count[0] == null || strlen($count[0]) <= 0) {
-        $count[0] = 0;
-    }
-
-    foreach ($arr as $list=>$things) {
-        if (is_array($things)) {
-            exec("sudo /usr/local/bin/uci delete dct.@di[$i]");
-            exec("sudo /usr/local/bin/uci add dct di");
-            foreach ($things as $key=>$val) {
-                if ($key == "mode") {
-                    $mode_num = array_search($val, $mode_value);
-                    exec("sudo /usr/local/bin/uci set dct.@di[$i].$key=$mode_num");
-                } else if ($key == "count_method") {
-                    $method_num = array_search($val, $method_value);
-                    exec("sudo /usr/local/bin/uci set dct.@di[$i].$key=$method_num");
-                } else {
-                    exec("sudo /usr/local/bin/uci set dct.@di[$i].$key='$val'");
-                }  
-            }
-        }
-        $i++;
-    }
-
-    if (number_format($count[0]) > $i) {
-        for ($j = $i; $j < number_format($count[0]); $j++) {
-            exec("sudo /usr/local/bin/uci delete dct.@di[$i]");
-        }
-    }
+    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
+    file_put_contents(ELASTEL_DCT_CONFIG_JSON, $data);
+    exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct di');
 }
 
 function saveDO($status)
 {
     $data = $_POST['tableDataDO'];
-    $arr = json_decode($data, true);
-    $i = 0;
-    $status_value = array("Open", "Close");
-
-    exec("sudo /usr/sbin/uci_get_count dct do", $count);
-
-    if ($count[0] == null || strlen($count[0]) <= 0) {
-        $count[0] = 0;
-    }
-
-    foreach ($arr as $list=>$things) {
-        if (is_array($things)) {
-            exec("sudo /usr/local/bin/uci delete dct.@do[$i]");
-            exec("sudo /usr/local/bin/uci add dct do");
-            foreach ($things as $key=>$val) {
-                if ($key == "init_status" || $key == "cur_status") {
-                    $status_num = array_search($val, $status_value);
-                    exec("sudo /usr/local/bin/uci set dct.@do[$i].$key=$status_num");
-                } else {
-                    exec("sudo /usr/local/bin/uci set dct.@do[$i].$key='$val'");
-                }  
-            }
-        }
-        $i++;
-    }
-
-    if (number_format($count[0]) > $i) {
-        for ($j = $i; $j < number_format($count[0]); $j++) {
-            exec("sudo /usr/local/bin/uci delete dct.@do[$i]");
-        }
-    }
+    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
+    file_put_contents(ELASTEL_DCT_CONFIG_JSON, $data);
+    exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct do');
 }
 
 function saveIOConfig($status, $model)

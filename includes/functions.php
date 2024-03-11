@@ -831,6 +831,18 @@ function getBetweenStrings($src, $string)
     return $dest != null ? $dest : $tmp;
 }
 
+// Load non default JS/ECMAScript in footer
+function loadFooterScripts($extraFooterScripts)
+{
+    foreach ($extraFooterScripts as $script) {
+        echo '<script type="text/javascript" src="' , $script['src'] , '"';
+        if ($script['defer']) {
+            echo ' defer="defer"';
+        }
+        echo '></script>' , PHP_EOL;
+    }
+}
+
 function handlePageActions($extraFooterScripts, $page, $config)
 {
     // handle page actions

@@ -1,5 +1,6 @@
 <?php
 
+define('ELASTEL_DCT_CONFIG_JSON', '/tmp/dct.json');
 define('RASPI_BRAND_TEXT', 'RaspAP');
 define('RASPI_CONFIG', '/etc/raspap');
 define('RASPI_CONFIG_NETWORK', RASPI_CONFIG.'/networking/defaults.json');

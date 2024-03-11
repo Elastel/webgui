@@ -165,8 +165,9 @@ function page_interface_tcp($num)
   echo '</div>';
 
   $count = $num - 1;
-  exec("uci -P /var/state get dct.connection.tcp_status$count", $status);
-  LabelControlCustom(_("Connection Status"), 'connect_status'.$num, 'connect_status'.$num, $status[0]);
+  exec("uci -P /var/state get dct.connection.tcp_status$count", $tmp);
+  $status = $tmp ?? '-';
+  LabelControlCustom(_("Connection Status"), 'connect_status'.$num, 'connect_status'.$num, $status);
 
   echo '    </div><!-- /.page_tcp -->
           </div><!-- /.row -->
@@ -361,7 +362,7 @@ echo "<div class=\"tab-pane $active\" id=\"server$num\">
             <div name=\"page_json$num\" id=\"page_json$num\">
               <div class=\"cbi-value\">
                 <label class=\"cbi-value-title\">"; echo _("Enable Self Defined Variable"); echo "</label>
-                <input type=\"checkbox\" class=\"cbi-input-checkbox\" name=\"self_define_var$num\" id=\"self_define_var$num\" onchange=\"enableVar($num)\" value=\"$num\"/>
+                <input type=\"checkbox\" class=\"cbi-input-checkbox\" name=\"self_define_var$num\" id=\"self_define_var$num\" onchange=\"enableVar($num)\" value=\"1\"/>
               </div>
 
               <div name=\"page_var$num\" id=\"page_var$num\">
@@ -410,8 +411,8 @@ echo "<div class=\"tab-pane $active\" id=\"server$num\">
               </div>
 
               <div class=\"cbi-value\">
-                <label class=\"cbi-value-title\">"; echo _("Password"); echo "</label>
-                <input type=\"text\" class=\"cbi-input-text\" name=\"password$num\" id=\"password$num\" />
+                <label class=\"cbi-value-title\">"; echo _("PW"); echo "</label>
+                <input type=\"text\" class=\"cbi-input-text\" name=\"pw$num\" id=\"pw$num\" />
                 <label class=\"cbi-value-description\">"; echo _("6 Bytes Length"); echo "</label>
               </div>
 

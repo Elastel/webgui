@@ -42,33 +42,9 @@ function saveBACnetClientConfig($status)
     exec("sudo /usr/local/bin/uci set dct.bacnet_client.name=" .$_POST['name']);
 
     $data = $_POST['table_data'];
-    $arr = json_decode($data, true);
-    $i = 0;
-
-    exec("sudo /usr/sbin/uci_get_count dct baccli", $count);
-
-    if ($count[0] == null || strlen($count[0]) <= 0) {
-        $count[0] = 0;
-    }
-
-    foreach ($arr as $list=>$things) {
-        if (is_array($things)) {
-            exec("sudo /usr/local/bin/uci delete dct.@baccli[$i]");
-            exec("sudo /usr/local/bin/uci add dct baccli");
-            foreach ($things as $key=>$val) {
-                exec("sudo /usr/local/bin/uci set dct.@baccli[$i].$key='$val'");
-            }
-        }
-        $i++;
-    }
-
-    if (number_format($count[0]) > $i) {
-        for ($j = $i; $j < number_format($count[0]); $j++) {
-            exec("sudo /usr/local/bin/uci delete dct.@baccli[$i]");
-        }
-    }
-
-    exec("sudo /usr/local/bin/uci commit dct");
+    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
+    file_put_contents(ELASTEL_DCT_CONFIG_JSON, $data);
+    exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct baccli');
 
     if ($_POST['enabled'] == "1") {
         if ($_POST['port'] == NULL || (int)($_POST['port']) > 65535 || (int)($_POST['device_id']) > 65535) {

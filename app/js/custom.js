@@ -1043,8 +1043,14 @@ function addSectionTable(table_name, jsonData, option_list) {
                 contents += '   <td style="text-align:center" name="'+key+'">'+ (mode_value[Number(jsonData[i][key])]) +'</td>\n';
             } else if (key == 'count_method') {
                 contents += ('   <td style="text-align:center" name="'+key+'">'+ (((mode == 1) ? '-' : count_method_value[Number(jsonData[i][key])])) +'</td>\n');
-            } else if (key == 'init_status' || key == 'cur_status') {
+            } else if (key == 'init_status') {
                 contents += '   <td style="text-align:center" name="'+key+'">'+ (status_value[Number(jsonData[i][key])]) +'</td>\n';
+            } else if (key == 'cur_status') {
+                var cur_status = jsonData[i][key];
+                if (cur_status == '0' || cur_status == '1')
+                    cur_status = status_value[Number(cur_status)];
+                
+                contents += '   <td style="text-align:center" name="'+key+'">'+ cur_status +'</td>\n';
             } else if (key == 'enabled' || key == 'sms_reporting') {
                 contents += '   <td style="' + ((key == 'enabled') ? 'text-align:center' : 'display:none') + '"><input type="checkbox" name="' +
                              key + (table_name == 'baccli' ? '_baccli' : '') + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + 
@@ -1779,8 +1785,38 @@ function conf_im_ex(conf_name) {
     }
 }
 
+function findKey (data, value, compare = (a, b) => a === b) {
+    return Object.keys(data).find(k => compare(data[k], value))
+}
+
 // modbus
 function get_table_data(table_name, option_list) {
+    var data_type_value = [];
+    var reg_type_value = [];
+    var word_len_value = [];
+    var cap_type_value = ['4-20mA', '0-10V'];
+    var mode_value = ['Counting Mode', 'Status Mode'];
+    var count_method_value = ['Rising Edge', 'Falling Edge'];
+    var status_value = ['Open', 'Close'];
+    var type_id_list = {'1':'M_SP_NA_1', '30':'M_SP_TB_1', '3':'M_DP_NA_1', '31':'M_DP_TB_1', '5':'M_ST_NA_1', '32':'M_ST_TB_1',
+    '7':'M_BO_NA_1', '33':'M_BO_TB_1', '9':'M_ME_NA_1', '34':'M_ME_TD_1', '21':'M_ME_ND_1', '11':'M_ME_NB_1', '35':'M_ME_TE_1', '13':'M_ME_NC_1', 
+    '36':'M_ME_TF_1', '15':'M_IT_NA_1', '37':'M_IT_TB_1', '38':'M_EP_TD_1'};
+
+    if (table_name == 'modbus') {
+        data_type_value = ['Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
+        'Unsigned 32Bits ABCD', 'Unsigned 32Bits BADC', 'Unsigned 32Bits CDAB', 'Unsigned 32Bits DCBA',
+        'Signed 32Bits ABCD', 'Signed 32Bits BADC', 'Signed 32Bits CDAB', 'Signed 32Bits DCBA',
+        'Float ABCD', 'Float BADC', 'Float CDAB', 'Float DCBA'];
+    } else if (table_name == 'fx') {
+        data_type_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real'];
+        reg_type_value = ['X', 'Y', 'M', 'S', 'D'];
+    } else if (table_name == 's7') {
+        reg_type_value = ['I', 'Q', 'M', 'DB', 'V', 'C', 'T'];
+        word_len_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real', 'Counter', 'Timer'];
+    } else if (table_name == 'mc' || table_name == 'iec104') {
+        data_type_value = ['Bit', 'Int', 'Float'];
+    }
+
     var tr = $('#table_' + table_name + ' tr');
     var result = [];
     for (var i = 2; i < tr.length; i++) {
@@ -1792,7 +1828,29 @@ function get_table_data(table_name, option_list) {
             option_list.forEach(function (option) {
                 if (option == 'enabled' || option == 'sms_reporting') {
                     tmp += '"' + option + '":"' + ($($(tds[num++]).find('input'))[0].checked ? 1 : 0) + '",';
-                } else {
+                } else if (option == 'data_type') {
+                    tmp += '"' + option + '":"' + data_type_value.indexOf($(tds[num++]).html()) + '",';
+                } else if (option == 'reg_type') {
+                    tmp += '"' + option + '":"' + reg_type_value.indexOf($(tds[num++]).html()) + '",';
+                } else if (option == 'word_len') {
+                    tmp += '"' + option + '":"' + word_len_value.indexOf($(tds[num++]).html()) + '",';
+                } else if (option == 'cap_type') {
+                    tmp += '"' + option + '":"' + cap_type_value.indexOf($(tds[num++]).html()) + '",';
+                } else if (option == 'mode') {
+                    tmp += '"' + option + '":"' + mode_value.indexOf($(tds[num++]).html()) + '",';
+                } else if (option == 'count_method') {
+                    tmp += '"' + option + '":"' + count_method_value.indexOf($(tds[num++]).html()) + '",';
+                } else if (option == 'init_status') {
+                    tmp += '"' + option + '":"' + status_value.indexOf($(tds[num++]).html()) + '",';
+                } else if (option == 'cur_status') {
+                    var cur_status = $(tds[num++]).html();
+                    if (cur_status == '0' || cur_status == '1')
+                        cur_status = status_value.indexOf($(tds[num++]).html());
+                    
+                    tmp += '"' + option + '":"' + cur_status + '",';
+                } else if (option == 'type_id') {
+                    tmp += '"' + option + '":"' + findKey(type_id_list, $(tds[num++]).html()) + '",';
+                } else  {
                     tmp += '"' + option + '":"' + $(tds[num++]).html() + '",';
                 }
             })
@@ -1866,7 +1924,11 @@ function saveData(table_name) {
         } else if (option == 'init_status') {
             option_value[option] = status_value[Number(document.getElementById(table_name + '.'  + option).value)];
         } else if (option == 'cur_status') {
-            option_value[option] = status_value[Number(document.getElementById(table_name + '.'  + option).innerHTML)];
+            var cur_status = document.getElementById(table_name + '.'  + option).innerHTML;
+            if (cur_status == '0' || cur_status == '1')
+                option_value[option] = status_value[Number(cur_status)];
+            else
+                option_value[option] = cur_status;
         } else if (option == 'enabled' || option == 'sms_reporting') {
             option_value[option] = document.getElementById(table_name + '.'  + option).checked ? '1' : '0';
         } else if (option == 'index') {
@@ -1899,7 +1961,7 @@ function saveData(table_name) {
                 contents += '   <td style="' + ((option == 'enabled') ? 'text-align:center' : 'display:none') + '"><input type="checkbox" name="' + option + (table_name == 'baccli' ? '_baccli' : '') +'" ' +
                 (option_value[option] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
             } else {
-                contents += '   <td style="text-align:center" name="'+option+'">'+ (option_value[option].length > 0 ? option_value[option] : "-") +'</td>\n';
+                contents += '   <td style="text-align:center" name="'+option+'">'+ (option_value[option] ? option_value[option] : "-") +'</td>\n';
             }
         })
         contents += '   <td><a href="javascript:void(0);" onclick="editData(this, \''+table_name+'\');" >Edit</a></td>\n' +
@@ -1978,6 +2040,8 @@ function editData(object, table_name) {
             document.getElementById(table_name + '.'  + option + '.' + io_type).value = value.eq(num++).text();
         } else if (option == 'enabled' || option == 'sms_reporting') {
             document.getElementById(table_name + '.'  + option).checked = value.eq(num++).find("input")[0].checked;
+        } else if (option == 'cur_status') {
+            document.getElementById(table_name + '.'  + option).innerHTML = value.eq(num++).text();
         } else {
             document.getElementById(table_name + '.'  + option).value = value.eq(num++).text();
         }

@@ -37,40 +37,9 @@ function DisplayMc()
 function saveMcConfig($status)
 {
     $data = $_POST['table_data'];
-    $arr = json_decode($data, true);
-    $i = 0;
-
-    $data_type_value = array("Bit", "Int", "Float");
-
-    exec("sudo /usr/sbin/uci_get_count dct mc", $count);
-
-    if ($count[0] == null || strlen($count[0]) <= 0) {
-        $count[0] = 0;
-    }
-
-    foreach ($arr as $list=>$things) {
-        if (is_array($things)) {
-            exec("sudo /usr/local/bin/uci delete dct.@mc[$i]");
-            exec("sudo /usr/local/bin/uci add dct mc");
-            foreach ($things as $key=>$val) {
-                if ($key == "data_type") {
-                    $data_type_num = array_search($val, $data_type_value);
-                    exec("sudo /usr/local/bin/uci set dct.@mc[$i].$key=$data_type_num");
-                } else {
-                    exec("sudo /usr/local/bin/uci set dct.@mc[$i].$key='$val'");
-                }  
-            }
-        }
-        $i++;
-    }
-
-    if (number_format($count[0]) > $i) {
-        for ($j = $i; $j < number_format($count[0]); $j++) {
-            exec("sudo /usr/local/bin/uci delete dct.@mc[$i]");
-        }
-    }
-
-    exec('sudo /usr/local/bin/uci commit dct');
+    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
+    file_put_contents(ELASTEL_DCT_CONFIG_JSON, $data);
+    exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct mc');
 
     $status->addMessage('dct configuration updated ', 'success');
     return true;

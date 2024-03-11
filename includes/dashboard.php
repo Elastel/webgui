@@ -286,7 +286,6 @@ function DisplayDashboard(&$extraFooterScripts)
             "wifiInfo",
             'cur_hostname',
             'model',
-            'revision',
             'kernel_version',
             'sn',
             'local_time',

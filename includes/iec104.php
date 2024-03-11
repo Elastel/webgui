@@ -41,41 +41,9 @@ function DisplayIEC104()
 function saveIec104Config($status, $data_type_list, $type_id_list)
 {
     $data = $_POST['table_data'];
-    $arr = json_decode($data, true);
-    $i = 0;
-
-    exec('sudo /usr/sbin/uci_get_count dct iec104', $count);
-
-    if ($count[0] == null || strlen($count[0]) <= 0) {
-        $count[0] = 0;
-    }
-
-    foreach ($arr as $list=>$things) {
-        if (is_array($things)) {
-            exec("sudo /usr/local/bin/uci delete dct.@iec104[$i]");
-            exec("sudo /usr/local/bin/uci add dct iec104");
-            foreach ($things as $key=>$val) {
-                if ($key == "data_type") {
-                    $data_type_num = array_search($val, $data_type_list);
-                    exec("sudo /usr/local/bin/uci set dct.@iec104[$i].$key=$data_type_num");
-                } else if ($key == "type_id") {
-                    $type_id = array_search($val, $type_id_list);
-                    exec("sudo /usr/local/bin/uci set dct.@iec104[$i].$key=$type_id");
-                } else {
-                    exec("sudo /usr/local/bin/uci set dct.@iec104[$i].$key='$val'");
-                }  
-            }
-        }
-        $i++;
-    }
-
-    if (number_format($count[0]) > $i) {
-        for ($j = $i; $j < number_format($count[0]); $j++) {
-            exec("sudo /usr/local/bin/uci delete dct.@iec104[$i]");
-        }
-    }
-
-    exec('sudo /usr/local/bin/uci commit dct');
+    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
+    file_put_contents(ELASTEL_DCT_CONFIG_JSON, $data);
+    exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct iec104');
 
     $status->addMessage('dct configuration updated ', 'success');
     return true;

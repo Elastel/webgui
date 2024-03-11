@@ -127,3 +127,4 @@ www-data ALL=(ALL) NOPASSWD:/usr/sbin/conf_im_ex export *
 www-data ALL=(ALL) NOPASSWD:/usr/sbin/conf_im_ex import *
 www-data ALL=(ALL) NOPASSWD:/bin/systemctl * dhcpcd.service
 www-data ALL=(ALL) NOPASSWD:/usr/bin/dos2unix *
+www-data ALL=(ALL) NOPASSWD:/usr/sbin/set_config *
