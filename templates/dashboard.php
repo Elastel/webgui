@@ -20,34 +20,34 @@
           <div class="system">
           <table class="table cbi-section-table">
             <tr class="tr cbi-section-table-titles">
-              <td style="text-align:left;width:30rem;font-weight:bold"><?php echo _("Hostname"); ?></td>
-              <td style="text-align:left"><?php echo htmlspecialchars($cur_hostname, ENT_QUOTES); ?></td>
+              <td style="text-align:left;width:30%;font-weight:bold; padding:0.5rem; font-size:0.8rem"><?php echo _("Hostname"); ?></td>
+              <td style="text-align:left; padding:0.5rem; font-size:0.8rem"><?php echo htmlspecialchars($cur_hostname, ENT_QUOTES); ?></td>
             </tr>
             <tr class="tr cbi-section-table-titles">
-              <td style="text-align:left;width:30rem;font-weight:bold"><?php echo _("Revision"); ?></td>
-              <td style="text-align:left"><?php echo htmlspecialchars(get_revison(), ENT_QUOTES); ?></td>
+              <td style="text-align:left;width:30%;font-weight:bold; padding:0.5rem; font-size:0.8rem"><?php echo _("Revision"); ?></td>
+              <td style="text-align:left; padding:0.5rem; font-size:0.8rem"><?php echo htmlspecialchars(get_revison(), ENT_QUOTES); ?></td>
             </tr>
             <tr class="tr cbi-section-table-titles">
-              <td style="text-align:left;width:30rem;font-weight:bold"><?php echo _("Kernel Version"); ?></td>
-              <td style="text-align:left"><?php echo htmlspecialchars($kernel_version, ENT_QUOTES); ?></td>
+              <td style="text-align:left;width:30%;font-weight:bold; padding:0.5rem; font-size:0.8rem"><?php echo _("Kernel Version"); ?></td>
+              <td style="text-align:left; padding:0.5rem; font-size:0.8rem"><?php echo htmlspecialchars($kernel_version, ENT_QUOTES); ?></td>
             </tr>
             <tr class="tr cbi-section-table-titles">
-              <td style="text-align:left;width:30rem;font-weight:bold"><?php echo _("SN"); ?></td>
-              <td style="text-align:left"><?php echo htmlspecialchars($sn, ENT_QUOTES); ?></td>
+              <td style="text-align:left;width:30%;font-weight:bold; padding:0.5rem; font-size:0.8rem"><?php echo _("SN"); ?></td>
+              <td style="text-align:left; padding:0.5rem; font-size:0.8rem"><?php echo htmlspecialchars($sn, ENT_QUOTES); ?></td>
             </tr>
             <tr class="tr cbi-section-table-titles">
-              <td style="text-align:left;width:30rem;font-weight:bold"><?php echo _("Update Date"); ?></td>
-              <td style="text-align:left"><?php echo htmlspecialchars($fw_date, ENT_QUOTES); ?></td>
+              <td style="text-align:left;width:30%;font-weight:bold; padding:0.5rem; font-size:0.8rem"><?php echo _("Update Date"); ?></td>
+              <td style="text-align:left; padding:0.5rem; font-size:0.8rem"><?php echo htmlspecialchars($fw_date, ENT_QUOTES); ?></td>
             </tr>
             <tr class="tr cbi-section-table-titles">
-              <td style="text-align:left;width:30rem;font-weight:bold"><?php echo _("Local Time"); ?></td>
-              <td style="text-align:left" name="local_time" id="local_time"><?php echo htmlspecialchars($local_time, ENT_QUOTES); ?></td>
+              <td style="text-align:left;width:30%;font-weight:bold; padding:0.5rem; font-size:0.8rem"><?php echo _("Local Time"); ?></td>
+              <td style="text-align:left; padding:0.5rem; font-size:0.8rem" name="local_time" id="local_time"><?php echo htmlspecialchars($local_time, ENT_QUOTES); ?></td>
             </tr>
             <tr class="tr cbi-section-table-titles">
-              <td style="text-align:left;width:30rem;font-weight:bold"><?php echo _("Uptime"); ?></td>
-              <td style="text-align:left"  name="uptime" id="uptime"><?php echo htmlspecialchars($uptime, ENT_QUOTES); ?></td>
+              <td style="text-align:left;width:30%;font-weight:bold; padding:0.5rem; font-size:0.8rem"><?php echo _("Uptime"); ?></td>
+              <td style="text-align:left; padding:0.5rem; font-size:0.8rem"  name="uptime" id="uptime"><?php echo htmlspecialchars($uptime, ENT_QUOTES); ?></td>
             </tr>
-            <tr class="tr cbi-section-table-titles">
+            <!-- <tr class="tr cbi-section-table-titles">
               <td style="text-align:left;width:30rem;font-weight:bold"><?php echo _("Memory Used"); ?></td>
               
               <td style="text-align:left"  name="memory" id="memory">
@@ -82,7 +82,7 @@
                   </div>
                 </div>
               </td>
-            </tr>
+            </tr> -->
           </table>
           </div>
         </div>
