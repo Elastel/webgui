@@ -47,7 +47,7 @@ function saveBACnetClientConfig($status)
     exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct baccli');
 
     if ($_POST['enabled'] == "1") {
-        if ($_POST['port'] == NULL || (int)($_POST['port']) > 65535 || (int)($_POST['device_id']) > 65535) {
+        if ($_POST['port'] == NULL || (int)($_POST['port']) > 65535) {
             return false;
         }
     }
