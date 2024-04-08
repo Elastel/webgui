@@ -13,7 +13,7 @@ if [ $model == "EG500" -o $model == "EG410" -o $model == "ElastBox400" ]; then
 #check openvpn
         if ! type openvpn >/dev/null 2>&1; then
                 echo "openvpn is NOT installed!"
-                sudo apt-get install openvpn
+                sudo apt-get install openvpn -y
 
                 if [ $? -ne 0 ] ; then
                         echo "Failed to install openvpn."
@@ -24,7 +24,7 @@ if [ $model == "EG500" -o $model == "EG410" -o $model == "ElastBox400" ]; then
 #check wireguard
         if ! type wg >/dev/null 2>&1; then
                 echo "wireguard is NOT installed!"
-                sudo apt-get install wireguard
+                sudo apt-get install wireguard -y
 
                 if [ $? -ne 0 ] ; then
                         echo "Failed to install wireguard."
@@ -42,7 +42,7 @@ if [ $model != "EG324L" ]; then
         #check msmtp
         if ! type msmtp >/dev/null 2>&1; then
                 echo "msmtp is NOT installed!"
-                sudo apt-get install msmtp
+                sudo apt-get install msmtp -y
 
                 if [ $? -ne 0 ] ; then
                         echo "Failed to install msmtp."
@@ -52,7 +52,7 @@ if [ $model != "EG324L" ]; then
         #check mutt
         if ! type mutt >/dev/null 2>&1; then
                 echo "mutt is NOT installed!"
-                sudo apt-get install mutt
+                sudo apt-get install mutt -y
 
                 if [ $? -ne 0 ] ; then
                         echo "Failed to install mutt."
@@ -62,7 +62,7 @@ if [ $model != "EG324L" ]; then
 
         if ! type dos2unix > /dev/null 2>&1; then
                 echo "dos2unix is NOT installed!"
-                sudo apt-get install dos2unix
+                sudo apt-get install dos2unix -y
 
                 if [ $? -ne 0 ] ; then
                         echo "Failed to install dos2unix."
