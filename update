@@ -69,6 +69,25 @@ if [ $model != "EG324L" ]; then
                         exit 4
                 fi
         fi
+
+        # check resolvconf
+        resolvconf_path=/etc/resolvconf/resolv.conf.d/head
+        resolvconf_cmd=$(which resolvconf)
+        if [[ -e $resolvconf_path &&  -e $resolvconf_cmd ]]; then
+                echo "$resolvconf_path" " is exist"
+        else
+                sudo apt-get install resolvconf -y
+                if [ $? -ne 0 ] ; then
+                        echo "Failed to install resolvconf."
+                        exit 4
+                fi
+        fi
+
+        if grep -q "nameserver 8.8.8.8" $resolvconf_path; then
+                echo "nameserver exist"
+        else
+                echo -e "nameserver 8.8.8.8\nnameserver 8.8.4.4" >> $resolvconf_path
+        fi
 fi
 
 sleep 1
@@ -150,10 +169,10 @@ if [ $model != "EG324L" ]; then
         sudo ln -s /etc/init.d/firewall /etc/rc5.d/S10firewall
         sudo ln -s /etc/init.d/loragw /etc/rc5.d/S10loragw
 else
-		result=$(ls /etc/ssl/certs/ | wc -l)
-		if [[ $result == "0" ]]; then
-			tar xzvf $path/config/certs.tar.gz -C /etc/ssl/
-		fi
+        result=$(ls /etc/ssl/certs/ | wc -l)
+        if [[ $result == "0" ]]; then
+                tar xzvf $path/config/certs.tar.gz -C /etc/ssl/
+        fi
         sudo rm /etc/init.d/S90terminal
         sudo rm /etc/init.d/S90failover
         sudo rm /etc/init.d/S90lte
