@@ -952,6 +952,9 @@ function handlePageActions($extraFooterScripts, $page, $config)
         case "/firewall_conf":
             DisplayFirewall();
             break;
+        case "/opcuacli_conf":
+            DisplayOpcuaClient();
+            break;
         case "/baccli_conf":
             DisplayBACnetClient();
             break;
@@ -1069,12 +1072,12 @@ function RadioControlCustom($title, $name, $id, $event, $num = null, $descr = nu
         <label class="cbi-value-title">'.htmlspecialchars($title, ENT_QUOTES).'</label>' , PHP_EOL;
     echo '<input class="cbi-input-radio" id="'.htmlspecialchars($id, ENT_QUOTES).'_enable'.$num.'" ';
     echo 'name="'.htmlspecialchars($name, ENT_QUOTES).$num.'" value="1" type="radio" checked ';
-    echo 'onchange="' . htmlspecialchars($event, ENT_QUOTES). '(true'.(($num != null)?(','.$num):'').')">';
+    echo 'onchange="' . htmlspecialchars($event, ENT_QUOTES). '(true'.(($num != null)?(','.$num):'').', \''.$id.'\')">';
     echo '<label >' . _('Enable') . '</label>';
     echo PHP_EOL;
     echo '<input class="cbi-input-radio" id="'.htmlspecialchars($id, ENT_QUOTES).'_disable'.$num.'" ';
     echo 'name="'.htmlspecialchars($name, ENT_QUOTES).$num.'" value="0" type="radio" ';
-    echo 'onchange="' . htmlspecialchars($event, ENT_QUOTES). '(false'.(($num != null)?(','.$num):'').')">';
+    echo 'onchange="' . htmlspecialchars($event, ENT_QUOTES). '(false'.(($num != null)?(','.$num):'').', \''.$id.'\')">';
     echo '<label >' . _('Disable') . '</label>';
     echo '</div>';
 }
@@ -1087,6 +1090,20 @@ function UploadFileControlCustom($title, $btn_id, $text_id, $file_name, $file_id
         <input type="button" class="cbi-file-btn" id="'.htmlspecialchars($btn_id, ENT_QUOTES).'" value="'._("Choose file").'">
         <span id="'.htmlspecialchars($text_id, ENT_QUOTES).'">'._("No file chosen").'></span>
         <input type="file" class="cbi-file" name="'.htmlspecialchars($file_name, ENT_QUOTES).
+        '" id="'.htmlspecialchars($file_id, ENT_QUOTES).
+        '" onchange="' . htmlspecialchars($event, ENT_QUOTES). '">
+    </label>
+    </div>';
+}
+
+function UploadFileMultipleControlCustom($title, $btn_id, $text_id, $file_name, $file_id, $event)
+{
+    echo '<div class="cbi-value">
+    <label class="cbi-value-title">'.htmlspecialchars($title, ENT_QUOTES).'</label>' , PHP_EOL;
+    echo '<label class="cbi-file-lable">
+        <input type="button" class="cbi-file-btn" id="'.htmlspecialchars($btn_id, ENT_QUOTES).'" value="'._("Choose file").'">
+        <span id="'.htmlspecialchars($text_id, ENT_QUOTES).'">'._("No file chosen").'></span>
+        <input type="file" multiple="multiple" class="cbi-file" name="'.htmlspecialchars($file_name, ENT_QUOTES).
         '" id="'.htmlspecialchars($file_id, ENT_QUOTES).
         '" onchange="' . htmlspecialchars($event, ENT_QUOTES). '">
     </label>

@@ -16,6 +16,7 @@ abstract class TcpProtoEnum {
   const TCP_PROTO_MC = 4;
   const TCP_PROTO_ASCII = 5;
   const TCP_PROTO_IEC104 = 6;
+  const TCP_PROTO_OPCUA = 7;
 };
 
 function get_belonged_interface($com_proto, $tcp_proto)
@@ -148,7 +149,7 @@ function page_interface_tcp($num)
 
   InputControlCustom(_("Frame Interval"), 'tcp_frame_interval'.$num, 'tcp_frame_interval'.$num, _('ms'), 200);
 
-  $tcp_proto = array('Modbus', 'Transparent', 'S7', 'FX', 'MC', 'ASCII', 'IEC104');
+  $tcp_proto = array('Modbus', 'Transparent', 'S7', 'FX', 'MC', 'ASCII', 'IEC104', 'OPCUA');
   SelectControlCustom(_('Protocol'), 'tcp_proto'.$num, $tcp_proto, $tcp_proto[0], 'tcp_proto'.$num, null, "tcpProtocolChange($num)");
 
   echo '<div id="tcp_page_protocol_modbus'.$num.'" name="tcp_page_protocol_modbus'.$num.'">';
@@ -164,9 +165,31 @@ function page_interface_tcp($num)
   InputControlCustom(_("Slot"), 'slot'.$num, 'slot'.$num);
   echo '</div>';
 
+  echo '<div id="tcp_page_protocol_opcua'.$num.'" name="tcp_page_protocol_opcua'.$num.'">';
+  CheckboxControlCustom(_('Anonymous'), 'anonymous'.$num, 'anonymous'.$num, 'checked', null, "anonymousCheckTcp($num)");
+  echo '<div id="page_anonymous'.$num.'" name="page_anonymous'.$num.'">';
+  InputControlCustom(_('Username'), 'username'.$num, 'username'.$num);
+  InputControlCustom(_('Password'), 'password'.$num, 'password'.$num);
+  echo '</div>';
+  /*
+  $policy_list = [_('None'), 'basic128', 'basic256', 'basic256sha256'];
+  SelectControlCustom(_('Security Policy'), 'security_policy'.$num, $policy_list, $policy_list[0], 'security_policy'.$num, null, "securityChangeTcp(this, $num)");
+
+  echo '<div id="page_security'.$num.'" name="page_security'.$num.'">';
+  InputControlCustom(_('URI'), 'uri'.$num, 'uri'.$num, _('If left blank, it will be automatically filled in'));
+
+  UploadFileControlCustom(_('Certificate'), 'cert_btn'.$num, 'cert_text'.$num, 'certificate'.$num, 'certificate'.$num, "certChangeTcp($num)");
+
+  UploadFileControlCustom(_('Private Key'), 'key_btn'.$num, 'key_text'.$num, 'private_key'.$num, 'private_key'.$num, "keyChangeTcp($num)");
+
+  UploadFileMultipleControlCustom(_('Trust Server Certificate'), 'trust_btn'.$num, 'trust_text'.$num, 'trust_crt'.$num.'[]', 'trust_crt'.$num, "trustChangeTcp($num)");
+  echo '</div>';
+  */
+  echo '</div>';
+
   $count = $num - 1;
   exec("uci -P /var/state get dct.connection.tcp_status$count", $tmp);
-  $status = $tmp ?? '-';
+  $status = $tmp[0] ?? '-';
   LabelControlCustom(_("Connection Status"), 'connect_status'.$num, 'connect_status'.$num, $status);
 
   echo '    </div><!-- /.page_tcp -->

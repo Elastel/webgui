@@ -198,6 +198,9 @@ function contentLoaded() {
             loadDIConfig();
             loadDOConfig();
             break;
+        case "opcuacli_conf":
+            loadOpcuaClientConfig();
+            break;
         case "baccli_conf":
             loadBACnetClientConfig();
             break;
@@ -921,7 +924,8 @@ function loadInterfacesConfig() {
         }
 
         var arrTcp = ['server_addr', 'server_port', 'tcp_frame_interval', 'tcp_proto', 'tcp_cmd_interval', 
-                    'tcp_report_center', 'rack', 'slot'];
+                    'tcp_report_center', 'rack', 'slot', 'anonymous', 'username', 'password', 
+                    'security_policy', 'uri', 'certificate', 'private_key', 'trust_crt'];
 
         for (var i = 1; i <= 5; i++) {
             $('#tcp_enabled' + i).val(jsonData['tcp_enabled' + i]);
@@ -933,25 +937,55 @@ function loadInterfacesConfig() {
                     if (jsonData[info + i] == null) {
                         return true;    // continue: return true; break: return false
                     }
-
-                    $('#' + info + i).val(jsonData[info + i]);
+                    if (info == 'anonymous') {
+                        $('#' + info + i).prop('checked', jsonData[info + i] == 1 ? true : false);
+                    } else if (info == 'certificate') {
+                        if (jsonData[info + i]) {
+                            $('#cert_text' + i).html(jsonData[info + i]);
+                        }
+                    } else if (info == 'private_key') {
+                        if (jsonData[info + i]) {
+                            $('#key_text' + i).html(jsonData[info + i]);
+                        }
+                    } else if (info == 'trust_crt') {
+                        if (jsonData[info + i]) {
+                            $('#trust_text' + i).html(jsonData[info + i]);
+                        }
+                    } else {
+                        $('#' + info + i).val(jsonData[info + i]);
+                    } 
                 })
 
                 if (jsonData['tcp_proto' + i] == '2') {
                     //$('#rack' + i).val(jsonData.rack[i]);
                     //$('#slot' + i).val(jsonData.slot[i]);
                     $('#tcp_page_protocol_modbus' + i).hide();
-                    $('#tcp_page_protocol_transparent' + i).hide(); 
+                    $('#tcp_page_protocol_transparent' + i).hide();
+                    $('#tcp_page_protocol_opcua' + i).hide();
                     $('#tcp_page_protocol_s7' + i).show(); 
                 } else if (jsonData['tcp_proto' + i] == '1') {
                     //$('#tcp_report_center' + i).val(jsonData.tcp_report_center[i]);
                     $('#tcp_page_protocol_modbus' + i).hide();
-                    $('#tcp_page_protocol_transparent' + i).show(); 
+                    $('#tcp_page_protocol_transparent' + i).show();
+                    $('#tcp_page_protocol_opcua' + i).hide();
                     $('#tcp_page_protocol_s7' + i).hide(); 
+                } else if (jsonData['tcp_proto' + i] == '7') {
+                    //$('#tcp_report_center' + i).val(jsonData.tcp_report_center[i]);
+                    $('#tcp_page_protocol_modbus' + i).hide();
+                    $('#tcp_page_protocol_transparent' + i).hide();
+                    $('#tcp_page_protocol_opcua' + i).show();
+                    $('#tcp_page_protocol_s7' + i).hide();
+                    anonymousCheckTcp(i);
+                    if (jsonData['security_policy' + i] == '0') {
+                        $('#page_security' + i).hide();
+                    } else {
+                        $('#page_security' + i).show();
+                    }
                 } else {
                     //$('#tcp_cmd_interval' + i).val(jsonData.tcp_cmd_interval[i]);
                     $('#tcp_page_protocol_modbus' + i).show();
-                    $('#tcp_page_protocol_transparent' + i).hide(); 
+                    $('#tcp_page_protocol_transparent' + i).hide();
+                    $('#tcp_page_protocol_opcua' + i).hide();
                     $('#tcp_page_protocol_s7' + i).hide(); 
                 }
             } else {
@@ -996,6 +1030,8 @@ function addSectionTable(table_name, jsonData, option_list) {
         word_len_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real', 'Counter', 'Timer'];
     } else if (table_name == 'mc' || table_name == 'iec104') {
         data_type_value = ['Bit', 'Int', 'Float'];
+    } else if (table_name == 'opcuacli') {
+        data_type_value = ['Bool', 'Byte', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Float', 'String'];
     }
     
     var len = Number(jsonData.length);
@@ -1069,6 +1105,21 @@ function addSectionTable(table_name, jsonData, option_list) {
     var result = get_table_data(table_name, option_list);
     var json_data = JSON.stringify(result);
     $('#hidTD_'+table_name).val(json_data);
+}
+
+function loadOpcuaClientConfig(){
+    $('#loading').show();
+    var table_name = 'opcuacli';
+    $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
+        var jsonData = JSON.parse(data);
+        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'node_name', 
+                        'data_type', 'server_center', 'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
+                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
+                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
+
+        addSectionTable(table_name, jsonData, option_list);
+    });
+    $('#loading').hide();
 }
 
 function loadIec104Config() {
@@ -1815,6 +1866,8 @@ function get_table_data(table_name, option_list) {
         word_len_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real', 'Counter', 'Timer'];
     } else if (table_name == 'mc' || table_name == 'iec104') {
         data_type_value = ['Bit', 'Int', 'Float'];
+    } else if (table_name == 'opcuacli') {
+        data_type_value = ['Bool', 'Byte', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Float', 'String'];
     }
 
     var tr = $('#table_' + table_name + ' tr');
@@ -1893,6 +1946,8 @@ function saveData(table_name) {
         word_len_value = ['Bit', 'Byte', 'Word', 'DWord', 'Real', 'Counter', 'Timer'];
     } else if (table_name == 'mc' || table_name == 'iec104') {
         data_type_value = ['Bit', 'Int', 'Float'];
+    } else if (table_name == 'opcuacli') {
+        data_type_value = ['Bool', 'Byte', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Float', 'String'];
     }
 
     var page_type = document.getElementById("page_type").value;
@@ -2151,13 +2206,22 @@ function tcpProtocolChange(num) {
         $('#tcp_page_protocol_modbus' + numStr).hide();
         $('#tcp_page_protocol_transparent' + numStr).show();
         $('#tcp_page_protocol_s7' + numStr).hide();
+        $('#tcp_page_protocol_opcua' + numStr).hide();
     } else if (protocol == '2') {
         $('#tcp_page_protocol_modbus' + numStr).hide();
         $('#tcp_page_protocol_transparent' + numStr).hide();
+        $('#tcp_page_protocol_opcua' + numStr).hide();
         $('#tcp_page_protocol_s7' + numStr).show();
+    }  else if (protocol == '7') {
+        $('#tcp_page_protocol_modbus' + numStr).hide();
+        $('#tcp_page_protocol_transparent' + numStr).hide();
+        $('#tcp_page_protocol_s7' + numStr).hide();
+        $('#tcp_page_protocol_opcua' + numStr).show();
+        anonymousCheckTcp(numStr);
     } else {
         $('#tcp_page_protocol_modbus' + numStr).show();
         $('#tcp_page_protocol_transparent' + numStr).hide();
+        $('#tcp_page_protocol_opcua' + numStr).hide();
         $('#tcp_page_protocol_s7' + numStr).hide();
     }
 }
@@ -2492,62 +2556,13 @@ function enableBACnet(state) {
     }
 }
 
-$(document).ready(function(){
-    $('.sidebar li a').each(function(){
-        if ($($(this))[0].href == String(window.location)) {
-        $(this).parent().addClass('active');
-        }
-    });
-
-    $('.nav-item').each(function() {
-        if ($(this).hasClass('active')) {
-            var id = $($(this))[0].id;
-            if (id == "dct_basic" || id == "interfaces" || id == "modbus" || id == "s7" ||
-                id == "server" || id == "io" || id == "bacnet" || id == "fx" || id == "datadisplay" ||
-                id == "opcua" || id == "mc" || id == "ascii" || id == "bacnet_client" || id == 'iec104') {
-                $('#navbar-collapse-dct').addClass('show')
-                $('#dct').removeClass('collapsed');
-            } else if (id == "ddns" || id == "macchina") {
-                $('#navbar-collapse-remote').addClass('show');
-                $('#remote').removeClass('collapsed');
-            } else if (id == "wan" || id == "lan" || id == "wifi" || id == "wifi_client" || 
-            id == "online_detection" || id == "lorawan" || id == "firewall") {
-                $('#navbar-collapse-network').addClass('show');
-                $('#network').removeClass('collapsed');
-            } else if (id == "openvpn" || id == "wireguard") {
-                $('#navbar-collapse-vpn').addClass('show');
-                $('#vpn').removeClass('collapsed');
-            } else if (id == "terminal" || id == "gps" || id == "nodered" || id == "docker") {
-                $('#navbar-collapse-services').addClass('show');
-                $('#services').removeClass('collapsed');
-            }
-        }
-    });
-
-    function itemChange(id) {
-        var idArr = ['dct', 'remote', 'network', 'vpn', 'services'];
-        if (id.includes('page_')) {
-        var key = id.slice(5);
-        // console.log(key);
-        if (idArr.includes(key)) {
-            idArr.forEach(function (info) {
-                if (id != 'page_' + info) {
-                // console.log("info:" + info);
-                if ($('#navbar-collapse-' + info).hasClass('show')) {
-                    $('#navbar-collapse-' + info).removeClass('show');
-                    $('#' + info).addClass('collapsed');
-                }
-                }
-            });
-        }
-        }
+function enablePage(state, name) {
+    if (state) {
+        $('#page_' + name).show();
+    } else {
+        $('#page_' + name).hide();
     }
-
-    $('.nav-item').click(function() {
-        var id = $($(this))[0].id;
-        itemChange(id);
-    });
-});
+}
 
 function typeChangeLorawan() {
     var type = document.getElementById('type').value;
@@ -2686,6 +2701,14 @@ function anonymousCheck(check) {
     }
 }
 
+function anonymousCheckTcp(num) {
+    if ($('#anonymous' + num).is(':checked'))  {
+        $('#page_anonymous' + num).hide();
+    } else {
+        $('#page_anonymous' + num).show();
+    }
+}
+
 function enableOpcua(state) {
     if (state) {
         $('#page_opcua').show();
@@ -2732,3 +2755,89 @@ function trustChange() {
 
     $('#trust_text').html(str);
 }
+
+function securityChangeTcp(state, num) {
+    if (state.value == '0') {
+        $('#page_security' + num).hide();
+    } else {
+        $('#page_security' + num).show();
+    }
+}
+
+function certChangeTcp(num) {
+    $('#cert_text' + num).html($('#certificate' + num)[0].files[0].name);
+}
+
+function keyChangeTcp(num) {
+    $('#key_text' + num).html($('#private_key' + num)[0].files[0].name);
+}
+
+function trustChangeTcp(num) {
+    var file = $('#trust_crt' + num)[0].files;
+    var str = '';
+    for (var i = 0, len = file.length; i < len; i++) {
+        str += file[i].name;
+        if (i < len - 1)
+        str += ";";
+    }
+
+    $('#trust_text' + num).html(str);
+}
+
+$(document).ready(function(){
+    $('.sidebar li a').each(function(){
+        if ($($(this))[0].href == String(window.location)) {
+        $(this).parent().addClass('active');
+        }
+    });
+
+    $('.nav-item').each(function() {
+        if ($(this).hasClass('active')) {
+            var id = $($(this))[0].id;
+            if (id == "dct_basic" || id == "interfaces" || id == "modbus" || id == "s7" ||
+                id == "server" || id == "io" || id == "bacnet" || id == "fx" || id == "datadisplay" ||
+                id == "opcua" || id == "mc" || id == "ascii" || id == "bacnet_client" || id == 'iec104' ||
+                id == 'opcua_client') {
+                $('#navbar-collapse-dct').addClass('show')
+                $('#dct').removeClass('collapsed');
+            } else if (id == "ddns" || id == "macchina") {
+                $('#navbar-collapse-remote').addClass('show');
+                $('#remote').removeClass('collapsed');
+            } else if (id == "wan" || id == "lan" || id == "wifi" || id == "wifi_client" || 
+            id == "online_detection" || id == "lorawan" || id == "firewall") {
+                $('#navbar-collapse-network').addClass('show');
+                $('#network').removeClass('collapsed');
+            } else if (id == "openvpn" || id == "wireguard") {
+                $('#navbar-collapse-vpn').addClass('show');
+                $('#vpn').removeClass('collapsed');
+            } else if (id == "terminal" || id == "gps" || id == "nodered" || id == "docker") {
+                $('#navbar-collapse-services').addClass('show');
+                $('#services').removeClass('collapsed');
+            }
+        }
+    });
+
+    function itemChange(id) {
+        var idArr = ['dct', 'remote', 'network', 'vpn', 'services'];
+        if (id.includes('page_')) {
+        var key = id.slice(5);
+        // console.log(key);
+        if (idArr.includes(key)) {
+            idArr.forEach(function (info) {
+                if (id != 'page_' + info) {
+                // console.log("info:" + info);
+                if ($('#navbar-collapse-' + info).hasClass('show')) {
+                    $('#navbar-collapse-' + info).removeClass('show');
+                    $('#' + info).addClass('collapsed');
+                }
+                }
+            });
+        }
+        }
+    }
+
+    $('.nav-item').click(function() {
+        var id = $($(this))[0].id;
+        itemChange(id);
+    });
+});

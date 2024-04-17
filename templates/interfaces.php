@@ -21,7 +21,7 @@
       </div><!-- ./card-header -->
       <div class="card-body">
           <?php $status->showMessages(); ?>
-          <form method="POST" action="interfaces_conf" role="form">
+          <form role="form" action="interfaces_conf" enctype="multipart/form-data" method="POST">
           <?php echo CSRFTokenFieldTag() ?>
 
           <?php if ($model != "ElastBox400") { ?>
@@ -40,10 +40,10 @@
             </ul>
             <!-- Tab panes -->
             <div class="tab-content">
-                <?php page_interface_com(1, $com_proto);?>
-                <?php page_interface_com(2, $com_proto);?>
-                <?php page_interface_com(3, $com_proto);?>
-                <?php page_interface_com(4, $com_proto);?>
+                <?php page_interface_com(1);?>
+                <?php page_interface_com(2);?>
+                <?php page_interface_com(3);?>
+                <?php page_interface_com(4);?>
             </div><!-- /.tab-content -->
           </div>
           <?php } ?>
@@ -59,11 +59,11 @@
             </ul>
             <!-- Tab panes -->
             <div class="tab-content">
-                <?php page_interface_tcp(1, $tcp_proto);?>
-                <?php page_interface_tcp(2, $tcp_proto);?>
-                <?php page_interface_tcp(3, $tcp_proto);?>
-                <?php page_interface_tcp(4, $tcp_proto);?>
-                <?php page_interface_tcp(5, $tcp_proto);?>
+                <?php page_interface_tcp(1);?>
+                <?php page_interface_tcp(2);?>
+                <?php page_interface_tcp(3);?>
+                <?php page_interface_tcp(4);?>
+                <?php page_interface_tcp(5);?>
             </div><!-- /.tab-content -->
           </div>
           <?php echo $buttons ?>

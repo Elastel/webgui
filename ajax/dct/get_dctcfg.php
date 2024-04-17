@@ -21,7 +21,7 @@ if ($type == 'datadisplay') {
         exec("/usr/sbin/get_config dct name $type 5", $data);
     else if ($type == 'modbus' || $type == 'ascii' || $type == 's7'|| $type == 'fx' ||
              $type == 'mc' || $type == 'adc' || $type == 'di' || $type == 'do' || 
-             $type == 'iec104')
+             $type == 'iec104' || $type == 'opcuacli')
         exec("/usr/sbin/get_config dct type $type 1", $data);
     else
         exec("/usr/sbin/get_config dct name $type 1", $data);

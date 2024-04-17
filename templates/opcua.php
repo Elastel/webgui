@@ -51,7 +51,7 @@
 
             UploadFileControlCustom(_('Private Key'), 'key_btn', 'key_text', 'private_key', 'private_key', 'keyChange()');
 
-            UploadFileControlCustom(_('Trust Client Certificate'), 'trust_btn', 'trust_text', 'trust_crt[]', 'trust_crt', 'trustChange()');
+            UploadFileMultipleControlCustom(_('Trust Client Certificate'), 'trust_btn', 'trust_text', 'trust_crt[]', 'trust_crt', 'trustChange()');
             echo '</div>
             </div>
             </div>';

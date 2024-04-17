@@ -6,9 +6,9 @@
     "com_key" : ["com_enabled", "baudrate", "databit", "stopbit", "parity", "com_frame_interval",
 					"com_proto", "com_cmd_interval", "com_report_center"],
     "tcp_server_option" : ["enabled", "server_addr", "server_port", "frame_interval", "proto", "cmd_interval", "report_center", 
-							"rack", "slot"],
+							"rack", "slot", "anonymous", "username", "password", "security_policy", "uri", "certificate", "private_key", "trust_crt"],
     "tcp_server_key" : ["tcp_enabled", "server_addr", "server_port", "tcp_frame_interval", "tcp_proto", "tcp_cmd_interval", 
-						"tcp_report_center", "rack", "slot"],
+						"tcp_report_center", "rack", "slot", "anonymous", "username", "password", "security_policy", "uri", "certificate", "private_key", "trust_crt"],
     "modbus_option" : ["order", "device_name", "belonged_com", "factor_name", "device_id", "function_code", "reg_addr",
 						"reg_count", "data_type", "server_center", "operator", "operand", "ex", "accuracy", "sms_reporting",
 						"report_type", "alarm_up", "alarm_down", "phone_num", "email", "contents", "retry_interval", "again_interval", "enabled"],
@@ -70,6 +70,12 @@
 						"operator", "operand", "ex", "accuracy", "enabled"],
     "opcua_option" : ["enabled", "port", "anonymous", "max_value", "enable_database", "username", "password", "security_policy",
 						"uri", "certificate", "private_key", "trust_crt"],
-    "bacnet_option" : ["enabled", "ifname", "port", "device_id", "object_name"]
+    "bacnet_option" : ["enabled", "ifname", "port", "device_id", "object_name"],
+	"opcuacli_option" : ["order", "device_name", "belonged_com", "factor_name", "node_name", "data_type", "server_center", 
+						"operator", "operand", "ex", "accuracy", "sms_reporting",
+						"report_type", "alarm_up", "alarm_down", "phone_num", "email", "contents", "retry_interval", "again_interval", "enabled"],
+	"opcuacli_field" : ["Order", "Device Name", "Belonged Interface", "Factor Name", "Node Name", "Data Type", "Reporting Center", 
+						"Operator", "Operand", "Operation Expression", "Accuracy", "SMS&Email Reporting",
+						"Report Type", "Alarm Up Limit", "Alarm Down Limit", "Phone Number", "Email", "Contents", "Retry Interval", "Again Interval", "Enable"]
 	
 }
