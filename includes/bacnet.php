@@ -38,17 +38,22 @@ function DisplayBACnet()
 function saveBACnetConfig($status)
 {
     exec("sudo /usr/local/bin/uci set dct.bacnet.enabled=" . $_POST['enabled']);
-    exec("sudo /usr/local/bin/uci set dct.bacnet.ifname=" .$_POST['ifname']);
-    exec("sudo /usr/local/bin/uci set dct.bacnet.port=" .$_POST['port']);
+    exec("sudo /usr/local/bin/uci set dct.bacnet.proto=" . $_POST['proto']);
+    if ($_POST['proto'] == 0) {
+        exec("sudo /usr/local/bin/uci set dct.bacnet.ifname=" .$_POST['ifname']);
+        exec("sudo /usr/local/bin/uci set dct.bacnet.port=" .$_POST['port']);
+    } else {
+        exec("sudo /usr/local/bin/uci set dct.bacnet.interface=" .$_POST['interface']);
+        exec("sudo /usr/local/bin/uci set dct.bacnet.baudrate=" .$_POST['baudrate']);
+        exec("sudo /usr/local/bin/uci set dct.bacnet.mac=" .$_POST['mac']);
+        exec("sudo /usr/local/bin/uci set dct.bacnet.max_master=" .$_POST['max_master']);
+        exec("sudo /usr/local/bin/uci set dct.bacnet.frames=" .$_POST['frames']);
+    }
+    
     exec("sudo /usr/local/bin/uci set dct.bacnet.device_id=" .$_POST['device_id']);
     exec("sudo /usr/local/bin/uci set dct.bacnet.object_name=" .$_POST['object_name']);
     exec("sudo /usr/local/bin/uci commit dct");
 
-    if ($_POST['enabled'] == "1") {
-        if ($_POST['port'] == NULL || (int)($_POST['port']) > 65535 || (int)($_POST['device_id']) > 65535) {
-            return false;
-        }
-    }
     
     $status->addMessage('BACnet configuration updated ', 'success');
     return true;

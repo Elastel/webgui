@@ -2,10 +2,12 @@
 
 PROG=/usr/sbin/dctd
 BACNET_PROG=/usr/sbin/bacserv
+BACNET_MSTP_PROG=/usr/sbin/bacserv-mstp
+BACCLI_PROG=/usr/sbin/baccli
 
 do_start()
 {
-	local enabled hour_enabled day_enabled bacnet_enabled
+	local enabled hour_enabled day_enabled bacnet_enabled proto
 
 	enabled=$(uci get dct.basic.enabled)
 	[ "$enabled" = "1" ] || return
@@ -13,9 +15,19 @@ do_start()
 	$PROG >/dev/null &
 
 	bacnet_enabled=$(uci get dct.bacnet.enabled)
-	[ "$bacnet_enabled" = "1" ] || return
+	[ "$bacnet_enabled" = "1" ] && {
+		proto=$(uci get dct.bacnet.proto)
+		if [[ "$proto" == "0" ]]; then
+			$BACNET_PROG >/dev/null &
+		else
+			$BACNET_MSTP_PROG >/dev/null &
+		fi
+	}
 
-	$BACNET_PROG >/dev/null &
+	baccli_enabled=$(uci get dct.bacnet_client.enabled)
+	[ "$baccli_enabled" = "1" ] && {
+		$BACCLI_PROG >/dev/null &
+	}
 }
 
 do_stop()
@@ -32,6 +44,20 @@ do_stop()
 	[ -n "$(pgrep bacserv)" ] && {
 		sleep 1
 		kill -9 $(pgrep bacserv)
+	}
+
+	killall -q baccli
+	sleep 1
+	[ -n "$(pgrep baccli)" ] && {
+		sleep 1
+		kill -9 $(pgrep baccli)
+	}
+
+	killall -q bacserv-mstp
+	sleep 1
+	[ -n "$(pgrep bacserv-mstp)" ] && {
+		sleep 1
+		kill -9 $(pgrep bacserv-mstp)
 	}
 }
 

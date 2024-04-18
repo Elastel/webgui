@@ -628,7 +628,8 @@ function loadDataDisplay() {
 function loadBACnetConfig() {
     $.get('ajax/dct/get_dctcfg.php?type=bacnet',function(data){
         jsonData = JSON.parse(data);
-        var arr = ['ifname', 'port', 'device_id', 'object_name'];
+        var arr = ['proto', 'ifname', 'port', 'interface', 'baudrate', 'mac',
+                    'max_master', 'frames', 'device_id', 'object_name'];
 
         $('#enabled').val(jsonData.enabled);
         if (jsonData.enabled == '1') {
@@ -646,6 +647,7 @@ function loadBACnetConfig() {
             $('#page_bacnet').hide();
             $('#bacnet_disable').prop('checked', true);
         }
+        bacnetProtocolChange();
     });
 }
 
@@ -2782,6 +2784,17 @@ function trustChangeTcp(num) {
     }
 
     $('#trust_text' + num).html(str);
+}
+
+function bacnetProtocolChange()
+{
+    if ($('#proto').val() == '0') {
+        $('#page_proto_ip').show();
+        $('#page_proto_mstp').hide();
+    } else {
+        $('#page_proto_ip').hide();
+        $('#page_proto_mstp').show();
+    }
 }
 
 $(document).ready(function(){
