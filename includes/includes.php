@@ -47,6 +47,7 @@ require_once 'includes/nodered.php';
 require_once 'includes/docker.php';
 require_once 'includes/iec104.php';
 require_once 'includes/opcua_client.php';
+require_once 'includes/bacnet_router.php';
 
 $config = getConfig();
 $model = getModel();

@@ -19,6 +19,19 @@ if ($type == "gps") {
             $servicedata[$info] = $val[0];
         }
     } 
+} else if ($type == "bacnet_router") {
+    $arrInfo = array('mode', 'ifname', 'port', 'interface', 'baudrate', 'mac',
+    'max_master', 'frames');
+
+    exec("/usr/local/bin/uci get bacnet_router.bacnet.enabled", $enabled);
+    $servicedata['enabled'] = $enabled[0];
+    if ($enabled[0] == "1") {
+        foreach ($arrInfo as $info) {
+            unset($val);
+            exec("sudo /usr/local/bin/uci get bacnet_router.bacnet." . $info, $val);
+            $servicedata[$info] = $val[0];
+        }
+    } 
 }
 
 echo json_encode($servicedata);

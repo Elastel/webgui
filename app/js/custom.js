@@ -231,10 +231,39 @@ function contentLoaded() {
         case "gps":
             loadGps();
             break;
+        case "bacnet_router":
+            loadBacnetRouter();
+            break;
         case "firewall_conf":
             loadFirewall();
             break;
     }
+}
+
+function loadBacnetRouter() {
+    $.get('ajax/service/get_service.php?type=bacnet_router', function(data) {
+        // console.log(data);
+        jsonData = JSON.parse(data);
+        var arr = ['mode', 'ifname', 'port', 'interface', 'baudrate', 'mac',
+                    'max_master', 'frames'];
+
+        $('#enabled').val(jsonData.enabled);
+        if (jsonData.enabled == '1') {
+            $('#page_bacnet').show();
+            $('#bacnet_enable').prop('checked', true);
+
+            arr.forEach(function (info) {
+                if (info == null) {
+                    return true;    // continue: return true; break: return false
+                }
+
+                $('#' + info).val(jsonData[info]);
+            })
+        } else {
+            $('#page_bacnet').hide();
+            $('#bacnet_disable').prop('checked', true);
+        }
+    })
 }
 
 function getDashboardData() {
@@ -2823,7 +2852,8 @@ $(document).ready(function(){
             } else if (id == "openvpn" || id == "wireguard") {
                 $('#navbar-collapse-vpn').addClass('show');
                 $('#vpn').removeClass('collapsed');
-            } else if (id == "terminal" || id == "gps" || id == "nodered" || id == "docker") {
+            } else if (id == "terminal" || id == "gps" || id == "nodered" || 
+            id == "docker" || id == "bacnet_router") {
                 $('#navbar-collapse-services').addClass('show');
                 $('#services').removeClass('collapsed');
             }

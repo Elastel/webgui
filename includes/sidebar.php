@@ -52,7 +52,7 @@
                 <li class="nav-item" name="opcua_client" id="opcua_client"><a class="nav-link" href="opcuacli_conf"><?php echo _("OPCUA Client"); ?></a></li>
                 <li class="nav-item" name="bacnet_client" id="bacnet_client"><a class="nav-link" href="baccli_conf"><?php echo _("BACnet Client"); ?></a></li>
                 <li class="nav-item" name="server" id="server"><a class="nav-link" href="server_conf"><?php echo _("Server"); ?></a></li>
-                <li class="nav-item" name="opcua" id="opcua"><a class="nav-link" href="opcua"><?php echo _("OPC UA"); ?></a></li>
+                <li class="nav-item" name="opcua" id="opcua"><a class="nav-link" href="opcua"><?php echo _("OPCUA Server"); ?></a></li>
                 <li class="nav-item" name="bacnet" id="bacnet"><a class="nav-link" href="bacnet"><?php echo _("BACnet Server"); ?></a></li>
                 <li class="nav-item" name="datadisplay" id="datadisplay"><a class="nav-link" href="datadisplay"><?php echo _("Data Display"); ?></a></li>
             </ul>
@@ -100,6 +100,9 @@
                 <?php endif; ?>
                 <?php if(isBinExists("dockerd")) : ?>
                 <li class="nav-item" name="docker" id="docker"> <a class="nav-link" href="docker"><?php echo _("Docker"); ?></a></li>
+                <?php endif; ?>
+                <?php if(isBinExists("router-mstp")) : ?>
+                <li class="nav-item" name="bacnet_router" id="bacnet_router"> <a class="nav-link" href="bacnet_router"><?php echo _("BACnet Router"); ?></a></li>
                 <?php endif; ?>
             </ul>
             </div>
