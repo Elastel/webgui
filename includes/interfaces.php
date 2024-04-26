@@ -164,7 +164,7 @@ function saveTcpConfig($status)
             $data['anonymous' . $i] = $_POST['anonymous' . $i];
             $data['username' . $i] = $_POST['username' . $i];
             $data['password' . $i] = $_POST['password' . $i];
-            /*
+            
             $data['security_policy' . $i] = $_POST['security_policy' . $i];
             if ($data['security_policy' . $i] != '0') {
                 if (strlen($_FILES['certificate' . $i]['name']) > 0) {
@@ -214,7 +214,6 @@ function saveTcpConfig($status)
                     $data['trust_crt' . $i] = $trustName;
                 }
             }
-            */
         }
     }
 

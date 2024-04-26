@@ -171,7 +171,7 @@ function page_interface_tcp($num)
   InputControlCustom(_('Username'), 'username'.$num, 'username'.$num);
   InputControlCustom(_('Password'), 'password'.$num, 'password'.$num);
   echo '</div>';
-  /*
+  
   $policy_list = [_('None'), 'basic128', 'basic256', 'basic256sha256'];
   SelectControlCustom(_('Security Policy'), 'security_policy'.$num, $policy_list, $policy_list[0], 'security_policy'.$num, null, "securityChangeTcp(this, $num)");
 
@@ -184,7 +184,7 @@ function page_interface_tcp($num)
 
   UploadFileMultipleControlCustom(_('Trust Server Certificate'), 'trust_btn'.$num, 'trust_text'.$num, 'trust_crt'.$num.'[]', 'trust_crt'.$num, "trustChangeTcp($num)");
   echo '</div>';
-  */
+  
   echo '</div>';
 
   $count = $num - 1;

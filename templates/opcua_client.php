@@ -83,7 +83,7 @@
 
       InputControlCustom(_('Node Name'), $table_name.'.node_name', $table_name.'.node_name');
 
-      $data_type_list = ["Bool", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Float"/*, "String"*/];
+      $data_type_list = ["Bool", "Byte", "Int16", "UInt16", "Int32", "UInt32", "Float", "String"];
       SelectControlCustom(_('Data Type'), $table_name.'.data_type', $data_type_list, $data_type_list[0], $table_name.'.data_type');
 
       InputControlCustom(_('Reporting Center'), $table_name.'.server_center', $table_name.'.server_center', _('Multiple Servers Are Separated By Minus'));
