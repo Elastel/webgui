@@ -15,7 +15,7 @@
       <div class="card-header">
         <div class="row">
           <div class="col">
-          <?php echo _("BACnet Client(BBMD)"); ?>
+          <?php echo _("BACnet Client"); ?>
           </div>
         </div><!-- ./row -->
       </div><!-- ./card-header -->
@@ -28,11 +28,43 @@
                 RadioControlCustom(_('BACnet Client'), 'enabled', 'bacnet', 'enableBACnet');
           
                 echo '<div id="page_bacnet" name="page_bacnet">';
+                $proto = array('BACnet/IP', 'BACnet/MSTP');
+                SelectControlCustom(_('Protocol'), 'proto', $proto, $proto[0], 'proto', null, "bacnetProtocolChange()");
+
+                echo '<div id="page_proto_ip" name="page_proto_ip">';
+                SelectControlCustom(_('Interface'), 'ifname', $interface_list, $interface[0], 'ifname');
+                // InputControlCustom(_('Remote IP'), 'ip_address', 'ip_address', _('If not, leave blank'));
                 InputControlCustom(_('Port'), 'port', 'port', _('1~65535'));
 
-                InputControlCustom(_('Device ID'), 'device_id', 'device_id', _('1~65535'));
+                CheckboxControlCustom(_('BBMD'), 'bbmd_enabled', 'bbmd_enabled', null, null, 'enableBBMD()');
+                echo '<div id="page_bbmd" name="page_bbmd">';
+                InputControlCustom(_('Remote BBMD IP'), 'bbmd_ip', 'bbmd_ip');
+                InputControlCustom(_('BBMD Port'), 'bbmd_port', 'bbmd_port', _('1~65535'));
+                InputControlCustom(_('Registration Time'), 'bbmd_time', 'bbmd_time', _('minutes'));
+                echo '</div>';
+                echo '</div>';
 
-                InputControlCustom(_('Name'), 'name', 'name');
+                echo '<div id="page_proto_mstp" name="page_proto_mstp">';
+                exec("cat /etc/fw_model", $model);
+                
+                if ($model[0] == "EG324" || $model[0] == "EG324L") {
+                  $comlist = array('COM1'=>'COM1', 'COM2'=>'COM2');
+                } else {
+                  $comlist = array('COM1'=>'COM1');
+                }
+                SelectControlCustom(_('Interface'), 'interface', $comlist, $comlist[0], 'interface');
+
+                $baudrate_list = array('1200'=>'1200', '2400'=>'2400', '4800'=>'4800', '9600'=>'9600', '19200'=>'19200', '38400'=>'38400',
+                '57600'=>'57600', '115200'=>'115200', '230400'=>'230400');
+                SelectControlCustom(_('Baudrate'), 'baudrate', $baudrate_list, $baudrate_list['38400'], 'baudrate');
+                InputControlCustom(_('Source Address'), 'mac', 'mac');
+                InputControlCustom(_('Max Master'), 'max_master', 'max_master', _('1~127'));
+                InputControlCustom(_('Frames'), 'frames', 'frames', _('1~127'));
+                echo '</div>';
+
+                InputControlCustom(_('Device ID'), 'device_id', 'device_id', _('1~65535'));
+                $collect_mode = array('poll'=>'poll', 'cov'=>'cov');
+                SelectControlCustom(_('Collect Mode'), 'collect_mode', $collect_mode, $collect_mode[0], 'collect_mode');
               ?>
 
                 <input type="hidden" name="table_data" value="" id="hidTD_baccli">
@@ -43,6 +75,7 @@
                     array("name"=>"Order",                "style"=>"", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Factor Name",          "style"=>"", "descr"=>"Multiple Factors Are Separated By Semicolon", "ctl"=>"input"),
+                    array("name"=>"Object Device ID",            "style"=>"", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Object Identifier",    "style"=>"", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
                     array("name"=>"Operator",             "style"=>"display:none", "descr"=>"0 + - * /", "ctl"=>"select"),
@@ -80,6 +113,8 @@
       InputControlCustom(_('Device Name'), $table_name.'.device_name', $table_name.'.device_name');
 
       InputControlCustom(_('Factor Name'), $table_name.'.factor_name', $table_name.'.factor_name', _('Multiple Factors Are Separated By Semicolon'));
+      
+      InputControlCustom(_('Object Device ID'), $table_name.'.object_device_id', $table_name.'.object_device_id');
 
       InputControlCustom(_('Object Identifier'), $table_name.'.object_id', $table_name.'.object_id');
 

@@ -4,78 +4,91 @@ PROG=/usr/sbin/dctd
 BACNET_PROG=/usr/sbin/bacserv
 BACNET_MSTP_PROG=/usr/sbin/bacserv-mstp
 BACCLI_PROG=/usr/sbin/baccli
+BACCLI_MSTP_PROG=/usr/sbin/baccli-mstp
 
 do_start()
 {
-	local enabled hour_enabled day_enabled bacnet_enabled proto
+        local enabled hour_enabled day_enabled bacnet_enabled proto baccli_enabled baccli_proto
 
-	enabled=$(uci get dct.basic.enabled)
-	[ "$enabled" = "1" ] || return
+        enabled=$(uci get dct.basic.enabled)
+        [ "$enabled" = "1" ] || return
 
-	$PROG >/dev/null &
+        $PROG >/dev/null &
 
-	bacnet_enabled=$(uci get dct.bacnet.enabled)
-	[ "$bacnet_enabled" = "1" ] && {
-		proto=$(uci get dct.bacnet.proto)
-		if [ "$proto" = "0" ]; then
-			$BACNET_PROG >/dev/null &
-		else
-			$BACNET_MSTP_PROG >/dev/null &
-		fi
-	}
+        bacnet_enabled=$(uci get dct.bacnet.enabled)
+        [ "$bacnet_enabled" = "1" ] && {
+                proto=$(uci get dct.bacnet.proto)
+                if [ "$proto" = "0" ]; then
+                        $BACNET_PROG >/dev/null &
+                else
+                        $BACNET_MSTP_PROG >/dev/null &
+                fi
+        }
 
-	baccli_enabled=$(uci get dct.bacnet_client.enabled)
-	[ "$baccli_enabled" = "1" ] && {
-		$BACCLI_PROG >/dev/null &
-	}
+        baccli_enabled=$(uci get dct.bacnet_client.enabled)
+        [ "$baccli_enabled" = "1" ] && {
+                proto=$(uci get dct.bacnet_client.proto)
+                if [ "$proto" = "0" ]; then
+                        $BACCLI_PROG >/dev/null &
+                else
+                        $BACCLI_MSTP_PROG >/dev/null &
+                fi
+        }
 }
 
 do_stop()
 {
-	killall -q dctd
-	sleep 1
-	[ -n "$(pgrep dctd)" ] && {
-		sleep 1
-		kill -9 $(pgrep dctd)
-	}
+        killall -q dctd
+        sleep 1
+        [ -n "$(pgrep dctd)" ] && {
+                sleep 1
+                kill -9 $(pgrep dctd)
+        }
 
-	killall -q bacserv
-	sleep 1
-	[ -n "$(pgrep bacserv)" ] && {
-		sleep 1
-		kill -9 $(pgrep bacserv)
-	}
+        killall -q bacserv
+        sleep 1
+        [ -n "$(pgrep bacserv)" ] && {
+                sleep 1
+                kill -9 $(pgrep bacserv)
+        }
 
-	killall -q baccli
-	sleep 1
-	[ -n "$(pgrep baccli)" ] && {
-		sleep 1
-		kill -9 $(pgrep baccli)
-	}
+        killall -q baccli
+        sleep 1
+        [ -n "$(pgrep baccli)" ] && {
+                sleep 1
+                kill -9 $(pgrep baccli)
+        }
 
-	killall -q bacserv-mstp
-	sleep 1
-	[ -n "$(pgrep bacserv-mstp)" ] && {
-		sleep 1
-		kill -9 $(pgrep bacserv-mstp)
-	}
+        killall -q bacserv-mstp
+        sleep 1
+        [ -n "$(pgrep bacserv-mstp)" ] && {
+                sleep 1
+                kill -9 $(pgrep bacserv-mstp)
+        }
+
+		killall -q baccli-mstp
+        sleep 1
+        [ -n "$(pgrep baccli-mstp)" ] && {
+                sleep 1
+                kill -9 $(pgrep baccli-mstp)
+        }
 }
 
 case "$1" in
   start)
-	do_start
-	;;
+        do_start
+        ;;
   stop)
-	do_stop
-	;;
+        do_stop
+        ;;
   restart|force-reload)
-	$0 stop
-	$0 start
-	;;
+        $0 stop
+        $0 start
+        ;;
   *)
-	echo "Usage: $SCRIPTNAME {start|stop|restart}" >&2
-	exit 3
-	;;
+        echo "Usage: $SCRIPTNAME {start|stop|restart}" >&2
+        exit 3
+        ;;
 esac
 
 :

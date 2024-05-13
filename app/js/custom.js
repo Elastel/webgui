@@ -1304,7 +1304,9 @@ function loadBACnetClientConfig() {
         if (jsonData == null)
             return;
 
-        var arr = ['ip_address', 'port', 'device_id', 'name'];
+        var arr = ['proto', 'ifname', 'ip_address', 'port', 'bbmd_enabled', 'bbmd_ip', 
+            'bbmd_port', 'bbmd_time', 'interface', 'baudrate', 'mac', 
+            'max_master', 'frames', 'device_id', 'collect_mode'];
 
         $('#enabled').val(jsonData.enabled);
         if (jsonData.enabled == '1') {
@@ -1315,16 +1317,21 @@ function loadBACnetClientConfig() {
                 if (info == null) {
                     return true;    // continue: return true; break: return false
                 }
-
-                $('#' + info).val(jsonData[info]);
+                if (info == 'bbmd_enabled') {
+                    $('#' + info).prop('checked', (jsonData[info] == '1') ? true:false);
+                } else {
+                    $('#' + info).val(jsonData[info]);
+                }
             })
         } else {
             $('#page_bacnet').hide();
             $('#bacnet_disable').prop('checked', true);
         }
 
+        bacnetProtocolChange();
+
         var tmpData = jsonData.baccli;
-        var option_list = ['order', 'device_name', 'factor_name', 'object_id', 
+        var option_list = ['order', 'device_name', 'factor_name', 'object_device_id', 'object_id', 
                         'server_center', 'operator', 'operand', 'ex', 'accuracy', 'enabled'];
 
         addSectionTable(table_name, tmpData, option_list);
@@ -2823,6 +2830,18 @@ function bacnetProtocolChange()
     } else {
         $('#page_proto_ip').hide();
         $('#page_proto_mstp').show();
+    }
+    enableBBMD();
+}
+
+
+function enableBBMD() {
+    var checked = document.getElementById('bbmd_enabled').checked;
+
+    if (checked) {
+        $('#page_bbmd').show();
+    } else {
+        $('#page_bbmd').hide();
     }
 }
 
