@@ -51,7 +51,7 @@
                 <?php endif; ?>
                 <li class="nav-item" name="opcua_client" id="opcua_client"><a class="nav-link" href="opcuacli_conf"><?php echo _("OPCUA Client"); ?></a></li>
                 <li class="nav-item" name="bacnet_client" id="bacnet_client"><a class="nav-link" href="baccli_conf"><?php echo _("BACnet Client"); ?></a></li>
-                <li class="nav-item" name="server" id="server"><a class="nav-link" href="server_conf"><?php echo _("Server"); ?></a></li>
+                <li class="nav-item" name="server" id="server"><a class="nav-link" href="server_conf"><?php echo _("Reporting Server"); ?></a></li>
                 <li class="nav-item" name="opcua" id="opcua"><a class="nav-link" href="opcua"><?php echo _("OPCUA Server"); ?></a></li>
                 <li class="nav-item" name="bacnet" id="bacnet"><a class="nav-link" href="bacnet"><?php echo _("BACnet Server"); ?></a></li>
                 <li class="nav-item" name="datadisplay" id="datadisplay"><a class="nav-link" href="datadisplay"><?php echo _("Data Display"); ?></a></li>

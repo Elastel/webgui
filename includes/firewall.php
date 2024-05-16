@@ -113,7 +113,7 @@ function DisplayFirewall()
 
     echo renderTemplate(
         "firewall", compact(
-            "status",
+            "status"
         )
     );
 }
