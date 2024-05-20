@@ -107,12 +107,20 @@
             </ul>
             </div>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="auth_conf"><i class="fas fa-user-lock fa-fw mr-2"></i><span class="nav-label"><?php echo _("Authentication"); ?></a>
+        <li class="nav-item" id="page_system">
+            <a class="nav-link navbar-toggle collapsed" id="system" href="#" data-toggle="collapse" data-target="#navbar-collapse-system">
+                <i class="fas fa-cogs fa-fw mr-2"></i>
+                <span class="nav-label"><?php echo _("System"); ?></a>
+            </a>
+            <div class="collapse navbar-collapse" id="navbar-collapse-system">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="nav-item" name="system_info" id="system_info"> <a class="nav-link" href="system_info"><?php echo _("System"); ?></a></li>
+                <li class="nav-item" name="auth_conf" id="auth_conf"> <a class="nav-link" href="auth_conf"><?php echo _("Authentication"); ?></a></li>
+                <li class="nav-item" name="backup_update" id="backup_update"> <a class="nav-link" href="backup_update"><?php echo _("Update/Restore"); ?></a></li>
+            </ul>
+            </div>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="system_info"><i class="fas fa-cube fa-fw mr-2"></i><span class="nav-label"><?php echo _("System"); ?></a>
-        </li>
+
         <li class="nav-item">
             <a class="nav-link" href="about"><i class="fas fa-info-circle fa-fw mr-2"></i><span class="nav-label"><?php echo _("About Elastel"); ?></a>
         </li>

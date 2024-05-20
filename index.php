@@ -85,6 +85,7 @@ require_once 'includes/includes.php';
 
     <!-- Custom JS -->
     <script src="app/js/custom.js"></script>
+    <script src="app/js/system.js"></script>
 
     <?php loadFooterScripts($extraFooterScripts); ?>
   </body>

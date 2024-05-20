@@ -967,6 +967,9 @@ function handlePageActions($extraFooterScripts, $page, $config)
         case "/bacnet_router":
             DisplayBacnetRouter();
             break;
+        case "/backup_update":
+            DisplayBackupUpdate();
+            break;
         default:
             DisplayDashboard($extraFooterScripts);
     }
@@ -1091,7 +1094,7 @@ function UploadFileControlCustom($title, $btn_id, $text_id, $file_name, $file_id
     <label class="cbi-value-title">'.htmlspecialchars($title, ENT_QUOTES).'</label>' , PHP_EOL;
     echo '<label class="cbi-file-lable">
         <input type="button" class="cbi-file-btn" id="'.htmlspecialchars($btn_id, ENT_QUOTES).'" value="'._("Choose file").'">
-        <span id="'.htmlspecialchars($text_id, ENT_QUOTES).'">'._("No file chosen").'></span>
+        <span id="'.htmlspecialchars($text_id, ENT_QUOTES).'">'._("No file chosen").'</span>
         <input type="file" class="cbi-file" name="'.htmlspecialchars($file_name, ENT_QUOTES).
         '" id="'.htmlspecialchars($file_id, ENT_QUOTES).
         '" onchange="' . htmlspecialchars($event, ENT_QUOTES). '">
@@ -1105,7 +1108,7 @@ function UploadFileMultipleControlCustom($title, $btn_id, $text_id, $file_name, 
     <label class="cbi-value-title">'.htmlspecialchars($title, ENT_QUOTES).'</label>' , PHP_EOL;
     echo '<label class="cbi-file-lable">
         <input type="button" class="cbi-file-btn" id="'.htmlspecialchars($btn_id, ENT_QUOTES).'" value="'._("Choose file").'">
-        <span id="'.htmlspecialchars($text_id, ENT_QUOTES).'">'._("No file chosen").'></span>
+        <span id="'.htmlspecialchars($text_id, ENT_QUOTES).'">'._("No file chosen").'</span>
         <input type="file" multiple="multiple" class="cbi-file" name="'.htmlspecialchars($file_name, ENT_QUOTES).
         '" id="'.htmlspecialchars($file_id, ENT_QUOTES).
         '" onchange="' . htmlspecialchars($event, ENT_QUOTES). '">

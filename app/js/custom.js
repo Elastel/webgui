@@ -2875,6 +2875,9 @@ $(document).ready(function(){
             id == "docker" || id == "bacnet_router") {
                 $('#navbar-collapse-services').addClass('show');
                 $('#services').removeClass('collapsed');
+            } else if (id == "system_info" || id == "auth_conf" || id == 'backup_update') {
+                $('#navbar-collapse-system').addClass('show');
+                $('#system').removeClass('collapsed');
             }
         }
     });

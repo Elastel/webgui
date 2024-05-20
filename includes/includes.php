@@ -48,6 +48,7 @@ require_once 'includes/docker.php';
 require_once 'includes/iec104.php';
 require_once 'includes/opcua_client.php';
 require_once 'includes/bacnet_router.php';
+require_once 'includes/backup_update.php';
 
 $config = getConfig();
 $model = getModel();

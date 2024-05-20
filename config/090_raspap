@@ -129,3 +129,5 @@ www-data ALL=(ALL) NOPASSWD:/bin/systemctl * dhcpcd.service
 www-data ALL=(ALL) NOPASSWD:/usr/bin/dos2unix *
 www-data ALL=(ALL) NOPASSWD:/usr/sbin/set_config *
 www-data ALL=(ALL) NOPASSWD:/etc/init.d/bacnet_router *
+www-data ALL=(ALL) NOPASSWD:/usr/bin/git *
+www-data ALL=(ALL) NOPASSWD:/var/www/html/update *

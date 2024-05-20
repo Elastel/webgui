@@ -207,19 +207,13 @@ fi
 
 sleep 1
 sudo /etc/init.d/dct stop
-sleep 1
 sudo /etc/init.d/lte stop
-sleep 1
 sudo /etc/init.d/failover stop
-sleep 1
 sudo /etc/init.d/ddns stop
-sleep 1
 sudo /etc/init.d/terminal stop
-sleep 1
 sudo /etc/init.d/gps stop
-sleep 1
 sudo /etc/init.d/loragw stop
-sleep 1
+sleep 2
 
 if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" ]]; then
 	sudo cp -r $path/Elastel/$model/usr/* /usr/
