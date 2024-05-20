@@ -22,43 +22,47 @@ function updateProgress(percentage) {
 }
 
 $('#update_node').click(function(){
-    $('#page_progress').css('display', 'block');
-    let randomPercentage = 0;
-    // 模拟进度更新
-    var intervalId = setInterval(() => {
-        randomPercentage = randomPercentage + 5;
-        updateProgress(randomPercentage);
-    }, 2000);
-
-    $.get('ajax/system/system.php?type=update_node',function(data) {
-        var jsonData = JSON.parse(data);
-        console.log(jsonData);
-        if (json.hasOwnProperty('error')) {
-            clearInterval(intervalId);
-            $('#progress_info').html(jsonData['error']);
-            $('#progress_info').css('color', 'red');
-        } else {
-            clearInterval(intervalId);
-            updateProgress(100);
-        }
-    }) 
+    if (confirm("Please confirm whether to execute the update node？")) {
+        $('#page_progress').css('display', 'block');
+        let randomPercentage = 0;
+        // 模拟进度更新
+        var intervalId = setInterval(() => {
+            randomPercentage = randomPercentage + 5;
+            updateProgress(randomPercentage);
+        }, 2000);
+    
+        $.get('ajax/system/system.php?type=update_node',function(data) {
+            var jsonData = JSON.parse(data);
+            console.log(jsonData);
+            if (json.hasOwnProperty('error')) {
+                clearInterval(intervalId);
+                $('#progress_info').html(jsonData['error']);
+                $('#progress_info').css('color', 'red');
+            } else {
+                clearInterval(intervalId);
+                updateProgress(100);
+            }
+        })
+    }
 })
 
 $('#reset_configs').click(function(){
-    $('#progress_info').html('Please do not power off or operate the page, restore in progress...');
-    $('#page_progress').css('display', 'block');
-    let randomPercentage = 0;
-    // 模拟进度更新
-    var intervalId = setInterval(() => {
-        randomPercentage = randomPercentage + 5;
-        updateProgress(randomPercentage);
-    }, 2000);
+    if (confirm("Please confirm whether to perform a restore？")) {
+        $('#progress_info').html('Please do not power off or operate the page, restore in progress...');
+        $('#page_progress').css('display', 'block');
+        let randomPercentage = 0;
+        // 模拟进度更新
+        var intervalId = setInterval(() => {
+            randomPercentage = randomPercentage + 5;
+            updateProgress(randomPercentage);
+        }, 2000);
 
-    $.get('ajax/system/system.php?type=reset_configs',function(data) {
-        clearInterval(intervalId);
-        updateProgress(100);
-        $('#progress_info').html('Restore done, it will reboot...');
-    }) 
+        $.get('ajax/system/system.php?type=reset_configs',function(data) {
+            clearInterval(intervalId);
+            updateProgress(100);
+            $('#progress_info').html('Restore done, it will reboot...');
+        })
+    }
 })
 
 $('.download_backup').click(function(){
