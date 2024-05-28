@@ -131,3 +131,7 @@ www-data ALL=(ALL) NOPASSWD:/usr/sbin/set_config *
 www-data ALL=(ALL) NOPASSWD:/etc/init.d/bacnet_router *
 www-data ALL=(ALL) NOPASSWD:/usr/bin/git *
 www-data ALL=(ALL) NOPASSWD:/var/www/html/update *
+www-data ALL=(ALL) NOPASSWD:/usr/bin/grep *
+www-data ALL=(ALL) NOPASSWD:/bin/sed -i * /etc/chirpstack-gateway-bridge/chirpstack-gateway-bridge.toml
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl * chirpstack.service
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl * chirpstack-gateway-bridge.service

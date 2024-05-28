@@ -964,6 +964,9 @@ function handlePageActions($extraFooterScripts, $page, $config)
         case "/docker":
             DisplayDocker();
             break;
+        case "/chirpstack":
+            DisplayChirpstack();
+            break;
         case "/bacnet_router":
             DisplayBacnetRouter();
             break;

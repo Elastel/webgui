@@ -104,6 +104,9 @@
                 <?php if(isBinExists("router-mstp")) : ?>
                 <li class="nav-item" name="bacnet_router" id="bacnet_router"> <a class="nav-link" href="bacnet_router"><?php echo _("BACnet Router"); ?></a></li>
                 <?php endif; ?>
+                <?php if(isBinExists("chirpstack")) : ?>
+                <li class="nav-item" name="chirpstack" id="chirpstack"> <a class="nav-link" href="chirpstack"><?php echo _("Chirpstack"); ?></a></li>
+                <?php endif; ?>
             </ul>
             </div>
         </li>

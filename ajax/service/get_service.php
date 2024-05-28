@@ -32,6 +32,19 @@ if ($type == "gps") {
             $servicedata[$info] = $val[0];
         }
     } 
+} else if ($type == "chirpstack") {
+    $new_region = $_GET['region'];
+    exec('sudo grep -r "event_topic_template" /etc/chirpstack-gateway-bridge/chirpstack-gateway-bridge.toml', $tmp);
+    preg_match('/"([^"]*)"/', $tmp[0], $cur_region);
+    $array = explode("/", $cur_region[1]);
+    unset($cur_region);
+    $cur_region = $array[0];
+
+    exec("sudo sed -i 's/$cur_region/$new_region/g' /etc/chirpstack-gateway-bridge/chirpstack-gateway-bridge.toml");
+    $servicedata['region'] = "eu868";
+
+    exec('sudo systemctl restart chirpstack.service');
+    exec('sudo systemctl restart chirpstack-gateway-bridge.service');
 }
 
 echo json_encode($servicedata);

@@ -2845,6 +2845,13 @@ function enableBBMD() {
     }
 }
 
+$('#chirpstack_region').change(function(){
+    $('#loading').show();
+    $.get('ajax/service/get_service.php?type=chirpstack&region=' + $('#chirpstack_region').val(),function() {
+        $('#loading').hide();
+    }) 
+})
+
 $(document).ready(function(){
     $('.sidebar li a').each(function(){
         if ($($(this))[0].href == String(window.location)) {
@@ -2872,7 +2879,7 @@ $(document).ready(function(){
                 $('#navbar-collapse-vpn').addClass('show');
                 $('#vpn').removeClass('collapsed');
             } else if (id == "terminal" || id == "gps" || id == "nodered" || 
-            id == "docker" || id == "bacnet_router") {
+            id == "docker" || id == "bacnet_router" || id == "chirpstack") {
                 $('#navbar-collapse-services').addClass('show');
                 $('#services').removeClass('collapsed');
             } else if (id == "system_info" || id == "auth_conf" || id == 'backup_update') {
