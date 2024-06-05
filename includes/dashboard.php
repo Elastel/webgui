@@ -5,6 +5,28 @@ require_once 'includes/wifi_functions.php';
 require_once 'includes/functions.php';
 require_once 'app/lib/system.php';
 
+
+function timeCalculation($seconds)
+{
+    $day = $seconds > 86400 ? floor($seconds / 86400) : 0;
+    $seconds -= $day * 86400;
+    $hour = $seconds > 3600 ? floor($seconds / 3600) : 0;
+    $seconds -= $hour * 3600;
+    $minute = $seconds > 60 ? floor($seconds / 60) : 0;
+    $seconds -= $minute * 60;
+    $second = $seconds;
+ 
+    $dayText = $day ? $day . ' day ' : '';
+    $hourText = $hour ? $hour . ' hours ' : '';
+    $minuteText = $minute ? $minute . ' minutes ' : '';
+    // $date = $dayText . $hourText . $minuteText . $second . 's';
+    $date = $dayText . $hourText . $minuteText;
+
+    $date = $date ?? '-';
+
+    return $date;
+}
+
 function get_revison()
 {
     $dev_model = getModel();
@@ -172,6 +194,7 @@ function DisplayDashboard(&$extraFooterScripts)
         exec('uci -P /var/state/ get dangle.dev.imei', $imei);
 		exec('uci -P /var/state/ get dangle.dev.sim', $sim);
         exec('uci -P /var/state/ get dangle.dev.connect', $lte_status);
+        exec('uci -P /var/state/ get dangle.dev.uptime', $uptime);
 		
         if ($enabled[0] == '0') {
             $lte_status[0] = "DISCONNECTED";
@@ -186,6 +209,7 @@ function DisplayDashboard(&$extraFooterScripts)
         $lteInfo["imei"] = $imei[0] ?? '-';
         $lteInfo["lte_status"] = $lte_status[0]  ?? "DISCONNECTED";
 		$lteInfo["sim"] = $sim[0] ?? '-';
+        $lteInfo["uptime"] = $uptime[0] ? timeCalculation($uptime[0]) : '-';
     }
 
     exec('ip route | grep "default"  | grep -c "wlan0"', $wifi_enabled);

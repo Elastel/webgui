@@ -153,6 +153,9 @@
                         <div class="row mb-1">
                           <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("Status:"); ?></div><div class="col-xs-3"><?php echo $lteInfo["lte_status"]; ?></div>
                         </div>
+                        <div class="row mb-1">
+                          <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("Uptime:"); ?></div><div class="col-xs-3"><?php echo $lteInfo["uptime"]; ?></div>
+                        </div>
                       </div>
                     </div>
                   <?php } ?>
