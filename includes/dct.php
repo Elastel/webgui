@@ -173,7 +173,7 @@ function page_interface_tcp($num)
   echo '</div>';
   
   $policy_list = [_('None'), 'basic128', 'basic256', 'basic256sha256'];
-  SelectControlCustom(_('Security Policy'), 'security_policy'.$num, $policy_list, $policy_list[0], 'security_policy'.$num, null, "securityChangeTcp(this, $num)");
+  SelectControlCustom(_('Security Policy'), 'security_policy'.$num, $policy_list, $policy_list[0], 'security_policy'.$num, null, "securityChangeTcp($num)");
 
   echo '<div id="page_security'.$num.'" name="page_security'.$num.'">';
   InputControlCustom(_('URI'), 'uri'.$num, 'uri'.$num, _('If left blank, it will be automatically filled in'));
@@ -445,7 +445,7 @@ echo "<div class=\"tab-pane $active\" id=\"server$num\">
                 <label class=\"cbi-value-title\">"; echo _("Connection Status"); echo "</label>";
                 $count = $num - 1;
                 exec("uci -P /var/state get dct.connection.status$count", $status);
-                echo "<label id=\"connect_status$num\" name=\"connect_status$num\">"; echo _(empty($status) ? "-" : $status[0]); echo "</label>
+                echo "<label id=\"connect_status$num\" name=\"connect_status$num\">"; echo _(empty($status[0]) ? "-" : $status[0]); echo "</label>
               </div>
             </div>
           </div><!-- /.page_server -->
