@@ -1,3 +1,75 @@
+
+function doesColumnExist(tableId, columnName) {
+    var table = document.getElementById(tableId);
+    var headers = table.querySelectorAll('th');
+    for (var i = 0; i < headers.length; i++) {
+        if (headers[i].textContent.trim() === columnName) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function insertColumn(tableId, name, headerName, newHeaderName) {
+    if (doesColumnExist(tableId, newHeaderName))
+        return;
+
+    var table = document.getElementById(tableId);
+    var rows = table.getElementsByTagName('tr');
+    var th_num = 0;
+
+    var headers = table.getElementsByTagName('th');
+    var columnIndex = 0;
+    
+    for (var i = 0; i < headers.length; i++) {
+        if (headers[i].textContent === headerName) {
+            columnIndex = i + 1;
+        }
+    }
+
+    for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        var td = document.createElement('td');
+        td.setAttribute('name', name);
+        td.style.fontWeight = "bold";
+        td.style.color = "blue";
+        td.style.textAlign = 'center';
+        td.innerHTML = '-';
+
+        if (row.getElementsByTagName('th').length > 0) {
+            var th = document.createElement('th');
+            th.classList.add("th");
+            th.classList.add("cbi-section-table-cell");
+            if (th_num == 0) {
+                th.innerHTML = newHeaderName;
+                th_num++;
+            }
+
+            row.insertBefore(th, row.cells[columnIndex]);
+        } else {
+            row.insertBefore(td, row.cells[columnIndex]);
+        }
+    }
+}
+
+function deleteColumnByHeader(tableId, headerName) {
+    if (!doesColumnExist(tableId, headerName))
+        return;
+
+    var table = document.getElementById(tableId);
+    const cells = table.getElementsByTagName('th');
+    for (let i = 0; i < cells.length; i++) {
+        if (cells[i].textContent === headerName) {
+            const columnIndex = i;
+            const rows = table.rows;
+            for (let j = 0; j < rows.length; j++) {
+                rows[j].deleteCell(columnIndex);
+            }
+            break;
+        }
+    }
+}
+
 /*basic*/
 function loadBasicConfig() {
     $('#loading').show();
@@ -430,7 +502,7 @@ function addSectionTable(table_name, jsonData, option_list) {
                 contents += '   <td style="text-align:center" name="'+key+'">'+ cur_status +'</td>\n';
             } else if (key == 'enabled' || key == 'sms_reporting') {
                 contents += '   <td style="' + ((key == 'enabled') ? 'text-align:center' : 'display:none') + '"><input type="checkbox" name="' +
-                             key + (table_name == 'baccli' ? '_baccli' : '') + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + 
+                             key + ((table_name == 'baccli' && key == 'enabled') ? '_baccli' : '') + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + 
                              ' onclick="updateData(\''+table_name+'\')"></td>\n';
             } else {
                 contents += '   <td style="text-align:center" name="'+key+'">'+ ((mode == 1 && key == 'debounce_interval') ? '-' : jsonData[i][key]) +'</td>\n';
@@ -443,9 +515,46 @@ function addSectionTable(table_name, jsonData, option_list) {
         table.innerHTML += contents;
     }
 
+    insertColumn("table_" + table_name, 'cur_value', 'Factor Name', 'Current Value');
+
     var result = get_table_data(table_name, option_list);
     var json_data = JSON.stringify(result);
     $('#hidTD_'+table_name).val(json_data);
+}
+
+/*datadisplay*/
+function getRealtimeData() {
+    $.get('ajax/dct/get_dctcfg.php?type=datadisplay', function(data) {
+        jsonData = JSON.parse(data);
+        //console.log(jsonData);
+
+        const trList = document.querySelectorAll('table tr');
+        trList.forEach((tr) => {
+            if (tr.querySelector('td[name="factor_name"]')) {
+                //console.log(tr.querySelector('td[name="factor_name"]').innerHTML);
+                var factor = tr.querySelector('td[name="factor_name"]').innerHTML;
+                var factorList = factor.split(';');
+                var cur_value = '';
+                factorList.forEach((key) => {
+                    if (jsonData.hasOwnProperty(key)) {
+                        cur_value += jsonData[key] + ';';
+                    }    
+                })
+
+                if (cur_value.slice(-1) === ';') {
+                    cur_value = cur_value.slice(0, -1);
+                }
+            }
+            if (tr.querySelector('td[name="cur_value"]')) {
+                tr.querySelector('td[name="cur_value"]').innerHTML = cur_value.length > 0 ? cur_value : '-';
+            }
+        });
+    });
+}
+
+function loadRealtimeData() {
+    getRealtimeData();
+    setInterval(getRealtimeData, 1000);
 }
 
 /*modbus*/
@@ -462,6 +571,8 @@ function loadModbusConfig() {
 
         addSectionTable(table_name, jsonData, option_list);
     });
+
+    loadRealtimeData();
     $('#loading').hide();
 }
 
@@ -492,6 +603,8 @@ function loadS7Config() {
                         'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
         addSectionTable(table_name, jsonData, option_list);
     });
+
+    loadRealtimeData();
     $('#loading').hide();
 }
 
@@ -508,6 +621,8 @@ function loadFxConfig() {
                         'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
         addSectionTable(table_name, jsonData, option_list);
     });
+
+    loadRealtimeData();
     $('#loading').hide();
 }
 
@@ -524,6 +639,8 @@ function loadMcConfig() {
                         'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
         addSectionTable(table_name, jsonData, option_list);
     });
+
+    loadRealtimeData();
     $('#loading').hide();
 }
 
@@ -540,6 +657,8 @@ function loadIec104Config() {
                         'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
         addSectionTable(table_name, jsonData, option_list);
     });
+
+    loadRealtimeData();
     $('#loading').hide();
 }
 
@@ -560,6 +679,7 @@ function loadADCConfig() {
             addSectionTable(table_name, jsonData, option_list);
         }
 
+        loadRealtimeData();
         $('#loading').hide();
     });
 }
@@ -577,6 +697,7 @@ function loadDIConfig() {
 
         addSectionTable(table_name, jsonData, option_list);
 
+        loadRealtimeData();
         $('#loading').hide();
     });
 }
@@ -594,6 +715,7 @@ function loadDOConfig() {
 
         addSectionTable(table_name, jsonData, option_list);
 
+        loadRealtimeData();
         $('#loading').hide();
     });
 }
@@ -611,6 +733,8 @@ function loadOpcuaClientConfig(){
 
         addSectionTable(table_name, jsonData, option_list);
     });
+
+    loadRealtimeData();
     $('#loading').hide();
 }
 
@@ -655,6 +779,7 @@ function loadBACnetClientConfig() {
 
         addSectionTable(table_name, tmpData, option_list);
 
+        loadRealtimeData();
         $('#loading').hide();
     });
 }
@@ -1100,32 +1225,37 @@ function get_table_data(table_name, option_list) {
             var num = 0;
             tmp += '{';
             option_list.forEach(function (option) {
+                var val = tds.filter('[name="'+ option +'"]').text();
+                // console.log(val);
+
                 if (option == 'enabled' || option == 'sms_reporting') {
-                    tmp += '"' + option + '":"' + ($($(tds[num++]).find('input'))[0].checked ? 1 : 0) + '",';
+                    var check = tds.find('input[name="' + ((table_name == 'baccli' && option == 'enabled') ? (option + '_baccli') : option) + '"]').is(':checked');
+                    // console.log(check);
+                    tmp += '"' + option + '":"' + ( check ? 1 : 0) + '",';
                 } else if (option == 'data_type') {
-                    tmp += '"' + option + '":"' + data_type_value.indexOf($(tds[num++]).html()) + '",';
+                    tmp += '"' + option + '":"' + data_type_value.indexOf(val) + '",';
                 } else if (option == 'reg_type') {
-                    tmp += '"' + option + '":"' + reg_type_value.indexOf($(tds[num++]).html()) + '",';
+                    tmp += '"' + option + '":"' + reg_type_value.indexOf(val) + '",';
                 } else if (option == 'word_len') {
-                    tmp += '"' + option + '":"' + word_len_value.indexOf($(tds[num++]).html()) + '",';
+                    tmp += '"' + option + '":"' + word_len_value.indexOf(val) + '",';
                 } else if (option == 'cap_type') {
-                    tmp += '"' + option + '":"' + cap_type_value.indexOf($(tds[num++]).html()) + '",';
+                    tmp += '"' + option + '":"' + cap_type_value.indexOf(val) + '",';
                 } else if (option == 'mode') {
-                    tmp += '"' + option + '":"' + mode_value.indexOf($(tds[num++]).html()) + '",';
+                    tmp += '"' + option + '":"' + mode_value.indexOf(val) + '",';
                 } else if (option == 'count_method') {
-                    tmp += '"' + option + '":"' + count_method_value.indexOf($(tds[num++]).html()) + '",';
+                    tmp += '"' + option + '":"' + count_method_value.indexOf(val) + '",';
                 } else if (option == 'init_status') {
-                    tmp += '"' + option + '":"' + status_value.indexOf($(tds[num++]).html()) + '",';
+                    tmp += '"' + option + '":"' + status_value.indexOf(val) + '",';
                 } else if (option == 'cur_status') {
-                    var cur_status = $(tds[num++]).html();
+                    var cur_status = val;
                     if (cur_status == '0' || cur_status == '1')
-                        cur_status = status_value.indexOf($(tds[num++]).html());
+                        cur_status = status_value.indexOf(val);
                     
                     tmp += '"' + option + '":"' + cur_status + '",';
                 } else if (option == 'type_id') {
-                    tmp += '"' + option + '":"' + findKey(type_id_list, $(tds[num++]).html()) + '",';
+                    tmp += '"' + option + '":"' + findKey(type_id_list, val) + '",';
                 } else  {
-                    tmp += '"' + option + '":"' + $(tds[num++]).html() + '",';
+                    tmp += '"' + option + '":"' + val + '",';
                 }
             })
 
@@ -1226,6 +1356,7 @@ function saveData(table_name) {
 
     var table = document.getElementById("table_" + table_name);
     if (page_type == "0") {
+        deleteColumnByHeader("table_" + table_name, 'Current Value');
         var contents = '';
         contents += '<tr  class="tr cbi-section-table-descr">\n';
         option_list.forEach(function(option){
@@ -1234,8 +1365,9 @@ function saveData(table_name) {
                 option == 'email' || option == 'contents' || option == 'retry_interval' || option == 'again_interval') {
                 contents += '   <td style="display:none" name="'+option+'">'+ (option_value[option].length > 0 ? option_value[option] : "-") +'</td>\n';
             } else if (option == 'enabled' || option == 'sms_reporting') {
-                contents += '   <td style="' + ((option == 'enabled') ? 'text-align:center' : 'display:none') + '"><input type="checkbox" name="' + option + (table_name == 'baccli' ? '_baccli' : '') +'" ' +
-                (option_value[option] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
+                contents += '   <td style="' + ((option == 'enabled') ? 'text-align:center' : 'display:none') + '"><input type="checkbox" name="' + option + 
+                ((table_name == 'baccli' && option == 'enabled') ? '_baccli' : '') +'" ' + (option_value[option] == '1' ? 'checked' : ' ') + 
+                ' onclick="updateData(\''+table_name+'\')"></td>\n';
             } else {
                 contents += '   <td style="text-align:center" name="'+option+'">'+ (option_value[option] ? option_value[option] : "-") +'</td>\n';
             }
@@ -1244,24 +1376,29 @@ function saveData(table_name) {
             '       <td><a href="javascript:void(0);" onclick="delData(this, \''+table_name+'\');" >Del</a></td>\n' +
             '   </tr>';
         table.innerHTML += contents;
+
+        insertColumn("table_" + table_name, 'cur_value', 'Factor Name', 'Current Value');
     } else {
         var num = 0;
         option_list.forEach(function (option){
             if (option == 'enabled' || option == 'sms_reporting') {
-                // 获取所有的checkbox元素
+                // Get all checkbox elements
                 var trs = table.getElementsByTagName("tr");
                 var checkboxes = trs[page_type].getElementsByTagName("input");
-                // 遍历checkbox元素
+                // Traverse checkbox elements
                 for (var i = 0; i < checkboxes.length; i++) {
-                    // 判断是否为checkbox类型
-                    if ((checkboxes[i].type === "checkbox" && checkboxes[i].name == option)) {
-                        checkboxes[i].checked = option_value[option] == '1' ? true : false;
+                    // Determine if it is of checkbox type
+                    var m_option = (table_name == 'baccli' && option == 'enabled') ? (option + '_baccli') : option;
+                    console.log(m_option);
+                    if ((checkboxes[i].type === "checkbox" && checkboxes[i].name == m_option)) {
+                        checkboxes[i].checked = (option_value[option] == '1') ? true : false;
                         num++;
                         break;  
                     }
                 }
             } else {
-                table.rows[Number(page_type)].cells[num++].innerHTML = (option_value[option].length > 0 ? option_value[option] : "-");
+                // console.log(table.rows[Number(page_type)].querySelector('td[name="'+ option +'"]').innerHTML);
+                table.rows[Number(page_type)].querySelector('td[name="'+ option +'"]').innerHTML = (option_value[option].length > 0 ? option_value[option] : "-");
             }
         })
     }
@@ -1312,7 +1449,7 @@ function editData(object, table_name) {
     var num = 0;
     var tmp = $('#option_list_'+table_name).val();
     var option_list = tmp.split(",");
-    var value = $(object).parent().parent().find("td");
+    var tds = $(object).parent().parent().find("td");
     var io_type;
 
     if (table_name == 'adc' || table_name == 'di' || table_name == 'do') {
@@ -1321,17 +1458,20 @@ function editData(object, table_name) {
     }
 
     option_list.forEach(function(option) {
+        var val = tds.filter('[name="'+ option +'"]').text();
+
         if (option == 'data_type' || option == 'reg_type' || option == 'word_len' || option == 'cap_type' ||
             option == 'cap_type' || option == 'mode' || option == 'count_method' || option == 'init_status' || option == 'type_id') {
-            setSelectByText(table_name + '.'  + option, value.eq(num++).text());
+            setSelectByText(table_name + '.'  + option, val);
         } else if (option == 'index') {
-            document.getElementById(table_name + '.'  + option + '.' + io_type).value = value.eq(num++).text();
+            document.getElementById(table_name + '.'  + option + '.' + io_type).value = val;
         } else if (option == 'enabled' || option == 'sms_reporting') {
-            document.getElementById(table_name + '.'  + option).checked = value.eq(num++).find("input")[0].checked;
+            var check = tds.find('input[name="' + ((table_name == 'baccli' && option == 'enabled') ? (option + '_baccli') : option) + '"]').is(':checked');
+            document.getElementById(table_name + '.'  + option).checked = check;
         } else if (option == 'cur_status') {
-            document.getElementById(table_name + '.'  + option).innerHTML = value.eq(num++).text();
+            document.getElementById(table_name + '.'  + option).innerHTML = val;
         } else {
-            document.getElementById(table_name + '.'  + option).value = value.eq(num++).text();
+            document.getElementById(table_name + '.'  + option).value = val;
         }
     })
     

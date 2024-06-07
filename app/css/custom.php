@@ -339,6 +339,7 @@ canvas#divDBChartBandwidthhourly {
 
 .cbi-section-table {
   max-width: auto;
+  table-layout: fixed;
 }
 
 .cbi-section-table-titles {
