@@ -6,6 +6,8 @@ config interface 'wan'
 
 config interface 'lan'
 	option ifname 'br0'
+	option ip '192.168.1.1'
+	option netmask '255.255.255.0'
 
 config interface 'swan'
 	option proto 'lte'
@@ -17,5 +19,6 @@ config interface 'swan'
 config setting 'detection'
 	option secondary_addr '8.8.8.8'
 	option primary_addr '1.1.1.1'
-	option enabled_reboot '0'
+	option enabled_reboot '1'
+	option reboot_inter '10'
 

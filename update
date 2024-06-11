@@ -116,6 +116,10 @@ if [ "$1" == "reset" ]; then
         sudo cp $path/config/global_conf.json /etc/global_conf.json
         # reset wifi ssid
         sub_mac=$(ifconfig eth0 | grep ether | awk '{print $2}' | cut -f 5-6 -d ":" | tr -d ":")
+
+        if [ ! -f /etc/udev/rules.d/99-wifi-hotplug.rules ]; then
+                sudo cp $path/config/99-wifi-hotplug.rules /etc/udev/rules.d/
+        fi
     else
         if [ -f /etc/init.d/S42htset ]; then
                 sudo rm /etc/init.d/S42htset

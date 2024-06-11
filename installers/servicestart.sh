@@ -136,6 +136,14 @@ fi
 
 sleep "${seconds}"
 
+# check br0 ip
+BR0_IP=$(ip route | grep -c br0)
+if [ $BR0_IP = "0" ]; then
+    BR0_GATEWAY=$(uci get network.lan.ip)
+    BR0_MAK=$(uci get network.lan.netmask)
+    ifconfig br0 $BR0_GATEWAY netmask $BR0_MAK up
+fi
+
 echo "Stopping systemd-networkd"
 systemctl stop systemd-networkd
 

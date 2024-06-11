@@ -261,13 +261,14 @@ function updateDHCPConfig($iface,$status)
     if (isset($_POST['StaticIP'])) {
         $mask = ($_POST['SubnetMask'] !== '' && $_POST['SubnetMask'] !== '0.0.0.0') ? '/'.mask2cidr($_POST['SubnetMask']) : null;
         $cfg[] = 'static ip_address='.$_POST['StaticIP'].$mask;
+        exec('sudo /usr/local/bin/uci set network.lan.ip='.$_POST['StaticIP']);
+        exec('sudo /usr/local/bin/uci set network.lan.netmask='.$_POST['SubnetMask']);
     }
     if (isset($_POST['DefaultGateway'])) {
       $cfg[] = 'static routers='.$_POST['DefaultGateway'];
     }
     if (filter_var($_POST['lan_mac'], FILTER_VALIDATE_MAC)) {
         exec('sudo /usr/local/bin/uci set network.lan.mac=' . $_POST['lan_mac']);
-        exec('sudo /usr/local/bin/uci commit network');
     }
     if ($_POST['DNS1'] !== '' || $_POST['DNS2'] !== '') {
         $cfg[] = 'static domain_name_server='.$_POST['DNS1'].' '.$_POST['DNS2'];
@@ -291,7 +292,8 @@ function updateDHCPConfig($iface,$status)
     }
     file_put_contents('/tmp/dhcpddata', $dhcp_cfg);
     system('sudo cp /tmp/dhcpddata '.RASPI_DHCPCD_CONFIG, $result);
-
+    exec('sudo /usr/local/bin/uci commit network');
+    
     return $result;
 }
 
