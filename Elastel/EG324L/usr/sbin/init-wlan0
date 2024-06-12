@@ -54,3 +54,6 @@ fi
 
 sleep 1
 /etc/init.d/S80dnsmasq restart
+
+# check wifi dongle
+/usr/sbin/wifi_dongle_check.sh &
