@@ -256,9 +256,11 @@ function loadInterfacesConfig() {
 
 function comProtocolChange(num) {
     var numStr = num.toString();
-    var protocol = document.getElementById("com_proto" + numStr).value;
+    var selectElement = document.getElementById('com_proto' + numStr);
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var selectedText = selectedOption.text;
 
-    if (protocol == "1") {
+    if (selectedText == 'Transparent') {
         $('#com_page_protocol_modbus' + numStr).hide();
         $('#com_page_protocol_transparent' + numStr).show();
     } else {
@@ -269,19 +271,21 @@ function comProtocolChange(num) {
 
 function tcpProtocolChange(num) {
     var numStr = num.toString();
-    var protocol = document.getElementById('tcp_proto' + numStr).value;
+    var selectElement = document.getElementById('tcp_proto' + numStr);
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var selectedText = selectedOption.text;
 
-    if (protocol == '1') {
+    if (selectedText == 'Transparent') {
         $('#tcp_page_protocol_modbus' + numStr).hide();
         $('#tcp_page_protocol_transparent' + numStr).show();
         $('#tcp_page_protocol_s7' + numStr).hide();
         $('#tcp_page_protocol_opcua' + numStr).hide();
-    } else if (protocol == '2') {
+    } else if (selectedText == 'S7') {
         $('#tcp_page_protocol_modbus' + numStr).hide();
         $('#tcp_page_protocol_transparent' + numStr).hide();
         $('#tcp_page_protocol_opcua' + numStr).hide();
         $('#tcp_page_protocol_s7' + numStr).show();
-    }  else if (protocol == '7') {
+    }  else if (selectedText == 'OPCUA') {
         $('#tcp_page_protocol_modbus' + numStr).hide();
         $('#tcp_page_protocol_transparent' + numStr).hide();
         $('#tcp_page_protocol_s7' + numStr).hide();
@@ -825,8 +829,8 @@ function loadServerConfig() {
 
         var arr = ["proto", "encap_type", "server_addr", "http_url", "server_port", "cache_enabled", 
         "register_packet", "register_packet_hex", "heartbeat_packet", "heartbeat_packet_hex", "heartbeat_interval",
-        "mqtt_heartbeat_interval", "mqtt_pub_topic", "mqtt_sub_topic", "mqtt_username", "mqtt_password", 
-        "mqtt_client_id", "mqtt_tls_enabled", "certificate_type", "mqtt_ca", "mqtt_cert", "mqtt_key", 
+        "mqtt_heartbeat_interval", "mqtt_pub_topic", "mqtt_sub_topic", "mqtt_username", "mqtt_password", "sparkplug_group_id",
+        "sparkplug_node_id", "sparkplug_device_id", "mqtt_client_id", "mqtt_tls_enabled", "certificate_type", "mqtt_ca", "mqtt_cert", "mqtt_key", 
         "self_define_var", "var_name1_", "var_value1_", "var_name2_", "var_value2_", "var_name3_", "var_value3_", 
         "mn", "st", "pw"];
 
@@ -876,14 +880,21 @@ function enableServer(state, num) {
 }
 
 function protocolChange(num) {
-    var protocol = document.getElementById('proto' + num).value;
+    var selectElement = document.getElementById('proto' + num);
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var selectedText = selectedOption.text;
 
     enableTls(num);
     cerChange(num);
-    enableVar(num);
-    encapChange(num);
-
-    if (protocol == '0' || protocol == '1') {
+    if (selectedText != 'SparkPlugB') {
+        enableVar(num);
+        encapChange(num);
+    } else {
+        $('#page_json' + num).hide();
+        $('#page_hj212_' + num).hide();
+    }
+    
+    if (selectedText == 'TCP' || selectedText == 'UDP') {
         $('#page_mqtt' + num).hide();
         $('#page_url' + num).hide(); 
         $('#page_tcp' + num).show(); 
@@ -892,16 +903,24 @@ function protocolChange(num) {
         $('#page_encap' + num).show(); 
         $('#page_status' + num).show();
         $('#page_cache' + num).show();
-    } else if (protocol == '2') {
+    } else if (selectedText == 'MQTT' || selectedText == 'SparkPlugB') {
         $('#page_mqtt' + num).show();
         $('#page_url' + num).hide(); 
         $('#page_tcp' + num).hide(); 
         $('#page_addr' + num).show(); 
         $('#page_port' + num).show(); 
-        $('#page_encap' + num).show(); 
         $('#page_status' + num).show();
         $('#page_cache' + num).show();
-    } else if (protocol == '3')  {
+        if (selectedText == 'MQTT') {
+            $('#page_encap' + num).show();
+            $('#page_topic' + num).show();
+            $('#page_sparkplug' + num).hide();
+        } else {
+            $('#page_encap' + num).hide();
+            $('#page_topic' + num).hide();
+            $('#page_sparkplug' + num).show();
+        }
+    } else if (selectedText == 'HTTP')  {
         $('#page_mqtt' + num).hide();
         $('#page_url' + num).show(); 
         $('#page_tcp' + num).hide(); 
@@ -910,7 +929,7 @@ function protocolChange(num) {
         $('#page_encap' + num).show(); 
         $('#page_status' + num).hide();
         $('#page_cache' + num).hide();
-    } else if (protocol == '4' || protocol == '5') {
+    } else if (selectedText == 'MODBUS TCP' || selectedText == 'TCP Server') {
         $('#page_mqtt' + num).hide();
         $('#page_url' + num).hide(); 
         $('#page_tcp' + num).hide(); 

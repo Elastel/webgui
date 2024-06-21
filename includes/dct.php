@@ -222,9 +222,10 @@ echo "<div class=\"tab-pane $active\" id=\"server$num\">
                 <option value=\"0\" selected=\"\">TCP</option>
                 <option value=\"1\">UDP</option>
                 <option value=\"2\">MQTT</option>
-                <option value=\"3\">HTTP</option>
-                <option value=\"4\">MODBUS TCP</option>
-                <option value=\"5\">TCP Server</option>
+                <option value=\"3\">SparkPlugB</option>
+                <option value=\"4\">HTTP</option>
+                <option value=\"5\">MODBUS TCP</option>
+                <option value=\"6\">TCP Server</option>
               </select>
             </div>
 
@@ -310,14 +311,33 @@ echo "<div class=\"tab-pane $active\" id=\"server$num\">
                 <label class=\"cbi-value-description\">"; echo _("Seconds, 0 means Default Heartbeat"); echo "</label>
               </div>
 
-              <div class=\"cbi-value\">
-                <label class=\"cbi-value-title\">"; echo _("MQTT Public Topic"); echo "</label>
-                <input type=\"text\" class=\"cbi-input-text\" name=\"mqtt_pub_topic$num\" id=\"mqtt_pub_topic$num\" />
+              <div name=\"page_topic$num\" id=\"page_topic$num\">
+                <div class=\"cbi-value\">
+                  <label class=\"cbi-value-title\">"; echo _("MQTT Public Topic"); echo "</label>
+                  <input type=\"text\" class=\"cbi-input-text\" name=\"mqtt_pub_topic$num\" id=\"mqtt_pub_topic$num\" />
+                </div>
+
+                <div class=\"cbi-value\">
+                  <label class=\"cbi-value-title\">"; echo _("MQTT Subscribe Topic"); echo "</label>
+                  <input type=\"text\" class=\"cbi-input-text\" name=\"mqtt_sub_topic$num\" id=\"mqtt_sub_topic$num\" />
+                </div>
               </div>
 
-              <div class=\"cbi-value\">
-                <label class=\"cbi-value-title\">"; echo _("MQTT Subscribe Topic"); echo "</label>
-                <input type=\"text\" class=\"cbi-input-text\" name=\"mqtt_sub_topic$num\" id=\"mqtt_sub_topic$num\" />
+              <div name=\"page_sparkplug$num\" id=\"page_sparkplug$num\">
+                <div class=\"cbi-value\">
+                  <label class=\"cbi-value-title\">"; echo _("Group ID"); echo "</label>
+                  <input type=\"text\" class=\"cbi-input-text\" name=\"sparkplug_group_id$num\" id=\"sparkplug_group_id$num\" />
+                </div>
+
+                <div class=\"cbi-value\">
+                  <label class=\"cbi-value-title\">"; echo _("Node ID"); echo "</label>
+                  <input type=\"text\" class=\"cbi-input-text\" name=\"sparkplug_node_id$num\" id=\"sparkplug_node_id$num\" />
+                </div>
+
+                <div class=\"cbi-value\">
+                  <label class=\"cbi-value-title\">"; echo _("Device ID"); echo "</label>
+                  <input type=\"text\" class=\"cbi-input-text\" name=\"sparkplug_device_id$num\" id=\"sparkplug_device_id$num\" />
+                </div>
               </div>
 
               <div class=\"cbi-value\">
