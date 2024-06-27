@@ -128,6 +128,13 @@ if [ "$1" == "reset" ]; then
         sudo cp $path/config/edaemon.conf /etc/edaemon.conf
         sudo cp $path/Elastel/$model/etc/WebTunnelAgent.properties /etc/WebTunnelAgent.properties
         sub_mac=$(ifconfig eth0 | grep HWaddr | awk '{print $5}' | cut -f 5-6 -d ":" | tr -d ":")
+
+        zonelist=$(ls /usr/share/zoneinfo/ | wc -l)
+        if [[ $zonelist == "0" ]]; then
+                tar xzvf $path/config/zoneinfo.tar.gz -C /usr/share/
+        fi
+
+        sudo rm /etc/localtime && sudo ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
     fi
 
     ssid="$model"_"$sub_mac"
