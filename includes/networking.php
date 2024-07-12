@@ -48,7 +48,7 @@ function DisplayNetworkingConfig()
                         exec('sudo /usr/sbin/brctl delif br0 eth0');
                         exec('sudo systemctl stop dhcpcd.service');
                         sleep(1);
-                        exec('sudo systemctl stop dhcpcd.service');
+                        exec('sudo systemctl start dhcpcd.service');
                     }
                 } else {
                     exec('sudo /etc/init.d/S80dhcpcd restart');
