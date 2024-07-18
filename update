@@ -91,6 +91,11 @@ if [ $model != "EG324L" ]; then
 fi
 
 sleep 1
+if [ $model == "EG324" ]; then
+        if [ ! -f /usr/lib/arm-linux-gnueabihf/libjson-c.so.4 ]; then
+                sudo ln -s /usr/lib/arm-linux-gnueabihf/libjson-c.so /usr/lib/arm-linux-gnueabihf/libjson-c.so.4
+        fi
+fi
 
 if [ "$1" == "reset" ]; then
     echo $1
@@ -224,7 +229,7 @@ sudo /etc/init.d/ddns stop
 sudo /etc/init.d/terminal stop
 sudo /etc/init.d/gps stop
 sudo /etc/init.d/loragw stop
-sleep 2
+sleep 5
 
 if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" ]]; then
 	sudo cp -r $path/Elastel/$model/usr/* /usr/
