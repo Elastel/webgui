@@ -8,7 +8,15 @@ exec("sudo pgrep openvpn", $pid);
 if ($pid[0]) {
     exec("sudo /usr/local/bin/uci get openvpn.openvpn.role", $role);
     if ($role[0] == 'client') {
-        exec("sudo ifconfig tun0 | grep 'inet ' | awk '{print $2}'", $local_ip);
+        $interface = '';
+        exec("ifconfig tap0 | grep -c tap0", $count);
+        if ($count[0] == 1) {
+            $interface = 'tap0';
+        } else {
+            $interface = 'tun0';
+        }
+
+        exec("sudo ifconfig $interface | grep 'inet ' | awk '{print $2}'", $local_ip);
         if ($local_ip[0] != NULL) {
             $vpnstatus['local_ip'] = $local_ip[0];
             $vpnstatus['status'] = _('Connected');
@@ -16,7 +24,7 @@ if ($pid[0]) {
             $vpnstatus['status'] = _('Connecting');
         }
         
-        exec("sudo ifconfig tun0 | grep 'inet ' | awk '{print $4}'", $netmask);
+        exec("sudo ifconfig $interface | grep 'inet ' | awk '{print $4}'", $netmask);
         if ($netmask[0] != NULL)
             $vpnstatus['netmask'] = $netmask[0];
 
