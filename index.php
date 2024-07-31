@@ -84,9 +84,9 @@ require_once 'includes/includes.php';
     <script src="dist/sb-admin-2/js/sb-admin-2.js"></script>
 
     <!-- Custom JS -->
-    <script src="app/js/dct.js"></script>
-    <script src="app/js/custom.js"></script>
-    <script src="app/js/system.js"></script>
+    <script src="app/js/dct.js?version=1.0.0"></script>
+    <script src="app/js/custom.js?version=1.0.0"></script>
+    <script src="app/js/system.js?version=1.0.0"></script>
 
     <?php loadFooterScripts($extraFooterScripts); ?>
   </body>

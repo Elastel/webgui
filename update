@@ -9,6 +9,14 @@ fi
 
 echo model:$model
 
+sudo /etc/init.d/dct stop
+sudo /etc/init.d/lte stop
+sudo /etc/init.d/failover stop
+sudo /etc/init.d/ddns stop
+sudo /etc/init.d/terminal stop
+sudo /etc/init.d/gps stop
+sudo /etc/init.d/loragw stop
+
 if [ $model == "EG500" -o $model == "EG410" -o $model == "ElastBox400" ]; then
 #check openvpn
         if ! type openvpn >/dev/null 2>&1; then
@@ -222,14 +230,6 @@ if [[ $model = "EG500" || $model = "EG410" || $model = "ElastBox400" ]]; then
 fi
 
 sleep 1
-sudo /etc/init.d/dct stop
-sudo /etc/init.d/lte stop
-sudo /etc/init.d/failover stop
-sudo /etc/init.d/ddns stop
-sudo /etc/init.d/terminal stop
-sudo /etc/init.d/gps stop
-sudo /etc/init.d/loragw stop
-sleep 5
 
 if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" ]]; then
 	sudo cp -r $path/Elastel/$model/usr/* /usr/

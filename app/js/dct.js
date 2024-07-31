@@ -1,3 +1,6 @@
+/*
+version: 1.0.0
+*/
 
 function doesColumnExist(tableId, columnName) {
     var table = document.getElementById(tableId);
@@ -435,7 +438,7 @@ function addSectionTable(table_name, jsonData, option_list) {
         return;
 
     if (table_name == 'modbus') {
-        data_type_value = ['Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
+        data_type_value = ['Bit', 'Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
         'Unsigned 32Bits ABCD', 'Unsigned 32Bits BADC', 'Unsigned 32Bits CDAB', 'Unsigned 32Bits DCBA',
         'Signed 32Bits ABCD', 'Signed 32Bits BADC', 'Signed 32Bits CDAB', 'Signed 32Bits DCBA',
         'Float ABCD', 'Float BADC', 'Float CDAB', 'Float DCBA'];
@@ -1219,7 +1222,7 @@ function get_table_data(table_name, option_list) {
     '36':'M_ME_TF_1', '15':'M_IT_NA_1', '37':'M_IT_TB_1', '38':'M_EP_TD_1'};
 
     if (table_name == 'modbus') {
-        data_type_value = ['Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
+        data_type_value = ['Bit', 'Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
         'Unsigned 32Bits ABCD', 'Unsigned 32Bits BADC', 'Unsigned 32Bits CDAB', 'Unsigned 32Bits DCBA',
         'Signed 32Bits ABCD', 'Signed 32Bits BADC', 'Signed 32Bits CDAB', 'Signed 32Bits DCBA',
         'Float ABCD', 'Float BADC', 'Float CDAB', 'Float DCBA'];
@@ -1304,7 +1307,7 @@ function saveData(table_name) {
     '36':'M_ME_TF_1', '15':'M_IT_NA_1', '37':'M_IT_TB_1', '38':'M_EP_TD_1'};
 
     if (table_name == 'modbus') {
-        data_type_value = ['Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
+        data_type_value = ['Bit', 'Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
         'Unsigned 32Bits ABCD', 'Unsigned 32Bits BADC', 'Unsigned 32Bits CDAB', 'Unsigned 32Bits DCBA',
         'Signed 32Bits ABCD', 'Signed 32Bits BADC', 'Signed 32Bits CDAB', 'Signed 32Bits DCBA',
         'Float ABCD', 'Float BADC', 'Float CDAB', 'Float DCBA'];

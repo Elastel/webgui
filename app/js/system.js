@@ -1,3 +1,7 @@
+/*
+version: 1.0.0
+*/
+
 $('.node_online_update').click(function(){
     $('#loading').show();
     $.get('ajax/system/system.php?type=node_online_update',function(data) {

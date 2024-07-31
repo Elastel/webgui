@@ -1,3 +1,7 @@
+/*
+version: 1.0.0
+*/
+
 function msgShow(retcode,msg) {
     if(retcode == 0) { var alertType = 'success';
     } else if(retcode == 2 || retcode == 1) {

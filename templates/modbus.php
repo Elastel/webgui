@@ -89,11 +89,11 @@
 
       InputControlCustom(_('Count'), $table_name.'.reg_count', $table_name.'.reg_count', _('1~120'));
 
-      $data_type_list = ["Unsigned 16Bits AB", "Unsigned 16Bits BA", "Signed 16Bits AB", "Signed 16Bits BA", 
+      $data_type_list = ["Bit", "Unsigned 16Bits AB", "Unsigned 16Bits BA", "Signed 16Bits AB", "Signed 16Bits BA", 
                           "Unsigned 32Bits ABCD", "Unsigned 32Bits BADC", "Unsigned 32Bits CDAB", "Unsigned 32Bits DCBA", 
                           "Signed 32Bits ABCD", "Signed 32Bits BADC", "Signed 32Bits CDAB", "Signed 32Bits DCBA", 
                           "Float ABCD", "Float BADC", "Float CDAB", "Float DCBA"];
-      SelectControlCustom(_('Data Type'), $table_name.'.data_type', $data_type_list, $data_type_list[0], $table_name.'.data_type', _("A highest byte"));
+      SelectControlCustom(_('Data Type'), $table_name.'.data_type', $data_type_list, $data_type_list[1], $table_name.'.data_type', _("A highest byte"));
 
       InputControlCustom(_('Reporting Center'), $table_name.'.server_center', $table_name.'.server_center', _('Multiple Servers Are Separated By Minus'));
 
