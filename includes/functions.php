@@ -812,6 +812,12 @@ function getModel()
     return $model[0];
 }
 
+function getTarget()
+{
+    exec('cat /etc/target_model', $target);
+    return $target[0];
+}
+
 function isBinExists($name)
 {
     exec("which $name", $path);

@@ -1,10 +1,15 @@
 #!/bin/bash
 model=$(cat /etc/fw_model)
+target=$(cat /etc/target_model)
 bit=$(getconf LONG_BIT)
 path="/var/www/html"
 
 if [ ! -n "$model" ]; then
         model="EG500"
+fi
+
+if [ ! -n "$target" ]; then
+        target=$model
 fi
 
 echo model:$model
@@ -150,7 +155,7 @@ if [ "$1" == "reset" ]; then
         sudo rm /etc/localtime && sudo ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
     fi
 
-    ssid="$model"_"$sub_mac"
+    ssid="$target"_"$sub_mac"
     sed -i "s/ssid.*/ssid=$ssid/" /etc/hostapd/hostapd.conf
     sudo /etc/raspap/lighttpd/configport.sh 80 '' /etc/lighttpd/lighttpd.conf
 fi

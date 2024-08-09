@@ -3,9 +3,8 @@
         <hr class="sidebar-divider my-0">
         <div class="row">
             <div class="col-xs ml-3 sidebar-brand-icon">
-            <img src="app/img/elastel.php" class="navbar-logo" width="64" height="64">
+            <img src="app/img/<?php echo ( ($target != null) ? "$hostname.php" : "elastel.php"); ?>" class="navbar-logo" width="200" height="50">
             </div>
-            <div class="col-xs ml-2 cbi-model"><?php echo _($model);?></div>
         </div>
         <li class="nav-item">
             <a class="nav-link" href="dashboard"><i class="fas fa-tachometer-alt fa-fw mr-2"></i><span class="nav-label"><?php echo _("Dashboard"); ?></span></a>
@@ -123,11 +122,11 @@
             </ul>
             </div>
         </li>
-
+        <?php if ($target == null) : ?>
         <li class="nav-item">
             <a class="nav-link" href="about"><i class="fas fa-info-circle fa-fw mr-2"></i><span class="nav-label"><?php echo _("About Elastel"); ?></a>
         </li>
-
+        <?php endif; ?>
         <!-- Divider -->
         <hr class="sidebar-divider d-none d-md-block">
     </ul>

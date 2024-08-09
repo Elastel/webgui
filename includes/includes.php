@@ -53,6 +53,8 @@ require_once 'includes/chirpstack.php';
 
 $config = getConfig();
 $model = getModel();
+$target = getTarget();
+$hostname = getHostname();
 $output = $return = 0;
 $page = $_SERVER['PATH_INFO'];
 
