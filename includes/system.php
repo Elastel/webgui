@@ -80,11 +80,17 @@ function DisplaySystem()
 
     if (isset($_POST['applyProperties'])) {
         if (isset($_POST['hostname'])) {
-            exec("cat /proc/sys/kernel/hostname", $buff);
-            $old_hostname = $buff[0];
-            $new_hostname = $_POST['hostname'];
-            exec("sudo hostnamectl set-hostname $new_hostname");
-            exec("sudo sed -i 's/$old_hostname/$new_hostname/g' /etc/hosts");
+            if ($model != "EG324L") {
+                exec("cat /proc/sys/kernel/hostname", $buff);
+                $old_hostname = $buff[0];
+                $new_hostname = $_POST['hostname'];
+                exec("sudo hostnamectl set-hostname $new_hostname");
+                exec("sudo sed -i 's/$old_hostname/$new_hostname/g' /etc/hosts");
+            } else {
+                $new_hostname = $_POST['hostname'];
+                exec("echo $new_hostname > /etc/hostname");
+                exec("hostname -F /etc/hostname");
+            }   
         }
 
         if (isset($_POST['timezones'])) {
