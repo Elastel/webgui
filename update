@@ -14,14 +14,6 @@ fi
 
 echo model:$model
 
-sudo /etc/init.d/dct stop
-sudo /etc/init.d/lte stop
-sudo /etc/init.d/failover stop
-sudo /etc/init.d/ddns stop
-sudo /etc/init.d/terminal stop
-sudo /etc/init.d/gps stop
-sudo /etc/init.d/loragw stop
-
 if [ $model == "EG500" -o $model == "EG410" -o $model == "ElastBox400" ]; then
 #check openvpn
         if ! type openvpn >/dev/null 2>&1; then
@@ -154,6 +146,7 @@ if [ "$1" == "reset" ]; then
 
         sudo rm /etc/localtime && sudo ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
     fi
+    
 
     ssid="$target"_"$sub_mac"
     sed -i "s/ssid.*/ssid=$ssid/" /etc/hostapd/hostapd.conf
@@ -236,14 +229,6 @@ fi
 
 sleep 1
 
-if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" ]]; then
-	sudo cp -r $path/Elastel/$model/usr/* /usr/
-elif [ $bit = "32" ]; then
-	sudo cp -r $path/Elastel/$model/32/usr/* /usr/
-fi
-
-sleep 1
-
 if [ $model != "EG324" -a $model != "EG324L" ]; then
 	echo -e "Start feed dog"
 	sudo /var/www/html/installers/feed_dog.sh &
@@ -258,6 +243,26 @@ sleep 1
 [ -n "$(pgrep edaemon)" ] && {
         sudo kill -9 $(pgrep edaemon)
 }
+
+sleep 1
+
+sudo /etc/init.d/dct stop
+sudo /etc/init.d/lte stop
+sudo /etc/init.d/failover stop
+sudo /etc/init.d/ddns stop
+sudo /etc/init.d/terminal stop
+sudo /etc/init.d/gps stop
+sudo /etc/init.d/loragw stop
+
+sleep 1
+
+if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" ]]; then
+	sudo cp -r $path/Elastel/$model/usr/* /usr/
+elif [ $bit = "32" ]; then
+	sudo cp -r $path/Elastel/$model/32/usr/* /usr/
+fi
+
+sleep 1
 
 if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" ]]; then
         sudo cp $path/Elastel/$model/sbin/* /sbin/
