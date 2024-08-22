@@ -124,6 +124,7 @@ if [ "$1" == "reset" ]; then
         sudo cp $path/config/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
         sudo cp $path/Elastel/$model/etc/WebTunnelAgent.properties /etc/WebTunnelAgent.properties
         sudo cp $path/config/global_conf.json /etc/global_conf.json
+        sudo cp $path/config/hostapd.service /lib/systemd/system/hostapd.service
         # reset wifi ssid
         sub_mac=$(ifconfig eth0 | grep ether | awk '{print $2}' | cut -f 5-6 -d ":" | tr -d ":")
 
@@ -135,6 +136,7 @@ if [ "$1" == "reset" ]; then
                 sudo rm /etc/init.d/S42htset
                 sudo rm -r /etc/htset
         fi
+
         sudo cp $path/config/edaemon.conf /etc/edaemon.conf
         sudo cp $path/Elastel/$model/etc/WebTunnelAgent.properties /etc/WebTunnelAgent.properties
         sub_mac=$(ifconfig eth0 | grep HWaddr | awk '{print $5}' | cut -f 5-6 -d ":" | tr -d ":")
