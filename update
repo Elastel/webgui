@@ -248,6 +248,10 @@ sleep 1
 
 sleep 1
 
+if [[ $model = "EG324" || $model = "EG324L" ]]; then
+	echo V > /dev/watchdog
+fi
+
 sudo /etc/init.d/dct stop
 sudo /etc/init.d/lte stop
 sudo /etc/init.d/failover stop
