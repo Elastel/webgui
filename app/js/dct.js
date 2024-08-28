@@ -800,7 +800,8 @@ function filterFunction() {
     const device_id_list = document.getElementById('deviceIdList');
     const options_device_id = [];
     var data = document.getElementById('bacnet_discover_data').value;
-    if (data == null)
+
+    if (data.length < 3)
         return;
 
     // console.log(data);
@@ -839,7 +840,7 @@ function filterFunctionObject() {
     }
 
     var data = document.getElementById('bacnet_discover_data').value;
-    if (data == null)
+    if (data.length < 3)
         return;
 
     // console.log(data);
@@ -953,7 +954,7 @@ function loadBACnetClientConfig() {
 }
 
 $('.btn_bacdiscover').click(function(){
-    console.log("btn_bacdiscover");
+    // console.log("btn_bacdiscover");
     updateDeviceIdList();
 })
 
