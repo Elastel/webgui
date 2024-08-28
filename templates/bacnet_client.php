@@ -9,6 +9,42 @@
   ob_end_clean();
 ?>
 
+<style>
+    /* 基本样式 */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+        width: 200px;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        width: 20rem;
+        max-height: 150px;
+        overflow-y: auto;
+        left: 18.8rem
+    }
+
+    .dropdown-content div {
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .dropdown-content div:hover {
+        background-color: #f1f1f1;
+    }
+
+    .show {
+        display: block;
+    }
+</style>
+
 <div class="row">
   <div class="col-lg-12">
     <div class="card">
@@ -113,10 +149,26 @@
       InputControlCustom(_('Device Name'), $table_name.'.device_name', $table_name.'.device_name');
 
       InputControlCustom(_('Factor Name'), $table_name.'.factor_name', $table_name.'.factor_name', _('Multiple Factors Are Separated By Semicolon'));
-      
-      InputControlCustom(_('Object Device ID'), $table_name.'.object_device_id', $table_name.'.object_device_id');
+    ?>
 
-      InputControlCustom(_('Object Identifier'), $table_name.'.object_id', $table_name.'.object_id');
+    <div class="cbi-value">
+        <input type="hidden" name="bacnet_discover_data" value="" id="bacnet_discover_data">
+        <label class="cbi-value-title"><?php echo _("Object Device ID"); ?></label>
+        <input type="text" class="cbi-input-text" name="baccli.object_device_id" id="baccli.object_device_id" oninput="filterFunction()">
+        <div id="deviceIdList" class="dropdown-content"></div>
+        <button class="btn rounded-right btn_bacdiscover" type="button"><i class="fas fa-sync"></i></button>
+    </div>
+
+    <div class="cbi-value">
+        <label class="cbi-value-title"><?php echo _("Object Identifier"); ?></label>
+        <input type="text" class="cbi-input-text" name="baccli.object_id" id="baccli.object_id" oninput="filterFunctionObject()">
+        <div id="objectIdList" class="dropdown-content"></div>
+    </div>
+
+    <?php
+      //InputControlCustom(_('Object Device ID'), $table_name.'.object_device_id', $table_name.'.object_device_id');
+
+      // InputControlCustom(_('Object Identifier'), $table_name.'.object_id', $table_name.'.object_id');
 
       InputControlCustom(_('Reporting Center'), $table_name.'.server_center', $table_name.'.server_center', _('Multiple Servers Are Separated By Minus'));
 
@@ -143,3 +195,6 @@
     <button class="cbi-button cbi-button-positive important" onclick="saveData('baccli')"><?php echo _("Save"); ?></button>
   </div>
 </div><!-- popBox -->
+<script>
+</script>
+

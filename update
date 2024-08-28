@@ -163,6 +163,7 @@ sudo cp $path/config/elastel_config.json /etc/elastel_config.json
 sudo cp $path/config/rules.v4 /etc/iptables/rules.v4
 sudo cp $path/installers/service*.sh /etc/raspap/hostapd
 sudo cp $path/installers/configport.sh /etc/raspap/lighttpd/
+sudo cp $path/installers/bacnet_update /usr/sbin/
 sudo cp $path/Elastel/$model/etc/init.d/* /etc/init.d/
 sleep 1
 if [ $model != "EG324L" ]; then
@@ -259,6 +260,7 @@ sudo /etc/init.d/ddns stop
 sudo /etc/init.d/terminal stop
 sudo /etc/init.d/gps stop
 sudo /etc/init.d/loragw stop
+sudo /etc/init.d/bacnet_router stop
 
 sleep 1
 

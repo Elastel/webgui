@@ -5,8 +5,8 @@ if (!defined('RASPI_CONFIG')) {
 }
 
 $defaults = [
-  'RASPI_BRAND_TEXT' => 'RaspAP',
-  'RASPI_VERSION' => 'v1.0.2',
+  'RASPI_BRAND_TEXT' => 'ElastPro',
+  'RASPI_VERSION' => 'v1.0.3',
   'RASPI_CONFIG_NETWORK' => RASPI_CONFIG.'/networking/defaults.json',
   'RASPI_ADMIN_DETAILS' => RASPI_CONFIG.'/raspap.auth',
   'RASPI_WIFI_AP_INTERFACE' => 'wlan0',

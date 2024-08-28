@@ -34,8 +34,8 @@
 
             echo '<div id="page_bacnet" name="page_bacnet">';
 
-            $mode = array('BACnet/IP To BACnet/MSTP', /*'BACnet/MSTP To BACnet/IP'*/);
-            SelectControlCustom(_('Mode'), 'mode', $mode, $mode[0], 'mode');
+            // $mode = array('BACnet/IP To BACnet/MSTP', 'BACnet/MSTP To BACnet/IP');
+            // SelectControlCustom(_('Mode'), 'mode', $mode, $mode[0], 'mode');
             echo '<h5>'._("BACnet/IP Settings").'</h5>';
             SelectControlCustom(_('IP Interface'), 'ifname', $interface_list, $interface[0], 'ifname');
             InputControlCustom(_('Port'), 'port', 'port', _('1~65535'));

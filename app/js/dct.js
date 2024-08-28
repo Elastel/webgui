@@ -745,6 +745,140 @@ function loadOpcuaClientConfig(){
     $('#loading').hide();
 }
 
+function get_bacnet_server_discover(callback) {
+    $.get('ajax/dct/get_dctcfg.php?type=bacdiscover', function(data) {
+        callback(data);
+    })
+}
+
+function updateDeviceIdList() {
+    var data = null;
+    const options_device_id = [];
+
+    const device_id_list = document.getElementById('deviceIdList');
+
+    get_bacnet_server_discover(function(data) {
+        if (data && data != 'null') {
+            $('#bacnet_discover_data').val(data);
+            var jsonData = JSON.parse(data);
+            for (var i = 0; i < jsonData.length; i++) {
+                options_device_id[i] = jsonData[i].device_id;
+            }
+
+            device_id_list.innerHTML = '';
+            options_device_id.forEach(option => {
+                const div = document.createElement('div');
+                div.textContent = option;
+                div.onclick = () => selectItem(option);
+                device_id_list.appendChild(div);
+            });
+        } else {
+            $('#bacnet_discover_data').val("");
+            device_id_list.innerHTML = '';
+        }
+    });
+}
+
+function selectItem(value) {
+    const input = document.getElementById('baccli.object_device_id');
+    const device_id_list = document.getElementById('deviceIdList');
+
+    input.value = value;
+    device_id_list.classList.remove('show');
+}
+
+function selectItemObject(value) {
+    const input = document.getElementById('baccli.object_id');
+    const device_id_list = document.getElementById('objectIdList');
+
+    input.value = value;
+    device_id_list.classList.remove('show');
+}
+
+function filterFunction() {
+    const input = document.getElementById('baccli.object_device_id');
+    const device_id_list = document.getElementById('deviceIdList');
+    const options_device_id = [];
+    var data = document.getElementById('bacnet_discover_data').value;
+    if (data == null)
+        return;
+
+    // console.log(data);
+    var jsonData = JSON.parse(data);
+
+    for (var i = 0; i < jsonData.length; i++) {
+        options_device_id[i] = jsonData[i].device_id;
+    }
+
+    // console.log(options_device_id);
+    // const filter = input.value.toLowerCase();
+    filteredOptions = options_device_id;
+    //const filteredOptions = options_device_id.filter(option => option.toLowerCase().includes(filter));
+    device_id_list.innerHTML = '';
+    if (filteredOptions.length > 0) {
+        filteredOptions.forEach(option => {
+            const div = document.createElement('div');
+            div.textContent = option;
+            div.onclick = () => selectItem(option);
+            device_id_list.appendChild(div);
+        });
+        device_id_list.classList.add('show');
+    } else {
+        device_id_list.classList.remove('show');
+    }
+}
+
+function filterFunctionObject() {
+    const object_id_list = document.getElementById('objectIdList');
+    const options_object_id = [];
+    var cur_device_id = document.getElementById('baccli.object_device_id');
+    if (!cur_device_id.value) {
+        return;
+    } else {
+        cur_device_id = cur_device_id.value;
+    }
+
+    var data = document.getElementById('bacnet_discover_data').value;
+    if (data == null)
+        return;
+
+    // console.log(data);
+    var jsonData = JSON.parse(data);
+    var jsonObject = '';
+
+    for (var i = 0; i < jsonData.length; i++) {
+        if (jsonData[i].device_id == cur_device_id) {
+            jsonObject = jsonData[i].object_identifier;
+            break;
+        }
+    }
+
+    if (jsonObject.length > 0) {
+        for (var i = 0; i < jsonObject.length; i++) {
+            options_object_id[i] = jsonObject[i];
+        }
+    } else {
+        return;
+    }
+
+    // console.log(options_device_id);
+    // const filter = input.value.toLowerCase();
+    filteredOptions = options_object_id;
+    //const filteredOptions = options_device_id.filter(option => option.toLowerCase().includes(filter));
+    object_id_list.innerHTML = '';
+    if (filteredOptions.length > 0) {
+        filteredOptions.forEach(option => {
+            const div = document.createElement('div');
+            div.textContent = option;
+            div.onclick = () => selectItemObject(option);
+            object_id_list.appendChild(div);
+        });
+        object_id_list.classList.add('show');
+    } else {
+        object_id_list.classList.remove('show');
+    }
+}
+
 /*BACnet client*/
 function loadBACnetClientConfig() {
     $('#loading').show();
@@ -789,7 +923,39 @@ function loadBACnetClientConfig() {
         loadRealtimeData();
         $('#loading').hide();
     });
+
+    const input = document.getElementById('baccli.object_device_id');
+    const input_object = document.getElementById('baccli.object_id');
+    const device_id_list = document.getElementById('deviceIdList');
+    const object_id_list = document.getElementById('objectIdList');
+
+    input.addEventListener('focus', () => {
+        filterFunction();
+    });
+
+    input_object.addEventListener('focus', () => {
+        filterFunctionObject();
+    });
+
+    document.addEventListener('click', (event) => {
+        const escapedId = CSS.escape('baccli.object_device_id');
+        const escapedIdObject = CSS.escape('baccli.object_id');
+        if (!event.target.matches(`#${escapedId}`)) {
+            device_id_list.classList.remove('show');
+        }
+
+        if (!event.target.matches(`#${escapedIdObject}`)) {
+            object_id_list.classList.remove('show');
+        }
+    });
+
+    // updateDeviceIdList();
 }
+
+$('.btn_bacdiscover').click(function(){
+    console.log("btn_bacdiscover");
+    updateDeviceIdList();
+})
 
 function enableBACnet(state) {
     if (state) {
@@ -1364,6 +1530,7 @@ function saveData(table_name) {
         } else if (option == 'type_id') {
             option_value[option] = type_id_list[document.getElementById(table_name + '.'  + option).value];
         } else {
+            console.log(option);
             option_value[option] = (mode == 1 && option == 'debounce_interval') ? '-' : document.getElementById(table_name + '.'  + option).value;
         }
     })

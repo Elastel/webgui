@@ -16,6 +16,16 @@ if ($type == 'datadisplay') {
     exec('sudo conf_im_ex export ' . $arr[1]);
     exec('cat /tmp/config_export.csv', $data);
     echo implode(PHP_EOL, $data);
+} else if (strstr($type, 'bacdiscover')) {
+    exec("uci get dct.bacnet_client.enabled", $enable);
+    if ($enable[0] != '0') {
+        exec("sudo /usr/sbin/bacnet_update");
+        exec('cat /tmp/bacdiscover', $data);
+        if ($data[0] != null) {
+            $dctdata = json_decode($data[0]);
+            echo json_encode($dctdata);
+        }
+    }
 } else {
     if ($type == 'interface' || $type == 'server')
         exec("/usr/sbin/get_config dct name $type 5", $data);
