@@ -78,6 +78,7 @@
 						"report_type", "alarm_up", "alarm_down", "phone_num", "email", "contents", "retry_interval", "again_interval", "enabled"],
 	"opcuacli_field" : ["Order", "Device Name", "Belonged Interface", "Factor Name", "Node Name", "Data Type", "Reporting Center", 
 						"Operator", "Operand", "Operation Expression", "Accuracy", "SMS&Email Reporting",
-						"Report Type", "Alarm Up Limit", "Alarm Down Limit", "Phone Number", "Email", "Contents", "Retry Interval", "Again Interval", "Enable"]
-	
+						"Report Type", "Alarm Up Limit", "Alarm Down Limit", "Phone Number", "Email", "Contents", "Retry Interval", "Again Interval", "Enable"],
+	"dnp3_server_option" : ["enabled", "proto", "port", "interface", "baudrate", "databit", "stopbit", "parity", "slave_address", "master_address"],
+	"dnp3_option" : ["source_object", "group_id", "point_number", "enabled"]
 }

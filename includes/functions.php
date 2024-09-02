@@ -940,6 +940,9 @@ function handlePageActions($extraFooterScripts, $page, $config)
         case "/bacnet":
             DisplayBACnet();
             break;
+        case "/dnp3":
+            DisplayDnp3();
+            break;
         case "/datadisplay":
             dataDisplay();
             break;

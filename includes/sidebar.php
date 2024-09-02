@@ -53,6 +53,7 @@
                 <li class="nav-item" name="server" id="server"><a class="nav-link" href="server_conf"><?php echo _("Reporting Server"); ?></a></li>
                 <li class="nav-item" name="opcua" id="opcua"><a class="nav-link" href="opcua"><?php echo _("OPCUA Server"); ?></a></li>
                 <li class="nav-item" name="bacnet" id="bacnet"><a class="nav-link" href="bacnet"><?php echo _("BACnet Server"); ?></a></li>
+                <li class="nav-item" name="dnp3" id="dnp3"><a class="nav-link" href="dnp3"><?php echo _("DNP3 Server"); ?></a></li>
                 <li class="nav-item" name="datadisplay" id="datadisplay"><a class="nav-link" href="datadisplay"><?php echo _("Data Display"); ?></a></li>
             </ul>
             </div>

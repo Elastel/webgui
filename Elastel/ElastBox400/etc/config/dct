@@ -37,6 +37,8 @@ config setting 'bacnet_client'
 
 config setting 'opcua'
 
+config setting 'dnp3_server'
+
 config state 'connection'
 
 config state 'sensor'

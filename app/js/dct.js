@@ -27,6 +27,8 @@ function insertColumn(tableId, name, headerName, newHeaderName) {
     for (var i = 0; i < headers.length; i++) {
         if (headers[i].textContent === headerName) {
             columnIndex = i + 1;
+        } else if (headers[i].textContent === 'Source Object') {
+            columnIndex = i + 1;
         }
     }
 
@@ -536,22 +538,35 @@ function getRealtimeData() {
         //console.log(jsonData);
 
         const trList = document.querySelectorAll('table tr');
+        var dnp3 = document.getElementById('option_list_dnp3');
         trList.forEach((tr) => {
-            if (tr.querySelector('td[name="factor_name"]')) {
-                //console.log(tr.querySelector('td[name="factor_name"]').innerHTML);
-                var factor = tr.querySelector('td[name="factor_name"]').innerHTML;
-                var factorList = factor.split(';');
-                var cur_value = '';
-                factorList.forEach((key) => {
-                    if (jsonData.hasOwnProperty(key)) {
-                        cur_value += jsonData[key] + ';';
-                    }    
-                })
+            var cur_value = '';
+            if (dnp3) {
+                if (tr.querySelector('td[name="source_object"]')) {
+                    var factor = tr.querySelector('td[name="source_object"]').innerHTML;
+                    factor = factor.substring(factor.indexOf('-') + 1)
+                    if (jsonData.hasOwnProperty(factor)) {
+                        cur_value += jsonData[factor];
+                    }
+                }
+            } else {
+                if (tr.querySelector('td[name="factor_name"]')) {
+                    //console.log(tr.querySelector('td[name="factor_name"]').innerHTML);
+                    var factor = tr.querySelector('td[name="factor_name"]').innerHTML;
+                    var factorList = factor.split(';');
+                    factorList.forEach((key) => {
+                        console.log(key);
+                        if (jsonData.hasOwnProperty(key)) {
+                            cur_value += jsonData[key] + ';';
+                        }    
+                    })
 
-                if (cur_value.slice(-1) === ';') {
-                    cur_value = cur_value.slice(0, -1);
+                    if (cur_value.slice(-1) === ';') {
+                        cur_value = cur_value.slice(0, -1);
+                    }
                 }
             }
+            
             if (tr.querySelector('td[name="cur_value"]')) {
                 tr.querySelector('td[name="cur_value"]').innerHTML = cur_value.length > 0 ? cur_value : '-';
             }
@@ -1734,6 +1749,90 @@ function saveDataIO() {
     }
 
     closeBox();
+}
+
+/* DNP3 */
+function addDataDnp3(table_name) {
+    openBox(table_name);
+    document.getElementById("page_type").value = "0"; /* 0 is add. other is edit */
+}
+
+function saveDataDnp3(table_name) {
+
+}
+
+function enableDnp3(state) {
+    if (state) {
+      $('#page_dnp3').show();
+    } else {
+      $('#page_dnp3').hide();
+    }
+    dnp3ProtocolChange();
+}
+
+function dnp3ProtocolChange() {
+    var head = 'dnp3_server';
+    var proto = document.getElementById('proto').value;
+
+    if (proto == 'RTU') {
+        $('#page_proto_rtu').show();
+        $('#page_proto_ip').hide();
+    } else {
+        $('#page_proto_rtu').hide();
+        $('#page_proto_ip').show();
+    }
+}
+
+function loadDnp3Config() {
+    $('#loading').show();
+    var table_name = 'dnp3';
+    $.get('ajax/dct/get_dctcfg.php?type=dnp3',function(data){
+        //console.log(data);
+        jsonData = JSON.parse(data);
+        var arr = jsonData.option;
+        var dnp3_server = JSON.parse(jsonData.dnp3_server);
+
+        $('#enabled').val(dnp3_server.enabled);
+        if (dnp3_server.enabled == '1') {
+            $('#page_dnp3').show();
+            $('#dnp3_server_enable').prop('checked', true);
+
+            arr.forEach(function (info) {
+                if (info == null) {
+                    return true;    // continue: return true; break: return false
+                }
+
+                $('#' + info).val(dnp3_server[info]);
+            })
+        } else {
+            $('#page_dnp3').hide();
+            $('#dnp3_server_disable').prop('checked', true);
+        }
+        dnp3ProtocolChange();
+
+        if (jsonData.hasOwnProperty("factor_list")) {
+            var factor_list = jsonData.factor_list;
+            var select = document.getElementById(table_name + '.source_object');
+            if (factor_list != null) {
+                factor_list.forEach(function(factor) {
+                    var newOption = document.createElement('option');
+                    newOption.value = factor;
+                    newOption.text = factor;
+                    select.appendChild(newOption);
+                });
+            }
+            
+        }
+        
+
+        var tmpData = JSON.parse(jsonData.dnp3);
+        var option_list = jsonData.option_list;
+
+        addSectionTable(table_name, tmpData, option_list);
+
+        loadRealtimeData();
+        $('#loading').hide();
+    });
 }
 
 /*datadisplay*/
