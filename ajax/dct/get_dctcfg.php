@@ -29,8 +29,8 @@ if ($type == 'datadisplay') {
 } else {
     $fileContent = file_get_contents('/etc/elastel_config.json');
     $config = json_decode($fileContent, true);
-
-    $fileContentFactor = file_get_contents('/tmp/factor_list');
+    if (file_exists('/tmp/factor_list'))
+        $fileContentFactor = file_get_contents('/tmp/factor_list');
 
     if ($type == 'interface' || $type == 'server')
         exec("/usr/sbin/get_config dct name $type 5", $data);
@@ -43,11 +43,15 @@ if ($type == 'datadisplay') {
         exec("/usr/sbin/get_config dct type dnp3 1", $tmp2);
         $dctdata['option'] = $config['dnp3_server_option'];
         $dctdata['option_list'] = $config['dnp3_option'];
-        if ($fileContent != null)
+        if (strlen($fileContentFactor) > 0)
             $dctdata['factor_list'] = json_decode($fileContentFactor, true);
 
-        $dctdata[$type.'_server'] = $tmp1[0];
-        $dctdata[$type] = $tmp2[0];
+        if ($tmp1)
+            $dctdata[$type.'_server'] = $tmp1[0];
+
+        if ($tmp2)
+            $dctdata[$type] = $tmp2[0];
+        
         echo json_encode($dctdata);
     } else
         exec("/usr/sbin/get_config dct name $type 1", $data);

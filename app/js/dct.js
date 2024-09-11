@@ -1787,28 +1787,30 @@ function loadDnp3Config() {
     $('#loading').show();
     var table_name = 'dnp3';
     $.get('ajax/dct/get_dctcfg.php?type=dnp3',function(data){
-        //console.log(data);
         jsonData = JSON.parse(data);
         var arr = jsonData.option;
-        var dnp3_server = JSON.parse(jsonData.dnp3_server);
+        if (jsonData.hasOwnProperty("dnp3_server")) {
+            var dnp3_server = JSON.parse(jsonData.dnp3_server);
 
-        $('#enabled').val(dnp3_server.enabled);
-        if (dnp3_server.enabled == '1') {
-            $('#page_dnp3').show();
-            $('#dnp3_server_enable').prop('checked', true);
+            $('#enabled').val(dnp3_server.enabled);
+            if (dnp3_server.enabled == '1') {
+                $('#page_dnp3').show();
+                $('#dnp3_server_enable').prop('checked', true);
 
-            arr.forEach(function (info) {
-                if (info == null) {
-                    return true;    // continue: return true; break: return false
-                }
+                arr.forEach(function (info) {
+                    if (info == null) {
+                        return true;    // continue: return true; break: return false
+                    }
 
-                $('#' + info).val(dnp3_server[info]);
-            })
-        } else {
-            $('#page_dnp3').hide();
-            $('#dnp3_server_disable').prop('checked', true);
+                    $('#' + info).val(dnp3_server[info]);
+                })
+            } else {
+                $('#page_dnp3').hide();
+                $('#dnp3_server_disable').prop('checked', true);
+            }
+            dnp3ProtocolChange();
         }
-        dnp3ProtocolChange();
+        
 
         if (jsonData.hasOwnProperty("factor_list")) {
             var factor_list = jsonData.factor_list;
@@ -1824,13 +1826,14 @@ function loadDnp3Config() {
             
         }
         
+        if (jsonData.hasOwnProperty("dnp3")) {
+            var tmpData = JSON.parse(jsonData.dnp3);
+            var option_list = jsonData.option_list;
 
-        var tmpData = JSON.parse(jsonData.dnp3);
-        var option_list = jsonData.option_list;
+            addSectionTable(table_name, tmpData, option_list);
 
-        addSectionTable(table_name, tmpData, option_list);
-
-        loadRealtimeData();
+            loadRealtimeData();
+        }
         $('#loading').hide();
     });
 }
