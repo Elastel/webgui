@@ -482,6 +482,16 @@ function addSectionTable(table_name, jsonData, option_list) {
                 
                 return;
             }
+	
+	    if (key == "tx_cmd") {
+                if (jsonData[i][key].includes('\r\n')) {
+                    jsonData[i][key] = jsonData[i][key].replace(/\r/g, "\\\\r").replace(/\n/g, "\\\\n");
+                } else if (jsonData[i][key].includes('\r')) {
+                    jsonData[i][key] = jsonData[i][key].replace(/\r/g, "\\\\r");
+                } else if (jsonData[i][key].includes('\n')) {
+                    jsonData[i][key] = jsonData[i][key].replace(/\n/g, "\\\\n");
+                }
+            }
 
             if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy' ||
             key == 'report_type' || key == 'alarm_up' || key == 'alarm_down' || key == 'phone_num' || 
@@ -555,7 +565,7 @@ function getRealtimeData() {
                     var factor = tr.querySelector('td[name="factor_name"]').innerHTML;
                     var factorList = factor.split(';');
                     factorList.forEach((key) => {
-                        console.log(key);
+                        // console.log(key);
                         if (jsonData.hasOwnProperty(key)) {
                             cur_value += jsonData[key] + ';';
                         }    
@@ -609,6 +619,8 @@ function loadAsciiConfig() {
 
         addSectionTable(table_name, jsonData, option_list);
     });
+
+    loadRealtimeData();
     $('#loading').hide();
 }
 
@@ -1546,7 +1558,7 @@ function saveData(table_name) {
         } else if (option == 'type_id') {
             option_value[option] = type_id_list[document.getElementById(table_name + '.'  + option).value];
         } else {
-            console.log(option);
+            // console.log(option);
             option_value[option] = (mode == 1 && option == 'debounce_interval') ? '-' : document.getElementById(table_name + '.'  + option).value;
         }
     })
