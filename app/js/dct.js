@@ -151,109 +151,79 @@ function enableMinuteData(checkbox) {
 function loadInterfacesConfig() {
     $('#loading').show();
     $.get('ajax/dct/get_dctcfg.php?type=interface',function(data) {
-        var jsonData = JSON.parse(data);
-        var arrCom = ['baudrate', 'databit', 'stopbit', 'parity', 'com_frame_interval',
-					'com_proto', 'com_cmd_interval', 'com_report_center'];
+        // console.log(data);
+        var interface_data = JSON.parse(data);
+        var arrCom = interface_data.com_option;
+        var jsonData = JSON.parse(interface_data.interface);
 
-        for (var i = 1; i <= 4; i++) {
-            $('#com_enabled' + i).val(jsonData['com_enabled' + i]);
-            if (jsonData['com_enabled' + i] == '1') {
-                $('#page_com' + i).show();
-                $('#com_enable' + i).prop('checked', true);
+        if (arrCom.length > 0) {
+            for (var i = 1; i <= 4; i++) {
+                $('#com_enabled' + i).val(jsonData['com_enabled' + i]);
+                if (jsonData['com_enabled' + i] == '1') {
+                    $('#page_com' + i).show();
+                    $('#com_enable' + i).prop('checked', true);
 
-                arrCom.forEach(function (info) {
-                    if (jsonData[info + i] == null) {
-                        return true;    // continue: return true; break: return false
-                    }
+                    arrCom.forEach(function (info) {
+                        if (jsonData[info + i] == null) {
+                            return true;    // continue: return true; break: return false
+                        }
 
-                    $('#' + info + i).val(jsonData[info + i]);
-                })
+                        $('#' + info + i).val(jsonData[info + i]);
+                    })
 
-                if (jsonData['com_proto' + i] == '1') {
-                    //$('#com_report_center' + i).val(jsonData.com_report_center[i]);
-                    $('#com_page_protocol_modbus' + i).hide();
-                    $('#com_page_protocol_transparent' + i).show();
+                    comProtocolChange(i);
                 } else {
-                    //$('#com_cmd_interval' + i).val(jsonData.com_cmd_interval[i]);
-                    $('#com_page_protocol_modbus' + i).show();
-                    $('#com_page_protocol_transparent' + i).hide();
+                    $('#page_com' + i).hide(); 
+                    $('#com_disable' + i).prop('checked', true);
                 }
-            } else {
-                $('#page_com' + i).hide(); 
-                $('#com_disable' + i).prop('checked', true);
             }
         }
+        
+        var arrTcp = interface_data.tcp_server_option;
 
-        var arrTcp = ['server_addr', 'server_port', 'tcp_frame_interval', 'tcp_proto', 'tcp_cmd_interval', 
-                    'tcp_report_center', 'rack', 'slot', 'anonymous', 'username', 'password', 
-                    'security_policy', 'uri', 'certificate', 'private_key', 'trust_crt'];
+        if (arrTcp.length > 0) {
+           for (var i = 1; i <= 5; i++) {
+                $('#tcp_enabled' + i).val(jsonData['tcp_enabled' + i]);
+                if (jsonData['tcp_enabled' + i] == '1') {
+                    $('#page_tcp' + i).show();
+                    $('#tcp_enable' + i).prop('checked', true);
 
-        for (var i = 1; i <= 5; i++) {
-            $('#tcp_enabled' + i).val(jsonData['tcp_enabled' + i]);
-            if (jsonData['tcp_enabled' + i] == '1') {
-                $('#page_tcp' + i).show();
-                $('#tcp_enable' + i).prop('checked', true);
-
-                arrTcp.forEach(function (info) {
-                    if (jsonData[info + i] == null) {
-                        return true;    // continue: return true; break: return false
-                    }
-                    if (info == 'anonymous') {
-                        $('#' + info + i).prop('checked', jsonData[info + i] == 1 ? true : false);
-                    } else if (info == 'certificate') {
-                        if (jsonData[info + i]) {
-                            $('#cert_text' + i).html(jsonData[info + i]);
+                    arrTcp.forEach(function (info) {
+                        if (jsonData[info + i] == null) {
+                            return true;    // continue: return true; break: return false
                         }
-                    } else if (info == 'private_key') {
-                        if (jsonData[info + i]) {
-                            $('#key_text' + i).html(jsonData[info + i]);
-                        }
-                    } else if (info == 'trust_crt') {
-                        if (jsonData[info + i]) {
-                            $('#trust_text' + i).html(jsonData[info + i]);
-                        }
-                    } else {
-                        $('#' + info + i).val(jsonData[info + i]);
-                    } 
-                })
+                        if (info == 'anonymous') {
+                            $('#' + info + i).prop('checked', jsonData[info + i] == 1 ? true : false);
+                        } else if (info == 'certificate') {
+                            if (jsonData[info + i]) {
+                                $('#cert_text' + i).html(jsonData[info + i]);
+                            }
+                        } else if (info == 'private_key') {
+                            if (jsonData[info + i]) {
+                                $('#key_text' + i).html(jsonData[info + i]);
+                            }
+                        } else if (info == 'trust_crt') {
+                            if (jsonData[info + i]) {
+                                $('#trust_text' + i).html(jsonData[info + i]);
+                            }
+                        } else {
+                            $('#' + info + i).val(jsonData[info + i]);
+                        } 
+                    })
 
-                if (jsonData['tcp_proto' + i] == '2') {
-                    //$('#rack' + i).val(jsonData.rack[i]);
-                    //$('#slot' + i).val(jsonData.slot[i]);
-                    $('#tcp_page_protocol_modbus' + i).hide();
-                    $('#tcp_page_protocol_transparent' + i).hide();
-                    $('#tcp_page_protocol_opcua' + i).hide();
-                    $('#tcp_page_protocol_s7' + i).show(); 
-                } else if (jsonData['tcp_proto' + i] == '1') {
-                    //$('#tcp_report_center' + i).val(jsonData.tcp_report_center[i]);
-                    $('#tcp_page_protocol_modbus' + i).hide();
-                    $('#tcp_page_protocol_transparent' + i).show();
-                    $('#tcp_page_protocol_opcua' + i).hide();
-                    $('#tcp_page_protocol_s7' + i).hide(); 
-                } else if (jsonData['tcp_proto' + i] == '7') {
-                    //$('#tcp_report_center' + i).val(jsonData.tcp_report_center[i]);
-                    $('#tcp_page_protocol_modbus' + i).hide();
-                    $('#tcp_page_protocol_transparent' + i).hide();
-                    $('#tcp_page_protocol_opcua' + i).show();
-                    $('#tcp_page_protocol_s7' + i).hide();
-                    anonymousCheckTcp(i);
+                    tcpProtocolChange(i);
                     if (jsonData['security_policy' + i] == '0') {
                         $('#page_security' + i).hide();
                     } else {
                         $('#page_security' + i).show();
                     }
                 } else {
-                    //$('#tcp_cmd_interval' + i).val(jsonData.tcp_cmd_interval[i]);
-                    $('#tcp_page_protocol_modbus' + i).show();
-                    $('#tcp_page_protocol_transparent' + i).hide();
-                    $('#tcp_page_protocol_opcua' + i).hide();
-                    $('#tcp_page_protocol_s7' + i).hide(); 
+                    $('#page_tcp' + i).hide(); 
+                    $('#tcp_disable' + i).prop('checked', true);
                 }
-            } else {
-                $('#page_tcp' + i).hide(); 
-                $('#tcp_disable' + i).prop('checked', true);
-            }
+            } 
         }
+        
 
         $('#loading').hide();
     });
@@ -268,9 +238,15 @@ function comProtocolChange(num) {
     if (selectedText == 'Transparent') {
         $('#com_page_protocol_modbus' + numStr).hide();
         $('#com_page_protocol_transparent' + numStr).show();
+        $('#com_page_protocol_dnp3' + numStr).hide();
+    } else if (selectedText == 'DNP3') {
+        $('#com_page_protocol_modbus' + numStr).hide();
+        $('#com_page_protocol_transparent' + numStr).hide();
+        $('#com_page_protocol_dnp3' + numStr).show();
     } else {
         $('#com_page_protocol_modbus' + numStr).show();
         $('#com_page_protocol_transparent' + numStr).hide();
+        $('#com_page_protocol_dnp3' + numStr).hide();
     }
 }
 
@@ -285,23 +261,35 @@ function tcpProtocolChange(num) {
         $('#tcp_page_protocol_transparent' + numStr).show();
         $('#tcp_page_protocol_s7' + numStr).hide();
         $('#tcp_page_protocol_opcua' + numStr).hide();
+        $('#tcp_page_protocol_dnp3' + numStr).hide();
     } else if (selectedText == 'S7') {
         $('#tcp_page_protocol_modbus' + numStr).hide();
         $('#tcp_page_protocol_transparent' + numStr).hide();
         $('#tcp_page_protocol_opcua' + numStr).hide();
         $('#tcp_page_protocol_s7' + numStr).show();
-    }  else if (selectedText == 'OPCUA') {
+        $('#tcp_page_protocol_dnp3' + numStr).hide();
+    } else if (selectedText == 'OPCUA') {
         $('#tcp_page_protocol_modbus' + numStr).hide();
         $('#tcp_page_protocol_transparent' + numStr).hide();
         $('#tcp_page_protocol_s7' + numStr).hide();
         $('#tcp_page_protocol_opcua' + numStr).show();
+        $('#tcp_page_protocol_dnp3' + numStr).hide();
         anonymousCheckTcp(numStr);
         securityChangeTcp(numStr)
-    } else {
+    } else if (selectedText == 'DNP3') {
+        $('#tcp_page_protocol_modbus' + numStr).hide();
+        $('#tcp_page_protocol_transparent' + numStr).hide();
+        $('#tcp_page_protocol_s7' + numStr).hide();
+        $('#tcp_page_protocol_opcua' + numStr).hide();
+        $('#tcp_page_protocol_dnp3' + numStr).show();
+        anonymousCheckTcp(numStr);
+        securityChangeTcp(numStr)
+    }  else {
         $('#tcp_page_protocol_modbus' + numStr).show();
         $('#tcp_page_protocol_transparent' + numStr).hide();
         $('#tcp_page_protocol_opcua' + numStr).hide();
         $('#tcp_page_protocol_s7' + numStr).hide();
+        $('#tcp_page_protocol_dnp3' + numStr).hide();
     }
 }
 
@@ -482,8 +470,8 @@ function addSectionTable(table_name, jsonData, option_list) {
                 
                 return;
             }
-	
-	    if (key == "tx_cmd") {
+
+            if (key == "tx_cmd") {
                 if (jsonData[i][key].includes('\r\n')) {
                     jsonData[i][key] = jsonData[i][key].replace(/\r/g, "\\\\r").replace(/\n/g, "\\\\n");
                 } else if (jsonData[i][key].includes('\r')) {
@@ -613,6 +601,7 @@ function loadAsciiConfig() {
     $('#loading').show();
     var table_name = 'ascii';
     $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
+        console.log(data);
         var jsonData = JSON.parse(data);
         var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'tx_cmd', 
                         'cmd_format', 'server_center', 'enabled'];
@@ -765,6 +754,24 @@ function loadOpcuaClientConfig(){
                         'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
                         'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
 
+        addSectionTable(table_name, jsonData, option_list);
+    });
+
+    loadRealtimeData();
+    $('#loading').hide();
+}
+
+/*DNP3 client*/
+function loadDnp3ClientConfig(){
+    $('#loading').show();
+    var table_name = 'dnp3cli';
+    $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
+        var jsonData = JSON.parse(data);
+        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'group_id', 
+                        'point_number', 'server_center', 'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
+                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
+                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
+        
         addSectionTable(table_name, jsonData, option_list);
     });
 
@@ -1606,7 +1613,7 @@ function saveData(table_name) {
                 for (var i = 0; i < checkboxes.length; i++) {
                     // Determine if it is of checkbox type
                     var m_option = (table_name == 'baccli' && option == 'enabled') ? (option + '_baccli') : option;
-                    console.log(m_option);
+                    // console.log(m_option);
                     if ((checkboxes[i].type === "checkbox" && checkboxes[i].name == m_option)) {
                         checkboxes[i].checked = (option_value[option] == '1') ? true : false;
                         num++;

@@ -967,6 +967,9 @@ function handlePageActions($extraFooterScripts, $page, $config)
         case "/baccli_conf":
             DisplayBACnetClient();
             break;
+        case "/dnp3cli_conf":
+            DisplayDnp3Client();
+            break;
         case "/nodered":
             DisplayNodered();
             break;

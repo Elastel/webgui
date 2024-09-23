@@ -27,18 +27,27 @@ if ($type == 'datadisplay') {
         }
     }
 } else {
-    $fileContent = file_get_contents('/etc/elastel_config.json');
-    $config = json_decode($fileContent, true);
+    if (file_exists('/etc/elastel_config.json')) {
+        $fileContent = file_get_contents('/etc/elastel_config.json');
+        $config = json_decode($fileContent, true);
+    }
+       
     if (file_exists('/tmp/factor_list'))
         $fileContentFactor = file_get_contents('/tmp/factor_list');
 
-    if ($type == 'interface' || $type == 'server')
+    if ($type == 'interface') {
         exec("/usr/sbin/get_config dct name $type 5", $data);
-    else if ($type == 'modbus' || $type == 'ascii' || $type == 's7'|| $type == 'fx' ||
+        $dctdata[$type] = $data[0];
+        $dctdata['com_option'] = $config['com_key'];
+        $dctdata['tcp_server_option'] = $config['tcp_server_key'];
+        echo json_encode($dctdata);
+    } else if ($type == 'server') {
+        exec("/usr/sbin/get_config dct name $type 5", $data);
+    } else if ($type == 'modbus' || $type == 'ascii' || $type == 's7'|| $type == 'fx' ||
              $type == 'mc' || $type == 'adc' || $type == 'di' || $type == 'do' || 
-             $type == 'iec104' || $type == 'opcuacli')
+             $type == 'iec104' || $type == 'opcuacli' || $type == 'dnp3cli') {
         exec("/usr/sbin/get_config dct type $type 1", $data);
-    else if ($type == 'dnp3') {
+    } else if ($type == 'dnp3') {
         exec("/usr/sbin/get_config dct name dnp3_server 1", $tmp1);
         exec("/usr/sbin/get_config dct type dnp3 1", $tmp2);
         $dctdata['option'] = $config['dnp3_server_option'];
@@ -53,10 +62,12 @@ if ($type == 'datadisplay') {
             $dctdata[$type] = $tmp2[0];
         
         echo json_encode($dctdata);
-    } else
+    } else {
         exec("/usr/sbin/get_config dct name $type 1", $data);
+    }
+        
     
-    if ($type != 'dnp3') {
+    if ($type != 'dnp3' && $type != 'interface') {
         $dctdata = json_decode($data[0]);
         echo json_encode($dctdata);
     }

@@ -45,6 +45,7 @@
                     <li class="nav-item" name="fx" id="fx"><a class="nav-link" href="fx_conf"><?php echo _("FX Rules"); ?></a></li>
                 <li class="nav-item" name="mc" id="mc"><a class="nav-link" href="mc_conf"><?php echo _("MC Rules"); ?></a></li>
                 <li class="nav-item" name="iec104" id="iec104"><a class="nav-link" href="iec104_conf"><?php echo _("IEC104 Rules"); ?></a></li>
+                <li class="nav-item" name="dnp3_client" id="dnp3_client"><a class="nav-link" href="dnp3cli_conf"><?php echo _("DNP3 Rules"); ?></a></li>
                 <?php if ($model == "EG500" || $model == "EG410") : ?>
                 <li class="nav-item" name="io" id="io"><a class="nav-link" href="io_conf"><?php echo _("IO"); ?></a></li>
                 <?php endif; ?>

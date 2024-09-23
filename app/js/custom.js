@@ -208,6 +208,9 @@ function contentLoaded() {
         case "baccli_conf":
             loadBACnetClientConfig();
             break;
+        case "dnp3cli_conf":
+            loadDnp3ClientConfig();
+            break;
         case "server_conf":
             loadServerConfig();
             break;
@@ -1465,7 +1468,7 @@ $(document).ready(function(){
             if (id == "dct_basic" || id == "interfaces" || id == "modbus" || id == "s7" ||
                 id == "server" || id == "io" || id == "bacnet" || id == "fx" || id == "datadisplay" ||
                 id == "opcua" || id == "mc" || id == "ascii" || id == "bacnet_client" || id == 'iec104' ||
-                id == 'opcua_client' || id == 'dnp3') {
+                id == 'opcua_client' || id == 'dnp3' || id == 'dnp3_client') {
                 $('#navbar-collapse-dct').addClass('show')
                 $('#dct').removeClass('collapsed');
             } else if (id == "ddns" || id == "macchina") {

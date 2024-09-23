@@ -6,6 +6,7 @@ abstract class ComProtoEnum {
   const COM_PROTO_FX = 2;
   const COM_PROTO_MC = 3;
   const COM_PROTO_ASCII = 4;
+  const COM_PROTO_DNP3 = 5;
 };
 
 abstract class TcpProtoEnum {
@@ -17,6 +18,7 @@ abstract class TcpProtoEnum {
   const TCP_PROTO_ASCII = 5;
   const TCP_PROTO_IEC104 = 6;
   const TCP_PROTO_OPCUA = 7;
+  const TCP_PROTO_DNP3 = 8;
 };
 
 function get_belonged_interface($com_proto, $tcp_proto)
@@ -107,7 +109,7 @@ function page_interface_com($num)
   $databit_list = array('7'=>'7', '8'=>'8');
   SelectControlCustom(_('Databit'), 'databit'.$num, $databit_list, $databit_list['8'], 'databit'.$num);
 
-  $stopbit_list = array('1'=>'1', '1'=>'1');
+  $stopbit_list = array('1'=>'1', '2'=>'2');
   SelectControlCustom(_('Stopbit'), 'stopbit'.$num, $stopbit_list, $stopbit_list['1'], 'stopbit'.$num);
 
   $parity_list = array('N'=>'None', 'O'=>'Odd', 'E'=>'Even');
@@ -115,7 +117,7 @@ function page_interface_com($num)
 
   InputControlCustom(_("Frame Interval"), 'com_frame_interval'.$num, 'com_frame_interval'.$num, _('ms'), 200);
 
-  $com_proto = array('Modbus', 'Transparent', 'FX', 'MC', 'ASCII');
+  $com_proto = array('Modbus', 'Transparent', 'FX', 'MC', 'ASCII', 'DNP3');
   SelectControlCustom(_('Protocol'), 'com_proto'.$num, $com_proto, $com_proto[0], 'com_proto'.$num, null, "comProtocolChange($num)");
 
   echo '<div id="com_page_protocol_modbus'.$num.'" name="com_page_protocol_modbus'.$num.'">';
@@ -124,6 +126,11 @@ function page_interface_com($num)
 
   echo '<div id="com_page_protocol_transparent'.$num.'" name="com_page_protocol_transparent'.$num.'">';
   InputControlCustom(_("Reporting Center"), 'com_report_center'.$num, 'com_report_center'.$num, _('1-2-3-4-5'));
+  echo '</div>';
+
+  echo '<div id="com_page_protocol_dnp3'.$num.'" name="com_page_protocol_dnp3'.$num.'">';
+  InputControlCustom(_('Slave Address'), 'com_slave_address'.$num, 'com_slave_address'.$num, "0~65519");
+  InputControlCustom(_('Master Address'), 'com_master_address'.$num, 'com_master_address'.$num, "0~65519");
   echo '</div>';
 
 echo '</div><!-- /.page_com -->
@@ -149,7 +156,7 @@ function page_interface_tcp($num)
 
   InputControlCustom(_("Frame Interval"), 'tcp_frame_interval'.$num, 'tcp_frame_interval'.$num, _('ms'), 200);
 
-  $tcp_proto = array('Modbus', 'Transparent', 'S7', 'FX', 'MC', 'ASCII', 'IEC104', 'OPCUA');
+  $tcp_proto = array('Modbus', 'Transparent', 'S7', 'FX', 'MC', 'ASCII', 'IEC104', 'OPCUA', 'DNP3');
   SelectControlCustom(_('Protocol'), 'tcp_proto'.$num, $tcp_proto, $tcp_proto[0], 'tcp_proto'.$num, null, "tcpProtocolChange($num)");
 
   echo '<div id="tcp_page_protocol_modbus'.$num.'" name="tcp_page_protocol_modbus'.$num.'">';
@@ -184,7 +191,11 @@ function page_interface_tcp($num)
 
   UploadFileMultipleControlCustom(_('Trust Server Certificate'), 'trust_btn'.$num, 'trust_text'.$num, 'trust_crt'.$num.'[]', 'trust_crt'.$num, "trustChangeTcp($num)");
   echo '</div>';
-  
+  echo '</div>';
+
+  echo '<div id="tcp_page_protocol_dnp3'.$num.'" name="tcp_page_protocol_dnp3'.$num.'">';
+  InputControlCustom(_('Slave Address'), 'tcp_slave_address'.$num, 'tcp_slave_address'.$num, "0~65519");
+  InputControlCustom(_('Master Address'), 'tcp_master_address'.$num, 'tcp_master_address'.$num, "0~65519");
   echo '</div>';
 
   $count = $num - 1;

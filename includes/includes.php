@@ -51,6 +51,7 @@ require_once 'includes/bacnet_router.php';
 require_once 'includes/backup_update.php';
 require_once 'includes/chirpstack.php';
 require_once 'includes/dnp3.php';
+require_once 'includes/dnp3_client.php';
 
 $config = getConfig();
 $model = getModel();

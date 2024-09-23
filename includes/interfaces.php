@@ -83,22 +83,34 @@ function saveComConfig($status, $model)
     }
 
     $data = array();
+    $arr_option = array();
+    $arr_key = array();
+
+    if (file_exists('/etc/elastel_config.json')) {
+        $fileContent = file_get_contents('/etc/elastel_config.json');
+        $config = json_decode($fileContent, true);
+    }
+    
+    if (array_key_exists('com_key', $config)) {
+        $arr_key = $config['com_key'];
+    } else {
+        $arr_key = $config['com_option'];
+    }
+
+    $arr_option = $config['com_option'];
 
     for ($i = 1; $i <= $count; $i++) {
-        $data['enabled' . $i] = $_POST['com_enabled' . $i] ?? '0';
-        if ($_POST['com_enabled' . $i] == '1') {
-            $data['baudrate' . $i] = $_POST['baudrate' . $i];
-            $data['databit' . $i] = $_POST['databit' . $i];
-            $data['stopbit' . $i] = $_POST['stopbit' . $i];
-            $data['parity' . $i] = $_POST['parity' . $i];
-            $data['frame_interval' . $i] = $_POST['com_frame_interval' . $i];
-            $data['proto' . $i] = $_POST['com_proto' . $i];
-            $data['cmd_interval' . $i] = $_POST['com_cmd_interval' . $i];
-            $data['report_center' . $i] = $_POST['com_report_center' . $i];
+        for ($j = 0; $j < count($arr_option); $j++) {
+            $data[$arr_option[$j] . $i] = $_POST[$arr_key[$j] . $i];
+        }
+
+        if ($arr_key[$j] == 'com_enabled' && $_POST[$arr_key[$j] . $i] != '1') {
+            break;
         }
     }
 
     $json_data = json_encode($data);
+    
     file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
     file_put_contents(ELASTEL_DCT_CONFIG_JSON, $json_data);
     exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct com');
@@ -164,6 +176,8 @@ function saveTcpConfig($status)
             $data['anonymous' . $i] = $_POST['anonymous' . $i];
             $data['username' . $i] = $_POST['username' . $i];
             $data['password' . $i] = $_POST['password' . $i];
+            $data['slave_address' . $i] = $_POST['tcp_slave_address' . $i];
+            $data['master_address' . $i] = $_POST['tcp_master_address' . $i];
             
             $data['security_policy' . $i] = $_POST['security_policy' . $i];
             if ($data['security_policy' . $i] != '0') {
