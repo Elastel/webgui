@@ -45,7 +45,7 @@ function saveDnp3Config($status)
     file_put_contents(ELASTEL_DCT_CONFIG_JSON, $data);
     exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct dnp3');
 
-    exec('sudo uci commit dnp3_server');
+    exec('sudo uci commit dct');
     
     $status->addMessage('DNP3 configuration updated ', 'success');
     return true;

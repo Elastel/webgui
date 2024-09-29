@@ -943,6 +943,9 @@ function handlePageActions($extraFooterScripts, $page, $config)
         case "/dnp3":
             DisplayDnp3();
             break;
+        case "/modbus_slave":
+            DisplayModbusSlave();
+            break;
         case "/datadisplay":
             dataDisplay();
             break;

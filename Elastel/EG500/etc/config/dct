@@ -39,6 +39,8 @@ config setting 'opcua'
 
 config setting 'dnp3_server'
 
+config setting 'modbus_slave'
+
 config state 'connection'
 
 config state 'sensor'

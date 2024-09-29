@@ -226,6 +226,9 @@ function contentLoaded() {
         case "dnp3":
             loadDnp3Config();
             break;
+        case "modbus_slave":
+            loadModbusSlaveConfig();
+            break;
         case "datadisplay":
             loadDataDisplay();
             break;
@@ -1465,10 +1468,7 @@ $(document).ready(function(){
     $('.nav-item').each(function() {
         if ($(this).hasClass('active')) {
             var id = $($(this))[0].id;
-            if (id == "dct_basic" || id == "interfaces" || id == "modbus" || id == "s7" ||
-                id == "server" || id == "io" || id == "bacnet" || id == "fx" || id == "datadisplay" ||
-                id == "opcua" || id == "mc" || id == "ascii" || id == "bacnet_client" || id == 'iec104' ||
-                id == 'opcua_client' || id == 'dnp3' || id == 'dnp3_client') {
+            if (id.includes('dct_')) {
                 $('#navbar-collapse-dct').addClass('show')
                 $('#dct').removeClass('collapsed');
             } else if (id == "ddns" || id == "macchina") {

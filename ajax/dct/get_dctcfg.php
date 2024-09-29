@@ -4,6 +4,11 @@ require_once '../../includes/config.php';
 
 $type = $_GET['type'];
 
+$type_arr = array(
+    'dnp3' => array('option' => 'dnp3_server', 'option_list' => 'dnp3'),
+    'modbus_slave' => array('option' => 'modbus_slave', 'option_list' => 'modbus_slave_point')
+);
+
 if ($type == 'datadisplay') {
     exec('cat /tmp/webshow', $dctdata);
     if ($dctdata[0] != NULL){
@@ -43,31 +48,35 @@ if ($type == 'datadisplay') {
         echo json_encode($dctdata);
     } else if ($type == 'server') {
         exec("/usr/sbin/get_config dct name $type 5", $data);
+        $dctdata = json_decode($data[0]);
+        echo json_encode($dctdata);
     } else if ($type == 'modbus' || $type == 'ascii' || $type == 's7'|| $type == 'fx' ||
              $type == 'mc' || $type == 'adc' || $type == 'di' || $type == 'do' || 
              $type == 'iec104' || $type == 'opcuacli' || $type == 'dnp3cli') {
         exec("/usr/sbin/get_config dct type $type 1", $data);
-    } else if ($type == 'dnp3') {
-        exec("/usr/sbin/get_config dct name dnp3_server 1", $tmp1);
-        exec("/usr/sbin/get_config dct type dnp3 1", $tmp2);
-        $dctdata['option'] = $config['dnp3_server_option'];
-        $dctdata['option_list'] = $config['dnp3_option'];
+        $dctdata = json_decode($data[0]);
+        echo json_encode($dctdata);
+    } else if ($type == 'dnp3' || $type == 'modbus_slave') {
+        $option_name = $type_arr[$type]['option'];
+        $option_list_name = $type_arr[$type]['option_list'];
+
+        exec("/usr/sbin/get_config dct name " . $option_name . " 1", $tmp1);
+        exec("/usr/sbin/get_config dct type " . $option_list_name . " 1", $tmp2);
+    
+        $dctdata['option'] = $config[$option_name .'_option'];
+        $dctdata['option_list'] = $config[$option_list_name .'_option'];
         if (strlen($fileContentFactor) > 0)
             $dctdata['factor_list'] = json_decode($fileContentFactor, true);
 
         if ($tmp1)
-            $dctdata[$type.'_server'] = $tmp1[0];
+            $dctdata[$option_name] = $tmp1[0];
 
         if ($tmp2)
-            $dctdata[$type] = $tmp2[0];
+            $dctdata[$option_list_name] = $tmp2[0];
         
         echo json_encode($dctdata);
     } else {
         exec("/usr/sbin/get_config dct name $type 1", $data);
-    }
-        
-    
-    if ($type != 'dnp3' && $type != 'interface') {
         $dctdata = json_decode($data[0]);
         echo json_encode($dctdata);
     }

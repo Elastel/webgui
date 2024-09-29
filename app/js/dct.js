@@ -427,7 +427,7 @@ function addSectionTable(table_name, jsonData, option_list) {
     if (jsonData == null)
         return;
 
-    if (table_name == 'modbus') {
+    if (table_name == 'modbus' || table_name == 'modbus_slave_point') {
         data_type_value = ['Bit', 'Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
         'Unsigned 32Bits ABCD', 'Unsigned 32Bits BADC', 'Unsigned 32Bits CDAB', 'Unsigned 32Bits DCBA',
         'Signed 32Bits ABCD', 'Signed 32Bits BADC', 'Signed 32Bits CDAB', 'Signed 32Bits DCBA',
@@ -537,9 +537,10 @@ function getRealtimeData() {
 
         const trList = document.querySelectorAll('table tr');
         var dnp3 = document.getElementById('option_list_dnp3');
+        var modbus_slave = document.getElementById('option_list_modbus_slave_point');
         trList.forEach((tr) => {
             var cur_value = '';
-            if (dnp3) {
+            if (dnp3 || modbus_slave) {
                 if (tr.querySelector('td[name="source_object"]')) {
                     var factor = tr.querySelector('td[name="source_object"]').innerHTML;
                     factor = factor.substring(factor.indexOf('-') + 1)
@@ -1422,7 +1423,7 @@ function get_table_data(table_name, option_list) {
     '7':'M_BO_NA_1', '33':'M_BO_TB_1', '9':'M_ME_NA_1', '34':'M_ME_TD_1', '21':'M_ME_ND_1', '11':'M_ME_NB_1', '35':'M_ME_TE_1', '13':'M_ME_NC_1', 
     '36':'M_ME_TF_1', '15':'M_IT_NA_1', '37':'M_IT_TB_1', '38':'M_EP_TD_1'};
 
-    if (table_name == 'modbus') {
+    if (table_name == 'modbus' || table_name == 'modbus_slave_point') {
         data_type_value = ['Bit', 'Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
         'Unsigned 32Bits ABCD', 'Unsigned 32Bits BADC', 'Unsigned 32Bits CDAB', 'Unsigned 32Bits DCBA',
         'Signed 32Bits ABCD', 'Signed 32Bits BADC', 'Signed 32Bits CDAB', 'Signed 32Bits DCBA',
@@ -1507,7 +1508,7 @@ function saveData(table_name) {
     '7':'M_BO_NA_1', '33':'M_BO_TB_1', '9':'M_ME_NA_1', '34':'M_ME_TD_1', '21':'M_ME_ND_1', '11':'M_ME_NB_1', '35':'M_ME_TE_1', '13':'M_ME_NC_1', 
     '36':'M_ME_TF_1', '15':'M_IT_NA_1', '37':'M_IT_TB_1', '38':'M_EP_TD_1'};
 
-    if (table_name == 'modbus') {
+    if (table_name == 'modbus' || table_name == 'modbus_slave_point') {
         data_type_value = ['Bit', 'Unsigned 16Bits AB', 'Unsigned 16Bits BA', 'Signed 16Bits AB', 'Signed 16Bits BA',
         'Unsigned 32Bits ABCD', 'Unsigned 32Bits BADC', 'Unsigned 32Bits CDAB', 'Unsigned 32Bits DCBA',
         'Signed 32Bits ABCD', 'Signed 32Bits BADC', 'Signed 32Bits CDAB', 'Signed 32Bits DCBA',
@@ -1770,16 +1771,7 @@ function saveDataIO() {
     closeBox();
 }
 
-/* DNP3 */
-function addDataDnp3(table_name) {
-    openBox(table_name);
-    document.getElementById("page_type").value = "0"; /* 0 is add. other is edit */
-}
-
-function saveDataDnp3(table_name) {
-
-}
-
+/* DNP3 Server*/
 function enableDnp3(state) {
     if (state) {
       $('#page_dnp3').show();
@@ -1847,6 +1839,82 @@ function loadDnp3Config() {
         
         if (jsonData.hasOwnProperty("dnp3")) {
             var tmpData = JSON.parse(jsonData.dnp3);
+            var option_list = jsonData.option_list;
+
+            addSectionTable(table_name, tmpData, option_list);
+
+            loadRealtimeData();
+        }
+        $('#loading').hide();
+    });
+}
+
+/* Modbus Slave*/
+function enableModbusSlave(state) {
+    if (state) {
+      $('#page_modbus_slave').show();
+    } else {
+      $('#page_modbus_slave').hide();
+    }
+    modbusSlaveProtocolChange();
+}
+
+function modbusSlaveProtocolChange() {
+    var proto = document.getElementById('proto').value;
+
+    if (proto == 'RTU') {
+        $('#page_proto_rtu').show();
+        $('#page_proto_ip').hide();
+    } else {
+        $('#page_proto_rtu').hide();
+        $('#page_proto_ip').show();
+    }
+}
+
+function loadModbusSlaveConfig() {
+    $('#loading').show();
+    $.get('ajax/dct/get_dctcfg.php?type=modbus_slave',function(data){
+        jsonData = JSON.parse(data);
+        var arr = jsonData.option;
+        if (jsonData.hasOwnProperty("modbus_slave")) {
+            var modbus_slave = JSON.parse(jsonData.modbus_slave);
+
+            $('#enabled').val(modbus_slave.enabled);
+            if (modbus_slave.enabled == '1') {
+                $('#page_modbus_slave').show();
+                $('#modbus_slave_enable').prop('checked', true);
+
+                arr.forEach(function (info) {
+                    if (info == null) {
+                        return true;    // continue: return true; break: return false
+                    }
+
+                    $('#' + info).val(modbus_slave[info]);
+                })
+            } else {
+                $('#page_modbus_slave').hide();
+                $('#modbus_slave_disable').prop('checked', true);
+            }
+            modbusSlaveProtocolChange();
+        }
+
+        var table_name = 'modbus_slave_point';
+        if (jsonData.hasOwnProperty("factor_list")) {
+            var factor_list = jsonData.factor_list;
+            var select = document.getElementById(table_name + '.source_object');
+            if (factor_list != null) {
+                factor_list.forEach(function(factor) {
+                    var newOption = document.createElement('option');
+                    newOption.value = factor;
+                    newOption.text = factor;
+                    select.appendChild(newOption);
+                });
+            }
+            
+        }
+        
+        if (jsonData.hasOwnProperty(table_name)) {
+            var tmpData = JSON.parse(jsonData.modbus_slave_point);
             var option_list = jsonData.option_list;
 
             addSectionTable(table_name, tmpData, option_list);
