@@ -17,7 +17,7 @@ function DisplayNetworkingConfig()
             saveLteConfig($status);
             exec('sudo /usr/local/bin/uci commit network');
 
-            if ($model != 'EG324L') {
+            if ($model != 'EG324L' && $model != 'EC212') {
                 if ($_POST['wan-multi'] == '1') {
                     exec('sudo cp /var/www/html/config/raspap-br0-member-eth0.network /etc/systemd/network/');
                 } else {
@@ -33,7 +33,7 @@ function DisplayNetworkingConfig()
             
 
             if (isset($_POST['applynetworksettings'])) {
-                if ($model != 'EG324L') {
+                if ($model != 'EG324L' && $model != 'EC212') {
                     exec('cat /sys/class/net/eth0/address', $cur_wired_mac);
                     if ($cur_wired_mac[0] != $_POST['wired_mac']) {
                         exec('sudo ifconfig eth0 down');
@@ -146,7 +146,7 @@ function saveStaticConfig($status)
             exec('sudo uci set network.wan.proto=static');
             $errors = validateDHCPInputNetwork();
             if (empty($errors)) {
-                $return = updateDHCPConfigNetwork($iface0,$status);
+                $return = updateDHCPConfigNetwork($iface0, $status);
             } else {
                 $status->addMessage($errors, 'danger');
             }

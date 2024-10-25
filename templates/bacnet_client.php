@@ -3,7 +3,7 @@
   if (!RASPI_MONITOR_ENABLED) :
     BtnSaveApplyCustom('savebacclisettings', 'applybacclisettings');
   endif;
-  $msg = _('Restarting BACnet Client');
+  $msg = _('Restarting BACnet Rules');
   page_progressbar($msg, _("Executing dct start"));
   $buttons = ob_get_clean(); 
   ob_end_clean();
@@ -51,7 +51,7 @@
       <div class="card-header">
         <div class="row">
           <div class="col">
-          <?php echo _("BACnet Client"); ?>
+          <?php echo _("BACnet Rules"); ?>
           </div>
         </div><!-- ./row -->
       </div><!-- ./card-header -->
@@ -61,7 +61,7 @@
           <?php echo CSRFTokenFieldTag() ?>
             <div class="cbi-section cbi-tblsection">
               <?php 
-                RadioControlCustom(_('BACnet Client'), 'enabled', 'bacnet', 'enableBACnet');
+                RadioControlCustom(_('BACnet Rules'), 'enabled', 'bacnet', 'enableBACnet');
           
                 echo '<div id="page_bacnet" name="page_bacnet">';
                 $proto = array('BACnet/IP', 'BACnet/MSTP');
@@ -110,7 +110,7 @@
                   $arr= array(
                     array("name"=>"Order",                "style"=>"", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Factor Name",          "style"=>"", "descr"=>"Multiple Factors Are Separated By Semicolon", "ctl"=>"input"),
+                    array("name"=>"Tag Name",          "style"=>"", "descr"=>"Multiple Tags Are Separated By Semicolon", "ctl"=>"input"),
                     array("name"=>"Object Device ID",            "style"=>"", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Object Identifier",    "style"=>"", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
@@ -140,7 +140,7 @@
 <div id="popLayer"></div>
 <div id="popBox" style="overflow:auto">
   <input hidden="hidden" name="page_type" id="page_type" value="0">
-  <h4><?php echo _("Bacnet Client Object Setting"); ?></h4>
+  <h4><?php echo _("BACnet Rules Object Setting"); ?></h4>
   <div class="cbi-section">
     <?php
       $table_name = 'baccli';
@@ -148,7 +148,7 @@
 
       InputControlCustom(_('Device Name'), $table_name.'.device_name', $table_name.'.device_name');
 
-      InputControlCustom(_('Factor Name'), $table_name.'.factor_name', $table_name.'.factor_name', _('Multiple Factors Are Separated By Semicolon'));
+      InputControlCustom(_('Tag Name'), $table_name.'.factor_name', $table_name.'.factor_name', _('Multiple Tags Are Separated By Semicolon'));
     ?>
 
     <div class="cbi-value">

@@ -19,11 +19,9 @@ function DisplayDHCPConfig()
                 //exec('sudo /bin/systemctl restart dnsmasq.service', $dnsmasq, $return);
                 
                    exec('sudo /etc/raspap/hostapd/servicestart.sh --interface br0 --seconds 3', $return); 
-                if ($model == 'EG324L') {
+                if ($model == 'EG324L' || $model == 'EC212') {
                    exec('/etc/init.d/S80dnsmasq restart; sleep 1; /etc/init.d/S80dhcpcd restart', $return); 
                 }
-                
-                $status->addMessage($return, 'info');
             }
         }
     }
@@ -192,14 +190,17 @@ function updateDnsmasqConfig($iface,$status)
     $config .= $_POST['RangeLeaseTimeUnits'].PHP_EOL;
     //  Static leases
     $staticLeases = array();
-    for ($i=0; $i < count($_POST['static_leases']['mac']); $i++) {
-        $mac = trim($_POST['static_leases']['mac'][$i]);
-        $ip  = trim($_POST['static_leases']['ip'][$i]);
-        $comment  = trim($_POST['static_leases']['comment'][$i]);
-        if ($mac != '' && $ip != '') {
-            $staticLeases[] = array('mac' => $mac, 'ip' => $ip, 'comment' => $comment);
+    if (isset($_POST["static_leases"]["mac"])) {
+        for ($i=0; $i < count($_POST['static_leases']['mac']); $i++) {
+            $mac = trim($_POST['static_leases']['mac'][$i]);
+            $ip  = trim($_POST['static_leases']['ip'][$i]);
+            $comment  = trim($_POST['static_leases']['comment'][$i]);
+            if ($mac != '' && $ip != '') {
+                $staticLeases[] = array('mac' => $mac, 'ip' => $ip, 'comment' => $comment);
+            }
         }
     }
+    
     //  Sort ascending by IPs
     usort($staticLeases, 'compareIPs');
     //  Update config

@@ -31,7 +31,7 @@ function get_revison()
 {
     $dev_model = getModel();
     // Lookup table from http://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/
-    if ($dev_model != "EG324") {
+    if ($dev_model != "EG324" && $dev_model != "EC212") {
         $revisions = array(
         '0002' => 'Model B Revision 1.0',
         '0003' => 'Model B Revision 1.0 + ECN0001',
@@ -143,6 +143,7 @@ function DisplayDashboard(&$extraFooterScripts)
         $statusIcon = "down";
     }
     
+    $leases = array();
     exec('cat ' . RASPI_DNSMASQ_LEASES, $leases);
     // fetch dhcpcd.conf settings for interface
     $conf = file_get_contents(RASPI_DHCPCD_CONFIG);
@@ -248,7 +249,7 @@ function DisplayDashboard(&$extraFooterScripts)
     $local_time = $tmp[0];
 
     unset($tmp);
-    if ($model == 'EG324' || $model == 'EG324L') {
+    if ($model == 'EG324' || $model == 'EG324L' || $model == 'EC212') {
         exec("cat /etc/sn", $tmp);
         $sn = $tmp[0];
     } else {

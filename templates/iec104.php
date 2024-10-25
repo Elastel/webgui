@@ -29,7 +29,7 @@
               array("name"=>"Order",                "style"=>"", "descr"=>""),
               array("name"=>"Device Name",          "style"=>"", "descr"=>""),
               array("name"=>"Belonged Interface",   "style"=>"", "descr"=>""),
-              array("name"=>"Factor Name",          "style"=>"", "descr"=>"Multiple Factors Are Separated By Semicolon"),
+              array("name"=>"Tag Name",          "style"=>"", "descr"=>"Multiple Tags Are Separated By Semicolon"),
               array("name"=>"Type ID",              "style"=>"", "descr"=>""),
               array("name"=>"Start IOA",            "style"=>"", "descr"=>"0~255"),
               array("name"=>"Common Address",       "style"=>"", "descr"=>""),
@@ -78,7 +78,7 @@
       $interface_list = get_belonged_interface(-1, TcpProtoEnum::TCP_PROTO_IEC104);
       SelectControlCustom(_('Belonged Interface'), $table_name.'.belonged_com', $interface_list, $interface_list[0], $table_name.'.belonged_com');
 
-      InputControlCustom(_('Factor Name'), $table_name.'.factor_name', $table_name.'.factor_name', _('Multiple Factors Are Separated By Semicolon'));
+      InputControlCustom(_('Tag Name'), $table_name.'.factor_name', $table_name.'.factor_name', _('Multiple Tags Are Separated By Semicolon'));
       
       SelectControlCustom(_('Type ID'), $table_name.'.type_id', $type_id_list, $type_id_list[0], $table_name.'.type_id');
 

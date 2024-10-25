@@ -27,7 +27,7 @@
                   $arrADC = array(
                     array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"ADC Channel",          "style"=>"", "descr"=>"", "ctl"=>"select"),
-                    array("name"=>"Factor Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
+                    array("name"=>"Tag Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Capture Type",         "style"=>"", "descr"=>"", "ctl"=>"select"),
                     array("name"=>"Range Down",           "style"=>"", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Range Up",             "style"=>"", "descr"=>"", "ctl"=>"input"),
@@ -66,7 +66,7 @@
                   $arrDI = array(
                     array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"DI Channel",           "style"=>"", "descr"=>"", "ctl"=>"select"),
-                    array("name"=>"Factor Name",          "style"=>"", "descr"=>"Multiple Factors Are Separated By Semicolon", "ctl"=>"input"),
+                    array("name"=>"Tag Name",          "style"=>"", "descr"=>"Multiple Tags Are Separated By Semicolon", "ctl"=>"input"),
                     array("name"=>"Mode",                 "style"=>"", "descr"=>"", "ctl"=>"select"),
                     array("name"=>"Count Method",         "style"=>"", "descr"=>"", "ctl"=>"select"),
                     array("name"=>"Debounce Interval",    "style"=>"", "descr"=>"", "ctl"=>"input"),
@@ -100,7 +100,7 @@
                   $arrDO = array(
                     array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"DO Channel",           "style"=>"", "descr"=>"", "ctl"=>"select"),
-                    array("name"=>"Factor Name",          "style"=>"", "descr"=>"Multiple Factors Are Separated By Semicolon", "ctl"=>"input"),
+                    array("name"=>"Tag Name",          "style"=>"", "descr"=>"Multiple Tags Are Separated By Semicolon", "ctl"=>"input"),
                     array("name"=>"Init Status",          "style"=>"", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Current Status",       "style"=>"", "descr"=>"", "ctl"=>"input"),
                     array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
@@ -170,7 +170,7 @@
       SelectControlCustom(_('DO Channel'), $table_name.'.index.do', $do_index, $do_index[0], $table_name.'.index.do');
       echo '</div>';
 
-      InputControlCustom(_('Factor Name'), $table_name.'.factor_name', $table_name.'.factor_name', _('Multiple Factors Are Separated By Semicolon'));
+      InputControlCustom(_('Tag Name'), $table_name.'.factor_name', $table_name.'.factor_name', _('Multiple Tags Are Separated By Semicolon'));
 
       echo '<div name="pageADCMod" id="pageADCMod">';
       $cap_type = ['4-20mA', '0-10V'];

@@ -43,7 +43,7 @@ if [ $model == "EG500" -o $model == "EG410" -o $model == "ElastBox400" ]; then
         sudo systemctl disable nftables.service
 fi
 
-if [ $model != "EG324L" ]; then
+if [ $model != "EG324L" -a $model != "EC212" ]; then
         #check msmtp
         if ! type msmtp >/dev/null 2>&1; then
                 echo "msmtp is NOT installed!"
@@ -120,7 +120,7 @@ if [ "$1" == "reset" ]; then
     sudo cp $path/Elastel/$model/etc/config/* /etc/config/
     sudo cp $path/Elastel/$model/etc/basic_station /etc/ -r
     sleep 1
-    if [ $model != "EG324L" ]; then
+    if [ $model != "EG324L" -a $model != "EC212" ]; then
         sudo cp $path/config/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
         sudo cp $path/Elastel/$model/etc/WebTunnelAgent.properties /etc/WebTunnelAgent.properties
         sudo cp $path/config/global_conf.json /etc/global_conf.json
@@ -166,7 +166,7 @@ sudo cp $path/installers/configport.sh /etc/raspap/lighttpd/
 sudo cp $path/installers/bacnet_update /usr/sbin/
 sudo cp $path/Elastel/$model/etc/init.d/* /etc/init.d/
 sleep 1
-if [ $model != "EG324L" ]; then
+if [ $model != "EG324L" -a $model != "EC212" ]; then
         sudo cp $path/config/090_raspap /etc/sudoers.d/090_raspap
         sudo chown -c root:www-data /etc/raspap/hostapd/*.sh
         sleep 1
@@ -232,7 +232,7 @@ fi
 
 sleep 1
 
-if [ $model != "EG324" -a $model != "EG324L" ]; then
+if [ $model != "EG324" -a $model != "EG324L" -a $model != "EC212" ]; then
 	echo -e "Start feed dog"
 	sudo /var/www/html/installers/feed_dog.sh &
 fi
@@ -249,7 +249,7 @@ sleep 1
 
 sleep 1
 
-if [[ $model = "EG324" || $model = "EG324L" ]]; then
+if [[ $model = "EG324" || $model = "EG324L" ||  $model = "EC212" ]]; then
 	echo V > /dev/watchdog
 fi
 
@@ -264,7 +264,7 @@ sudo /etc/init.d/bacnet_router stop
 
 sleep 1
 
-if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" ]]; then
+if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" || $model = "EC212" ]]; then
 	sudo cp -r $path/Elastel/$model/usr/* /usr/
 elif [ $bit = "32" ]; then
 	sudo cp -r $path/Elastel/$model/32/usr/* /usr/
@@ -272,7 +272,7 @@ fi
 
 sleep 1
 
-if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" ]]; then
+if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" || $model = "EC212" ]]; then
         sudo cp $path/Elastel/$model/sbin/* /sbin/
 elif [ $bit = "32" ]; then
         sudo cp $path/Elastel/$model/32/sbin/* /sbin/

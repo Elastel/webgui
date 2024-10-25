@@ -84,7 +84,7 @@ function saveBACnetClientConfig($status)
         }
     }
     
-    $status->addMessage('BACnet Client configuration updated ', 'success');
+    $status->addMessage('BACnet Rules configuration updated ', 'success');
     return true;
 }
 

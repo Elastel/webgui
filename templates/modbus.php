@@ -29,7 +29,7 @@
               array("name"=>"Order",                "style"=>"", "descr"=>"", "ctl"=>"input"),
               array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
               array("name"=>"Belonged Interface",   "style"=>"", "descr"=>"", "ctl"=>"select"),
-              array("name"=>"Factor Name",          "style"=>"", "descr"=>"Multiple Factors Are Separated By Semicolon", "ctl"=>"input"),
+              array("name"=>"Tag Name",          "style"=>"", "descr"=>"Multiple Tags Are Separated By Semicolon", "ctl"=>"input"),
               array("name"=>"Device ID",            "style"=>"", "descr"=>"0~255", "ctl"=>"input"),
               array("name"=>"Function Code",        "style"=>"", "descr"=>"0~255", "ctl"=>"input"),
               array("name"=>"Start Address",        "style"=>"", "descr"=>"0~65535", "ctl"=>"input"),
@@ -79,7 +79,7 @@
       $interface_list = get_belonged_interface(ComProtoEnum::COM_PROTO_MODBUS, TcpProtoEnum::TCP_PROTO_MODBUS);
       SelectControlCustom(_('Belonged Interface'), $table_name.'.belonged_com', $interface_list, $interface_list[0], $table_name.'.belonged_com');
 
-      InputControlCustom(_('Factor Name'), $table_name.'.factor_name', $table_name.'.factor_name', _('Multiple Factors Are Separated By Semicolon'));
+      InputControlCustom(_('Tag Name'), $table_name.'.factor_name', $table_name.'.factor_name', _('Multiple Tags Are Separated By Semicolon'));
 
       InputControlCustom(_('Device ID'), $table_name.'.device_id', $table_name.'.device_id', _('0~255'));
 

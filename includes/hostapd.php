@@ -57,7 +57,7 @@ function DisplayHostAPDConfig()
             $arrHostapdConf = parse_ini_file('/etc/raspap/hostapd.ini');
 
             if (isset($_POST['applyHostAPDsettings'])) {
-                if ($model == "EG324" || $model == "EG324L") {
+                if ($model == "EG324" || $model == "EG324L" || $model == "EC212") {
                     exec("sudo /usr/sbin/init-wlan0 >/dev/null &");
                 } else {
                     if ($arrHostapdConf['BridgedEnable'] == 1) {

@@ -1468,7 +1468,17 @@ $(document).ready(function(){
     $('.nav-item').each(function() {
         if ($(this).hasClass('active')) {
             var id = $($(this))[0].id;
-            if (id.includes('dct_')) {
+            if (id.includes('dct_south')) {
+                $('#navbar-collapse-south').addClass('show')
+                $('#south').removeClass('collapsed');
+                $('#navbar-collapse-dct').addClass('show')
+                $('#dct').removeClass('collapsed');
+            } else if (id.includes('dct_north')) {
+                $('#navbar-collapse-north').addClass('show')
+                $('#north').removeClass('collapsed');
+                $('#navbar-collapse-dct').addClass('show')
+                $('#dct').removeClass('collapsed');
+            } else if (id.includes('dct_')) {
                 $('#navbar-collapse-dct').addClass('show')
                 $('#dct').removeClass('collapsed');
             } else if (id == "ddns" || id == "macchina") {

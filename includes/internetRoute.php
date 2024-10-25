@@ -38,7 +38,7 @@ function getRouteInfo($checkAccess)
             $rInfo[$i]["interface"] = $prop[0];
             $rInfo[$i]["ip-address"] = $prop[1];
             $rInfo[$i]["gateway"] = $prop[2];
-            if ($model != "EG324L") {
+            if ($model != "EG324L" && $model != "EC212") {
                 exec('ifconfig ' . $prop[0] . ' | grep -oP "(?<=netmask )([0-9]{1,3}\.){3}[0-9]{1,3}"', $netmask);
             } else {
                 exec('ifconfig ' . $prop[0] . ' | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep "255.255"', $netmask);

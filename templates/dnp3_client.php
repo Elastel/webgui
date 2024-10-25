@@ -32,7 +32,7 @@
                   array("name"=>"Order",                "style"=>"", "descr"=>"", "ctl"=>"input"),
                   array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
                   array("name"=>"Belonged Interface",   "style"=>"", "descr"=>"", "ctl"=>"select"),
-                  array("name"=>"Factor Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
+                  array("name"=>"Tag Name",             "style"=>"", "descr"=>"", "ctl"=>"input"),
                   array("name"=>"Group ID",             "style"=>"", "descr"=>"", "ctl"=>"select"),
                   array("name"=>"Number of Points",     "style"=>"", "descr"=>"0~100", "ctl"=>"input"),
                   array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
@@ -79,7 +79,7 @@
       $interface_list = get_belonged_interface(ComProtoEnum::COM_PROTO_DNP3, TcpProtoEnum::TCP_PROTO_DNP3);
       SelectControlCustom(_('Belonged Interface'), $table_name.'.belonged_com', $interface_list, $interface_list[0], $table_name.'.belonged_com');
 
-      InputControlCustom(_('Factor Name'), $table_name.'.factor_name', $table_name.'.factor_name');
+      InputControlCustom(_('Tag Name'), $table_name.'.factor_name', $table_name.'.factor_name');
 
       $group_id_list = ['BINARR_INPUT' => 'BINARR_INPUT', 'DOUBLE_INPUT' => 'DOUBLE_INPUT', 
                       'BINARY_OUTPUT' => 'BINARY_OUTPUT', 'COUNTER_INPUT' => 'COUNTER_INPUT', 

@@ -3,7 +3,7 @@
   if (!RASPI_MONITOR_ENABLED) :
     BtnSaveApplyCustom('saveopcuaclisettings', 'applyopcuaclisettings');
   endif;
-  $msg = _('Restarting OPCUA Client');
+  $msg = _('Restarting OPCUA Rules');
   page_progressbar($msg, _("Executing dct start"));
   $buttons = ob_get_clean(); 
   ob_end_clean();
@@ -15,7 +15,7 @@
       <div class="card-header">
         <div class="row">
           <div class="col">
-          <?php echo _("OPCUA Client"); ?>
+          <?php echo _("OPCUA Rules"); ?>
           </div>
         </div><!-- ./row -->
       </div><!-- ./card-header -->
@@ -32,7 +32,7 @@
                   array("name"=>"Order",                "style"=>"", "descr"=>"", "ctl"=>"input"),
                   array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
                   array("name"=>"Belonged Interface",   "style"=>"", "descr"=>"", "ctl"=>"select"),
-                  array("name"=>"Factor Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
+                  array("name"=>"Tag Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
                   array("name"=>"Node Name",            "style"=>"", "descr"=>"", "ctl"=>"input"),
                   array("name"=>"Data Type",            "style"=>"", "descr"=>"", "ctl"=>"select"),
                   array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
@@ -68,7 +68,7 @@
 <div id="popLayer"></div>
 <div id="popBox" style="overflow:auto">
   <input hidden="hidden" name="page_type" id="page_type" value="0">
-  <h4><?php echo _("Bacnet Client Object Setting"); ?></h4>
+  <h4><?php echo _("OPCUA Rules Object Setting"); ?></h4>
   <div class="cbi-section">
     <?php
       $table_name = 'opcuacli';
@@ -79,7 +79,7 @@
       $interface_list = get_belonged_interface(-1, TcpProtoEnum::TCP_PROTO_OPCUA);
       SelectControlCustom(_('Belonged Interface'), $table_name.'.belonged_com', $interface_list, $interface_list[0], $table_name.'.belonged_com');
 
-      InputControlCustom(_('Factor Name'), $table_name.'.factor_name', $table_name.'.factor_name');
+      InputControlCustom(_('Tag Name'), $table_name.'.factor_name', $table_name.'.factor_name');
 
       InputControlCustom(_('Node Name'), $table_name.'.node_name', $table_name.'.node_name');
 

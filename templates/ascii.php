@@ -29,7 +29,7 @@
               array("name"=>"Order",                "style"=>"", "descr"=>"", "ctl"=>"input"),
               array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
               array("name"=>"Belonged Interface",   "style"=>"", "descr"=>"", "ctl"=>"select"),
-              array("name"=>"Channel Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
+              array("name"=>"Tag Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
               array("name"=>"Tx Command",            "style"=>"", "descr"=>"", "ctl"=>"input"),
               array("name"=>"Command Format",        "style"=>"", "descr"=>"", "ctl"=>"select"),
               array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
@@ -64,7 +64,7 @@
       $interface_list = get_belonged_interface(ComProtoEnum::COM_PROTO_ASCII, TcpProtoEnum::TCP_PROTO_ASCII);
       SelectControlCustom(_('Belonged Interface'), $table_name.'.belonged_com', $interface_list, $interface_list[0], $table_name.'.belonged_com');
 
-      InputControlCustom(_('Channel Name'), $table_name.'.factor_name', $table_name.'.factor_name');
+      InputControlCustom(_('Tag Name'), $table_name.'.factor_name', $table_name.'.factor_name');
 
       InputControlCustom(_('Tx Command'), $table_name.'.tx_cmd', $table_name.'.tx_cmd');
 

@@ -39,23 +39,46 @@
             <ul class="nav navbar-nav navbar-right">
                 <li class="nav-item" name="dct_basic" id="dct_basic" ><a class="nav-link" href="basic_conf"><?php echo _("Basic"); ?></a></li>
                 <li class="nav-item" name="interfaces" id="dct_interfaces"><a class="nav-link" href="interfaces_conf"><?php echo _("Interfaces"); ?></a></li>
-                <li class="nav-item" name="modbus" id="dct_modbus"><a class="nav-link" href="modbus_conf"><?php echo _("Modbus Rules"); ?></a></li>
-                <li class="nav-item" name="ascii" id="dct_ascii"><a class="nav-link" href="ascii_conf"><?php echo _("ASCII Rules"); ?></a></li>
-                <li class="nav-item" name="s7" id="dct_s7"><a class="nav-link" href="s7_conf"><?php echo _("S7 Rules"); ?></a></li>
-                    <li class="nav-item" name="fx" id="dct_fx"><a class="nav-link" href="fx_conf"><?php echo _("FX Rules"); ?></a></li>
-                <li class="nav-item" name="mc" id="dct_mc"><a class="nav-link" href="mc_conf"><?php echo _("MC Rules"); ?></a></li>
-                <li class="nav-item" name="iec104" id="dct_iec104"><a class="nav-link" href="iec104_conf"><?php echo _("IEC104 Rules"); ?></a></li>
-                <li class="nav-item" name="dnp3_client" id="dct_dnp3_client"><a class="nav-link" href="dnp3cli_conf"><?php echo _("DNP3 Rules"); ?></a></li>
-                <?php if ($model == "EG500" || $model == "EG410") : ?>
-                <li class="nav-item" name="io" id="dct_io"><a class="nav-link" href="io_conf"><?php echo _("IO"); ?></a></li>
-                <?php endif; ?>
-                <li class="nav-item" name="opcua_client" id="dct_opcua_client"><a class="nav-link" href="opcuacli_conf"><?php echo _("OPCUA Client"); ?></a></li>
-                <li class="nav-item" name="bacnet_client" id="dct_bacnet_client"><a class="nav-link" href="baccli_conf"><?php echo _("BACnet Client"); ?></a></li>
-                <li class="nav-item" name="server" id="dct_server"><a class="nav-link" href="server_conf"><?php echo _("Reporting Server"); ?></a></li>
-                <li class="nav-item" name="modbus_slave" id="dct_modbus_slave"><a class="nav-link" href="modbus_slave"><?php echo _("Modbus Slave"); ?></a></li>
-                <li class="nav-item" name="opcua" id="dct_opcua"><a class="nav-link" href="opcua"><?php echo _("OPCUA Server"); ?></a></li>
-                <li class="nav-item" name="bacnet" id="dct_bacnet"><a class="nav-link" href="bacnet"><?php echo _("BACnet Server"); ?></a></li>
-                <li class="nav-item" name="dnp3" id="dct_dnp3"><a class="nav-link" href="dnp3"><?php echo _("DNP3 Server"); ?></a></li>
+                <li class="nav-item" id="page_south">
+                    <a class="nav-link navbar-toggle collapsed" id="south" href="#" data-toggle="collapse" data-target="#navbar-collapse-south">
+                        <?php echo _("South Devices"); ?>
+                    </a>
+                    <div class="collapse navbar-collapse" id="navbar-collapse-south">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="nav-item" name="modbus" id="dct_south_modbus"><a class="nav-link" href="modbus_conf"><?php echo _("Modbus Rules"); ?></a></li>
+                            <li class="nav-item" name="ascii" id="dct_south_ascii"><a class="nav-link" href="ascii_conf"><?php echo _("ASCII Rules"); ?></a></li>
+                            <li class="nav-item" name="s7" id="dct_south_s7"><a class="nav-link" href="s7_conf"><?php echo _("S7 Rules"); ?></a></li>
+                                <li class="nav-item" name="fx" id="dct_south_fx"><a class="nav-link" href="fx_conf"><?php echo _("FX Rules"); ?></a></li>
+                            <li class="nav-item" name="mc" id="dct_south_mc"><a class="nav-link" href="mc_conf"><?php echo _("MC Rules"); ?></a></li>
+                            <li class="nav-item" name="iec104" id="dct_south_iec104"><a class="nav-link" href="iec104_conf"><?php echo _("IEC104 Rules"); ?></a></li>
+                            <li class="nav-item" name="dnp3_client" id="dct_south_dnp3_client"><a class="nav-link" href="dnp3cli_conf"><?php echo _("DNP3 Rules"); ?></a></li>
+                            <li class="nav-item" name="opcua_client" id="dct_south_opcua_client"><a class="nav-link" href="opcuacli_conf"><?php echo _("OPCUA Rules"); ?></a></li>
+                            <?php if(isBinExists("baccli")) : ?>
+                            <li class="nav-item" name="bacnet_client" id="dct_south_bacnet_client"><a class="nav-link" href="baccli_conf"><?php echo _("BACnet Rules"); ?></a></li>
+                            <?php endif; ?>
+                            <?php if ($model == "EG500" || $model == "EG410") : ?>
+                            <li class="nav-item" name="io" id="dct_south_io"><a class="nav-link" href="io_conf"><?php echo _("IO"); ?></a></li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                </li>
+                
+                <li class="nav-item" id="page_north">
+                    <a class="nav-link navbar-toggle collapsed" id="north" href="#" data-toggle="collapse" data-target="#navbar-collapse-north">
+                        <?php echo _("North Apps"); ?>
+                    </a>
+                    <div class="collapse navbar-collapse" id="navbar-collapse-north">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="nav-item" name="server" id="dct_north_server"><a class="nav-link" href="server_conf"><?php echo _("Reporting Server"); ?></a></li>
+                            <li class="nav-item" name="modbus_slave" id="dct_north_modbus_slave"><a class="nav-link" href="modbus_slave"><?php echo _("Modbus Slave"); ?></a></li>
+                            <li class="nav-item" name="opcua" id="dct_north_opcua"><a class="nav-link" href="opcua"><?php echo _("OPCUA Server"); ?></a></li>
+                            <?php if(isBinExists("bacserv")) : ?>
+                            <li class="nav-item" name="bacnet" id="dct_north_bacnet"><a class="nav-link" href="bacnet"><?php echo _("BACnet Server"); ?></a></li>
+                            <?php endif; ?>
+                            <li class="nav-item" name="dnp3" id="dct_north_dnp3"><a class="nav-link" href="dnp3"><?php echo _("DNP3 Server"); ?></a></li>
+                        </ul>
+                    </div>
+                </li>
                 <li class="nav-item" name="datadisplay" id="dct_datadisplay"><a class="nav-link" href="datadisplay"><?php echo _("Data Display"); ?></a></li>
             </ul>
             </div>

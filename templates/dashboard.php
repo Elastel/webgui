@@ -211,9 +211,9 @@
                           </tr>
                           <?php endforeach ?>
 
-                          <?php foreach (array_slice($leases,0, 2) as $leases) : ?>
+                          <?php $leases_count = 0; foreach (array_slice($leases,0, 2) as $leases) : ?>
                           <tr>
-                              <?php $props = explode(' ', $leases) ?>
+                              <?php $props = explode(' ', $leases); if (sizeof($props) > 2) $leases_count++; ?>
                               <td><?php echo htmlspecialchars($props[3], ENT_QUOTES) ?></td>
                               <td><?php echo htmlspecialchars($props[2], ENT_QUOTES) ?></td>
                               <td><?php echo htmlspecialchars($props[1], ENT_QUOTES) ?></td>
@@ -221,11 +221,11 @@
                           <?php endforeach ?>
                       </tbody>
                     </table>
-                    <?php if (sizeof($clients) > 3 || sizeof($leases) > 3) : ?>
+                    <?php if (sizeof($clients) > 3 || $leases_count > 3) : ?>
                         <div class="col-lg-12 float-right">
                           <a class="btn btn-outline-info" role="button" href="<?php echo $moreLink ?>"><?php echo _("More");?>  <i class="fas fa-chevron-right"></i></a>
                         </div>
-                    <?php elseif (sizeof($clients) ==0 && sizeof($leases) ==0) : ?>
+                    <?php elseif (sizeof($clients) == 0 && $leases_count == 0) : ?>
                         <div class="col-lg-12 mt-3"><?php echo _("No connected devices");?></div>
                     <?php endif; ?>
                   </div><!-- /.table-responsive -->

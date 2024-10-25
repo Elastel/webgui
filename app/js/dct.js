@@ -522,7 +522,7 @@ function addSectionTable(table_name, jsonData, option_list) {
         table.innerHTML += contents;
     }
 
-    insertColumn("table_" + table_name, 'cur_value', 'Factor Name', 'Current Value');
+    insertColumn("table_" + table_name, 'cur_value', 'Tag Name', 'Current Value');
 
     var result = get_table_data(table_name, option_list);
     var json_data = JSON.stringify(result);
@@ -744,7 +744,7 @@ function loadDOConfig() {
     });
 }
 
-/*OPCUA client*/
+/*OPCUA Rules*/
 function loadOpcuaClientConfig(){
     $('#loading').show();
     var table_name = 'opcuacli';
@@ -915,7 +915,7 @@ function filterFunctionObject() {
     }
 }
 
-/*BACnet client*/
+/*BACnet Rules*/
 function loadBACnetClientConfig() {
     $('#loading').show();
     var table_name = 'baccli';
@@ -1602,7 +1602,7 @@ function saveData(table_name) {
             '   </tr>';
         table.innerHTML += contents;
 
-        insertColumn("table_" + table_name, 'cur_value', 'Factor Name', 'Current Value');
+        insertColumn("table_" + table_name, 'cur_value', 'Tag Name', 'Current Value');
     } else {
         var num = 0;
         option_list.forEach(function (option){

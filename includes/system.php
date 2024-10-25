@@ -13,7 +13,7 @@ function RPiVersion()
 {
     $dev_model = getModel();
     // Lookup table from http://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/
-    if ($dev_model != "EG324") {
+    if ($dev_model != 'EG324' && $dev_model != 'EC212' ) {
         $revisions = array(
         '0002' => 'Model B Revision 1.0',
         '0003' => 'Model B Revision 1.0 + ECN0001',
@@ -95,7 +95,7 @@ function DisplaySystem()
 
         if (isset($_POST['timezones'])) {
             $timezone = $_POST['timezones'];
-            if ($model != "EG324L") {
+            if ($model != 'EG324L' && $model != 'EC212') {
                 exec("sudo timedatectl set-timezone $timezone");
             } else {
                 exec("sudo rm /etc/localtime");
@@ -248,7 +248,7 @@ function DisplaySystem()
     exec("date '+%Y-%m-%d %H:%M:%S'", $tmp);
     $current_time = $tmp[0];
 
-    if ($model != "EG324L") {
+    if ($model != 'EG324L' && $model != 'EC212') {
         exec("cat /etc/timezone", $cur_timezone);
         $_SESSION['timezones'] = $cur_timezone[0];
     } else {
@@ -257,21 +257,19 @@ function DisplaySystem()
             exec("sudo rm /etc/localtime && sudo ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime");
             $_SESSION['timezones'] = "Asia/Shanghai";
         } else {
-            $remove = "/usr/share/zoneinfo/";
-            if (substr($cur_timezone[0], 0, strlen($remove)) == $remove) {
-                $str = substr($cur_timezone[0], strlen($remove));
-            }
+            $substring = "zoneinfo/";
+            $result = strstr($cur_timezone[0], $substring, false);
+            $result = substr($result, strlen($substring));
 
-            $_SESSION['timezones'] = $str;
+            $_SESSION['timezones'] = $result;
         }
     }
-    
 
     unset($tmp);
     exec("cat /proc/sys/kernel/hostname", $tmp);
     $cur_hostname = $tmp[0];
 
-    if ($model == 'EG324' || $model == 'EG324L') {
+    if ($model == 'EG324' || $model == 'EG324L' ||  $model == 'EC212') {
         unset($tmp);
         exec("cat /etc/sn", $tmp);
         $sn = $tmp[0];
