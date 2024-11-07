@@ -29,7 +29,7 @@
                         <div class="row mb-1" style="margin-bottom: 1rem !important;">
                           <div class="col-xs-3" style="color: #858796; width: 10rem"><?php echo _("Region:"); ?></div>
                           <div class="col-xs-3">
-                            <select name="chirpstack_region" id="chirpstack_region"
+                            <select name="chirpstack_region" id="chirpstack_region">
                             <?php
                             $region_list = array('as923'=>'as923', 'as923_2'=>'as923_2', 'as923_3'=>'as923_3', 'as923_4'=>'as923_4', 'au915_0'=>'au915_0', 
                             'cn470_10'=>'cn470_10', 'cn779'=>'cn779', 'eu433'=>'eu433', 'eu868'=>'eu868', 'in865'=>'in865', 'ism2400'=>'ism2400', 'kr920'=>'kr920', 
