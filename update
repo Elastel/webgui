@@ -150,6 +150,7 @@ if [ "$1" == "reset" ]; then
     ssid="$target"_"$sub_mac"
     sed -i "s/ssid.*/ssid=$ssid/" /etc/hostapd/hostapd.conf
     sudo /etc/raspap/lighttpd/configport.sh 80 '' /etc/lighttpd/lighttpd.conf
+    sync
 else
     sudo cp $path/Elastel/$model/etc/init.d/* /etc/init.d/ 
 fi
@@ -163,7 +164,7 @@ sudo cp $path/config/rules.v4 /etc/iptables/rules.v4
 sudo cp $path/installers/service*.sh /etc/raspap/hostapd
 sudo cp $path/installers/configport.sh /etc/raspap/lighttpd/
 sudo cp $path/installers/bacnet_update /usr/sbin/
-
+sync
 sleep 1
 if [ $model != "EG324L" -a $model != "EC212" ]; then
         sudo cp $path/config/090_raspap /etc/sudoers.d/090_raspap
@@ -276,7 +277,7 @@ if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" || $model = "EC212" ]
 elif [ $bit = "32" ]; then
         sudo cp $path/Elastel/$model/32/sbin/* /sbin/
 fi
-
+sync
 echo -e "Complete to update, it will reboot system."
 echo $(date +%F%n%T) > /etc/fw_date
 sleep 5
