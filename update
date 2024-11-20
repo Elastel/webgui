@@ -129,6 +129,11 @@ if [ "$1" == "reset" ]; then
         if [ ! -f /etc/udev/rules.d/99-wifi-hotplug.rules ]; then
                 sudo cp $path/config/99-wifi-hotplug.rules /etc/udev/rules.d/
         fi
+
+        if [[ -e "/etc/chirpstack" ]]; then
+                sudo cp $path/config/chirpstack.toml /etc/chirpstack/chirpstack.toml
+                sudo cp $path/config/chirpstack-gateway-bridge.toml /etc/chirpstack-gateway-bridge/chirpstack-gateway-bridge.toml
+        fi
     else
         if [ -f /etc/init.d/S42htset ]; then
                 sudo rm /etc/init.d/S42htset
