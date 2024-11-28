@@ -83,6 +83,19 @@
             </ul>
             </div>
         </li>
+        <li class="nav-item" id="page_convert">
+            <a class="nav-link navbar-toggle collapsed" id="protocol_convert" href="#" data-toggle="collapse" data-target="#navbar-collapse-convert">
+                <i class="fas fa-server fa-fw mr-2"></i>
+                <span class="nav-label"><?php echo _("Protocol Convert"); ?></a>
+            </a>
+            <div class="collapse navbar-collapse" id="navbar-collapse-convert">
+            <ul class="nav navbar-nav navbar-right">
+                <?php if(isBinExists("router-mstp")) : ?>
+                    <li class="nav-item" name="bacnet_router" id="convert_bacnet_router"> <a class="nav-link" href="bacnet_router"><?php echo _("BACnet Router"); ?></a></li>
+                <?php endif; ?>
+            </ul>
+            </div>
+        </li>
         <li class="nav-item" id="page_remote">
             <a class="nav-link navbar-toggle collapsed" id="remote" href="#" data-toggle="collapse" data-target="#navbar-collapse-remote">
                 <i class="fas fa-key fa-fw mr-2"></i>
@@ -106,19 +119,6 @@
                         </div>
                     </li>
                 </ul>
-            </div>
-        </li>
-        <li class="nav-item" id="page_convert">
-            <a class="nav-link navbar-toggle collapsed" id="protocol_convert" href="#" data-toggle="collapse" data-target="#navbar-collapse-convert">
-                <i class="fas fa-server fa-fw mr-2"></i>
-                <span class="nav-label"><?php echo _("Protocol Convert"); ?></a>
-            </a>
-            <div class="collapse navbar-collapse" id="navbar-collapse-convert">
-            <ul class="nav navbar-nav navbar-right">
-                <?php if(isBinExists("router-mstp")) : ?>
-                    <li class="nav-item" name="bacnet_router" id="convert_bacnet_router"> <a class="nav-link" href="bacnet_router"><?php echo _("BACnet Router"); ?></a></li>
-                <?php endif; ?>
-            </ul>
             </div>
         </li>
         <li class="nav-item" id="page_services">
