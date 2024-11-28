@@ -1,5 +1,0 @@
-config sim sim
-	option index '0'
-
-config state dev
-

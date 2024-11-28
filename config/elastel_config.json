@@ -28,7 +28,7 @@
     "s7_option" : ["order", "device_name", "belonged_com", "factor_name", "reg_type", "reg_addr", "reg_count", "word_len",
 					"server_center", "operator", "operand", "ex", "accuracy", "sms_reporting",
 					"report_type", "alarm_up", "alarm_down", "phone_num", "email", "contents", "retry_interval", "again_interval", "enabled"],
-	"s7_field" : ["Order", "Device Name", "Belonged Interface", "Tag Name", "Register Type", "Register Address", "Count", "Word Len",
+	"s7_field" : ["Order", "Device Name", "Belonged Interface", "Tag Name", "Register Type", "Register Address", "Count", "Data Type",
 					"Reporting Center", "Operator", "Operand", "Operation Expression", "Accuracy", "SMS&Email Reporting",
 					"Report Type", "Alarm Up Limit", "Alarm Down Limit", "Phone Number", "Email", "Contents", "Retry Interval", "Again Interval", "Enable"],
     "fx_option" : ["order", "device_name", "belonged_com", "factor_name", "reg_type", "reg_addr", "reg_count", "data_type",

@@ -33,7 +33,7 @@
             array("name"=>"Register Type",        "style"=>"", "descr"=>"", "ctl"=>"select"),
             array("name"=>"Register Address",     "style"=>"", "descr"=>"", "ctl"=>"input"),
             array("name"=>"Count",                "style"=>"", "descr"=>"1~120", "ctl"=>"input"),
-            array("name"=>"Word Len",             "style"=>"", "descr"=>"", "ctl"=>"select"),
+            array("name"=>"Data Type",            "style"=>"", "descr"=>"", "ctl"=>"select"),
             array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
             array("name"=>"Operator",             "style"=>"display:none", "descr"=>"0 + - * /", "ctl"=>"select"),
             array("name"=>"Operation Expression", "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
@@ -87,7 +87,7 @@
       InputControlCustom(_('Count'), $table_name.'.reg_count', $table_name.'.reg_count', _('1~120'));
 
       $word_len = ['Bit', 'Byte', 'Word', 'DWord', 'Real', 'Counter', 'Timer'];
-      SelectControlCustom(_('Word Len'), $table_name.'.word_len', $word_len, $word_len[0], $table_name.'.word_len');
+      SelectControlCustom(_('Data Type'), $table_name.'.word_len', $word_len, $word_len[0], $table_name.'.word_len');
 
       InputControlCustom(_('Reporting Center'), $table_name.'.server_center', $table_name.'.server_center', _('Multiple Servers Are Separated By Minus'));
 

@@ -57,7 +57,7 @@
             echo '</div>';
 
             InputControlCustom(_('Slave ID'), 'slave_id', 'slave_id');
-            echo '</div>';
+            
             ?>
                 <input type="hidden" name="table_data" value="" id="hidTD_modbus_slave_point">
                 <input type="hidden" name="option_list_modbus_slave_point" value="" id="option_list_modbus_slave_point">
@@ -78,6 +78,7 @@
                   </div>
                 </div>
           <?php
+            echo '</div>';
             echo '</div>';
             echo $buttons; 
           ?>

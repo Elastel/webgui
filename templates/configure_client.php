@@ -25,6 +25,15 @@
           </div>
         </div>
         <div class="row">
+          <div class="col-md-6 mb-2">
+            <div class="custom-control custom-switch">
+              <?php $checked = $enablewificlient == 1 ? 'checked="checked"' : '' ?>
+              <input class="custom-control-input js-enable-wifi-stations" id="enablewificlient" name="enable_wifi_client" type="checkbox" value="1" <?php echo $checked ?> />
+              <label class="custom-control-label" for="enablewificlient"><?php echo _("Enable WIFI Client <code>Enable WIFI STA mode, WIFI AP mode will be disabled.</code>"); ?></label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
           <div class="col">
             <form method="POST" action="wpa_conf" name="wpa_conf_form">
               <?php echo CSRFTokenFieldTag() ?>

@@ -17,9 +17,12 @@ do_start()
 
 do_stop()
 {
-	kill $(cat /var/run/gpsd.pid)
+	killall -q gpsd
 	sleep 1
-	kill -9 $(cat /var/run/gpsd.pid)
+	[ -n "$(pgrep gpsd)" ] && {
+		sleep 1
+		kill -9 $(pgrep gpsd)
+	}
 }
 
 case "$1" in

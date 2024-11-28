@@ -652,6 +652,13 @@ function loadWifiStations(refresh) {
 }
 $(".js-reload-wifi-stations").on("click", loadWifiStations(true));
 
+$('.js-enable-wifi-stations').on('click', function() {
+    let isChecked = $(this).is(':checked');
+
+    var complete = function() { $(this).removeClass('loading-spinner'); }
+    $('.js-wifi-stations').addClass('loading-spinner').empty().load('ajax/networking/wifi_stations.php?enable=' + (isChecked ? '1' : '0'), complete);
+});
+
 /*
 Populates the wired network form fields
 Option toggles are set dynamically depending on the loaded configuration
@@ -1468,34 +1475,35 @@ $(document).ready(function(){
     $('.nav-item').each(function() {
         if ($(this).hasClass('active')) {
             var id = $($(this))[0].id;
-            if (id.includes('dct_south')) {
-                $('#navbar-collapse-south').addClass('show')
-                $('#south').removeClass('collapsed');
+            if (id.includes('dct_')) {
+                if (id.includes('dct_south')) {
+                    $('#navbar-collapse-south').addClass('show')
+                    $('#south').removeClass('collapsed');
+                } else if (id.includes('dct_north')) {
+                    $('#navbar-collapse-north').addClass('show')
+                    $('#north').removeClass('collapsed');
+                }
+
                 $('#navbar-collapse-dct').addClass('show')
                 $('#dct').removeClass('collapsed');
-            } else if (id.includes('dct_north')) {
-                $('#navbar-collapse-north').addClass('show')
-                $('#north').removeClass('collapsed');
-                $('#navbar-collapse-dct').addClass('show')
-                $('#dct').removeClass('collapsed');
-            } else if (id.includes('dct_')) {
-                $('#navbar-collapse-dct').addClass('show')
-                $('#dct').removeClass('collapsed');
-            } else if (id == "ddns" || id == "macchina") {
+            } else if (id.includes('remote_')) {
+                if (id.includes('remote_vpn')) {
+                    $('#navbar-collapse-vpn').addClass('show');
+                    $('#vpn').removeClass('collapsed');
+                }
+
                 $('#navbar-collapse-remote').addClass('show');
                 $('#remote').removeClass('collapsed');
-            } else if (id == "wan" || id == "lan" || id == "wifi" || id == "wifi_client" || 
-            id == "online_detection" || id == "lorawan" || id == "firewall") {
+            } else if (id.includes('network_')) {
                 $('#navbar-collapse-network').addClass('show');
                 $('#network').removeClass('collapsed');
-            } else if (id == "openvpn" || id == "wireguard") {
-                $('#navbar-collapse-vpn').addClass('show');
-                $('#vpn').removeClass('collapsed');
-            } else if (id == "terminal" || id == "gps" || id == "nodered" || 
-            id == "docker" || id == "bacnet_router" || id == "chirpstack") {
+            } else if (id.includes('convert_')) {
+                $('#navbar-collapse-convert').addClass('show');
+                $('#convert').removeClass('collapsed');
+            } else if (id.includes('services_')) {
                 $('#navbar-collapse-services').addClass('show');
                 $('#services').removeClass('collapsed');
-            } else if (id == "system_info" || id == "auth_conf" || id == 'backup_update') {
+            }  else if (id.includes('system_')) {
                 $('#navbar-collapse-system').addClass('show');
                 $('#system').removeClass('collapsed');
             }
@@ -1503,7 +1511,7 @@ $(document).ready(function(){
     });
 
     function itemChange(id) {
-        var idArr = ['dct', 'remote', 'network', 'vpn', 'services'];
+        var idArr = ['dct', 'remote', 'network', 'protocol_convert', 'services', 'system'];
         if (id.includes('page_')) {
         var key = id.slice(5);
         // console.log(key);

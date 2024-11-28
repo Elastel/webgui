@@ -57,7 +57,6 @@
             echo '</div>';
             InputControlCustom(_('Slave Address'), 'slave_address', 'slave_address', "0~65519");
             InputControlCustom(_('Master Address'), 'master_address', 'master_address', "0~65519");
-            echo '</div>';
             ?>
                 <input type="hidden" name="table_data" value="" id="hidTD_dnp3">
                 <input type="hidden" name="option_list_dnp3" value="" id="option_list_dnp3">
@@ -76,6 +75,7 @@
                   </div>
                 </div>
           <?php
+            echo '</div>';
             echo '</div>';
             echo $buttons; 
           ?>

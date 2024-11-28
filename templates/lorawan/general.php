@@ -1,7 +1,7 @@
 <div class="tab-pane active" id="general">
   <div class="row">
     <div class="cbi-value">
-        <label class="cbi-value-title"><?php echo _("Type Service"); ?></label>
+        <label class="cbi-value-title"><?php echo _("Working Mode"); ?></label>
         <select id="type" name="type" class="cbi-input-select" onchange="typeChangeLorawan()">
             <option value="0">Disabled</option>
             <option value="1">Packet Forwarder</option>

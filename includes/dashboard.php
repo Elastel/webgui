@@ -124,7 +124,7 @@ function DisplayDashboard(&$extraFooterScripts)
         $MACPattern = '"([[:xdigit:]]{2}:){5}[[:xdigit:]]{2}"';
 
         $moreLink = "dhcpd_conf";
-        exec('cat ' . RASPI_DNSMASQ_LEASES . '| grep -E $(iw dev ' . $apInterface . ' station dump | grep -oE ' . $MACPattern . ' | paste -sd "|")', $clients);
+        // exec('cat ' . RASPI_DNSMASQ_LEASES . '| grep -E $(iw dev ' . $apInterface . ' station dump | grep -oE ' . $MACPattern . ' | paste -sd "|")', $clients);
     }
 
     exec('uci get network.swan.ifname', $lte_ifname);
@@ -300,7 +300,7 @@ function DisplayDashboard(&$extraFooterScripts)
 
     echo renderTemplate(
         "dashboard", compact(
-            "clients",
+            // "clients",
             "moreLink",
             "ifaceStatus",
             "status",

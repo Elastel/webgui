@@ -4,6 +4,8 @@ target=$(cat /etc/target_model)
 bit=$(getconf LONG_BIT)
 path="/var/www/html"
 
+echo $(date +%F%n%T):failed > /etc/update_status
+
 if [ ! -n "$model" ]; then
         model="EG500"
 fi
@@ -117,7 +119,7 @@ if [ "$1" == "reset" ]; then
     sudo cp $path/config/Muttrc /etc/Muttrc
     sudo cp $path/config/msmtprc /etc/msmtprc
     sudo cp $path/config/defaults.json /etc/raspap/networking/
-    sudo cp $path/Elastel/$model/etc/* /etc/ -r
+    sudo cp $path/config/elastpro/etc/* /etc/ -r
     sleep 1
     if [ $model != "EG324L" -a $model != "EC212" ]; then
         sudo cp $path/config/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
@@ -285,5 +287,6 @@ fi
 sync
 echo -e "Complete to update, it will reboot system."
 echo $(date +%F%n%T) > /etc/fw_date
+echo $(date +%F%n%T):success > /etc/update_status
 sleep 5
 sudo reboot

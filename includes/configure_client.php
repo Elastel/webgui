@@ -118,5 +118,8 @@ function DisplayWPAConfig()
     preg_match('/state (UP|DOWN)/i', $stdoutIpWRepeatedSpaces, $matchesState) || $matchesState[1] = 'unknown';
     $ifaceStatus = strtolower($matchesState[1]) ? "up" : "down";
 
-    echo renderTemplate("configure_client", compact("status", "clientInterface", "ifaceStatus"));
+    exec("sudo /usr/local/bin/uci get wifi.wifi_client.enabled", $tmp);
+    $enablewificlient = $tmp[0];
+
+    echo renderTemplate("configure_client", compact("status", "clientInterface", "ifaceStatus", "enablewificlient"));
 }

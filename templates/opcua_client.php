@@ -22,8 +22,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form method="POST" action="opcuacli_conf" role="form">
-          <?php echo CSRFTokenFieldTag() ?>
-            <div class="cbi-section cbi-tblsection">
+            <?php echo CSRFTokenFieldTag() ?>
               <input type="hidden" name="table_data" value="" id="hidTD_opcuacli">
               <input type="hidden" name="option_list_opcuacli" value="" id="option_list_opcuacli">
               <div class="cbi-section cbi-tblsection" id="page_opcuacli" name="page_opcuacli">
@@ -56,7 +55,6 @@
                   <?php conf_im_ex('Opcuacli'); ?>
                 </div>
               </div>
-            </div>
             <?php echo $buttons ?>
           </form>
       </div><!-- card-body -->

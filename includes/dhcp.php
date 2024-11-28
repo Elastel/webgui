@@ -33,10 +33,10 @@ function DisplayDHCPConfig()
     $dnsmasq_state = ($dnsmasq[0] > 0);
 
     getWifiInterface();
-    $ap_iface = $_SESSION['ap_interface'];
+    $ap_iface = "br0";
     $serviceStatus = $dnsmasq_state ? 'up' : 'down';
-    exec('cat '. RASPI_DNSMASQ_PREFIX.'raspap.conf', $return);
-    $conf = ParseConfig($return);
+    // exec('cat '. RASPI_DNSMASQ_PREFIX.'raspap.conf', $return);
+    // $conf = ParseConfig($return);
     exec('cat '. RASPI_DNSMASQ_PREFIX.$ap_iface.'.conf', $return);
     $conf = array_merge(ParseConfig($return));
     $hosts = array();

@@ -1,7 +1,0 @@
-
-config setting 'general'
-	option synflood_protect '1'
-	option drop_invalid '1'
-	option output 'accept'
-	option forward 'accept'
-	option input 'accept'

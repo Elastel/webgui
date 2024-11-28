@@ -51,11 +51,11 @@
               <td style="text-align:left;width:30%;font-weight:bold; padding:0.5rem; font-size:0.8rem"><?php echo _("Uptime"); ?></td>
               <td style="text-align:left; padding:0.5rem; font-size:0.8rem"  name="uptime" id="uptime"><?php echo htmlspecialchars($uptime, ENT_QUOTES); ?></td>
             </tr>
-            <!-- <tr class="tr cbi-section-table-titles">
-              <td style="text-align:left;width:30rem;font-weight:bold"><?php echo _("Memory Used"); ?></td>
+            <tr class="tr cbi-section-table-titles">
+              <td style="text-align:left;width:30%;font-weight:bold; padding:0.5rem; font-size:0.8rem"><?php echo _("Memory Used"); ?></td>
               
               <td style="text-align:left"  name="memory" id="memory">
-                <div class="progress mb-2" style="height: 1.5rem;">
+                <div class="progress" style="height: 1rem;">
                   <div class="progress-bar bg-<?php echo htmlspecialchars($memused_status, ENT_QUOTES); ?>"
                       role="progressbar" aria-valuenow="<?php echo htmlspecialchars($memused, ENT_QUOTES); ?>" aria-valuemin="0" aria-valuemax="100"
                       style="width: <?php echo htmlspecialchars($memused, ENT_QUOTES); ?>%"><?php echo htmlspecialchars($memused, ENT_QUOTES); ?>%
@@ -64,10 +64,10 @@
               </td>
             </tr>
             <tr class="tr cbi-section-table-titles">
-              <td style="text-align:left;width:30rem;font-weight:bold"><?php echo _("CPU Load"); ?></td>
+              <td style="text-align:left;width:30%;font-weight:bold; padding:0.5rem; font-size:0.8rem"><?php echo _("CPU Load"); ?></td>
               
               <td style="text-align:left"  name="cpu_load" id="cpu_load">
-                <div class="progress mb-2" style="height: 1.5rem;">
+                <div class="progress" style="height: 1rem;">
                   <div class="progress-bar bg-<?php echo htmlspecialchars($cpuload_status, ENT_QUOTES); ?>"
                       role="progressbar" aria-valuenow="<?php echo htmlspecialchars($cpuload, ENT_QUOTES); ?>" aria-valuemin="0" aria-valuemax="100"
                       style="width: <?php echo htmlspecialchars($cpuload, ENT_QUOTES); ?>%"><?php echo htmlspecialchars($cpuload, ENT_QUOTES); ?>%
@@ -76,17 +76,17 @@
               </td>
             </tr>
             <tr class="tr cbi-section-table-titles">
-              <td style="text-align:left;width:30rem;font-weight:bold"><?php echo _("CPU Temp"); ?></td>
+              <td style="text-align:left;width:30%;font-weight:bold; padding:0.5rem; font-size:0.8rem"><?php echo _("CPU Temp"); ?></td>
               
               <td style="text-align:left"  name="cpu_temp" id="cpu_temp">
-                <div class="progress mb-4" style="height: 1.5rem;">
+                <div class="progress" style="height: 1rem;">
                   <div class="progress-bar bg-<?php echo htmlspecialchars($cputemp_status, ENT_QUOTES); ?>"
                       role="progressbar" aria-valuenow="<?php echo htmlspecialchars($cputemp, ENT_QUOTES); ?>" aria-valuemin="0" aria-valuemax="100"
                       style="width: <?php echo htmlspecialchars(($cputemp*1.2), ENT_QUOTES); ?>%"><?php echo htmlspecialchars($cputemp, ENT_QUOTES); ?>°C
                   </div>
                 </div>
               </td>
-            </tr> -->
+            </tr>
           </table>
           </div>
         </div>
@@ -202,15 +202,6 @@
                         </tr>
                       </thead>
                       <tbody>
-                          <?php foreach (array_slice($clients,0, 2) as $client) : ?>
-                          <tr>
-                              <?php $props = explode(' ', $client) ?>
-                              <td><?php echo htmlspecialchars($props[3], ENT_QUOTES) ?></td>
-                              <td><?php echo htmlspecialchars($props[2], ENT_QUOTES) ?></td>
-                              <td><?php echo htmlspecialchars($props[1], ENT_QUOTES) ?></td>
-                          </tr>
-                          <?php endforeach ?>
-
                           <?php $leases_count = 0; foreach (array_slice($leases,0, 2) as $leases) : ?>
                           <tr>
                               <?php $props = explode(' ', $leases); if (sizeof($props) > 2) $leases_count++; ?>
@@ -221,11 +212,11 @@
                           <?php endforeach ?>
                       </tbody>
                     </table>
-                    <?php if (sizeof($clients) > 3 || $leases_count > 3) : ?>
+                    <?php if ($leases_count > 3) : ?>
                         <div class="col-lg-12 float-right">
                           <a class="btn btn-outline-info" role="button" href="<?php echo $moreLink ?>"><?php echo _("More");?>  <i class="fas fa-chevron-right"></i></a>
                         </div>
-                    <?php elseif (sizeof($clients) == 0 && $leases_count == 0) : ?>
+                    <?php elseif ($leases_count == 0) : ?>
                         <div class="col-lg-12 mt-3"><?php echo _("No connected devices");?></div>
                     <?php endif; ?>
                   </div><!-- /.table-responsive -->

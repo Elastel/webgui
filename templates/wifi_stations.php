@@ -1,4 +1,4 @@
-<?php if (empty($networks) || ($wifi_client_enable[0] == '0')): ?>
+<?php if (empty($networks) && ($wifi_client_enable[0] == '1')): ?>
   <div class="col-md-6 ml-6">
     <p class="lead text-center"><?php echo _('No Wifi stations found') ?></p>
     <p class="text-center"><?php echo _("Click 'Rescan' to search for nearby Wifi stations.") ?></p>
@@ -12,6 +12,10 @@
     </form>
     <?//php endif ?> -->
   </div>
+<?php elseif (empty($networks) && ($wifi_client_enable[0] == '0')):?>
+	<div class="col-md-6 ml-6">
+    	<p class="lead text-center"><?php echo _('Please enable WiFi client first.') ?></p>
+  	</div>
 <?php endif ?>
 
 <?php if (!empty($connected) && $wifi_client_enable[0]): ?>

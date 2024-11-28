@@ -16,16 +16,16 @@
             </a>
             <div class="collapse navbar-collapse" id="navbar-collapse-network">
             <ul class="nav navbar-nav navbar-right">
-                <li class="nav-item" name="wan" id="wan" ><a class="nav-link" href="network_conf"><?php echo _("WAN"); ?></a></li>
-                <li class="nav-item" name="lan" id="lan" ><a class="nav-link" href="dhcpd_conf"><?php echo _("LAN"); ?></a></li>
-                <li class="nav-item" name="wifi" id="wifi" ><a class="nav-link" href="hostapd_conf"><?php echo _("WiFi"); ?></a></li>
-                <li class="nav-item" name="wifi_client" id="wifi_client" ><a class="nav-link" href="wpa_conf"><?php echo _("WiFi client"); ?></a></li>
-                <li class="nav-item" name="online_detection" id="online_detection" ><a class="nav-link" href="detection_conf"><?php echo _("Online Detection"); ?></a></li>
+                <li class="nav-item" name="wan" id="network_wan" ><a class="nav-link" href="network_conf"><?php echo _("WAN"); ?></a></li>
+                <li class="nav-item" name="lan" id="network_lan" ><a class="nav-link" href="dhcpd_conf"><?php echo _("LAN"); ?></a></li>
+                <li class="nav-item" name="wifi" id="network_wifi" ><a class="nav-link" href="hostapd_conf"><?php echo _("WiFi AP"); ?></a></li>
+                <li class="nav-item" name="wifi_client" id="network_wifi_client" ><a class="nav-link" href="wpa_conf"><?php echo _("WiFi Client"); ?></a></li>
+                <li class="nav-item" name="online_detection" id="network_online_detection" ><a class="nav-link" href="detection_conf"><?php echo _("Online Detection"); ?></a></li>
                 <?php if ($model == "EG500" || $model == "EG410" || $model == "ElastBox400") : ?>
-                <li class="nav-item" name="lorawan" id="lorawan" ><a class="nav-link" href="lorawan_conf"><?php echo _("LoRaWan"); ?></a></li>
+                <li class="nav-item" name="lorawan" id="network_lorawan" ><a class="nav-link" href="lorawan_conf"><?php echo _("LoRaWan"); ?></a></li>
                 <?php endif; ?>
                 <?php if ($model == "EG500" || $model == "EG410" || $model == "ElastBox400") : ?>
-                <li class="nav-item" name="firewall" id="firewall" ><a class="nav-link" href="firewall_conf"><?php echo _("Firewall"); ?></a></li>
+                <li class="nav-item" name="firewall" id="network_firewall" ><a class="nav-link" href="firewall_conf"><?php echo _("Firewall"); ?></a></li>
                 <?php endif; ?>
             </ul>
             </div>
@@ -85,26 +85,38 @@
         </li>
         <li class="nav-item" id="page_remote">
             <a class="nav-link navbar-toggle collapsed" id="remote" href="#" data-toggle="collapse" data-target="#navbar-collapse-remote">
-                <i class="fas fa-server fa-fw mr-2"></i>
-                <span class="nav-label"><?php echo _("Remote Manage"); ?></a>
+                <i class="fas fa-key fa-fw mr-2"></i>
+                <span class="nav-label"><?php echo _("Remote Access"); ?></a>
             </a>
             <div class="collapse navbar-collapse" id="navbar-collapse-remote">
-            <ul class="nav navbar-nav navbar-right">
-                <li class="nav-item" name="ddns" id="ddns"> <a class="nav-link" href="ddns"><?php echo _("DDNS"); ?></a></li>
-                <li class="nav-item" name="macchina" id="macchina"> <a class="nav-link" href="macchina"><?php echo _("Macchina"); ?></a></li>
-            </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="nav-item" name="ddns" id="remote_ddns"> <a class="nav-link" href="ddns"><?php echo _("DDNS"); ?></a></li>
+                    <li class="nav-item" name="macchina" id="remote_macchina"> <a class="nav-link" href="macchina"><?php echo _("Macchina"); ?></a></li>
+                    <li class="nav-item" id="page_vpn">
+                        <a class="nav-link navbar-toggle collapsed" id="test" href="#" data-toggle="collapse" data-target="#navbar-collapse-vpn">
+                            <?php echo _("VPN"); ?>
+                        </a>
+                        <div class="collapse navbar-collapse" id="navbar-collapse-vpn">
+                            <ul class="nav navbar-nav navbar-right">
+                                <li class="nav-item" name="openvpn" id="remote_vpn_openvpn"> <a class="nav-link" href="openvpn"><?php echo _("OpenVPN"); ?></a></li>
+                                <?php if ($model != "EG324L") : ?>
+                                <li class="nav-item" name="wireguard" id="remote_vpn_wireguard"> <a class="nav-link" href="wireguard"><?php echo _("WireGuard"); ?></a></li>
+                                <?php endif; ?>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </li>
-        <li class="nav-item" id="page_vpn">
-            <a class="nav-link navbar-toggle collapsed" id="vpn" href="#" data-toggle="collapse" data-target="#navbar-collapse-vpn">
-                <i class="fas fa-key fa-fw mr-2"></i>
-                <span class="nav-label"><?php echo _("VPN"); ?></a>
+        <li class="nav-item" id="page_convert">
+            <a class="nav-link navbar-toggle collapsed" id="protocol_convert" href="#" data-toggle="collapse" data-target="#navbar-collapse-convert">
+                <i class="fas fa-server fa-fw mr-2"></i>
+                <span class="nav-label"><?php echo _("Protocol Convert"); ?></a>
             </a>
-            <div class="collapse navbar-collapse" id="navbar-collapse-vpn">
+            <div class="collapse navbar-collapse" id="navbar-collapse-convert">
             <ul class="nav navbar-nav navbar-right">
-                <li class="nav-item" name="openvpn" id="openvpn"> <a class="nav-link" href="openvpn"><?php echo _("OpenVPN"); ?></a></li>
-                <?php if ($model != "EG324L") : ?>
-                <li class="nav-item" name="wireguard" id="wireguard"> <a class="nav-link" href="wireguard"><?php echo _("WireGuard"); ?></a></li>
+                <?php if(isBinExists("router-mstp")) : ?>
+                    <li class="nav-item" name="bacnet_router" id="convert_bacnet_router"> <a class="nav-link" href="bacnet_router"><?php echo _("BACnet Router"); ?></a></li>
                 <?php endif; ?>
             </ul>
             </div>
@@ -116,21 +128,14 @@
             </a>
             <div class="collapse navbar-collapse" id="navbar-collapse-services">
             <ul class="nav navbar-nav navbar-right">
-                <li class="nav-item" name="terminal" id="terminal"> <a class="nav-link" href="terminal"><?php echo _("Terminal"); ?></a></li>
-                <?php if ($model == "EG500" || $model == "EG410") : ?>
-                <li class="nav-item" name="gps" id="gps"> <a class="nav-link" href="gps"><?php echo _("GPS Location"); ?></a></li>
-                <?php endif; ?>
                 <?php if(isBinExists("node-red")) : ?>
-                <li class="nav-item" name="nodered" id="nodered"> <a class="nav-link" href="nodered"><?php echo _("Node Red"); ?></a></li>
+                <li class="nav-item" name="nodered" id="services_nodered"> <a class="nav-link" href="nodered"><?php echo _("Node Red"); ?></a></li>
                 <?php endif; ?>
                 <?php if(isBinExists("dockerd")) : ?>
-                <li class="nav-item" name="docker" id="docker"> <a class="nav-link" href="docker"><?php echo _("Docker"); ?></a></li>
-                <?php endif; ?>
-                <?php if(isBinExists("router-mstp")) : ?>
-                <li class="nav-item" name="bacnet_router" id="bacnet_router"> <a class="nav-link" href="bacnet_router"><?php echo _("BACnet Router"); ?></a></li>
+                <li class="nav-item" name="docker" id="services_docker"> <a class="nav-link" href="docker"><?php echo _("Docker"); ?></a></li>
                 <?php endif; ?>
                 <?php if(isBinExists("chirpstack")) : ?>
-                <li class="nav-item" name="chirpstack" id="chirpstack"> <a class="nav-link" href="chirpstack"><?php echo _("Chirpstack"); ?></a></li>
+                <li class="nav-item" name="chirpstack" id="services_chirpstack"> <a class="nav-link" href="chirpstack"><?php echo _("Chirpstack"); ?></a></li>
                 <?php endif; ?>
             </ul>
             </div>
@@ -142,9 +147,15 @@
             </a>
             <div class="collapse navbar-collapse" id="navbar-collapse-system">
             <ul class="nav navbar-nav navbar-right">
-                <li class="nav-item" name="system_info" id="system_info"> <a class="nav-link" href="system_info"><?php echo _("System"); ?></a></li>
-                <li class="nav-item" name="auth_conf" id="auth_conf"> <a class="nav-link" href="auth_conf"><?php echo _("Authentication"); ?></a></li>
-                <li class="nav-item" name="backup_update" id="backup_update"> <a class="nav-link" href="backup_update"><?php echo _("Update/Restore"); ?></a></li>
+                <li class="nav-item" name="system_info" id="system_system_info"> <a class="nav-link" href="system_info"><?php echo _("System"); ?></a></li>
+                <?php if(isBinExists("gpsd")) : ?>
+                <li class="nav-item" name="gps" id="system_gps"> <a class="nav-link" href="gps"><?php echo _("GPS Location"); ?></a></li>
+                <?php endif; ?>
+                <?php if(isBinExists("ttyd")) : ?>
+                <li class="nav-item" name="terminal" id="system_terminal"> <a class="nav-link" href="terminal"><?php echo _("Terminal"); ?></a></li>
+                <?php endif; ?>
+                <li class="nav-item" name="auth_conf" id="system_auth_conf"> <a class="nav-link" href="auth_conf"><?php echo _("Authentication"); ?></a></li>
+                <li class="nav-item" name="backup_update" id="system_backup_update"> <a class="nav-link" href="backup_update"><?php echo _("Update/Restore"); ?></a></li>
             </ul>
             </div>
         </li>

@@ -8,30 +8,6 @@
   </div>
 
   <h5 class="mt-1"><?php echo _("Adapter IP Address Settings"); ?></h5>
-  <!-- <div class="row">
-    <div class="form-group col-md-6">
-      <div class="btn-group" data-toggle="buttons">
-        <label class="btn btn-light active" checked onclick="setDHCPToggles(false)">
-          <input type="radio" name="adapter-ip" id="chkdhcp" autocomplete="off"> DHCP
-        </label>
-        <label class="btn btn-light" onclick="setDHCPToggles(true)">
-          <input type="radio" name="adapter-ip" id="chkstatic" autocomplete="off"> Static IP
-        </label>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="form-group col-md-6">
-        <div class="custom-control custom-switch">
-          <input class="custom-control-input" id="chkfallback" type="checkbox" name="Fallback" value="1" aria-describedby="fallback-description">
-          <label class="custom-control-label" for="chkfallback"><?php echo _("Enable fallback to static option") ?></label>
-        </div>
-        <p class="mb-0" id="fallback-description">
-          <small><?php echo _("Enable this option to configure a static profile and fall back to it when DHCP lease fails.") ?></small>
-        </p>
-    </div>
-  </div> -->
 
   <h5 class="mt-1">Static IP options</h5>
   <div class="row">
@@ -50,27 +26,8 @@
 
   <div class="row">
     <div class="form-group col-md-6">
-      <label for="code"><?php echo _("Default gateway"); ?></label>
-      <input type="text" class="form-control" id="txtgateway" name="DefaultGateway" />
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="form-group col-md-6">
       <label for="lan_mac"><?php echo _("Mac") ?></label>
       <input type="text" class="form-control" id="lan_mac" name="lan_mac" value=<?php echo $lan_mac ?>>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="form-group col-md-6">
-        <div class="custom-control custom-switch">
-          <input class="custom-control-input" id="default-route" type="checkbox" name="DefaultRoute" value="1" aria-describedby="default-route-description">
-          <label class="custom-control-label" for="default-route"><?php echo _("Install a default route for this interface") ?></label>
-        </div>
-        <p class="mb-0" id="default-route-description">
-          <small><?php echo _("This toggles the <code>gateway</code>/<code>nogateway</code> option for this interface in the DHCPCD configuration.") ?></small>
-        </p>
     </div>
   </div>
 

@@ -72,12 +72,12 @@
                 // InputControlCustom(_('Remote IP'), 'ip_address', 'ip_address', _('If not, leave blank'));
                 InputControlCustom(_('Port'), 'port', 'port', _('1~65535'));
 
-                CheckboxControlCustom(_('BBMD'), 'bbmd_enabled', 'bbmd_enabled', null, null, 'enableBBMD()');
-                echo '<div id="page_bbmd" name="page_bbmd">';
-                InputControlCustom(_('Remote BBMD IP'), 'bbmd_ip', 'bbmd_ip');
-                InputControlCustom(_('BBMD Port'), 'bbmd_port', 'bbmd_port', _('1~65535'));
-                InputControlCustom(_('Registration Time'), 'bbmd_time', 'bbmd_time', _('minutes'));
-                echo '</div>';
+                // CheckboxControlCustom(_('BBMD'), 'bbmd_enabled', 'bbmd_enabled', null, null, 'enableBBMD()');
+                // echo '<div id="page_bbmd" name="page_bbmd">';
+                // InputControlCustom(_('Remote BBMD IP'), 'bbmd_ip', 'bbmd_ip');
+                // InputControlCustom(_('BBMD Port'), 'bbmd_port', 'bbmd_port', _('1~65535'));
+                // InputControlCustom(_('Registration Time'), 'bbmd_time', 'bbmd_time', _('minutes'));
+                // echo '</div>';
                 echo '</div>';
 
                 echo '<div id="page_proto_mstp" name="page_proto_mstp">';

@@ -10,6 +10,14 @@ $networks = [];
 $network  = null;
 $ssid     = null;
 
+$enabled = $_GET['enable'];
+
+if (isset($enabled)) {
+    exec("sudo /usr/local/bin/uci set wifi.wifi_client.enabled=" . $enabled);
+    exec("sudo /usr/local/bin/uci commit wifi");
+    exec('sudo /etc/raspap/hostapd/servicestart.sh --interface br0 --seconds 3');
+}
+
 knownWifiStations($networks);
 nearbyWifiStations($networks, !isset($_REQUEST["refresh"]));
 connectedWifiStations($networks);

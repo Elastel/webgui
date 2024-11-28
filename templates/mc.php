@@ -29,8 +29,8 @@
             array("name"=>"Order",                "style"=>"", "descr"=>"", "ctl"=>"input"),
             array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
             array("name"=>"Belonged Interface",   "style"=>"", "descr"=>"", "ctl"=>"select"),
-            array("name"=>"Tag Name",          "style"=>"", "descr"=>"Multiple Tags Are Separated By Semicolon", "ctl"=>"input"),
-            array("name"=>"Data Area",            "style"=>"", "descr"=>"", "ctl"=>"select"),
+            array("name"=>"Tag Name",             "style"=>"", "descr"=>"Multiple Tags Are Separated By Semicolon", "ctl"=>"input"),
+            array("name"=>"Register Type",        "style"=>"", "descr"=>"", "ctl"=>"select"),
             array("name"=>"Start Address",        "style"=>"", "descr"=>"000000~00FFFF", "ctl"=>"input"),
             array("name"=>"Count",                "style"=>"", "descr"=>"0001~0120", "ctl"=>"input"),
             array("name"=>"Data Type",            "style"=>"", "descr"=>"", "ctl"=>"select"),
@@ -81,7 +81,7 @@
     
     $data_area = array("X*"=>"X*", "Y*"=>"Y*", "M*"=>"M*", "L*"=>"L*", "F*"=>"F*", "V*"=>"V*", 
                         "B*"=>"B*", "D*"=>"D*", "W*"=>"W*", "TN"=>"TN", "SN"=>"SN", "CN"=>"CN");
-    SelectControlCustom(_('Data Area'), $table_name.'.data_area', $data_area, $data_area[0], $table_name.'.data_area');
+    SelectControlCustom(_('Register Type'), $table_name.'.data_area', $data_area, $data_area[0], $table_name.'.data_area');
 
     InputControlCustom(_('Start Address'), $table_name.'.start_addr', $table_name.'.start_addr', _('000000~00FFFF'));
 
