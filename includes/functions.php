@@ -935,6 +935,9 @@ function handlePageActions($extraFooterScripts, $page, $config)
         case "/server_conf":
             DisplayServer();
             break;
+        case "/things_wing":
+            DisplayThingsWing();
+            break;
         case "/ddns":
             DisplayDDNS();
             break;

@@ -69,7 +69,7 @@
                     </a>
                     <div class="collapse navbar-collapse" id="navbar-collapse-north">
                         <ul class="nav navbar-nav navbar-right">
-                            <li class="nav-item" name="server" id="dct_north_server"><a class="nav-link" href="server_conf"><?php echo _("Reporting Server"); ?></a></li>
+                            <li class="nav-item" name="server" id="dct_north_server"><a class="nav-link" href="server_conf"><?php echo _("Reporting Center"); ?></a></li>
                             <li class="nav-item" name="modbus_slave" id="dct_north_modbus_slave"><a class="nav-link" href="modbus_slave"><?php echo _("Modbus Slave"); ?></a></li>
                             <li class="nav-item" name="opcua" id="dct_north_opcua"><a class="nav-link" href="opcua"><?php echo _("OPCUA Server"); ?></a></li>
                             <?php if(isBinExists("bacserv")) : ?>
@@ -103,6 +103,7 @@
             </a>
             <div class="collapse navbar-collapse" id="navbar-collapse-remote">
                 <ul class="nav navbar-nav navbar-right">
+                    <li class="nav-item" name="things_wing" id="remote_things_wing"> <a class="nav-link" href="things_wing"><?php echo _("ThingsWing"); ?></a></li>
                     <li class="nav-item" name="ddns" id="remote_ddns"> <a class="nav-link" href="ddns"><?php echo _("DDNS"); ?></a></li>
                     <li class="nav-item" name="macchina" id="remote_macchina"> <a class="nav-link" href="macchina"><?php echo _("Macchina"); ?></a></li>
                     <li class="nav-item" id="page_vpn">

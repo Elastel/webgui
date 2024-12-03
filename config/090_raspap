@@ -136,3 +136,11 @@ www-data ALL=(ALL) NOPASSWD:/bin/sed -i * /etc/chirpstack-gateway-bridge/chirpst
 www-data ALL=(ALL) NOPASSWD:/bin/systemctl * chirpstack.service
 www-data ALL=(ALL) NOPASSWD:/bin/systemctl * chirpstack-gateway-bridge.service
 www-data ALL=(ALL) NOPASSWD:/usr/sbin/bacnet_update
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl * baseagent
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl * plc-rel
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl * device_console
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl * remote-serial-server
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl * newficus
+www-data ALL=(ALL) NOPASSWD:/usr/bin/curl *
+www-data ALL=(ALL) NOPASSWD:/usr/bin/bash *
+

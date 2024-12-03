@@ -246,7 +246,6 @@ echo "<div class=\"tab-pane $active\" id=\"server$num\">
                 <select id=\"encap_type$num\" name=\"encap_type$num\" class=\"cbi-input-select\" onchange=\"encapChange($num)\">
                   <option value=\"0\">Transparent</option>
                   <option value=\"1\" selected=\"\">JSON</option>
-                  <option value=\"2\">HJ212</option>
                 </select>
               </div>
             </div>
