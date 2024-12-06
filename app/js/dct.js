@@ -1001,6 +1001,15 @@ function enableBACnet(state) {
     }
 }
 
+function enableModbus(state) {
+    if (state) {
+      $('#page_modbus').show();
+    } else {
+      $('#page_modbus').hide();
+    }
+}
+
+
 function bacnetProtocolChange()
 {
     if ($('#proto').val() == '0') {

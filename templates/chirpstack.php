@@ -4,7 +4,7 @@
       <div class="card-header">
         <div class="row">
           <div class="col">
-            <?php echo _("Chirpstack"); ?>
+            <?php echo _("ChirpStack"); ?>
           </div>
         </div><!-- /.row -->
       </div><!-- /.card-header -->
@@ -14,7 +14,7 @@
           <div class="col-sm-6 align-items-stretch">
             <div class="card h-100">
               <div class="card-body wireless">
-                    <h4 class="card-title"><?php echo _("Chirpstack"); ?></h4>
+                    <h4 class="card-title"><?php echo _("ChirpStack"); ?></h4>
                     <div class="row ml-1">
                         <div class="col-sm">
                         <div class="row mb-1">
@@ -44,8 +44,7 @@
                                     if ($label == $disabled) {
                                         $disabled = ' disabled';
                                     }
-                                    echo '<option value="'.htmlspecialchars($opt, ENT_QUOTES).'"'.$select.$disabled.'>'.
-                                        htmlspecialchars($label, ENT_QUOTES).'</option>' , PHP_EOL;
+                                    echo '<option value="'.htmlspecialchars($opt, ENT_QUOTES).'"'.$select.$disabled.'>'. htmlspecialchars($label, ENT_QUOTES).'</option>' , PHP_EOL;
                                 }
                             }
                             ?>

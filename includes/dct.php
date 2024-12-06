@@ -235,8 +235,6 @@ echo "<div class=\"tab-pane $active\" id=\"server$num\">
                 <option value=\"2\">MQTT</option>
                 <option value=\"3\">SparkPlugB</option>
                 <option value=\"4\">HTTP</option>
-                <option value=\"5\">MODBUS TCP</option>
-                <option value=\"6\">TCP Server</option>
               </select>
             </div>
 

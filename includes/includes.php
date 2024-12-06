@@ -54,6 +54,7 @@ require_once 'includes/dnp3.php';
 require_once 'includes/dnp3_client.php';
 require_once 'includes/modbus_slave.php';
 require_once 'includes/things_wing.php';
+require_once 'includes/modbus_router.php';
 
 $config = getConfig();
 $model = getModel();

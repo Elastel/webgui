@@ -93,6 +93,9 @@
                 <?php if(isBinExists("router-mstp")) : ?>
                     <li class="nav-item" name="bacnet_router" id="convert_bacnet_router"> <a class="nav-link" href="bacnet_router"><?php echo _("BACnet Router"); ?></a></li>
                 <?php endif; ?>
+                <?php if(isBinExists("router-modbus")) : ?>
+                    <li class="nav-item" name="modbus_router" id="convert_modbus_router"> <a class="nav-link" href="modbus_router"><?php echo _("Modbus Router"); ?></a></li>
+                <?php endif; ?>
             </ul>
             </div>
         </li>
@@ -136,7 +139,7 @@
                 <li class="nav-item" name="docker" id="services_docker"> <a class="nav-link" href="docker"><?php echo _("Docker"); ?></a></li>
                 <?php endif; ?>
                 <?php if(isBinExists("chirpstack")) : ?>
-                <li class="nav-item" name="chirpstack" id="services_chirpstack"> <a class="nav-link" href="chirpstack"><?php echo _("Chirpstack"); ?></a></li>
+                <li class="nav-item" name="chirpstack" id="services_chirpstack"> <a class="nav-link" href="chirpstack"><?php echo _("ChirpStack"); ?></a></li>
                 <?php endif; ?>
             </ul>
             </div>
