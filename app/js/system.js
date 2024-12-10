@@ -37,8 +37,8 @@ $('#update_node').click(function(){
     
         $.get('ajax/system/system.php?type=update_node',function(data) {
             var jsonData = JSON.parse(data);
-            console.log(jsonData);
-            if (json.hasOwnProperty('error')) {
+            // console.log(jsonData);
+            if (jsonData.hasOwnProperty('error')) {
                 clearInterval(intervalId);
                 $('#progress_info').html(jsonData['error']);
                 $('#progress_info').css('color', 'red');
