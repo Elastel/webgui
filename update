@@ -16,28 +16,26 @@ fi
 
 echo model:$model
 
+install_package_if_needed() {
+    local package_name=$1
+    local cmd_name=$2
+
+    if ! type "$cmd_name" >/dev/null 2>&1; then
+        echo "$package_name is NOT installed!"
+        sudo apt-get install "$package_name" -y
+
+        if [ $? -ne 0 ]; then
+            echo "Failed to install $package_name."
+            exit 4
+        fi
+    fi
+}
+
 if [ $model == "EG500" -o $model == "EG410" -o $model == "ElastBox400" ]; then
 #check openvpn
-        if ! type openvpn >/dev/null 2>&1; then
-                echo "openvpn is NOT installed!"
-                sudo apt-get install openvpn -y
-
-                if [ $? -ne 0 ] ; then
-                        echo "Failed to install openvpn."
-                        exit 4
-                fi
-        fi
-
+        install_package_if_needed "openvpn" "openvpn"
 #check wireguard
-        if ! type wg >/dev/null 2>&1; then
-                echo "wireguard is NOT installed!"
-                sudo apt-get install wireguard -y
-
-                if [ $? -ne 0 ] ; then
-                        echo "Failed to install wireguard."
-                        exit 4
-                fi
-        fi
+        install_package_if_needed "wireguard" "wg"
 
 #close nft service
         sudo systemctl stop nftables.service
@@ -47,35 +45,10 @@ fi
 
 if [ $model != "EG324L" -a $model != "EC212" ]; then
         #check msmtp
-        if ! type msmtp >/dev/null 2>&1; then
-                echo "msmtp is NOT installed!"
-                sudo apt-get install msmtp -y
-
-                if [ $? -ne 0 ] ; then
-                        echo "Failed to install msmtp."
-                        exit 4
-                fi
-        fi
+        install_package_if_needed "msmtp" "msmtp"
         #check mutt
-        if ! type mutt >/dev/null 2>&1; then
-                echo "mutt is NOT installed!"
-                sudo apt-get install mutt -y
-
-                if [ $? -ne 0 ] ; then
-                        echo "Failed to install mutt."
-                        exit 4
-                fi
-        fi
-
-        if ! type dos2unix > /dev/null 2>&1; then
-                echo "dos2unix is NOT installed!"
-                sudo apt-get install dos2unix -y
-
-                if [ $? -ne 0 ] ; then
-                        echo "Failed to install dos2unix."
-                        exit 4
-                fi
-        fi
+        install_package_if_needed "mutt" "mutt"
+        install_package_if_needed "dos2unix" "dos2unix"
 
         # check resolvconf
         resolvconf_path=/etc/resolvconf/resolv.conf.d/head
@@ -120,6 +93,7 @@ if [ "$1" == "reset" ]; then
     sudo cp $path/config/msmtprc /etc/msmtprc
     sudo cp $path/config/defaults.json /etc/raspap/networking/
     sudo cp $path/config/elastpro/etc/* /etc/ -r
+    sudo cp $path/Elastel/$model/etc/* /etc/ -r
     sleep 1
     if [ $model != "EG324L" -a $model != "EC212" ]; then
         sudo cp $path/config/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
@@ -159,7 +133,8 @@ if [ "$1" == "reset" ]; then
     sudo /etc/raspap/lighttpd/configport.sh 80 '' /etc/lighttpd/lighttpd.conf
     sync
 else
-    sudo cp $path/Elastel/$model/etc/init.d/* /etc/init.d/ 
+    sudo cp $path/Elastel/$model/etc/init.d/* /etc/init.d/
+    sudo cp $path/config/elastpro/etc/init.d/* /etc/init.d/ -r
 fi
 
 sudo cp $path/config/cron-logrotate /etc/cron.d/
@@ -173,55 +148,15 @@ sudo cp $path/installers/configport.sh /etc/raspap/lighttpd/
 sudo cp $path/installers/bacnet_update /usr/sbin/
 sync
 sleep 1
+
 if [ $model != "EG324L" -a $model != "EC212" ]; then
         sudo cp $path/config/090_raspap /etc/sudoers.d/090_raspap
         sudo chown -c root:www-data /etc/raspap/hostapd/*.sh
-        sleep 1
-        sudo rm /etc/rc5.d/S01init-wifi
-        sudo rm /etc/rc5.d/S01terminal
-        sudo rm /etc/rc5.d/S10failover
-        sudo rm /etc/rc5.d/S10lte
-        sudo rm /etc/rc5.d/S10dct
-	sudo rm /etc/rc5.d/S10*daemon
-        sudo rm /etc/rc5.d/S10ddns
-        sudo rm /etc/rc5.d/S10macchina
-        sudo rm /etc/rc5.d/S10gps
-        sudo rm /etc/rc5.d/S10firewall
-        sudo rm /etc/rc5.d/S10loragw
-        sleep 1
-        sudo ln -s /etc/init.d/init-wifi /etc/rc5.d/S01init-wifi
-        sudo ln -s /etc/init.d/terminal /etc/rc5.d/S01terminal
-        sudo ln -s /etc/init.d/failover /etc/rc5.d/S10failover
-        sudo ln -s /etc/init.d/lte /etc/rc5.d/S10lte
-        sudo ln -s /etc/init.d/dct /etc/rc5.d/S10dct
-        sudo ln -s /etc/init.d/edaemon /etc/rc5.d/S10edaemon
-        sudo ln -s /etc/init.d/ddns /etc/rc5.d/S10ddns
-        sudo ln -s /etc/init.d/macchina /etc/rc5.d/S10macchina
-        sudo ln -s /etc/init.d/gps /etc/rc5.d/S10gps
-        sudo ln -s /etc/init.d/firewall /etc/rc5.d/S10firewall
-        sudo ln -s /etc/init.d/loragw /etc/rc5.d/S10loragw
 else
         result=$(ls /etc/ssl/certs/ | wc -l)
         if [[ $result == "0" ]]; then
                 tar xzvf $path/config/certs.tar.gz -C /etc/ssl/
         fi
-        sudo rm /etc/init.d/S90terminal
-        sudo rm /etc/init.d/S90failover
-        sudo rm /etc/init.d/S90lte
-        sudo rm /etc/init.d/S90dct
-        sudo rm /etc/init.d/S90edaemon
-        sudo rm /etc/init.d/S90ddns
-        sudo rm /etc/init.d/S90init-wifi
-	sudo rm /etc/init.d/S90macchina
-	sleep 1
-        sudo ln -s /etc/init.d/terminal /etc/init.d/S90terminal
-        sudo ln -s /etc/init.d/failover /etc/init.d/S90failover
-        sudo ln -s /etc/init.d/lte /etc/init.d/S90lte
-        sudo ln -s /etc/init.d/dct /etc/init.d/S90dct
-        sudo ln -s /etc/init.d/edaemon /etc/init.d/S90edaemon
-        sudo ln -s /etc/init.d/ddns /etc/init.d/S90ddns
-	sudo ln -s /etc/init.d/init-wifi /etc/init.d/S90init-wifi
-	sudo ln -s /etc/init.d/macchina /etc/init.d/S90macchina
 fi
 
 if [[ $model = "EG500" || $model = "EG410" || $model = "ElastBox400" ]]; then
@@ -236,9 +171,8 @@ if [[ $model = "EG500" || $model = "EG410" || $model = "ElastBox400" ]]; then
         sudo /etc/init.d/loragw stop
         sudo cp $path/installers/reset_lgw.sh /usr/sbin/
 fi
-
 sleep 1
-
+sync
 if [ $model != "EG324" -a $model != "EG324L" -a $model != "EC212" ]; then
 	echo -e "Start feed dog"
 	sudo /var/www/html/installers/feed_dog.sh &
@@ -260,18 +194,28 @@ if [[ $model = "EG324" || $model = "EG324L" ||  $model = "EC212" ]]; then
 	echo V > /dev/watchdog
 fi
 
-sudo /etc/init.d/dct stop
-sudo /etc/init.d/lte stop
-sudo /etc/init.d/failover stop
-sudo /etc/init.d/ddns stop
-sudo /etc/init.d/terminal stop
-sudo /etc/init.d/gps stop
-sudo /etc/init.d/loragw stop
-sudo /etc/init.d/bacnet_router stop
+app_array=("bacnet_router" "dct" "ddns" "edaemon" "failover" "firewall" \
+        "gps" "lte" "macchina" "modbus_router" "terminal" "init-wifi")
 
+for item in "${app_array[@]}"; do
+        sudo /etc/init.d/$item stop
+        if [ $model != "EG324L" -a $model != "EC212" ]; then
+                sudo update-rc.d $item remove
+                if [ $item == "init-wifi" -o $item == "terminal" ]; then
+                        sudo ln -s /etc/init.d/$item /etc/rc5.d/S01$item
+                else
+                        sudo ln -s /etc/init.d/$item /etc/rc5.d/S10$item
+                fi
+        else
+                sudo rm /etc/init.d/S90$item
+                sudo ln -s /etc/init.d/$item /etc/init.d/S90$item
+        fi
+done
+
+sync
 sleep 1
-
 if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" || $model = "EC212" ]]; then
+        sudo /etc/init.d/hostapd stop
 	sudo cp -r $path/Elastel/$model/usr/* /usr/
 elif [ $bit = "32" ]; then
 	sudo cp -r $path/Elastel/$model/32/usr/* /usr/

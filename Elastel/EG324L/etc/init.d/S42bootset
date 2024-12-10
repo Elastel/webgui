@@ -1,0 +1,16 @@
+#!/bin/sh
+
+mkdir -p /run/network
+
+case "$1" in
+  start)
+	/usr/sbin/bootset &
+	;;
+  stop)
+	;;
+  *)
+	exit 1
+esac
+
+exit $?
+
