@@ -17,10 +17,10 @@ function DisplayDHCPConfig()
             
             if (isset($_POST['applydhcpdsettings'])) {
                 //exec('sudo /bin/systemctl restart dnsmasq.service', $dnsmasq, $return);
-                
-                   exec('sudo /etc/raspap/hostapd/servicestart.sh --interface br0 --seconds 3', $return); 
+                    exec('sudo ip addr flush dev br0'); // clear ip caches
+                    exec('sudo /etc/raspap/hostapd/servicestart.sh --interface br0 --seconds 3', $return);
                 if ($model == 'EG324L' || $model == 'EC212') {
-                   exec('/etc/init.d/S80dnsmasq restart; sleep 1; /etc/init.d/S80dhcpcd restart', $return); 
+                    exec('/etc/init.d/S80dnsmasq restart; sleep 1; /etc/init.d/S80dhcpcd restart', $return);
                 }
             }
         }

@@ -202,9 +202,9 @@
                         </tr>
                       </thead>
                       <tbody>
-                          <?php $leases_count = 0; foreach (array_slice($leases,0, 2) as $leases) : ?>
+                          <?php foreach (array_slice($leases, 0, 6) as $lease) : ?>
                           <tr>
-                              <?php $props = explode(' ', $leases); if (sizeof($props) > 2) $leases_count++; ?>
+                              <?php $props = explode(' ', $lease);?>
                               <td><?php echo htmlspecialchars($props[3], ENT_QUOTES) ?></td>
                               <td><?php echo htmlspecialchars($props[2], ENT_QUOTES) ?></td>
                               <td><?php echo htmlspecialchars($props[1], ENT_QUOTES) ?></td>
@@ -212,11 +212,11 @@
                           <?php endforeach ?>
                       </tbody>
                     </table>
-                    <?php if ($leases_count > 3) : ?>
+                    <?php if (sizeof($leases) > 6) : ?>
                         <div class="col-lg-12 float-right">
                           <a class="btn btn-outline-info" role="button" href="<?php echo $moreLink ?>"><?php echo _("More");?>  <i class="fas fa-chevron-right"></i></a>
                         </div>
-                    <?php elseif ($leases_count == 0) : ?>
+                    <?php elseif (sizeof($leases) == 0) : ?>
                         <div class="col-lg-12 mt-3"><?php echo _("No connected devices");?></div>
                     <?php endif; ?>
                   </div><!-- /.table-responsive -->

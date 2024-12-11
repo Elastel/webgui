@@ -102,13 +102,12 @@ function DisplayFirewall()
 {
     $status = new StatusMessages();
     if (isset($_POST['savefirewallsettings']) || isset($_POST['applyfirewallsettings'])) {
-        saveFirewallConfig($status);  
+        saveFirewallConfig($status);
+        exec('sudo /usr/local/bin/uci commit firewall');
         
         if (isset($_POST['applyfirewallsettings'])) {
             exec('sudo /etc/init.d/firewall restart');
         }
-
-        exec('sudo /usr/local/bin/uci commit firewall');
     }
 
     echo renderTemplate(

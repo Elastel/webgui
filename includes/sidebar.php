@@ -21,10 +21,10 @@
                 <li class="nav-item" name="wifi" id="network_wifi" ><a class="nav-link" href="hostapd_conf"><?php echo _("WiFi AP"); ?></a></li>
                 <li class="nav-item" name="wifi_client" id="network_wifi_client" ><a class="nav-link" href="wpa_conf"><?php echo _("WiFi Client"); ?></a></li>
                 <li class="nav-item" name="online_detection" id="network_online_detection" ><a class="nav-link" href="detection_conf"><?php echo _("Online Detection"); ?></a></li>
-                <?php if ($model == "EG500" || $model == "EG410" || $model == "ElastBox400") : ?>
+                <?php if (isBinExists("lora_pkt_fwd")) : ?>
                 <li class="nav-item" name="lorawan" id="network_lorawan" ><a class="nav-link" href="lorawan_conf"><?php echo _("LoRaWan"); ?></a></li>
                 <?php endif; ?>
-                <?php if ($model == "EG500" || $model == "EG410" || $model == "ElastBox400") : ?>
+                <?php if (isBinExists("efw")) : ?>
                 <li class="nav-item" name="firewall" id="network_firewall" ><a class="nav-link" href="firewall_conf"><?php echo _("Firewall"); ?></a></li>
                 <?php endif; ?>
             </ul>
@@ -53,7 +53,7 @@
                             <li class="nav-item" name="iec104" id="dct_south_iec104"><a class="nav-link" href="iec104_conf"><?php echo _("IEC104 Rules"); ?></a></li>
                             <li class="nav-item" name="dnp3_client" id="dct_south_dnp3_client"><a class="nav-link" href="dnp3cli_conf"><?php echo _("DNP3 Rules"); ?></a></li>
                             <li class="nav-item" name="opcua_client" id="dct_south_opcua_client"><a class="nav-link" href="opcuacli_conf"><?php echo _("OPCUA Rules"); ?></a></li>
-                            <?php if(isBinExists("baccli")) : ?>
+                            <?php if (isBinExists("baccli")) : ?>
                             <li class="nav-item" name="bacnet_client" id="dct_south_bacnet_client"><a class="nav-link" href="baccli_conf"><?php echo _("BACnet Rules"); ?></a></li>
                             <?php endif; ?>
                             <?php if ($model == "EG500" || $model == "EG410") : ?>

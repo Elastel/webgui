@@ -146,4 +146,4 @@ www-data ALL=(ALL) NOPASSWD:/bin/curl *
 www-data ALL=(ALL) NOPASSWD:/usr/bin/bash *
 www-data ALL=(ALL) NOPASSWD:/bin/bash *
 www-data ALL=(ALL) NOPASSWD:/etc/init.d/modbus_router * 
-
+www-data ALL=(ALL) NOPASSWD:/bin/ip addr *

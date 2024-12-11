@@ -1,0 +1,191 @@
+#!/bin/bash
+
+add_rules_forward() {
+	forwards_count=$(uci_get_count firewall forwards)
+	
+	for i in `seq $forwards_count`
+	do
+		local proto src_port dest_ip dest_port enabled
+
+		let count=$i-1
+		enabled=$(uci get firewall.@forwards[$count].enabled)
+		if [ "$enabled" != "1" ]; then
+			continue
+		fi
+		proto=$(uci get firewall.@forwards[$count].proto)
+		src_port=$(uci get firewall.@forwards[$count].src_port)
+		dest_ip=$(uci get firewall.@forwards[$count].dest_ip)
+		dest_port=$(uci get firewall.@forwards[$count].dest_port)
+
+		
+		if [ "$proto" == "tcp udp" -o "$proto" == "tcp"  -o "$proto" == "udp"  -o "$proto" == "stcp" ]; then
+			if [ "$proto" == "tcp udp" ]; then
+				if [ -n "$dest_ip" ]; then
+					iptables -t nat -A PREROUTING -p tcp --dport $src_port -j DNAT --to-destination $dest_ip:$dest_port
+					iptables -t nat -A PREROUTING -p udp --dport $src_port -j DNAT --to-destination $dest_ip:$dest_port
+				else
+					iptables -t nat -A PREROUTING -p tcp --dport $src_port -j REDIRECT --to-port $dest_port
+					iptables -t nat -A PREROUTING -p udp --dport $src_port -j REDIRECT --to-port $dest_port
+				fi
+			else
+				if [ -n "$dest_ip" ]; then
+					iptables -t nat -A PREROUTING -p $proto --dport $src_port -j DNAT --to-destination $dest_ip:$dest_port
+				else
+					iptables -t nat -A PREROUTING -p $proto --dport $src_port -j REDIRECT --to-port $dest_port
+				fi
+			fi
+		else
+			if [ "$proto" == "any" ]; then
+				iptables -t nat -A PREROUTING -j DNAT --to-destination $dest_ip
+			else
+				iptables -t nat -A PREROUTING -p $proto -j DNAT --to-destination $dest_ip
+			fi
+		fi
+	done
+}
+
+add_rules_traffic() {
+	traffic_count=$(uci_get_count firewall traffic)
+	
+	for i in `seq $traffic_count`
+	do
+		local proto rule src_mac src_ip src_port dest_ip dest_port action enabled
+		local saddr daddr sport dport smac
+
+		let count=$i-1
+		enabled=$(uci get firewall.@traffic[$count].enabled)
+		if [ "$enabled" != "1" ]; then
+			continue
+		fi
+		proto=$(uci get firewall.@traffic[$count].proto)
+		rule=$(uci get firewall.@traffic[$count].rule | tr 'a-z' 'A-Z')
+		src_mac=$(uci get firewall.@traffic[$count].src_mac)
+		src_ip=$(uci get firewall.@traffic[$count].src_ip)
+		src_port=$(uci get firewall.@traffic[$count].src_port)
+		dest_ip=$(uci get firewall.@traffic[$count].dest_ip)
+		dest_port=$(uci get firewall.@traffic[$count].dest_port)
+		action=$(uci get firewall.@traffic[$count].action | tr 'a-z' 'A-Z')
+		name=$(uci get firewall.@traffic[$count].name)
+
+		if [ -n "$src_ip" ]; then
+			saddr="-s $src_ip"
+		fi
+
+		if [ -n "$dest_ip" ]; then
+			daddr="-d $dest_ip"
+		fi
+
+		if [ -n "$src_mac" ]; then
+			smac="--mac-source $src_mac"
+		fi
+
+		if [ -n "$src_port" ]; then
+			sport="--sport $src_port"
+		fi
+
+		if [ -n "$dest_port" ]; then
+			dport="--dport $dest_port"
+		fi
+
+		
+		if [ "$proto" == "tcp udp" -o "$proto" == "tcp"  -o "$proto" == "udp"  -o "$proto" == "stcp" ]; then
+			if [ "$proto" == "tcp udp" ]; then
+				iptables -t filter -A $rule -p tcp $saddr $daddr $sport $dport $smac -j $action -m comment --comment "efw-$name"
+				iptables -t filter -A $rule -p udp $saddr $daddr $sport $dport $smac -j $action -m comment --comment "efw-$name"
+			else
+				iptables -t filter -A $rule -p $proto $saddr $daddr $sport $dport $smac -j $action -m comment --comment "efw-$name"
+			fi
+		else
+			if [ "$proto" == "any" ]; then
+				iptables -t filter -A $rule -j $action -m comment --comment "efw-$name"
+			else
+				iptables -t filter -A $rule -p $proto $smac -j $action -m comment --comment "efw-$name"
+			fi
+		fi
+	done
+}
+
+add_rules() {
+	input=$(uci get firewall.general.input | tr 'a-z' 'A-Z')
+	output=$(uci get firewall.general.output | tr 'a-z' 'A-Z')
+	forward=$(uci get firewall.general.forward | tr 'a-z' 'A-Z')
+	synflood_protect=$(uci get firewall.general.synflood_protect)
+	drop_invalid=$(uci get firewall.general.drop_invalid)
+
+	iptables -A INPUT -i lo -j ACCEPT
+	iptables -A OUTPUT -o lo -j ACCEPT
+	iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+	add_rules_forward
+	add_rules_traffic
+
+	iptables -A INPUT -i br0 -j ACCEPT
+	iptables -A OUTPUT -o br0 -j ACCEPT
+	iptables -A FORWARD -i br0 -j ACCEPT
+	iptables -A INPUT -j $input
+	iptables -A OUTPUT -j $output
+	iptables -A FORWARD -j $forward
+	
+
+	iptables -t nat -A POSTROUTING -j MASQUERADE
+
+	src_addr=$(ip route | grep br0 | awk -F ' ' '{print $1}')
+	iptables -t nat -A POSTROUTING -s $src_addr ! -d $src_addr -j MASQUERADE
+	
+	if [ "$synflood_protect" == "1" ]; then
+		iptables -A INPUT -p tcp --syn -m limit --limit 5/s --limit-burst 10 -j ACCEPT
+	fi
+	
+	if [ "$drop_invalid" == "1" ]; then
+		iptables -A INPUT -m state --state INVALID -j DROP
+		iptables -A FORWARD -m state --state INVALID -j DROP
+		iptables -A OUTPUT -m state --state INVALID -j DROP
+	fi
+}
+
+reset_iptables() {
+	iptables -F
+	iptables -t nat -F
+	iptables -P INPUT ACCEPT
+	iptables -P FORWARD ACCEPT
+	iptables -P OUTPUT ACCEPT
+}
+
+start() {
+	echo "Start firewall"
+    case "$1" in
+        start | reload)
+            add_rules
+        ;;
+    esac
+}
+
+stop() {
+	echo "Stop firewall"
+	reset_iptables
+}
+
+flush() {
+	echo "Flush firewall"
+	reset_iptables
+}
+
+case "$1" in
+	start|reload)
+		start "$1"
+	;;
+	stop)
+		stop
+	;;
+	flush)
+		flush
+	;;
+	restart)
+		stop
+		start start
+	;;
+	*)
+		cat <<EOT
+EOT
+	;;
+esac
