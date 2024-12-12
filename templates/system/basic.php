@@ -1,8 +1,3 @@
-<?php
-
-include('includes/sysstats.php');
-
-?>
 <!-- basic tab -->
 <div role="tabpanel" class="tab-pane active" id="basic">
   <div class="row">

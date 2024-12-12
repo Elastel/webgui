@@ -286,7 +286,12 @@ function DisplayDashboard(&$extraFooterScripts)
     }
 
     // cpu temp
-    $cputemp = $system->systemTemperature();
+    if ($model != 'EG324L') {
+        $cputemp = $system->systemTemperature();
+    } else {
+        $cputemp = file_get_contents("/sys/class/thermal/thermal_zone0/temp");
+    }
+    
     if ($cputemp > 70) {
         $cputemp_status = "danger";
         $cputemp_led = "service-status-down";
