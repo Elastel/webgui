@@ -5,7 +5,9 @@ STOP_PROG=/usr/sbin/stop_diald
 
 do_start()
 {
-	mount -t tmpfs tmpfs /var/state/ -o size=10m
+	if grep -q "/var/state" /proc/mounts; then
+		mount -t tmpfs tmpfs /var/state/ -o size=10m
+	fi
 
 	local proto lte_interface
 
