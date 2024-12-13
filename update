@@ -150,7 +150,10 @@ sync
 sleep 1
 
 if [ $model != "EG324L" -a $model != "EC212" ]; then
-        sudo cp $path/config/090_raspap /etc/sudoers.d/090_raspap
+        if [ -f /etc/sudoers.d/090_raspap ]; then
+                sudo rm /etc/sudoers.d/090_raspap
+        fi
+        sudo cp $path/config/090_elastpro /etc/sudoers.d/
         sudo chown -c root:www-data /etc/raspap/hostapd/*.sh
 else
         result=$(ls /etc/ssl/certs/ | wc -l)

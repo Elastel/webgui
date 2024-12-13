@@ -290,8 +290,13 @@ function saveConfigs($status, $role)
 
 function saveUserPass($status, $role)
 {   
+    // check checkpsw.sh
+    if (!file_exists("/etc/openvpn/server/checkpsw.sh")) {
+        exec("sudo cp /var/www/html/installers/checkpsw.sh /etc/openvpn/server/checkpsw.sh");
+    }
+
     if (strlen($_POST['text_user_pwd']) > 5) {
-        $authUserPwd = strip_tags(trim($_POST['text_user_pwd']));
+        $authUserPwd = strtr(strip_tags(trim($_POST['text_user_pwd'])), ["\r\n" => "\n"]);
     } else {
         if ($role == 'client') {
             exec("sudo rm /etc/openvpn/client/login.conf");
