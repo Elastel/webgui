@@ -1,7 +1,7 @@
 <?php
 
 require_once 'includes/status_messages.php';
-require_once 'config.php';
+require_once 'includes/config.php';
 
 /**
  * Displays wireguard server & peer configuration
@@ -53,18 +53,46 @@ function DisplayWireGuardConfig()
         CheckWireGuardLog( $optLogEnable, $status );
         exec("sudo /usr/local/bin/uci commit wireguard");
     }
-
+    
     exec('sudo cat '. RASPI_WIREGUARD_CONFIG, $return);
     $conf = ParseConfig($return);
     $wg_srvpubkey = exec('sudo cat '. RASPI_WIREGUARD_PATH .'wg-server-public.key', $return);
+    $wg_srvprikey = exec('sudo cat '. RASPI_WIREGUARD_PATH .'wg-server-private.key', $return);
     $wg_srvport = ($conf['ListenPort'] == '') ? getDefaultNetValue('wireguard','server','ListenPort') : $conf['ListenPort'];
     $wg_srvipaddress = ($conf['Address'] == '') ? getDefaultNetValue('wireguard','server','Address') : $conf['Address'];
     $wg_srvdns = ($conf['DNS'] == '') ? getDefaultNetValue('wireguard','server','DNS') : $conf['DNS'];
-    $wg_peerpubkey = exec('sudo cat '. RASPI_WIREGUARD_PATH .'wg-peer-public.key', $return);
     $wg_pendpoint = ($conf['Endpoint'] == '') ? getDefaultNetValue('wireguard','peer','Endpoint') : $conf['Endpoint'];
-    $wg_pallowedips = ($conf['AllowedIPs'] == '') ? getDefaultNetValue('wireguard','peer','AllowedIPs') : $conf['AllowedIPs'];
-    $wg_pkeepalive = ($conf['PersistentKeepalive'] == '') ? getDefaultNetValue('wireguard','peer','PersistentKeepalive') : $conf['PersistentKeepalive'];
-    if (sizeof($conf) >0) {
+    $wg_peerpubkey = exec('sudo cat '. RASPI_WIREGUARD_PATH .'wg-peer-public.key', $return);
+    $wg_peerpubkey2 = exec('sudo cat '. RASPI_WIREGUARD_PATH .'wg-peer-public2.key', $return);
+    $wg_peerpubkey3 = exec('sudo cat '. RASPI_WIREGUARD_PATH .'wg-peer-public3.key', $return);
+
+    exec('sudo cp '. RASPI_WIREGUARD_CONFIG . ' /tmp/wg0.conf; sudo chmod 777 /tmp/wg0.conf');
+    $configFile = '/tmp/wg0.conf';
+    if (!file_exists($configFile)) {
+        $status->addMessage('The configuration file does not exist.', 'danger');
+    }
+
+    $configContent = file_get_contents($configFile);
+    $parsedConfig = parseWireGuardConfig($configContent);
+
+    $enable_client = [];
+    $wg_pallowedips = [];
+    $wg_pkeepalive = [];
+
+    if (isset($parsedConfig['Peer'])) {
+        foreach ($parsedConfig['Peer'] as $peerIndex => $peerData) {
+            foreach ($peerData as $key => $value) {
+                if (strstr($key, 'AllowedIPs')) {
+                    $wg_pallowedips[$peerIndex] = $value;
+                } else if (strstr($key, 'PersistentKeepalive')) {
+                    $wg_pkeepalive[$peerIndex] = $value;
+                }
+                $enable_client[$peerIndex] = true;
+            }
+        }
+    }
+
+    if (count($parsedConfig) >0) {
         $wg_senabled = true;
     }
 
@@ -84,6 +112,7 @@ function DisplayWireGuardConfig()
             "optLogEnable",
             "peer_id",
             "wg_srvpubkey",
+            "wg_srvprikey",
             "wg_srvport",
             "wg_srvipaddress",
             "wg_srvdns",
@@ -92,12 +121,56 @@ function DisplayWireGuardConfig()
             "wg_pipaddress",
             "wg_plistenport",
             "wg_peerpubkey",
+            "wg_peerpubkey2",
+            "wg_peerpubkey3",
             "wg_pendpoint",
             "wg_pallowedips",
-            "wg_pkeepalive"
+            "wg_pkeepalive",
+            "enable_client"
         )
     );
 }
+
+function parseWireGuardConfig($content) {
+    $result = [];
+    $lines = explode("\n", $content);
+    $section = null;
+    $peerIndex = 0;
+
+    foreach ($lines as $line) {
+        $line = trim($line);
+
+        if (empty($line) || strpos($line, '#') === 0 || strpos($line, ';') === 0) {
+            continue;
+        }
+
+        if (preg_match('/^\[(.+)\]$/', $line, $matches)) {
+            $section = $matches[1];
+
+            if ($section === 'Peer') {
+                $peerIndex++;
+                $result[$section][$peerIndex] = [];
+            } else {
+                $result[$section] = [];
+            }
+            continue;
+        }
+
+        if (strpos($line, '=') !== false) {
+            list($key, $value) = array_map('trim', explode('=', $line, 2));
+            if ($section === 'Peer') {
+                $result[$section][$peerIndex][$key] = $value;
+            } elseif ($section) {
+                $result[$section][$key] = $value;
+            } else {
+                $result[$key] = $value;
+            }
+        }
+    }
+
+    return $result;
+}
+
 
 /**
  * Validates uploaded .conf file, adds iptables post-up and
@@ -229,6 +302,21 @@ function SaveWireGuardConfig($status, $role)
         }
     }
 
+    // save private key
+    if (isset($_POST['wg-srvprikey']) && strlen(trim($_POST['wg-srvprikey'])) > 0 ) {
+        
+        $pubkey = RASPI_WIREGUARD_PATH.'wg-server-public.key';
+        $privkey = RASPI_WIREGUARD_PATH.'wg-server-private.key';
+        $pubkey_tmp = '/tmp/wg-server-public.key';
+        $privkey_tmp = '/tmp/wg-server-private.key';
+        $wgprivkey = trim($_POST['wg-srvprikey']);
+
+        file_put_contents($privkey_tmp, $wgprivkey);
+        exec("cat $privkey_tmp | wg pubkey > $pubkey_tmp");
+        exec("sudo mv $privkey_tmp $privkey", $return);
+        exec("sudo mv $pubkey_tmp $pubkey", $return);
+    }
+
     // Save settings
     if ($good_input) {
         // fetch peer private key from filesystem 
@@ -238,6 +326,7 @@ function SaveWireGuardConfig($status, $role)
         $config[] = 'Address = '.trim($_POST['wg_srvipaddress']);
         $config[] = 'PrivateKey = '.$wg_svrprivkey;
         $config[] = 'ListenPort = '.$_POST['wg_srvport'];
+        $config[] = 'DNS = '.$_POST['wg_srvdns'];
         $config[] = '';
         $config[] = '[Peer]';
         $config[] = 'PublicKey = '.$_POST['wg-peer'];
@@ -249,13 +338,34 @@ function SaveWireGuardConfig($status, $role)
             $config[] = 'PersistentKeepalive = '.trim($_POST['wg_pkeepalive']);
         }
         $config[] = '';
+
+        if ($role == 'server' && $_POST['enable_client2']) {
+            $config[] = '[Peer]';
+            $config[] = 'PublicKey = '.$_POST['wg-peer2'];
+            $config[] = 'AllowedIPs = '.$_POST['wg_pallowedips2'];
+            if ($_POST['wg_pkeepalive2'] !== '') {
+                $config[] = 'PersistentKeepalive = '.trim($_POST['wg_pkeepalive2']);
+            }
+
+            file_put_contents("/tmp/wg-peer-public2.key", $_POST['wg-peer2']);
+            system('sudo mv /tmp/wg-peer-public2.key '.RASPI_WIREGUARD_PATH.'wg-peer-public2.key', $return);
+        }
+
+        $config[] = '';
+        if ($role == 'server' && $_POST['enable_client3']) {
+            $config[] = '[Peer]';
+            $config[] = 'PublicKey = '.$_POST['wg-peer3'];
+            $config[] = 'AllowedIPs = '.$_POST['wg_pallowedips3'];
+            if ($_POST['wg_pkeepalive3'] !== '') {
+                $config[] = 'PersistentKeepalive = '.trim($_POST['wg_pkeepalive3']);
+            }
+
+            file_put_contents("/tmp/wg-peer-public3.key", $_POST['wg-peer3']);
+            system('sudo mv /tmp/wg-peer-public3.key '.RASPI_WIREGUARD_PATH.'wg-peer-public3.key', $return);
+        }
+        $config[] = '';
         $config = join(PHP_EOL, $config);
 
-        if ($_POST['wg-server'] !== '') {
-            file_put_contents("/tmp/wg-server-public.key", $_POST['wg-server']);
-            system('sudo mv /tmp/wg-server-public.key '.RASPI_WIREGUARD_PATH.'wg-server-public.key', $return);
-        }
-        
         file_put_contents("/tmp/wg-peer-public.key", $_POST['wg-peer']);
         system('sudo mv /tmp/wg-peer-public.key '.RASPI_WIREGUARD_PATH.'wg-peer-public.key', $return);
 
