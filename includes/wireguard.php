@@ -66,34 +66,30 @@ function DisplayWireGuardConfig()
     $wg_peerpubkey2 = exec('sudo cat '. RASPI_WIREGUARD_PATH .'wg-peer-public2.key', $return);
     $wg_peerpubkey3 = exec('sudo cat '. RASPI_WIREGUARD_PATH .'wg-peer-public3.key', $return);
 
-    exec('sudo cp '. RASPI_WIREGUARD_CONFIG . ' /tmp/wg0.conf; sudo chmod 777 /tmp/wg0.conf');
-    $configFile = '/tmp/wg0.conf';
-    if (!file_exists($configFile)) {
-        $status->addMessage('The configuration file does not exist.', 'danger');
-    }
-
-    $configContent = file_get_contents($configFile);
-    $parsedConfig = parseWireGuardConfig($configContent);
-
     $enable_client = [];
     $wg_pallowedips = [];
     $wg_pkeepalive = [];
-
-    if (isset($parsedConfig['Peer'])) {
-        foreach ($parsedConfig['Peer'] as $peerIndex => $peerData) {
-            foreach ($peerData as $key => $value) {
-                if (strstr($key, 'AllowedIPs')) {
-                    $wg_pallowedips[$peerIndex] = $value;
-                } else if (strstr($key, 'PersistentKeepalive')) {
-                    $wg_pkeepalive[$peerIndex] = $value;
+    exec('sudo cp '. RASPI_WIREGUARD_CONFIG . ' /tmp/wg0.conf; sudo chmod 777 /tmp/wg0.conf');
+    $configFile = '/tmp/wg0.conf';
+    if (file_exists($configFile)) {
+        $configContent = file_get_contents($configFile);
+        $parsedConfig = parseWireGuardConfig($configContent);
+        if (isset($parsedConfig['Peer'])) {
+            foreach ($parsedConfig['Peer'] as $peerIndex => $peerData) {
+                foreach ($peerData as $key => $value) {
+                    if (strstr($key, 'AllowedIPs')) {
+                        $wg_pallowedips[$peerIndex] = $value;
+                    } else if (strstr($key, 'PersistentKeepalive')) {
+                        $wg_pkeepalive[$peerIndex] = $value;
+                    }
+                    $enable_client[$peerIndex] = true;
                 }
-                $enable_client[$peerIndex] = true;
             }
         }
-    }
 
-    if (count($parsedConfig) >0) {
-        $wg_senabled = true;
+        if (count($parsedConfig) >0) {
+            $wg_senabled = true;
+        }
     }
 
     // fetch service status

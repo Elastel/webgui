@@ -94,6 +94,9 @@ if [ "$1" == "reset" ]; then
     sudo cp $path/config/defaults.json /etc/raspap/networking/
     sudo cp $path/config/elastpro/etc/* /etc/ -r
     sudo cp $path/Elastel/$model/etc/* /etc/ -r
+    sudo rm -r /etc/openvpn/client/*
+    sudo rm -r /etc/openvpn/server/*
+    sudo rm -r /etc/wireguard/wg0.conf
     sleep 1
     if [ $model != "EG324L" -a $model != "EC212" ]; then
         sudo cp $path/config/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
