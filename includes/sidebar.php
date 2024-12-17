@@ -108,7 +108,6 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li class="nav-item" name="things_wing" id="remote_things_wing"> <a class="nav-link" href="things_wing"><?php echo _("ThingsWing"); ?></a></li>
                     <li class="nav-item" name="ddns" id="remote_ddns"> <a class="nav-link" href="ddns"><?php echo _("DDNS"); ?></a></li>
-                    <li class="nav-item" name="macchina" id="remote_macchina"> <a class="nav-link" href="macchina"><?php echo _("Macchina"); ?></a></li>
                     <li class="nav-item" id="page_vpn">
                         <a class="nav-link navbar-toggle collapsed" id="test" href="#" data-toggle="collapse" data-target="#navbar-collapse-vpn">
                             <?php echo _("VPN"); ?>
@@ -116,7 +115,7 @@
                         <div class="collapse navbar-collapse" id="navbar-collapse-vpn">
                             <ul class="nav navbar-nav navbar-right">
                                 <li class="nav-item" name="openvpn" id="remote_vpn_openvpn"> <a class="nav-link" href="openvpn"><?php echo _("OpenVPN"); ?></a></li>
-                                <?php if ($model != "EG324L") : ?>
+                                <?php if ($model != "EG324L" && $model != "EC212") : ?>
                                 <li class="nav-item" name="wireguard" id="remote_vpn_wireguard"> <a class="nav-link" href="wireguard"><?php echo _("WireGuard"); ?></a></li>
                                 <?php endif; ?>
                             </ul>
@@ -125,25 +124,27 @@
                 </ul>
             </div>
         </li>
-        <li class="nav-item" id="page_services">
-            <a class="nav-link navbar-toggle collapsed" id="services" href="#" data-toggle="collapse" data-target="#navbar-collapse-services">
-                <i class="fas fa-cube fa-fw mr-2"></i>
-                <span class="nav-label"><?php echo _("Services"); ?></a>
-            </a>
-            <div class="collapse navbar-collapse" id="navbar-collapse-services">
-            <ul class="nav navbar-nav navbar-right">
-                <?php if(isBinExists("node-red")) : ?>
-                <li class="nav-item" name="nodered" id="services_nodered"> <a class="nav-link" href="nodered"><?php echo _("Node Red"); ?></a></li>
-                <?php endif; ?>
-                <?php if(isBinExists("dockerd")) : ?>
-                <li class="nav-item" name="docker" id="services_docker"> <a class="nav-link" href="docker"><?php echo _("Docker"); ?></a></li>
-                <?php endif; ?>
-                <?php if(isBinExists("chirpstack")) : ?>
-                <li class="nav-item" name="chirpstack" id="services_chirpstack"> <a class="nav-link" href="chirpstack"><?php echo _("ChirpStack"); ?></a></li>
-                <?php endif; ?>
-            </ul>
-            </div>
-        </li>
+        <?php if(isBinExists("node-red") || isBinExists("dockerd") || isBinExists("chirpstack")) : ?>
+            <li class="nav-item" id="page_services">
+                <a class="nav-link navbar-toggle collapsed" id="services" href="#" data-toggle="collapse" data-target="#navbar-collapse-services">
+                    <i class="fas fa-cube fa-fw mr-2"></i>
+                    <span class="nav-label"><?php echo _("Services"); ?></a>
+                </a>
+                <div class="collapse navbar-collapse" id="navbar-collapse-services">
+                <ul class="nav navbar-nav navbar-right">
+                    <?php if(isBinExists("node-red")) : ?>
+                    <li class="nav-item" name="nodered" id="services_nodered"> <a class="nav-link" href="nodered"><?php echo _("Node Red"); ?></a></li>
+                    <?php endif; ?>
+                    <?php if(isBinExists("dockerd")) : ?>
+                    <li class="nav-item" name="docker" id="services_docker"> <a class="nav-link" href="docker"><?php echo _("Docker"); ?></a></li>
+                    <?php endif; ?>
+                    <?php if(isBinExists("chirpstack")) : ?>
+                    <li class="nav-item" name="chirpstack" id="services_chirpstack"> <a class="nav-link" href="chirpstack"><?php echo _("ChirpStack"); ?></a></li>
+                    <?php endif; ?>
+                </ul>
+                </div>
+            </li>
+        <?php endif; ?>
         <li class="nav-item" id="page_system">
             <a class="nav-link navbar-toggle collapsed" id="system" href="#" data-toggle="collapse" data-target="#navbar-collapse-system">
                 <i class="fas fa-cogs fa-fw mr-2"></i>
