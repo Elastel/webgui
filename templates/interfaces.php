@@ -52,13 +52,13 @@
           <?php } ?>
 
           <div class="cbi-section">
-            <h4>TCP Server Setting</h4>
+            <h4>Network Node Setting</h4>
             <ul class="nav nav-tabs">
-              <li role="presentation" class="nav-item"><a class="nav-link active" href="#tcp1" aria-controls="tcp1" role="tab" data-toggle="tab"><?php echo _("TCP Server1"); ?></a></li>
-              <li role="presentation" class="nav-item"><a class="nav-link" href="#tcp2" aria-controls="tcp2" role="tab" data-toggle="tab"><?php echo _("TCP Server2"); ?></a></li>
-              <li role="presentation" class="nav-item"><a class="nav-link" href="#tcp3" aria-controls="tcp3" role="tab" data-toggle="tab"><?php echo _("TCP Server3"); ?></a></li>
-              <li role="presentation" class="nav-item"><a class="nav-link" href="#tcp4" aria-controls="tcp4" role="tab" data-toggle="tab"><?php echo _("TCP Server4"); ?></a></li>
-              <li role="presentation" class="nav-item"><a class="nav-link" href="#tcp5" aria-controls="tcp5" role="tab" data-toggle="tab"><?php echo _("TCP Server5"); ?></a></li>
+              <li role="presentation" class="nav-item"><a class="nav-link active" href="#tcp1" aria-controls="tcp1" role="tab" data-toggle="tab"><?php echo _("Network Node1"); ?></a></li>
+              <li role="presentation" class="nav-item"><a class="nav-link" href="#tcp2" aria-controls="tcp2" role="tab" data-toggle="tab"><?php echo _("Network Node2"); ?></a></li>
+              <li role="presentation" class="nav-item"><a class="nav-link" href="#tcp3" aria-controls="tcp3" role="tab" data-toggle="tab"><?php echo _("Network Node3"); ?></a></li>
+              <li role="presentation" class="nav-item"><a class="nav-link" href="#tcp4" aria-controls="tcp4" role="tab" data-toggle="tab"><?php echo _("Network Node4"); ?></a></li>
+              <li role="presentation" class="nav-item"><a class="nav-link" href="#tcp5" aria-controls="tcp5" role="tab" data-toggle="tab"><?php echo _("Network Node5"); ?></a></li>
             </ul>
             <!-- Tab panes -->
             <div class="tab-content">

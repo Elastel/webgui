@@ -1,29 +1,23 @@
 #!/bin/bash
 
-local proto,iface,interface,port,baudrate,source_address,max_master,frames,model
-
 model=$(cat /etc/fw_model)
 
-proto=$(uci get dct.bacnet_client.proto)
-if [ $proto == "0" ]; then
+if [ $1 == "0" ]; then
 	echo "BACnet/IP"
-	iface=$(uci get dct.bacnet_client.ifname)
-	prot=$(uci get dct.bacnet_client.port)
-	exprot BACNET_IP_PORT=$port
-	export BACNET_IFACE=$iface
+	export BACNET_IFACE=$2
+	export BACNET_IP_PORT=$3
 	
 	/usr/sbin/bacdiscover_ip --print-seconds 2
 else
 	echo "BACnet/MSTP"
-	interface=$(uci get dct.bacnet_client.interface)
 	if [ $model == "EG324" ]; then
-		if [ $interface == "COM1" ]; then
+		if [ $2 == "COM1" ]; then
 			iface="/dev/ttyAMA0"
 		else
 			iface="/dev/ttyAMA1"
 		fi
 	elif [ $model == "EG324L" ]; then
-		if [ $interface == "COM1" ]; then
+		if [ $2 == "COM1" ]; then
 			iface="/dev/ttyS1"
 		else
 			iface="/dev/ttyS2"
@@ -31,16 +25,13 @@ else
 	else
 		iface="/dev/ttyACM0"
 	fi
-	baudrate=$(uci get dct.bacnet_client.baudrate)
-	source_address=$(uci get dct.bacnet_client.mac)
-	max_master=$(uci get dct.bacnet_client.max_master)
-	frames=$(uci get dct.bacnet_client.frames)
+
 	export BACNET_IFACE=$iface
-	echo $BACNET_IFACE
-	export BACNET_MSTP_BAUD=$baudrate
-	export BACNET_MSTP_MAC=$source_address
-	export BACNET_MAX_MASTER=$max_master
-	export BACNET_MAX_INFO_FRAMES=$frames
+	export BACNET_MSTP_BAUD=$3
+	export BACNET_MSTP_MAC=$4
+	export BACNET_MAX_MASTER=$5
+	export BACNET_MAX_INFO_FRAMES=$6
 	
-	/usr/sbin/bacdiscover_mstp --print-seconds 2
+	kill -9 $(pgrep -x baccli-mstp)
+	/usr/sbin/bacdiscover_mstp --print-seconds 3
 fi

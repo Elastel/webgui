@@ -74,8 +74,7 @@ exec("sudo /usr/local/bin/uci set dct.opcua.security_policy=" .$_POST['security_
     }
 */
 function saveComConfig($status, $model)
-{   
-
+{
     if ($model == "EG500") {
         $count = 2;
     } else {
@@ -100,12 +99,12 @@ function saveComConfig($status, $model)
     $arr_option = $config['com_option'];
 
     for ($i = 1; $i <= $count; $i++) {
-        for ($j = 0; $j < count($arr_option); $j++) {
-            $data[$arr_option[$j] . $i] = $_POST[$arr_key[$j] . $i];
-        }
-
-        if ($arr_key[$j] == 'com_enabled' && $_POST[$arr_key[$j] . $i] != '1') {
-            break;
+        if ($_POST['com_enabled' . $i] == '1') {
+            for ($j = 0; $j < count($arr_option); $j++) {
+                $data[$arr_option[$j] . $i] = $_POST[$arr_key[$j] . $i];
+            }
+        } else {
+            $data['enabled' . $i] = $_POST['com_enabled' . $i] ?? '0';
         }
     }
 
@@ -162,24 +161,34 @@ function saveFileUploadInterface($status, $file, $index)
 
 function saveTcpConfig($status)
 {
-    for ($i = 1; $i <= 5; $i++) {
-        $data['enabled' . $i] = $_POST['tcp_enabled' . $i] ?? '0';
+    $count = 5;
+
+    $data = array();
+    $arr_option = array();
+    $arr_key = array();
+
+    if (file_exists('/etc/elastel_config.json')) {
+        $fileContent = file_get_contents('/etc/elastel_config.json');
+        $config = json_decode($fileContent, true);
+    }
+    
+    if (array_key_exists('tcp_server_key', $config)) {
+        $arr_key = $config['tcp_server_key'];
+    } else {
+        $arr_key = $config['tcp_server_option'];
+    }
+
+    $arr_option = $config['tcp_server_option'];
+
+    for ($i = 1; $i <= $count; $i++) {
         if ($_POST['tcp_enabled' . $i] == '1') {
-            $data['server_addr' . $i] = $_POST['server_addr' . $i];
-            $data['server_port' . $i] = $_POST['server_port' . $i];
-            $data['frame_interval' . $i] = $_POST['tcp_frame_interval' . $i];
-            $data['proto' . $i] = $_POST['tcp_proto' . $i];
-            $data['cmd_interval' . $i] = $_POST['tcp_cmd_interval' . $i];
-            $data['report_center' . $i] = $_POST['tcp_report_center' . $i];
-            $data['rack' . $i] = $_POST['rack' . $i];
-            $data['slot' . $i] = $_POST['slot' . $i];
-            $data['anonymous' . $i] = $_POST['anonymous' . $i];
-            $data['username' . $i] = $_POST['username' . $i];
-            $data['password' . $i] = $_POST['password' . $i];
-            $data['slave_address' . $i] = $_POST['tcp_slave_address' . $i];
-            $data['master_address' . $i] = $_POST['tcp_master_address' . $i];
-            
-            $data['security_policy' . $i] = $_POST['security_policy' . $i];
+            for ($j = 0; $j < count($arr_option); $j++) {
+                if ($arr_key[$j] == 'certificate' || $arr_key[$j] == 'private_key' || $arr_key[$j] == 'trust_crt')
+                    continue;
+
+                $data[$arr_option[$j] . $i] = $_POST[$arr_key[$j] . $i];
+            }
+
             if ($data['security_policy' . $i] != '0') {
                 if (strlen($_FILES['certificate' . $i]['name']) > 0) {
                     if (is_uploaded_file($_FILES['certificate' . $i]['tmp_name'])) {
@@ -190,7 +199,7 @@ function saveTcpConfig($status)
                 }
 
                 // get uri
-                if ($_POST['uri'] == null) {
+                if ($_POST['uri' . $i] == null) {
                     $certFile = $data['certificate' . $i];
                     $uri_path = "/etc/ssl/interfaces$i/$certFile";
                     if (!is_dir($uri_path)) {
@@ -228,6 +237,8 @@ function saveTcpConfig($status)
                     $data['trust_crt' . $i] = $trustName;
                 }
             }
+        } else {
+            $data['enabled' . $i] = $_POST['tcp_enabled' . $i] ?? '0';
         }
     }
 

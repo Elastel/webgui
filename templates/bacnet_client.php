@@ -59,74 +59,29 @@
           <?php $status->showMessages(); ?>
           <form method="POST" action="baccli_conf" role="form">
           <?php echo CSRFTokenFieldTag() ?>
-            <div class="cbi-section cbi-tblsection">
-              <?php 
-                RadioControlCustom(_('BACnet Rules'), 'enabled', 'bacnet', 'enableBACnet');
-          
-                echo '<div id="page_bacnet" name="page_bacnet">';
-                $proto = array('BACnet/IP', 'BACnet/MSTP');
-                SelectControlCustom(_('Protocol'), 'proto', $proto, $proto[0], 'proto', null, "bacnetProtocolChange()");
-
-                echo '<div id="page_proto_ip" name="page_proto_ip">';
-                SelectControlCustom(_('Interface'), 'ifname', $interface_list, $interface[0], 'ifname');
-                // InputControlCustom(_('Remote IP'), 'ip_address', 'ip_address', _('If not, leave blank'));
-                InputControlCustom(_('Port'), 'port', 'port', _('1~65535'));
-
-                // CheckboxControlCustom(_('BBMD'), 'bbmd_enabled', 'bbmd_enabled', null, null, 'enableBBMD()');
-                // echo '<div id="page_bbmd" name="page_bbmd">';
-                // InputControlCustom(_('Remote BBMD IP'), 'bbmd_ip', 'bbmd_ip');
-                // InputControlCustom(_('BBMD Port'), 'bbmd_port', 'bbmd_port', _('1~65535'));
-                // InputControlCustom(_('Registration Time'), 'bbmd_time', 'bbmd_time', _('minutes'));
-                // echo '</div>';
-                echo '</div>';
-
-                echo '<div id="page_proto_mstp" name="page_proto_mstp">';
-                exec("cat /etc/fw_model", $model);
-                
-                if ($model[0] == "EG324" || $model[0] == "EG324L") {
-                  $comlist = array('COM1'=>'COM1', 'COM2'=>'COM2');
-                } else {
-                  $comlist = array('COM1'=>'COM1');
-                }
-                SelectControlCustom(_('Interface'), 'interface', $comlist, $comlist[0], 'interface');
-
-                $baudrate_list = array('1200'=>'1200', '2400'=>'2400', '4800'=>'4800', '9600'=>'9600', '19200'=>'19200', '38400'=>'38400',
-                '57600'=>'57600', '115200'=>'115200', '230400'=>'230400');
-                SelectControlCustom(_('Baudrate'), 'baudrate', $baudrate_list, $baudrate_list['38400'], 'baudrate');
-                InputControlCustom(_('Source Address'), 'mac', 'mac');
-                InputControlCustom(_('Max Master'), 'max_master', 'max_master', _('1~127'));
-                InputControlCustom(_('Frames'), 'frames', 'frames', _('1~127'));
-                echo '</div>';
-
-                InputControlCustom(_('Device ID'), 'device_id', 'device_id', _('1~65535'));
-                $collect_mode = array('poll'=>'poll', 'cov'=>'cov');
-                SelectControlCustom(_('Collect Mode'), 'collect_mode', $collect_mode, $collect_mode[0], 'collect_mode');
+            <input type="hidden" name="table_data" value="" id="hidTD_baccli">
+            <input type="hidden" name="option_list_baccli" value="" id="option_list_baccli">
+            <div class="cbi-section cbi-tblsection" id="page_baccli" name="page_baccli">
+              <?php
+              $arr= array(
+                array("name"=>"Order",                "style"=>"", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"Belonged Interface",   "style"=>"", "descr"=>"", "ctl"=>"select"),
+                array("name"=>"Tag Name",          "style"=>"", "descr"=>"Multiple Tags Are Separated By Semicolon", "ctl"=>"input"),
+                array("name"=>"Object Device ID",            "style"=>"", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"Object Identifier",    "style"=>"", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
+                array("name"=>"Operator",             "style"=>"display:none", "descr"=>"0 + - * /", "ctl"=>"select"),
+                array("name"=>"Operation Expression", "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"Operand",              "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"Accuracy",             "style"=>"display:none", "descr"=>"0~6", "ctl"=>"select"),
+                array("name"=>"Enable",               "style"=>"", "descr"=>"", "ctl"=>"check"),
+              );
+              page_table_title('baccli', $arr);
               ?>
-
-                <input type="hidden" name="table_data" value="" id="hidTD_baccli">
-                <input type="hidden" name="option_list_baccli" value="" id="option_list_baccli">
-                <div class="cbi-section cbi-tblsection" id="page_baccli" name="page_baccli">
-                  <?php
-                  $arr= array(
-                    array("name"=>"Order",                "style"=>"", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Tag Name",          "style"=>"", "descr"=>"Multiple Tags Are Separated By Semicolon", "ctl"=>"input"),
-                    array("name"=>"Object Device ID",            "style"=>"", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Object Identifier",    "style"=>"", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
-                    array("name"=>"Operator",             "style"=>"display:none", "descr"=>"0 + - * /", "ctl"=>"select"),
-                    array("name"=>"Operation Expression", "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Operand",              "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Accuracy",             "style"=>"display:none", "descr"=>"0~6", "ctl"=>"select"),
-                    array("name"=>"Enable",               "style"=>"", "descr"=>"", "ctl"=>"check"),
-                  );
-                  page_table_title('baccli', $arr);
-                  ?>
-                  <div class="cbi-section-create">
-                    <input type="button" class="cbi-button-add" name="popBox" value="Add" onclick="addData('baccli')">
-                    <?php conf_im_ex('Baccli'); ?>
-                  </div>
-                </div>
+              <div class="cbi-section-create">
+                <input type="button" class="cbi-button-add" name="popBox" value="Add" onclick="addData('baccli')">
+                <?php conf_im_ex('Baccli'); ?>
               </div>
             </div>
             <?php echo $buttons ?>
@@ -147,6 +102,9 @@
       InputControlCustom(_('Order'), $table_name.'.order', $table_name.'.order');
 
       InputControlCustom(_('Device Name'), $table_name.'.device_name', $table_name.'.device_name');
+
+      $interface_list = get_belonged_interface(ComProtoEnum::COM_PROTO_BACNET, TcpProtoEnum::TCP_PROTO_BACNET);
+      SelectControlCustom(_('Belonged Interface'), $table_name.'.belonged_com', $interface_list, $interface_list[0], $table_name.'.belonged_com');
 
       InputControlCustom(_('Tag Name'), $table_name.'.factor_name', $table_name.'.factor_name', _('Multiple Tags Are Separated By Semicolon'));
     ?>
@@ -185,6 +143,28 @@
 
       $accuracy_list = ['0', '1', '2', '3', '4', '5', '6'];
       SelectControlCustom(_('Accuracy'), $table_name.'.accuracy', $accuracy_list, $accuracy_list[0], $table_name.'.accuracy', _('0 + - * /'));
+
+      CheckboxControlCustom(_('SMS&Email Reporting'), $table_name.'.sms_reporting', $table_name.'.sms_reporting', null, null, "enableAlarm('$table_name')");
+
+      echo '<div name="page_sms" id="page_sms">';
+      $report_type = ['Change reporting', 'Alarm reporting'];
+      SelectControlCustom(_('Report Type'), $table_name.'.report_type', $report_type, $report_type[0], $table_name.'.report_type', null, "selectReportType('$table_name')");
+      
+      echo '<div name="page_alarm" id="page_alarm">';
+      InputControlCustom(_('Alarm Up Limit'), $table_name.'.alarm_up', $table_name.'.alarm_up');
+
+      InputControlCustom(_('Alarm Down Limit'), $table_name.'.alarm_down', $table_name.'.alarm_down');
+      echo '</div>';
+      InputControlCustom(_('Phone Number'), $table_name.'.phone_num', $table_name.'.phone_num', _('Multiple Phones Are Separated By Comma'));
+
+      InputControlCustom(_('Email'), $table_name.'.email', $table_name.'.email', _('Multiple emails Are Separated By Comma'));
+      
+      InputControlCustom(_('Contents'), $table_name.'.contents', $table_name.'.contents');
+
+      InputControlCustom(_('Retry Interval'), $table_name.'.retry_interval', $table_name.'.retry_interval', _('Minutes, it must be a multiple of collect period'));
+
+      InputControlCustom(_('Again Interval'), $table_name.'.again_interval', $table_name.'.again_interval', _('Minutes, it must be a multiple of collect period'));
+      echo '</div>';
 
       CheckboxControlCustom(_('Enable'), $table_name.'.enabled', $table_name.'.enabled', 'checked');
     ?>

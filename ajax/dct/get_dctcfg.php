@@ -22,9 +22,36 @@ if ($type == 'datadisplay') {
     exec('cat /tmp/config_export.csv', $data);
     echo implode(PHP_EOL, $data);
 } else if (strstr($type, 'bacdiscover')) {
-    exec("uci get dct.bacnet_client.enabled", $enable);
-    if ($enable[0] != '0') {
-        exec("sudo /usr/sbin/bacnet_update");
+    $interface = $_GET['interface'];
+    if (strstr($interface, 'TCP') != null) {
+        $num = filter_var($interface, FILTER_SANITIZE_NUMBER_INT);
+        exec("uci get dct.tcp_server.server_port$num", $tmp);
+        $port = $tmp[0];
+        unset($tmp);
+        exec("uci get dct.tcp_server.interface$num", $tmp);
+        $iface = $tmp[0];
+        exec("sudo /usr/sbin/bacnet_update 0 $iface $port");
+        exec('cat /tmp/bacdiscover', $data);
+        if ($data[0] != null) {
+            $dctdata = json_decode($data[0]);
+            echo json_encode($dctdata);
+        }
+    } else if (strstr($interface, 'COM') != null) {
+        $num = filter_var($interface, FILTER_SANITIZE_NUMBER_INT);
+        exec("uci get dct.com.baudrate$num", $tmp);
+        $baudrate = $tmp[0];
+        unset($tmp);
+        exec("uci get dct.com.src_addr$num", $tmp);
+        $src_addr = $tmp[0];
+        unset($tmp);
+        exec("uci get dct.com.max_master$num", $tmp);
+        $max_master = $tmp[0];
+        unset($tmp);
+        exec("uci get dct.com.frames$num", $tmp);
+        $frames = $tmp[0];
+        unset($tmp);
+
+        exec("sudo /usr/sbin/bacnet_update 1 $interface $baudrate $src_addr $max_master $frames");
         exec('cat /tmp/bacdiscover', $data);
         if ($data[0] != null) {
             $dctdata = json_decode($data[0]);
@@ -52,9 +79,13 @@ if ($type == 'datadisplay') {
         echo json_encode($dctdata);
     } else if ($type == 'modbus' || $type == 'ascii' || $type == 's7'|| $type == 'fx' ||
              $type == 'mc' || $type == 'adc' || $type == 'di' || $type == 'do' || 
-             $type == 'iec104' || $type == 'opcuacli' || $type == 'dnp3cli') {
+             $type == 'iec104' || $type == 'opcuacli' || $type == 'dnp3cli' || $type == 'baccli') {
         exec("/usr/sbin/get_config dct type $type 1", $data);
-        $dctdata = json_decode($data[0]);
+        // $dctdata = json_decode($data[0]);
+
+        $dctdata['option'] = $config[$type .'_option'];
+        $dctdata[$type] = $data[0];
+
         echo json_encode($dctdata);
     } else if ($type == 'dnp3' || $type == 'modbus_slave') {
         $option_name = $type_arr[$type]['option'];

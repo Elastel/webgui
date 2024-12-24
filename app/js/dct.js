@@ -78,7 +78,7 @@ function deleteColumnByHeader(tableId, headerName) {
 /*basic*/
 function loadBasicConfig() {
     $('#loading').show();
-    $.get('ajax/dct/get_dctcfg.php?type=basic',function(data){
+    $.get('ajax/dct/get_dctcfg.php?type=basic',function(data) {
         var jsonData = JSON.parse(data);
         var arr = ['collect_period', 'report_period', 'cache_enabled', 'cache_day', 'minute_enabled',
         'minute_period', 'hour_enabled', 'day_enabled'];
@@ -235,18 +235,19 @@ function comProtocolChange(num) {
     var selectedOption = selectElement.options[selectElement.selectedIndex];
     var selectedText = selectedOption.text;
 
+    $('#com_page_protocol_modbus' + numStr).hide();
+    $('#com_page_protocol_transparent' + numStr).hide();
+    $('#com_page_protocol_dnp3' + numStr).hide();
+    $('#com_page_protocol_bacnet' + numStr).hide();
+
     if (selectedText == 'Transparent') {
-        $('#com_page_protocol_modbus' + numStr).hide();
         $('#com_page_protocol_transparent' + numStr).show();
-        $('#com_page_protocol_dnp3' + numStr).hide();
     } else if (selectedText == 'DNP3') {
-        $('#com_page_protocol_modbus' + numStr).hide();
-        $('#com_page_protocol_transparent' + numStr).hide();
         $('#com_page_protocol_dnp3' + numStr).show();
+    } else if (selectedText == 'BACnet/MSTP') {
+        $('#com_page_protocol_bacnet' + numStr).show();
     } else {
         $('#com_page_protocol_modbus' + numStr).show();
-        $('#com_page_protocol_transparent' + numStr).hide();
-        $('#com_page_protocol_dnp3' + numStr).hide();
     }
 }
 
@@ -256,40 +257,25 @@ function tcpProtocolChange(num) {
     var selectedOption = selectElement.options[selectElement.selectedIndex];
     var selectedText = selectedOption.text;
 
+    $('#tcp_page_protocol_modbus' + numStr).hide();
+    $('#tcp_page_protocol_transparent' + numStr).hide();
+    $('#tcp_page_protocol_s7' + numStr).hide();
+    $('#tcp_page_protocol_opcua' + numStr).hide();
+    $('#tcp_page_protocol_dnp3' + numStr).hide();
+    $('#tcp_page_protocol_bacnet' + numStr).hide();
+
     if (selectedText == 'Transparent') {
-        $('#tcp_page_protocol_modbus' + numStr).hide();
         $('#tcp_page_protocol_transparent' + numStr).show();
-        $('#tcp_page_protocol_s7' + numStr).hide();
-        $('#tcp_page_protocol_opcua' + numStr).hide();
-        $('#tcp_page_protocol_dnp3' + numStr).hide();
     } else if (selectedText == 'S7') {
-        $('#tcp_page_protocol_modbus' + numStr).hide();
-        $('#tcp_page_protocol_transparent' + numStr).hide();
-        $('#tcp_page_protocol_opcua' + numStr).hide();
         $('#tcp_page_protocol_s7' + numStr).show();
-        $('#tcp_page_protocol_dnp3' + numStr).hide();
     } else if (selectedText == 'OPCUA') {
-        $('#tcp_page_protocol_modbus' + numStr).hide();
-        $('#tcp_page_protocol_transparent' + numStr).hide();
-        $('#tcp_page_protocol_s7' + numStr).hide();
         $('#tcp_page_protocol_opcua' + numStr).show();
-        $('#tcp_page_protocol_dnp3' + numStr).hide();
         anonymousCheckTcp(numStr);
         securityChangeTcp(numStr)
     } else if (selectedText == 'DNP3') {
-        $('#tcp_page_protocol_modbus' + numStr).hide();
-        $('#tcp_page_protocol_transparent' + numStr).hide();
-        $('#tcp_page_protocol_s7' + numStr).hide();
-        $('#tcp_page_protocol_opcua' + numStr).hide();
         $('#tcp_page_protocol_dnp3' + numStr).show();
-        anonymousCheckTcp(numStr);
-        securityChangeTcp(numStr)
-    }  else {
-        $('#tcp_page_protocol_modbus' + numStr).show();
-        $('#tcp_page_protocol_transparent' + numStr).hide();
-        $('#tcp_page_protocol_opcua' + numStr).hide();
-        $('#tcp_page_protocol_s7' + numStr).hide();
-        $('#tcp_page_protocol_dnp3' + numStr).hide();
+    } else if (selectedText == 'BACnet/IP') {
+        $('#tcp_page_protocol_bacnet' + numStr).show();
     }
 }
 
@@ -462,7 +448,7 @@ function addSectionTable(table_name, jsonData, option_list) {
                     contents += '   <td style="display:none" name="'+key+'">-</td>\n';
                 } else if (key == 'enabled' || key == 'sms_reporting') {
                     contents += '   <td style="' + ((key == 'enabled') ? 'text-align:center' : 'display:none') + '"><input type="checkbox" name="' +
-                             key + (table_name == 'baccli' ? '_baccli' : '') + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + 
+                             key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + 
                              ' onclick="updateData(\''+table_name+'\')"></td>\n';
                 } else {
                     contents += '   <td style="text-align:center" name="'+key+'">-</td>\n';
@@ -509,8 +495,10 @@ function addSectionTable(table_name, jsonData, option_list) {
                 contents += '   <td style="text-align:center" name="'+key+'">'+ cur_status +'</td>\n';
             } else if (key == 'enabled' || key == 'sms_reporting') {
                 contents += '   <td style="' + ((key == 'enabled') ? 'text-align:center' : 'display:none') + '"><input type="checkbox" name="' +
-                             key + ((table_name == 'baccli' && key == 'enabled') ? '_baccli' : '') + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + 
+                             key + '" ' + (jsonData[i][key] == '1' ? 'checked' : ' ') + 
                              ' onclick="updateData(\''+table_name+'\')"></td>\n';
+            } else if (key == 'belonged_com' && jsonData[i][key].includes('TCP')) {
+                contents += '   <td style="text-align:center" name="'+key+'">Network Node'+ jsonData[i][key][3] +'</td>\n';
             } else {
                 contents += '   <td style="text-align:center" name="'+key+'">'+ ((mode == 1 && key == 'debounce_interval') ? '-' : jsonData[i][key]) +'</td>\n';
             }
@@ -584,13 +572,12 @@ function loadModbusConfig() {
     var table_name = 'modbus';
     $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
-        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'device_id', 
-                        "function_code", 'reg_addr', 'reg_count', 'data_type', 'server_center', 
-                        'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
-                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
-                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
+        if (jsonData == null)
+            return;
 
-        addSectionTable(table_name, jsonData, option_list);
+        var option_list = jsonData.option;
+        var tmpData = JSON.parse(jsonData[table_name]);
+        addSectionTable(table_name, tmpData, option_list);
     });
 
     loadRealtimeData();
@@ -602,12 +589,14 @@ function loadAsciiConfig() {
     $('#loading').show();
     var table_name = 'ascii';
     $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
-        console.log(data);
+        // console.log(data);
         var jsonData = JSON.parse(data);
-        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'tx_cmd', 
-                        'cmd_format', 'server_center', 'enabled'];
+        if (jsonData == null)
+            return;
 
-        addSectionTable(table_name, jsonData, option_list);
+        var option_list = jsonData.option;
+        var tmpData = JSON.parse(jsonData[table_name]);
+        addSectionTable(table_name, tmpData, option_list);
     });
 
     loadRealtimeData();
@@ -620,12 +609,12 @@ function loadS7Config() {
     var table_name = 's7';
     $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
-        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'reg_type', 
-                        'reg_addr', 'reg_count', 'word_len', 'server_center', 
-                        'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
-                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
-                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
-        addSectionTable(table_name, jsonData, option_list);
+        if (jsonData == null)
+            return;
+
+        var option_list = jsonData.option;
+        var tmpData = JSON.parse(jsonData[table_name]);
+        addSectionTable(table_name, tmpData, option_list);
     });
 
     loadRealtimeData();
@@ -638,12 +627,12 @@ function loadFxConfig() {
     var table_name = 'fx';
     $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
-        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'reg_type', 
-                        'reg_addr', 'reg_count', 'data_type', 'server_center', 
-                        'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
-                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
-                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
-        addSectionTable(table_name, jsonData, option_list);
+        if (jsonData == null)
+            return;
+
+        var option_list = jsonData.option;
+        var tmpData = JSON.parse(jsonData[table_name]);
+        addSectionTable(table_name, tmpData, option_list);
     });
 
     loadRealtimeData();
@@ -656,12 +645,12 @@ function loadMcConfig() {
     var table_name = 'mc';
     $.get('ajax/dct/get_dctcfg.php?type=' + table_name, function(data){
         var jsonData = JSON.parse(data);
-        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'data_area', 
-                        'start_addr', 'reg_count', 'data_type', 'server_center', 
-                        'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
-                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
-                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
-        addSectionTable(table_name, jsonData, option_list);
+        if (jsonData == null)
+            return;
+
+        var option_list = jsonData.option;
+        var tmpData = JSON.parse(jsonData[table_name]);
+        addSectionTable(table_name, tmpData, option_list);
     });
 
     loadRealtimeData();
@@ -674,12 +663,12 @@ function loadIec104Config() {
     var table_name = 'iec104';
     $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
-        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'type_id', 
-                        'start_addr', 'common_addr', 'server_center',
-                        'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
-                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
-                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
-        addSectionTable(table_name, jsonData, option_list);
+        if (jsonData == null)
+            return;
+
+        var option_list = jsonData.option;
+        var tmpData = JSON.parse(jsonData[table_name]);
+        addSectionTable(table_name, tmpData, option_list);
     });
 
     loadRealtimeData();
@@ -692,15 +681,15 @@ function loadADCConfig() {
     var table_name = 'adc';
     $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
-        var option_list = ['device_name', 'index', 'factor_name', 'cap_type', 
-                        'range_down', 'range_up', 'server_center', 
-                        'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
-                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
-                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
+        if (jsonData == null)
+            return;
+
+        var option_list = jsonData.option;
+        var tmpData = JSON.parse(jsonData[table_name]);
         var model = document.getElementById("model").value;
 
         if (model == "EG500") {
-            addSectionTable(table_name, jsonData, option_list);
+            addSectionTable(table_name, tmpData, option_list);
         }
 
         loadRealtimeData();
@@ -713,13 +702,13 @@ function loadDIConfig() {
     var table_name = 'di';
     $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
-        var option_list = ['device_name', 'index', 'factor_name', 'mode', 
-                        'count_method', 'debounce_interval', 'server_center', 
-                        'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
-                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
-                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
+        if (jsonData == null)
+            return;
 
-        addSectionTable(table_name, jsonData, option_list);
+        var option_list = jsonData.option;
+        var tmpData = JSON.parse(jsonData[table_name]);
+
+        addSectionTable(table_name, tmpData, option_list);
 
         loadRealtimeData();
         $('#loading').hide();
@@ -731,13 +720,13 @@ function loadDOConfig() {
     var table_name = 'do';
     $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
-        var option_list = ['device_name', 'index', 'factor_name', 'init_status', 
-                        'cur_status', 'server_center', 'operator', 'operand', 'ex',
-                         'accuracy', 'sms_reporting',
-                         'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
-                         'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
+        if (jsonData == null)
+            return;
 
-        addSectionTable(table_name, jsonData, option_list);
+        var option_list = jsonData.option;
+        var tmpData = JSON.parse(jsonData[table_name]);
+
+        addSectionTable(table_name, tmpData, option_list);
 
         loadRealtimeData();
         $('#loading').hide();
@@ -750,12 +739,13 @@ function loadOpcuaClientConfig(){
     var table_name = 'opcuacli';
     $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
-        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'node_name', 
-                        'data_type', 'server_center', 'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
-                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
-                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
+        if (jsonData == null)
+            return;
 
-        addSectionTable(table_name, jsonData, option_list);
+        var option_list = jsonData.option;
+        var tmpData = JSON.parse(jsonData[table_name]);
+
+        addSectionTable(table_name, tmpData, option_list);
     });
 
     loadRealtimeData();
@@ -768,12 +758,13 @@ function loadDnp3ClientConfig(){
     var table_name = 'dnp3cli';
     $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
         var jsonData = JSON.parse(data);
-        var option_list = ['order', 'device_name', 'belonged_com', 'factor_name', 'group_id', 
-                        'point_number', 'server_center', 'operator', 'operand', 'ex', 'accuracy', 'sms_reporting',
-                        'report_type', 'alarm_up', 'alarm_down', 'phone_num', 
-                        'email', 'contents', 'retry_interval', 'again_interval', 'enabled'];
+        if (jsonData == null)
+            return;
+
+        var option_list = jsonData.option;
+        var tmpData = JSON.parse(jsonData[table_name]);
         
-        addSectionTable(table_name, jsonData, option_list);
+        addSectionTable(table_name, tmpData, option_list);
     });
 
     loadRealtimeData();
@@ -781,7 +772,9 @@ function loadDnp3ClientConfig(){
 }
 
 function get_bacnet_server_discover(callback) {
-    $.get('ajax/dct/get_dctcfg.php?type=bacdiscover', function(data) {
+    const interface = document.getElementById('baccli.belonged_com').value;
+    // console.log(interface);
+    $.get('ajax/dct/get_dctcfg.php?type=bacdiscover&interface=' + interface, function(data) {
         callback(data);
     })
 }
@@ -793,6 +786,7 @@ function updateDeviceIdList() {
     const device_id_list = document.getElementById('deviceIdList');
 
     get_bacnet_server_discover(function(data) {
+        // console.log(data);
         if (data && data != 'null') {
             $('#bacnet_discover_data').val(data);
             var jsonData = JSON.parse(data);
@@ -924,36 +918,8 @@ function loadBACnetClientConfig() {
         if (jsonData == null)
             return;
 
-        var arr = ['proto', 'ifname', 'ip_address', 'port', 'bbmd_enabled', 'bbmd_ip', 
-            'bbmd_port', 'bbmd_time', 'interface', 'baudrate', 'mac', 
-            'max_master', 'frames', 'device_id', 'collect_mode'];
-
-        $('#enabled').val(jsonData.enabled);
-        if (jsonData.enabled == '1') {
-            $('#page_bacnet').show();
-            $('#bacnet_enable').prop('checked', true);
-
-            arr.forEach(function (info) {
-                if (info == null) {
-                    return true;    // continue: return true; break: return false
-                }
-                if (info == 'bbmd_enabled') {
-                    $('#' + info).prop('checked', (jsonData[info] == '1') ? true:false);
-                } else {
-                    $('#' + info).val(jsonData[info]);
-                }
-            })
-        } else {
-            $('#page_bacnet').hide();
-            $('#bacnet_disable').prop('checked', true);
-        }
-
-        bacnetProtocolChange();
-
-        var tmpData = jsonData.baccli;
-        var option_list = ['order', 'device_name', 'factor_name', 'object_device_id', 'object_id', 
-                        'server_center', 'operator', 'operand', 'ex', 'accuracy', 'enabled'];
-
+        var option_list = jsonData.option;
+        var tmpData = JSON.parse(jsonData[table_name]);
         addSectionTable(table_name, tmpData, option_list);
 
         loadRealtimeData();
@@ -1462,7 +1428,7 @@ function get_table_data(table_name, option_list) {
                 // console.log(val);
 
                 if (option == 'enabled' || option == 'sms_reporting') {
-                    var check = tds.find('input[name="' + ((table_name == 'baccli' && option == 'enabled') ? (option + '_baccli') : option) + '"]').is(':checked');
+                    var check = tds.find('input[name="' + option + '"]').is(':checked');
                     // console.log(check);
                     tmp += '"' + option + '":"' + ( check ? 1 : 0) + '",';
                 } else if (option == 'data_type') {
@@ -1487,6 +1453,8 @@ function get_table_data(table_name, option_list) {
                     tmp += '"' + option + '":"' + cur_status + '",';
                 } else if (option == 'type_id') {
                     tmp += '"' + option + '":"' + findKey(type_id_list, val) + '",';
+                } else if (option == "belonged_com"  && val.includes('Network')) {
+                    tmp += '"' + option + '":"TCP' + val.slice(-1) + '",'
                 } else  {
                     tmp += '"' + option + '":"' + val + '",';
                 }
@@ -1576,7 +1544,8 @@ function saveData(table_name) {
             option_value[option] = type_id_list[document.getElementById(table_name + '.'  + option).value];
         } else {
             // console.log(option);
-            option_value[option] = (mode == 1 && option == 'debounce_interval') ? '-' : document.getElementById(table_name + '.'  + option).value;
+            if (option != null)
+                option_value[option] = (mode == 1 && option == 'debounce_interval') ? '-' : document.getElementById(table_name + '.'  + option).value;
         }
     })
 
@@ -1599,9 +1568,10 @@ function saveData(table_name) {
                 option == 'email' || option == 'contents' || option == 'retry_interval' || option == 'again_interval') {
                 contents += '   <td style="display:none" name="'+option+'">'+ (option_value[option].length > 0 ? option_value[option] : "-") +'</td>\n';
             } else if (option == 'enabled' || option == 'sms_reporting') {
-                contents += '   <td style="' + ((option == 'enabled') ? 'text-align:center' : 'display:none') + '"><input type="checkbox" name="' + option + 
-                ((table_name == 'baccli' && option == 'enabled') ? '_baccli' : '') +'" ' + (option_value[option] == '1' ? 'checked' : ' ') + 
-                ' onclick="updateData(\''+table_name+'\')"></td>\n';
+                contents += '   <td style="' + ((option == 'enabled') ? 'text-align:center' : 'display:none') + '"><input type="checkbox" name="' + option
+                +'" ' + (option_value[option] == '1' ? 'checked' : ' ') + ' onclick="updateData(\''+table_name+'\')"></td>\n';
+            } else if (option == "belonged_com"  && option_value[option].includes('TCP')) {
+                contents += '   <td style="text-align:center" name="'+option+'">Network Node' + (option_value[option][3]) +'</td>\n';
             } else {
                 contents += '   <td style="text-align:center" name="'+option+'">'+ (option_value[option] ? option_value[option] : "-") +'</td>\n';
             }
@@ -1622,7 +1592,7 @@ function saveData(table_name) {
                 // Traverse checkbox elements
                 for (var i = 0; i < checkboxes.length; i++) {
                     // Determine if it is of checkbox type
-                    var m_option = (table_name == 'baccli' && option == 'enabled') ? (option + '_baccli') : option;
+                    var m_option = option;
                     // console.log(m_option);
                     if ((checkboxes[i].type === "checkbox" && checkboxes[i].name == m_option)) {
                         checkboxes[i].checked = (option_value[option] == '1') ? true : false;
@@ -1700,10 +1670,12 @@ function editData(object, table_name) {
         } else if (option == 'index') {
             document.getElementById(table_name + '.'  + option + '.' + io_type).value = val;
         } else if (option == 'enabled' || option == 'sms_reporting') {
-            var check = tds.find('input[name="' + ((table_name == 'baccli' && option == 'enabled') ? (option + '_baccli') : option) + '"]').is(':checked');
+            var check = tds.find('input[name="' + option + '"]').is(':checked');
             document.getElementById(table_name + '.'  + option).checked = check;
         } else if (option == 'cur_status') {
             document.getElementById(table_name + '.'  + option).innerHTML = val;
+        } else if (option == "belonged_com"  && val.includes('Network')) {
+            document.getElementById(table_name + '.'  + option).value = 'TCP' + val.slice(-1);
         } else {
             document.getElementById(table_name + '.'  + option).value = val;
         }

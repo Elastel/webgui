@@ -7,6 +7,7 @@ abstract class ComProtoEnum {
   const COM_PROTO_MC = 3;
   const COM_PROTO_ASCII = 4;
   const COM_PROTO_DNP3 = 5;
+  const COM_PROTO_BACNET = 6;
 };
 
 abstract class TcpProtoEnum {
@@ -19,6 +20,7 @@ abstract class TcpProtoEnum {
   const TCP_PROTO_IEC104 = 6;
   const TCP_PROTO_OPCUA = 7;
   const TCP_PROTO_DNP3 = 8;
+  const TCP_PROTO_BACNET = 9;
 };
 
 function get_belonged_interface($com_proto, $tcp_proto)
@@ -60,19 +62,19 @@ function get_belonged_interface($com_proto, $tcp_proto)
     $option_list["COM4"] = "COM4";
   }  
   if ($tcp1_enable[0] == "1" && $tcp1_proto[0] == $tcp_proto) {
-    $option_list["TCP1"] = "TCP1";
+    $option_list["TCP1"] = "Network Node1";
   }
   if ($tcp2_enable[0] == "1" && $tcp2_proto[0] == $tcp_proto) {
-    $option_list["TCP2"] = "TCP2";
+    $option_list["TCP2"] = "Network Node2";
   }
   if ($tcp3_enable[0] == "1" && $tcp3_proto[0] == $tcp_proto) {
-    $option_list["TCP3"] = "TCP3";
+    $option_list["TCP3"] = "Network Node3";
   }
   if ($tcp4_enable[0] == "1" && $tcp4_proto[0] == $tcp_proto) {
-    $option_list["TCP4"] = "TCP4";
+    $option_list["TCP4"] = "Network Node4";
   }
   if ($tcp5_enable[0] == "1" && $tcp5_proto[0] == $tcp_proto) {
-    $option_list["TCP5"] = "TCP5";
+    $option_list["TCP5"] = "Network Node5";
   }
 
   if (($com1_enable[0] == null || $com1_enable[0]  == "0"  || $com1_proto[0] != $com_proto) &&
@@ -117,7 +119,7 @@ function page_interface_com($num)
 
   InputControlCustom(_("Frame Interval"), 'com_frame_interval'.$num, 'com_frame_interval'.$num, _('ms'), 200);
 
-  $com_proto = array('Modbus', 'Transparent', 'FX', 'MC', 'ASCII', 'DNP3');
+  $com_proto = array('Modbus', 'Transparent', 'FX', 'MC', 'ASCII', 'DNP3', 'BACnet/MSTP');
   SelectControlCustom(_('Protocol'), 'com_proto'.$num, $com_proto, $com_proto[0], 'com_proto'.$num, null, "comProtocolChange($num)");
 
   echo '<div id="com_page_protocol_modbus'.$num.'" name="com_page_protocol_modbus'.$num.'">';
@@ -131,6 +133,14 @@ function page_interface_com($num)
   echo '<div id="com_page_protocol_dnp3'.$num.'" name="com_page_protocol_dnp3'.$num.'">';
   InputControlCustom(_('Slave Address'), 'com_slave_address'.$num, 'com_slave_address'.$num, "0~65519");
   InputControlCustom(_('Master Address'), 'com_master_address'.$num, 'com_master_address'.$num, "0~65519");
+  echo '</div>';
+
+  echo '<div id="com_page_protocol_bacnet'.$num.'" name="com_page_protocol_bacnet'.$num.'">';
+  InputControlCustom(_('Source Address'), 'com_src_addr'.$num, 'com_src_addr'.$num);
+  InputControlCustom(_('Max Master'), 'com_max_master'.$num, 'com_max_master'.$num, "1~127");
+  InputControlCustom(_('Frames'), 'com_frames'.$num, 'com_frames'.$num, "1~127");
+  $collect_mode = array('poll'=>'poll', 'cov'=>'cov');
+  SelectControlCustom(_('Collect Mode'), 'com_collect_mode'.$num, $collect_mode, $collect_mode['poll'], 'com_collect_mode'.$num);
   echo '</div>';
 
 echo '</div><!-- /.page_com -->
@@ -156,7 +166,7 @@ function page_interface_tcp($num)
 
   InputControlCustom(_("Frame Interval"), 'tcp_frame_interval'.$num, 'tcp_frame_interval'.$num, _('ms'), 200);
 
-  $tcp_proto = array('Modbus', 'Transparent', 'S7', 'FX', 'MC', 'ASCII', 'IEC104', 'OPCUA', 'DNP3');
+  $tcp_proto = array('Modbus', 'Transparent', 'S7', 'FX', 'MC', 'ASCII', 'IEC104', 'OPCUA', 'DNP3', 'BACnet/IP');
   SelectControlCustom(_('Protocol'), 'tcp_proto'.$num, $tcp_proto, $tcp_proto[0], 'tcp_proto'.$num, null, "tcpProtocolChange($num)");
 
   echo '<div id="tcp_page_protocol_modbus'.$num.'" name="tcp_page_protocol_modbus'.$num.'">';
@@ -196,6 +206,23 @@ function page_interface_tcp($num)
   echo '<div id="tcp_page_protocol_dnp3'.$num.'" name="tcp_page_protocol_dnp3'.$num.'">';
   InputControlCustom(_('Slave Address'), 'tcp_slave_address'.$num, 'tcp_slave_address'.$num, "0~65519");
   InputControlCustom(_('Master Address'), 'tcp_master_address'.$num, 'tcp_master_address'.$num, "0~65519");
+  echo '</div>';
+
+  echo '<div id="tcp_page_protocol_bacnet'.$num.'" name="tcp_page_protocol_bacnet'.$num.'">';
+  exec("ip -o link show | awk -F': ' '{print $2}'", $interface_tmp);
+  sort($interface_tmp);
+  $interface_list = array();
+  foreach ($interface_tmp as $value) {
+      if ($value == 'eth1' || $value == 'docker0' ||  $value == 'lo' ||
+          strstr($value, 'veth') != NULL || strstr($value, '@NONE') != NULL || 
+          strstr($value, 'br-') != NULL)
+          continue;
+
+      $interface_list["$value"] = $value;
+  }
+  SelectControlCustom(_('Interface'), 'tcp_interface'.$num, $interface_list, $interface_list['eth0'], 'tcp_interface'.$num);
+  $collect_mode = array('poll'=>'poll', 'cov'=>'cov');
+  SelectControlCustom(_('Collect Mode'), 'tcp_collect_mode'.$num, $collect_mode, $collect_mode['poll'], 'tcp_collect_mode'.$num);
   echo '</div>';
 
   $count = $num - 1;
