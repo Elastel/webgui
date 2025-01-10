@@ -115,7 +115,7 @@
                         <div class="collapse navbar-collapse" id="navbar-collapse-vpn">
                             <ul class="nav navbar-nav navbar-right">
                                 <li class="nav-item" name="openvpn" id="remote_vpn_openvpn"> <a class="nav-link" href="openvpn"><?php echo _("OpenVPN"); ?></a></li>
-                                <?php if ($model != "EG324L" && $model != "EC212") : ?>
+                                <?php if(isBinExists("wg") && isBinExists("wg-quick")) : ?>
                                 <li class="nav-item" name="wireguard" id="remote_vpn_wireguard"> <a class="nav-link" href="wireguard"><?php echo _("WireGuard"); ?></a></li>
                                 <?php endif; ?>
                             </ul>

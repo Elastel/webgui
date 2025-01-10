@@ -8,6 +8,7 @@ require_once 'includes/config.php';
  */
 function DisplayWireGuardConfig()
 {
+    $model = getModel();
     $status = new StatusMessages();
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['savewgsettings']) || isset($_POST['applywgsettings'])){
@@ -30,13 +31,22 @@ function DisplayWireGuardConfig()
 
             if (isset($_POST['applywgsettings'])) {
                 $status->addMessage('Attempting to stop WireGuard', 'info');
-                exec('sudo /bin/systemctl stop wg-quick@wg0', $return);
-                exec('sudo /bin/systemctl disable wg-quick@wg0', $return);
+                if ($model != "EG324L" && $model != "EC212") {
+                    exec('sudo /bin/systemctl stop wg-quick@wg0', $return);
+                    exec('sudo /bin/systemctl disable wg-quick@wg0', $return);
+                } else {
+                    exec('sudo /etc/init.d/S80wireguard stop', $return);
+                }
+                
                 sleep(1);
                 if ($type != 'off') {
                     $status->addMessage('Attempting to start WireGuard', 'info');
-                    exec('sudo /bin/systemctl enable wg-quick@wg0', $return);
-                    exec('sudo /bin/systemctl start wg-quick@wg0', $return);
+                    if ($model != "EG324L" && $model != "EC212") {
+                        exec('sudo /bin/systemctl enable wg-quick@wg0', $return);
+                        exec('sudo /bin/systemctl start wg-quick@wg0', $return);
+                    } else {
+                        exec('sudo /etc/init.d/S80wireguard restart', $return);
+                    }
                 } else {
                     # remove selected conf + keys
                     system('sudo rm '. RASPI_WIREGUARD_PATH .'wg-server-private.key', $return);
@@ -93,7 +103,7 @@ function DisplayWireGuardConfig()
     }
 
     // fetch service status
-    exec('pidof wg-crypt-wg0 | wc -l', $wgstatus);
+    exec('pgrep -x wg-crypt-wg0 | wc -l', $wgstatus);
     $serviceStatus = $wgstatus[0] == 0 ? "down" : "up";
     $wg_state = ($wgstatus[0] > 0);
     $public_ip = get_public_ip();
