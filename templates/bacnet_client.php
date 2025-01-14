@@ -67,7 +67,7 @@
                 array("name"=>"Order",                "style"=>"", "descr"=>"", "ctl"=>"input"),
                 array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
                 array("name"=>"Belonged Interface",   "style"=>"", "descr"=>"", "ctl"=>"select"),
-                array("name"=>"Tag Name",          "style"=>"", "descr"=>"Multiple Tags Are Separated By Semicolon", "ctl"=>"input"),
+                array("name"=>"Tag Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
                 array("name"=>"Object Device ID",            "style"=>"", "descr"=>"", "ctl"=>"input"),
                 array("name"=>"Object Identifier",    "style"=>"", "descr"=>"", "ctl"=>"input"),
                 array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
@@ -106,7 +106,7 @@
       $interface_list = get_belonged_interface(ComProtoEnum::COM_PROTO_BACNET, TcpProtoEnum::TCP_PROTO_BACNET);
       SelectControlCustom(_('Belonged Interface'), $table_name.'.belonged_com', $interface_list, $interface_list[0], $table_name.'.belonged_com');
 
-      InputControlCustom(_('Tag Name'), $table_name.'.factor_name', $table_name.'.factor_name', _('Multiple Tags Are Separated By Semicolon'));
+      InputControlCustom(_('Tag Name'), $table_name.'.factor_name', $table_name.'.factor_name');
     ?>
 
     <div class="cbi-value">

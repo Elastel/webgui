@@ -180,8 +180,11 @@ fi
 sleep 1
 sync
 if [ $model != "EG324" -a $model != "EG324L" -a $model != "EC212" ]; then
-	echo -e "Start feed dog"
-	sudo /var/www/html/installers/feed_dog.sh &
+	echo -e "Start feed dog 0"
+	sudo /var/www/html/installers/feed_dog.sh 0 &
+else 
+        echo -e "Start feed dog 1"
+        sudo /var/www/html/installers/feed_dog.sh 1 & 
 fi
 
 sleep 1
@@ -195,10 +198,6 @@ sleep 1
 }
 
 sleep 1
-
-if [[ $model = "EG324" || $model = "EG324L" ||  $model = "EC212" ]]; then
-	echo V > /dev/watchdog
-fi
 
 app_array=("bacnet_router" "dct" "ddns" "edaemon" "failover" "firewall" \
         "gps" "lte" "macchina" "modbus_router" "terminal" "init-wifi")
