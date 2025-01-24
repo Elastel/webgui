@@ -239,6 +239,7 @@ function comProtocolChange(num) {
     $('#com_page_protocol_transparent' + numStr).hide();
     $('#com_page_protocol_dnp3' + numStr).hide();
     $('#com_page_protocol_bacnet' + numStr).hide();
+    $('#com_page_controller_model' + numStr).hide();
 
     if (selectedText == 'Transparent') {
         $('#com_page_protocol_transparent' + numStr).show();
@@ -246,6 +247,8 @@ function comProtocolChange(num) {
         $('#com_page_protocol_dnp3' + numStr).show();
     } else if (selectedText == 'BACnet/MSTP') {
         $('#com_page_protocol_bacnet' + numStr).show();
+    } else if (selectedText == 'Modbus2io') {
+        $('#com_page_controller_model' + numStr).show();
     } else {
         $('#com_page_protocol_modbus' + numStr).show();
     }

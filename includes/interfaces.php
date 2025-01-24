@@ -6,6 +6,7 @@ require_once 'config.php';
 function DisplayInterfaces()
 {   
     $model = getModel();
+    $target = getTarget();
     $status = new StatusMessages();
 
     if (!RASPI_MONITOR_ENABLED) {
@@ -19,7 +20,7 @@ function DisplayInterfaces()
         }
     }
 
-    echo renderTemplate('interfaces', compact('status', 'model'));
+    echo renderTemplate('interfaces', compact('status', 'model', 'target'));
 }
 /*
 exec("sudo /usr/local/bin/uci set dct.opcua.security_policy=" .$_POST['security_policy']);

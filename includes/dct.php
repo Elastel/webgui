@@ -8,6 +8,7 @@ abstract class ComProtoEnum {
   const COM_PROTO_ASCII = 4;
   const COM_PROTO_DNP3 = 5;
   const COM_PROTO_BACNET = 6;
+  const COM_PROTO_MODBUS2IO = 7;
 };
 
 abstract class TcpProtoEnum {
@@ -22,6 +23,70 @@ abstract class TcpProtoEnum {
   const TCP_PROTO_DNP3 = 8;
   const TCP_PROTO_BACNET = 9;
 };
+
+function get_io_maps()
+{
+  $model = getModel();
+  $channel_map = [];
+  $adc_index_count = 0;
+  $di_index_count = 0;
+  $do_index_count = 0;
+  $com_count = 4;
+
+  switch ($model) {
+      case "EG500":
+          $adc_index_count += 3;
+          $di_index_count += 6;
+          $do_index_count += 6;
+          $com_count = 2;
+          break;
+      case "EG410":
+          $di_index_count += 2;
+          $do_index_count += 2;
+          $com_count = 2;
+          break;
+  }
+
+  for ($i = 1; $i <= $com_count; $i++) {
+      exec("sudo uci get dct.com.proto$i", $tmp);
+      if ($tmp[0] == '7') {
+          unset($tmp);
+          exec("sudo uci get dct.com.controller_model$i", $tmp);
+          switch($tmp[0]) {
+              case '0':
+                  $channel_map[$i] .= 'DI' . $di_index_count++ . ';DI' . $di_index_count++;
+                  $channel_map[$i] .= ';DO' . $do_index_count++ . ';DO' . $do_index_count++;
+                  break;
+              case '1':
+                  $channel_map[$i] .= 'DI' . $di_index_count++ . ';DI' . $di_index_count++ . 
+                                      ';DI' . $di_index_count++ . ';DI' . $di_index_count++;
+                  $channel_map[$i] .= ';DO' . $do_index_count++ . ';DO' . $do_index_count++ . 
+                                      ';DO' . $do_index_count++. ';DO' . $do_index_count++;
+                  break;
+              case '2':
+                  $channel_map[$i] .= 'DI' . $di_index_count++ . ';DI' . $di_index_count++ . 
+                                      ';DI' . $di_index_count++ . ';DI' . $di_index_count++ . 
+                                      ';DI' . $di_index_count++ . ';DI' . $di_index_count++ . 
+                                      ';DI' . $di_index_count++ . ';DI' . $di_index_count++;
+                  $channel_map[$i] .= ';DO' . $do_index_count++ . ';DO' . $do_index_count++ . 
+                                      ';DO' . $do_index_count++. ';DO' . $do_index_count++ . 
+                                      ';DO' . $do_index_count++. ';DO' . $do_index_count++ . 
+                                      ';DO' . $do_index_count++. ';DO' . $do_index_count++;
+                  break;
+              case '3':
+                  $channel_map[$i] .= 'ADC' . $adc_index_count++ . ';ADC' . $adc_index_count++ .
+                                      ';ADC' . $adc_index_count++ . ';ADC' . $adc_index_count++ .
+                                      ';ADC' . $adc_index_count++ . ';ADC' . $adc_index_count++ .
+                                      ';ADC' . $adc_index_count++ . ';ADC' . $adc_index_count++;
+                  break;
+          }
+      }
+      unset($tmp);
+  }
+
+  echo $channel_map[0];
+  return $channel_map;
+}
 
 function get_belonged_interface($com_proto, $tcp_proto)
 {
@@ -119,7 +184,7 @@ function page_interface_com($num)
 
   InputControlCustom(_("Frame Interval"), 'com_frame_interval'.$num, 'com_frame_interval'.$num, _('ms'), 200);
 
-  $com_proto = array('Modbus', 'Transparent', 'FX', 'MC', 'ASCII', 'DNP3', 'BACnet/MSTP');
+  $com_proto = array('Modbus', 'Transparent', 'FX', 'MC', 'ASCII', 'DNP3', 'BACnet/MSTP', 'Modbus2io');
   SelectControlCustom(_('Protocol'), 'com_proto'.$num, $com_proto, $com_proto[0], 'com_proto'.$num, null, "comProtocolChange($num)");
 
   echo '<div id="com_page_protocol_modbus'.$num.'" name="com_page_protocol_modbus'.$num.'">';
@@ -141,6 +206,13 @@ function page_interface_com($num)
   InputControlCustom(_('Frames'), 'com_frames'.$num, 'com_frames'.$num, "1~127");
   $collect_mode = array('poll'=>'poll', 'cov'=>'cov');
   SelectControlCustom(_('Collect Mode'), 'com_collect_mode'.$num, $collect_mode, $collect_mode['poll'], 'com_collect_mode'.$num);
+  echo '</div>';
+
+  echo '<div id="com_page_controller_model'.$num.'" name="com_page_controller_model'.$num.'">';
+  $com_controller_model = array('EIO-2DIO', 'EIO-4DIO', 'EIO-8DIO', 'EIO-8AI');
+  SelectControlCustom(_('Controller Model'), 'com_controller_model'.$num, $com_controller_model, $com_controller_model[0], 'com_controller_model'.$num);
+  $channel_map = get_io_maps();
+  LabelControlCustom(_("Channel Map"), 'channel_map'.$num, 'channel_map'.$num, $channel_map[$num] != null ? $channel_map[$num] : '-');
   echo '</div>';
 
 echo '</div><!-- /.page_com -->
