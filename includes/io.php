@@ -32,7 +32,6 @@ function DisplayIO()
         }
     }
 
-    // 判断串口是否有有外接io设备的配置
     $adc_index_count = 0;
     $di_index_count = 0;
     $do_index_count = 0;
@@ -114,10 +113,7 @@ function saveDO($status)
 
 function saveIOConfig($status, $model)
 {
-    if ($model == "EG500") {
-        saveADC($status);
-    }
-
+    saveADC($status);
     saveDI($status);
     saveDO($status);
     

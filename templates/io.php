@@ -23,107 +23,109 @@
           <?php $status->showMessages(); ?>
           <form method="POST" action="io_conf" role="form">
             <?php echo CSRFTokenFieldTag();
-                if ($model == "EG500") { 
-                  $arrADC = array(
-                    array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"ADC Channel",          "style"=>"", "descr"=>"", "ctl"=>"select"),
-                    array("name"=>"Tag Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Capture Type",         "style"=>"", "descr"=>"", "ctl"=>"select"),
-                    array("name"=>"Range Down",           "style"=>"", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Range Up",             "style"=>"", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
-                    array("name"=>"Operator",             "style"=>"display:none", "descr"=>"0 + - * /", "ctl"=>"select"),
-                    array("name"=>"Operation Expression", "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Operand",              "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Accuracy",             "style"=>"display:none", "descr"=>"0~6", "ctl"=>"select"),
-                    array("name"=>"SMS&Email Reporting",  "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Report Type",          "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Alarm Up Limit",       "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Alarm Down Limit",     "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Phone Number",         "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Email",                "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Contents",             "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Enable",               "style"=>"", "descr"=>"", "ctl"=>"check"),
-                  );
+              if ($adc_index_count > 0) { 
+                $arrADC = array(
+                  array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
+                  array("name"=>"ADC Channel",          "style"=>"", "descr"=>"", "ctl"=>"select"),
+                  array("name"=>"Tag Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
+                  array("name"=>"Capture Type",         "style"=>"", "descr"=>"", "ctl"=>"select"),
+                  array("name"=>"Range Down",           "style"=>"", "descr"=>"", "ctl"=>"input"),
+                  array("name"=>"Range Up",             "style"=>"", "descr"=>"", "ctl"=>"input"),
+                  array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
+                  array("name"=>"Operator",             "style"=>"display:none", "descr"=>"0 + - * /", "ctl"=>"select"),
+                  array("name"=>"Operation Expression", "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
+                  array("name"=>"Operand",              "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
+                  array("name"=>"Accuracy",             "style"=>"display:none", "descr"=>"0~6", "ctl"=>"select"),
+                  array("name"=>"SMS&Email Reporting",  "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                  array("name"=>"Report Type",          "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                  array("name"=>"Alarm Up Limit",       "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                  array("name"=>"Alarm Down Limit",     "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                  array("name"=>"Phone Number",         "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                  array("name"=>"Email",                "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                  array("name"=>"Contents",             "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                  array("name"=>"Enable",               "style"=>"", "descr"=>"", "ctl"=>"check"),
+                );
             ?>
-                <div class="cbi-section cbi-tblsection" id="pageADC" name="pageADC">
-                  <input type="hidden" name="tableDataADC" value="" id="hidTD_adc">
-                  <input type="hidden" name="option_list_adc" value="" id="option_list_adc">
-                  <h4><?php echo _("ADC Setting"); ?></h4>
-                  <?php page_table_title('adc', $arrADC); ?>
-                  <div class="cbi-section-create">
-                    <input type="button" class="cbi-button-add" name="btnADC" value="ADD" onclick="addDataIO(this, 'io')">
-                    <?php conf_im_ex('ADC'); ?>
-                  </div>
+              <div class="cbi-section cbi-tblsection" id="pageADC" name="pageADC">
+                <input type="hidden" name="tableDataADC" value="" id="hidTD_adc">
+                <input type="hidden" name="option_list_adc" value="" id="option_list_adc">
+                <h4><?php echo _("ADC Setting"); ?></h4>
+                <?php page_table_title('adc', $arrADC); ?>
+                <div class="cbi-section-create">
+                  <input type="button" class="cbi-button-add" name="btnADC" value="ADD" onclick="addDataIO(this, 'io')">
+                  <?php conf_im_ex('ADC'); ?>
                 </div>
-              <?php } ?>
-
+              </div>
+            <?php } ?>
+            <?php
+            if ($di_index_count > 0) { 
+              $arrDI = array(
+                array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"DI Channel",           "style"=>"", "descr"=>"", "ctl"=>"select"),
+                array("name"=>"Tag Name",          "style"=>"", "descr"=>"Multiple Tags Are Separated By Semicolon", "ctl"=>"input"),
+                array("name"=>"Mode",                 "style"=>"", "descr"=>"", "ctl"=>"select"),
+                array("name"=>"Count Method",         "style"=>"", "descr"=>"", "ctl"=>"select"),
+                array("name"=>"Debounce Interval",    "style"=>"", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
+                array("name"=>"Operator",             "style"=>"display:none", "descr"=>"0 + - * /", "ctl"=>"select"),
+                array("name"=>"Operation Expression", "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"Operand",              "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"Accuracy",             "style"=>"display:none", "descr"=>"0~6", "ctl"=>"select"),
+                array("name"=>"SMS&Email Reporting",  "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                array("name"=>"Report Type",          "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                array("name"=>"Alarm Up Limit",       "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                array("name"=>"Alarm Down Limit",     "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                array("name"=>"Phone Number",         "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                array("name"=>"Email",                "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                array("name"=>"Contents",             "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                array("name"=>"Enable",               "style"=>"", "descr"=>"", "ctl"=>"check"),
+              );
+            ?>
               <div class="cbi-section cbi-tblsection" id="pageDI" name="pageDI">
                 <input type="hidden" name="tableDataDI" value="" id="hidTD_di">
                 <input type="hidden" name="option_list_di" value="" id="option_list_di">
                 <h4><?php echo _("DI Setting"); ?></h4>
-                <?php
-                  $arrDI = array(
-                    array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"DI Channel",           "style"=>"", "descr"=>"", "ctl"=>"select"),
-                    array("name"=>"Tag Name",          "style"=>"", "descr"=>"Multiple Tags Are Separated By Semicolon", "ctl"=>"input"),
-                    array("name"=>"Mode",                 "style"=>"", "descr"=>"", "ctl"=>"select"),
-                    array("name"=>"Count Method",         "style"=>"", "descr"=>"", "ctl"=>"select"),
-                    array("name"=>"Debounce Interval",    "style"=>"", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
-                    array("name"=>"Operator",             "style"=>"display:none", "descr"=>"0 + - * /", "ctl"=>"select"),
-                    array("name"=>"Operation Expression", "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Operand",              "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Accuracy",             "style"=>"display:none", "descr"=>"0~6", "ctl"=>"select"),
-                    array("name"=>"SMS&Email Reporting",  "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Report Type",          "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Alarm Up Limit",       "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Alarm Down Limit",     "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Phone Number",         "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Email",                "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Contents",             "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Enable",               "style"=>"", "descr"=>"", "ctl"=>"check"),
-                  );
-                  page_table_title('di', $arrDI);
-                ?>
+                <?php page_table_title('di', $arrDI);?>
                 <div class="cbi-section-create">
                   <input type="button" class="cbi-button-add" name="btnDI" value="ADD" onclick="addDataIO(this, 'io')">
                   <?php conf_im_ex('DI'); ?>
                 </div>
               </div>
-
+            <?php } ?>
+            <?php
+            if ($do_index_count > 0) { 
+              $arrDO = array(
+                array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"DO Channel",           "style"=>"", "descr"=>"", "ctl"=>"select"),
+                array("name"=>"Tag Name",          "style"=>"", "descr"=>"Multiple Tags Are Separated By Semicolon", "ctl"=>"input"),
+                array("name"=>"Init Status",          "style"=>"", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"Current Status",       "style"=>"", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
+                array("name"=>"Operator",             "style"=>"display:none", "descr"=>"0 + - * /", "ctl"=>"select"),
+                array("name"=>"Operation Expression", "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"Operand",              "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"Accuracy",             "style"=>"display:none", "descr"=>"0~6", "ctl"=>"select"),
+                array("name"=>"SMS&Email Reporting",  "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                array("name"=>"Report Type",          "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                array("name"=>"Alarm Up Limit",       "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                array("name"=>"Alarm Down Limit",     "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                array("name"=>"Phone Number",         "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                array("name"=>"Email",                "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                array("name"=>"Contents",             "style"=>"display:none", "descr"=>"", "ctl"=>""),
+                array("name"=>"Enable",               "style"=>"", "descr"=>"", "ctl"=>"check"),
+              );
+            ?>
               <div class="cbi-section cbi-tblsection" id="pageDO" name="pageDO">
                 <input type="hidden" name="tableDataDO" value="" id="hidTD_do">
                 <input type="hidden" name="option_list_do" value="" id="option_list_do">
                 <h4><?php echo _("DO Setting"); ?></h4>
-                <?php
-                  $arrDO = array(
-                    array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"DO Channel",           "style"=>"", "descr"=>"", "ctl"=>"select"),
-                    array("name"=>"Tag Name",          "style"=>"", "descr"=>"Multiple Tags Are Separated By Semicolon", "ctl"=>"input"),
-                    array("name"=>"Init Status",          "style"=>"", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Current Status",       "style"=>"", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
-                    array("name"=>"Operator",             "style"=>"display:none", "descr"=>"0 + - * /", "ctl"=>"select"),
-                    array("name"=>"Operation Expression", "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Operand",              "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
-                    array("name"=>"Accuracy",             "style"=>"display:none", "descr"=>"0~6", "ctl"=>"select"),
-                    array("name"=>"SMS&Email Reporting",  "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Report Type",          "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Alarm Up Limit",       "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Alarm Down Limit",     "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Phone Number",         "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Email",                "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Contents",             "style"=>"display:none", "descr"=>"", "ctl"=>""),
-                    array("name"=>"Enable",               "style"=>"", "descr"=>"", "ctl"=>"check"),
-                  );
-                  page_table_title('do', $arrDO);
-                ?>
+                <?php page_table_title('do', $arrDO); ?>
                 <div class="cbi-section-create">
                   <input type="button" class="cbi-button-add" name="btnDO" value="ADD" onclick="addDataIO(this, 'io')">
                   <?php conf_im_ex('DO'); ?>
                 </div>
               </div>
+            <?php } ?>
             <?php echo $buttons ?>
           </form>
       </div><!-- card-body -->

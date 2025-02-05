@@ -691,10 +691,7 @@ function loadADCConfig() {
         var tmpData = JSON.parse(jsonData[table_name]);
         var model = document.getElementById("model").value;
 
-        if (model == "EG500") {
-            addSectionTable(table_name, tmpData, option_list);
-        }
-
+        addSectionTable(table_name, tmpData, option_list);
         loadRealtimeData();
         $('#loading').hide();
     });

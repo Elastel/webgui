@@ -3,7 +3,7 @@
         <hr class="sidebar-divider my-0">
         <div class="row">
             <div class="col-xs ml-3 sidebar-brand-icon">
-            <img src="app/img/<?php echo ( ($target != null) ? "$hostname.php" : "elastel.php"); ?>" class="navbar-logo" width="200" height="50">
+            <img src="app/img/<?php echo ( ($target != null && $target != 'EC211') ? "$hostname.php" : "elastel.php"); ?>" class="navbar-logo" width="200" height="50">
             </div>
         </div>
         <li class="nav-item">
@@ -56,7 +56,7 @@
                             <?php if (isBinExists("baccli")) : ?>
                             <li class="nav-item" name="bacnet_client" id="dct_south_bacnet_client"><a class="nav-link" href="baccli_conf"><?php echo _("BACnet Rules"); ?></a></li>
                             <?php endif; ?>
-                            <?php if ($model == "EG500" || $model == "EG410") : ?>
+                            <?php if (isIoExistts()) : ?>
                             <li class="nav-item" name="io" id="dct_south_io"><a class="nav-link" href="io_conf"><?php echo _("IO"); ?></a></li>
                             <?php endif; ?>
                         </ul>
@@ -164,7 +164,7 @@
             </ul>
             </div>
         </li>
-        <?php if ($target == null) : ?>
+        <?php if ($target == null || $target == 'EC211') : ?>
         <li class="nav-item">
             <a class="nav-link" href="about"><i class="fas fa-info-circle fa-fw mr-2"></i><span class="nav-label"><?php echo _("About Elastel"); ?></a>
         </li>

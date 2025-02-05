@@ -832,6 +832,68 @@ function isBinExists($name)
     }
 }
 
+function isIoExistts()
+{
+    $model = getModel();
+    $adc_index_count = 0;
+    $di_index_count = 0;
+    $do_index_count = 0;
+    $com_count = 4;
+
+    switch ($model) {
+        case "EG500":
+            $adc_index_count += 3;
+            $di_index_count += 6;
+            $do_index_count += 6;
+            $com_count = 2;
+            break;
+        case "EG410":
+            $di_index_count += 2;
+            $do_index_count += 2;
+            $com_count = 2;
+            break;
+    }
+
+    for ($i = 1; $i <= $com_count; $i++) {
+        unset($enabled);
+        exec("sudo uci get dct.com.enabled$i", $enabled);
+        if ($enabled[0] != '1') {
+            continue;
+        }
+        exec("sudo uci get dct.com.proto$i", $com_proto);
+        if ($com_proto[0] == '7') {
+            exec("sudo uci get dct.com.controller_model$i", $controller_model);
+
+            switch($controller_model[0]) {
+                case '0':
+                    $di_index_count += 2;
+                    $do_index_count += 2;
+                    break;
+                case '1':
+                    $di_index_count += 4;
+                    $do_index_count += 4;
+                    break;
+                case '2':
+                    $di_index_count += 8;
+                    $do_index_count += 8;
+                    break;
+                case '3':
+                    $adc_index_count += 8;
+                    break;
+            }
+         }
+
+        unset($com_proto);
+        unset($controller_model);
+    }
+
+    if ($adc_index_count > 0 || $di_index_count > 0 || $do_index_count > 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function getBetweenStrings($src, $string)
 {
     $tmp = strstr($src, $string);
