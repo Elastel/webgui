@@ -16,6 +16,12 @@ if ($type == 'datadisplay') {
     }  else {
         echo "{}";
     }
+} else if ($type == 'tag_write') {
+    $tagName = $_GET['tagName'];
+    $value = $_GET['value'];
+    $cmd = "sudo /usr/sbin/tag_writer '{\"$tagName\": $value}'";
+    exec($cmd, $dctdata);
+    echo $dctdata[0];
 } else if (strstr($type, 'download')) {
     $arr = explode("_", $type);
     exec('sudo conf_im_ex export ' . $arr[1]);

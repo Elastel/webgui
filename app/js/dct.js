@@ -13,9 +13,105 @@ function doesColumnExist(tableId, columnName) {
     return false;
 }
 
+function writeValueByTag(object) {
+    var tds = $(object).parent().parent().find("td");
+    var tagName = tds.filter('[name="factor_name"]').text();
+
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    overlay.style.zIndex = '999';
+
+    const popup = document.createElement('div');
+    popup.style.position = 'fixed';
+    popup.style.top = '30%';
+    popup.style.left = '50%';
+    popup.style.backgroundColor = 'white';
+    popup.style.padding = '10px';
+    popup.style.border = '1px solid #ccc';
+    popup.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+    popup.style.zIndex = '1000';
+
+    const container = document.createElement("div");
+    container.style.display = "flex";
+    container.style.alignItems = "center";
+    container.style.gap = "10px";
+
+    const label = document.createElement('label');
+    label.textContent = tagName + ':';
+    label.style.display = 'block';
+    label.style.marginBottom = '10px';
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.style.display = 'block';
+    input.style.marginBottom = '10px';
+    input.style.width = '60%';
+    input.style.padding = '5px';
+
+    const writeButton = document.createElement('button');
+    writeButton.textContent = 'Write';
+    writeButton.style.display = 'block';
+    writeButton.style.marginTop = '-10px';
+    writeButton.style.padding = '5px 10px';
+    writeButton.style.backgroundColor = '#007BFF';
+    writeButton.style.color = 'white';
+    writeButton.style.border = 'none';
+    writeButton.style.cursor = 'pointer';
+
+    const container_close = document.createElement("div");
+    container_close.style.display = "flex";
+    container_close.style.justifyContent = "flex-end";
+    container_close.style.width = "100%";
+
+    const closeButton = document.createElement('button');
+    closeButton.textContent = 'X';
+    closeButton.style.display = 'block';
+    closeButton.style.marginBottom = '30px';
+    closeButton.style.backgroundColor = 'red';
+    closeButton.style.color = 'white';
+    closeButton.style.border = 'none';
+    closeButton.style.cursor = 'pointer';
+
+    container.appendChild(label);
+    container.appendChild(input);
+    container.appendChild(writeButton);
+
+    container_close.appendChild(closeButton);
+
+    popup.appendChild(container_close);
+    popup.appendChild(container);
+
+    document.body.appendChild(popup);
+    document.body.appendChild(overlay);
+
+    closeButton.addEventListener('click', () => {
+        popup.style.display = 'none';
+        overlay.style.display = 'none';
+    });
+
+    writeButton.addEventListener('click', () => {
+        let params = 'tagName=' + tagName + '&' + 'value=' + input.value
+        if (input.value.length > 0) {
+            $.get('ajax/dct/get_dctcfg.php?type=tag_write&' + params, function(data) {}); 
+        } else {
+            alert("The input cannot be empty!");
+        }
+        
+    });
+}
+
 function insertColumn(tableId, name, headerName, newHeaderName) {
     if (doesColumnExist(tableId, newHeaderName))
         return;
+
+    if (tableId == 'table_adc' || tableId == 'table_di') {
+        return;
+    }
 
     var table = document.getElementById(tableId);
     var rows = table.getElementsByTagName('tr');
@@ -39,7 +135,21 @@ function insertColumn(tableId, name, headerName, newHeaderName) {
         td.style.fontWeight = "bold";
         td.style.color = "blue";
         td.style.textAlign = 'center';
-        td.innerHTML = '-';
+        if (newHeaderName == 'Write Value') {
+            let button = document.createElement("button");
+            button.textContent = "Write";
+            button.classList.add("btn-primary");
+            button.style = "border-radius: 0.5rem;";
+            button.addEventListener("click", function (event) {
+                event.preventDefault();
+                writeValueByTag(this);
+            });
+
+            td.appendChild(button);
+        } else {
+            td.innerHTML = '-';
+        }
+        
 
         if (row.getElementsByTagName('th').length > 0) {
             var th = document.createElement('th');
@@ -514,6 +624,7 @@ function addSectionTable(table_name, jsonData, option_list) {
     }
 
     insertColumn("table_" + table_name, 'cur_value', 'Tag Name', 'Current Value');
+    insertColumn("table_" + table_name, 'write_value', 'Current Value', 'Write Value');
 
     var result = get_table_data(table_name, option_list);
     var json_data = JSON.stringify(result);
@@ -1560,6 +1671,7 @@ function saveData(table_name) {
     var table = document.getElementById("table_" + table_name);
     if (page_type == "0") {
         deleteColumnByHeader("table_" + table_name, 'Current Value');
+        deleteColumnByHeader("table_" + table_name, 'Write Value');
         var contents = '';
         contents += '<tr  class="tr cbi-section-table-descr">\n';
         option_list.forEach(function(option){
@@ -1582,6 +1694,7 @@ function saveData(table_name) {
         table.innerHTML += contents;
 
         insertColumn("table_" + table_name, 'cur_value', 'Tag Name', 'Current Value');
+        insertColumn("table_" + table_name, 'write_value', 'Current Value', 'Write Value');
     } else {
         var num = 0;
         option_list.forEach(function (option){
