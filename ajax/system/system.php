@@ -34,6 +34,23 @@ if ($type == "node_online_update") {
 } else if ($type == "reset_configs") {
     exec('cd /var/www/html; sudo git checkout *');
     exec('sudo /var/www/html/update reset 2>&1');
+} else if ($type == "download_backup") {
+    unlink("/tmp/backup.tar.gz");
+    exec('sudo /var/www/html/installers/backup.sh');
+    exec('cat /tmp/backup.tar.gz', $data);
+    echo implode(PHP_EOL, $data);
+} else if ($type == "action_backup") {
+    $file = "/tmp/backup.tar.gz";
+    if (file_exists($file)) {
+        exec("sudo tar -xzvf /tmp/backup.tar.gz -C /; sudo sync");
+        $data = ['success' => true, 'message' => 'Configuration restored successfully'];
+        sleep(5);
+        exec("sudo reboot");
+    } else {
+        $data = ['success' => false, 'message' => 'File does not exist'];
+    }
 }
 
-echo json_encode($data);
+if ($type != "download_backup") {
+    echo json_encode($data);
+}

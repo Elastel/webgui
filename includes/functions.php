@@ -1057,6 +1057,9 @@ function handlePageActions($extraFooterScripts, $page, $config)
         case "/modbus_router":
             DisplayModbusRouter();
             break;
+        case "/backup_restore":
+            DisplayBackupRestore();
+            break;
         case "/backup_update":
             DisplayBackupUpdate();
             break;

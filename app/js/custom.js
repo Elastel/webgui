@@ -1535,3 +1535,37 @@ $(document).ready(function(){
         itemChange(id);
     });
 });
+
+function downloadBackup() {
+    fetch("ajax/system/system.php?type=download_backup")
+    .then(response => response.blob())
+    .then(blob => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = ('0' + (now.getMonth() + 1)).slice(-2);
+        const day = ('0' + now.getDate()).slice(-2);
+        const hours = ('0' + now.getHours()).slice(-2);
+        const minutes = ('0' + now.getMinutes()).slice(-2);
+        const formattedTime = year + month + day + hours + minutes;
+        link.download = 'backup-elastpro-' + formattedTime + '.tar.gz';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    })
+    .catch(error => console.error("Fail to download:", error));
+}
+
+function actionBackupFile() {
+    $('#hostapdModal').modal('show'); 
+    fetch("ajax/system/system.php?type=action_backup")
+    
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            alert(data.message);
+        }
+    })
+    .catch(error => console.error("Fail to action:", error));
+}
