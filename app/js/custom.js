@@ -726,7 +726,7 @@ function loadInterfaceDHCPSelect() {
         $('#txtdns1').val(jsonData.DNS1);
         $('#txtdns2').val(jsonData.DNS2);
         $('#cbxrangeleasetimeunits').val(jsonData.leaseTimeInterval);
-        $('#no-resolv')[0].checked = jsonData.upstreamServersEnabled;
+        // $('#no-resolv')[0].checked = jsonData.upstreamServersEnabled;
         $('#cbxdhcpupstreamserver').val(jsonData.upstreamServers[0]);
         $('#txtmetric').val(jsonData.Metric);
 
