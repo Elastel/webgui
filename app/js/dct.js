@@ -109,7 +109,8 @@ function insertColumn(tableId, name, headerName, newHeaderName) {
     if (doesColumnExist(tableId, newHeaderName))
         return;
 
-    if (tableId == 'table_adc' || tableId == 'table_di') {
+    if (tableId == 'table_adc' || tableId == 'table_di' || tableId == 'table_modbus_slave_point' || 
+        tableId == 'table_dnp3') {
         return;
     }
 
