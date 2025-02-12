@@ -9,6 +9,7 @@ abstract class ComProtoEnum {
   const COM_PROTO_DNP3 = 5;
   const COM_PROTO_BACNET = 6;
   const COM_PROTO_MODBUS2IO = 7;
+  const COM_PROTO_MODBUS_ASCII = 8;
 };
 
 abstract class TcpProtoEnum {
@@ -90,6 +91,7 @@ function get_io_maps()
 
 function get_belonged_interface($com_proto, $tcp_proto)
 {
+  $found = false;
   $option_list = array();
   $i = 0;
   exec("sudo uci get dct.com.enabled1", $com1_enable);
@@ -114,43 +116,48 @@ function get_belonged_interface($com_proto, $tcp_proto)
   exec("sudo uci get dct.tcp_server.proto4", $tcp4_proto);
   exec("sudo uci get dct.tcp_server.proto5", $tcp5_proto);
 
-  if ($com1_enable[0] == "1" && $com1_proto[0] == $com_proto) {
+  if ($com1_enable[0] == "1" && 
+      ($com1_proto[0] == $com_proto || $com1_proto[0] + $com_proto == ComProtoEnum::COM_PROTO_MODBUS_ASCII )) {
     $option_list["COM1"] = "COM1";
+    $found = true;
   }
-  if ($com2_enable[0] == "1" && $com2_proto[0] == $com_proto) {
+  if ($com2_enable[0] == "1" && 
+      ($com2_proto[0] == $com_proto || $com2_proto[0] + $com_proto == ComProtoEnum::COM_PROTO_MODBUS_ASCII )) {
     $option_list["COM2"] = "COM2";
+    $found = true;
   }
-  if ($com3_enable[0] == "1" && $com3_proto[0] == $com_proto) {
+  if ($com3_enable[0] == "1" && 
+      ($com3_proto[0] == $com_proto || $com3_proto[0] + $com_proto == ComProtoEnum::COM_PROTO_MODBUS_ASCII )) {
     $option_list["COM3"] = "COM3";
+    $found = true;
   }
-  if ($com4_enable[0] == "1" && $com4_proto[0] == $com_proto) {
+  if ($com4_enable[0] == "1" && 
+      ($com4_proto[0] == $com_proto || $com4_proto[0] + $com_proto == ComProtoEnum::COM_PROTO_MODBUS_ASCII )) {
     $option_list["COM4"] = "COM4";
+    $found = true;
   }  
   if ($tcp1_enable[0] == "1" && $tcp1_proto[0] == $tcp_proto) {
     $option_list["TCP1"] = "Network Node1";
+    $found = true;
   }
   if ($tcp2_enable[0] == "1" && $tcp2_proto[0] == $tcp_proto) {
     $option_list["TCP2"] = "Network Node2";
+    $found = true;
   }
   if ($tcp3_enable[0] == "1" && $tcp3_proto[0] == $tcp_proto) {
     $option_list["TCP3"] = "Network Node3";
+    $found = true;
   }
   if ($tcp4_enable[0] == "1" && $tcp4_proto[0] == $tcp_proto) {
     $option_list["TCP4"] = "Network Node4";
+    $found = true;
   }
   if ($tcp5_enable[0] == "1" && $tcp5_proto[0] == $tcp_proto) {
     $option_list["TCP5"] = "Network Node5";
+    $found = true;
   }
 
-  if (($com1_enable[0] == null || $com1_enable[0]  == "0"  || $com1_proto[0] != $com_proto) &&
-    ($com2_enable[0] == null || $com2_enable[0]  == "0" || $com2_proto[0] != $com_proto) &&
-    ($com3_enable[0] == null || $com3_enable[0]  == "0" || $com3_proto[0] != $com_proto) &&
-    ($com4_enable[0] == null || $com4_enable[0]  == "0" || $com4_proto[0] != $com_proto) &&
-    ($tcp1_enable[0] == null || $tcp1_enable[0]  == "0" || $tcp1_proto[0] != $tcp_proto) &&
-    ($tcp2_enable[0] == null || $tcp2_enable[0]  == "0" || $tcp2_proto[0] != $tcp_proto) &&
-    ($tcp3_enable[0] == null || $tcp3_enable[0]  == "0" || $tcp3_proto[0] != $tcp_proto) &&
-    ($tcp4_enable[0] == null || $tcp4_enable[0]  == "0" || $tcp4_proto[0] != $tcp_proto) &&
-    ($tcp5_enable[0] == null || $tcp5_enable[0]  == "0" || $tcp5_proto[0] != $tcp_proto)) {
+  if ($found == false) {
       $option_list["No Interface Is Enabled"] = _("No Interface Is Enabled");
   }
   
@@ -184,7 +191,7 @@ function page_interface_com($num)
 
   InputControlCustom(_("Frame Interval"), 'com_frame_interval'.$num, 'com_frame_interval'.$num, _('ms'), 200);
 
-  $com_proto = array('Modbus', 'Transparent', 'FX', 'MC', 'ASCII', 'DNP3', 'BACnet/MSTP', 'Modbus2io');
+  $com_proto = array('Modbus RTU', 'Transparent', 'FX', 'MC', 'ASCII', 'DNP3', 'BACnet/MSTP', 'Modbus2io', 'Modbus ASCII');
   SelectControlCustom(_('Protocol'), 'com_proto'.$num, $com_proto, $com_proto[0], 'com_proto'.$num, null, "comProtocolChange($num)");
 
   echo '<div id="com_page_protocol_modbus'.$num.'" name="com_page_protocol_modbus'.$num.'">';
@@ -238,7 +245,7 @@ function page_interface_tcp($num)
 
   InputControlCustom(_("Frame Interval"), 'tcp_frame_interval'.$num, 'tcp_frame_interval'.$num, _('ms'), 200);
 
-  $tcp_proto = array('Modbus', 'Transparent', 'S7', 'FX', 'MC', 'ASCII', 'IEC104', 'OPCUA', 'DNP3', 'BACnet/IP');
+  $tcp_proto = array('Modbus TCP', 'Transparent', 'S7', 'FX', 'MC', 'ASCII', 'IEC104', 'OPCUA', 'DNP3', 'BACnet/IP');
   SelectControlCustom(_('Protocol'), 'tcp_proto'.$num, $tcp_proto, $tcp_proto[0], 'tcp_proto'.$num, null, "tcpProtocolChange($num)");
 
   echo '<div id="tcp_page_protocol_modbus'.$num.'" name="tcp_page_protocol_modbus'.$num.'">';
