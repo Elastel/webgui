@@ -77,12 +77,16 @@ function DisplayNetworkingConfig()
     }
 
     $wired_interface = ['eth0'];
-    $lte_interface = ['wwan0'];
+    $lte_interface = '';
     $lte_enabled = 0;
     exec('ls /sys/class/net | grep -v lo', $interfaces);
     foreach( $interfaces as $k=>$v) {
         if($v == 'wwan0') {
             $lte_enabled = 1;
+            $lte_interface = ['wwan0'];
+        } else if ($v == 'usb0') {
+            $lte_enabled = 1;
+            $lte_interface = ['usb0'];
         }
     }
 
