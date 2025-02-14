@@ -37,8 +37,22 @@ if ($type == "node_online_update") {
 } else if ($type == "download_backup") {
     unlink("/tmp/backup.tar.gz");
     exec('sudo /var/www/html/installers/backup.sh');
-    exec('cat /tmp/backup.tar.gz', $data);
-    echo implode(PHP_EOL, $data);
+    $file_path = '/tmp/backup.tar.gz';
+
+    if (file_exists($file_path)) {
+        $file_name = basename($file_path);
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename="' . $file_name . '"');
+        header('Content-Length: ' . filesize($file_path));
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        ob_clean();
+        flush();
+        readfile($file_path);
+    }
 } else if ($type == "action_backup") {
     $file = "/tmp/backup.tar.gz";
     if (file_exists($file)) {

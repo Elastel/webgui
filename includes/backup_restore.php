@@ -43,7 +43,35 @@ function save_upload_file($file) {
 
 function DisplayBackupRestore()
 {
+    // checkBox name, filename
+    $checkBoxList = [
+        "wan_lan"           => ["WAN&LAN", "/etc/config/network;/etc/dhcpcd.conf;/etc/dnsmasq.d/090_br0.conf", "0"],
+        "wifi_ap"           => ["WiFi AP", "/etc/hostapd/hostapd.conf", "0"],
+        "wifi_client"       => ["WiFi Client", "/etc/wpa_supplicant/wpa_supplicant.conf", "0"],
+        "data_collect"      => ["Data Collect", "/etc/config/dct", "0"],
+        "bacnet_router"     => ["BACnet Router", "/etc/config/bacnet_router", "0"],
+        "modbus_router"     => ["Modbus Rouoter", "/etc/config/modbus_router", "0"]
+    ];
+
+    $paths = [];
     if (isset($_POST['saveBackupList'])) {
+        foreach ($checkBoxList as $key => &$value) {
+            $value[2] = $_POST[$key] == '1' ? '1' : '0';
+            if ($value[2] == 1) {
+                $splitPaths = explode(";", $value[1]);
+
+                foreach ($splitPaths as $path) {
+                    $paths[] = $path;
+                }
+            }
+        }
+
+        exec("sudo echo '' > /etc/checkbox_backup.list");
+        $filePath = '/tmp/checkbox_backup.list';
+        if (file_put_contents($filePath, implode(PHP_EOL, $paths) . PHP_EOL)) {
+            exec("sudo mv $filePath /etc/checkbox_backup.list");
+        }
+
         $newBackupList = $_POST['backup_list'];
         if (strlen($newBackupList) > 0) {
             $file = '/tmp/backup.list';
@@ -51,6 +79,8 @@ function DisplayBackupRestore()
             if (file_put_contents($file, $unixText)) {
                 exec("sudo mv $file /etc/backup.list");
             }
+        } else {
+            exec("sudo echo '' > /etc/backup.list");
         }
     }
 
@@ -76,7 +106,15 @@ function DisplayBackupRestore()
     }
 
     $backupList = file_get_contents("/etc/backup.list");
+    $checkboxBackupList = file_get_contents("/etc/checkbox_backup.list");
 
-    echo renderTemplate("backup_restore", compact('backupList', 'upload_backup_list'));
+    foreach ($checkBoxList as $key => &$value) {
+        $splitPaths = explode(";", $value[1]);
+        if (strpos($checkboxBackupList, $splitPaths[0]) !== false) {
+            $value[2] = '1';
+        }
+    }
+
+    echo renderTemplate("backup_restore", compact('backupList', 'upload_backup_list', 'checkBoxList'));
 }
 
