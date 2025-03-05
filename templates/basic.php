@@ -38,15 +38,12 @@
             InputControlCustom(_('Cache Days'), 'cache_day', 'cache_day', _('Days'));
             echo '</div>';
 
-            CheckboxControlCustom(_('Send Minute Data'), 'minute_enabled', 'minute_enabled', null, null, 'enableMinuteData(this)');
-
-            echo '<div id="page_minute_data" name="page_minute_data">';
-            InputControlCustom(_('Minute Data Period'), 'minute_period', 'minute_period', _('Minutes'));
-            echo '</div>';
-
-            CheckboxControlCustom(_('Send Hour Data'), 'hour_enabled', 'hour_enabled');
-
-            CheckboxControlCustom(_('Send Day Data'), 'day_enabled', 'day_enabled');
+            // CheckboxControlCustom(_('Send Minute Data'), 'minute_enabled', 'minute_enabled', null, null, 'enableMinuteData(this)');
+            // echo '<div id="page_minute_data" name="page_minute_data">';
+            // InputControlCustom(_('Minute Data Period'), 'minute_period', 'minute_period', _('Minutes'));
+            // echo '</div>';
+            // CheckboxControlCustom(_('Send Hour Data'), 'hour_enabled', 'hour_enabled');
+            // CheckboxControlCustom(_('Send Day Data'), 'day_enabled', 'day_enabled');
 
             echo '</div>';
             echo '</div>';
