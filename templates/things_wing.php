@@ -31,7 +31,7 @@
                             <div class="col-xs-3">
                                 <?php 
                                 if ($enable) {
-                                  echo _(($run_status[0] != null) ? "<font color=\"green\">Runing</font>" : "<font color=\"red\">Stop</font>");
+                                  echo _(($run_status[0] != null) ? "<font color=\"green\">Running</font>" : "<font color=\"red\">Stop</font>");
                                 } else {
                                   echo _("<font color=\"red\">Uninstall</font>");
                                   echo _("&nbsp;&nbsp;<input class=\"btn btn-success\" type=\"submit\" value=\"Install\" name=\"install\" 

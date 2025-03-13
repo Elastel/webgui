@@ -64,7 +64,7 @@
                     <div class="cbi-value">
                         <label class="cbi-value-title"><?php echo _("Status:"); ?></label>
                         <label class="info-label" id="run_status" name="run_status">
-                          <?php echo _(($run_status[0] != null) ? "<font color=\"green\">Runing</font>" : "<font color=\"red\">Stop</font>"); ?>
+                          <?php echo _(($run_status[0] != null) ? "<font color=\"green\">Running</font>" : "<font color=\"red\">Stop</font>"); ?>
                         </label>
                     </div>
 

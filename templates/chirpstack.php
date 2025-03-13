@@ -23,7 +23,7 @@
                         <div class="row mb-1">
                             <div class="col-xs-3" style="color: #858796; width: 10rem"><?php echo _("Status:"); ?></div>
                             <div class="col-xs-3">
-                                <?php echo _(($run_status[0] != null) ? "<font color=\"green\">Runing</font>" : "<font color=\"red\">Stop</font>"); ?>
+                                <?php echo _(($run_status[0] != null) ? "<font color=\"green\">Running</font>" : "<font color=\"red\">Stop</font>"); ?>
                             </div>
                         </div>
                         <div class="row mb-1" style="margin-bottom: 1rem !important;">
