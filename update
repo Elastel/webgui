@@ -31,6 +31,20 @@ install_package_if_needed() {
     fi
 }
 
+iotedge_package_check() {
+    if ! type "iotedge" >/dev/null 2>&1; then
+        echo "iotedge is NOT installed!"
+        if [ $model == "EG500" -o $model == "EG410" -o $model == "ElastBox400" ]; then
+                curl https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb > /tmp/packages-microsoft-prod.deb
+                sudo apt install /tmp/packages-microsoft-prod.deb
+                sudo apt-get install moby-engine -y
+                sudo apt-get install aziot-edge -y
+        else
+                ehco "Not support iotedge";
+        fi
+    fi
+}
+
 if [ $model == "EG500" -o $model == "EG410" -o $model == "ElastBox400" ]; then
 #check openvpn
         install_package_if_needed "openvpn" "openvpn"
@@ -42,6 +56,8 @@ if [ $model == "EG500" -o $model == "EG410" -o $model == "ElastBox400" ]; then
         sleep 1
         sudo systemctl disable nftables.service
 fi
+
+iotedge_package_check
 
 if [ $model != "EG324L" -a $model != "EC212" ]; then
         #check msmtp
@@ -200,7 +216,8 @@ sleep 1
 sleep 1
 
 app_array=("bacnet_router" "dct" "ddns" "edaemon" "failover" "firewall" \
-        "gps" "lte" "macchina" "modbus_router" "terminal" "init-wifi")
+        "gps" "lte" "macchina" "modbus_router" "terminal" "init-wifi" \
+        "iotedge")
 
 for item in "${app_array[@]}"; do
         sudo /etc/init.d/$item stop

@@ -45,6 +45,28 @@ if ($type == "gps") {
 
     exec('sudo systemctl restart chirpstack.service');
     exec('sudo systemctl restart chirpstack-gateway-bridge.service');
+} else if ($type == "iotedge") {
+    $iotedge_option = [
+        'enabled',
+        'source',
+        'connection_string',
+        'iothub_hostname',
+        'device_id',
+        'global_endpoint',
+        'id_scope',
+        'attestion_method',
+        'registration_id',
+        'symmetric_key',
+        'certificate',
+        'private_key'
+    ];
+
+    foreach ($iotedge_option as $option) {
+        $command = "uci get iotedge.iotedge.$option 2>/dev/null";
+        $value = shell_exec($command);
+        $value = trim($value);
+        $servicedata[$option] = $value;
+    }
 }
 
 echo json_encode($servicedata);

@@ -124,7 +124,7 @@
                 </ul>
             </div>
         </li>
-        <?php if(isBinExists("node-red") || isBinExists("dockerd") || isBinExists("chirpstack")) : ?>
+        <?php if(isBinExists("node-red") || isBinExists("dockerd") || isBinExists("chirpstack") || isBinExists("iotedge")) : ?>
             <li class="nav-item" id="page_services">
                 <a class="nav-link navbar-toggle collapsed" id="services" href="#" data-toggle="collapse" data-target="#navbar-collapse-services">
                     <i class="fas fa-cube fa-fw mr-2"></i>
@@ -140,6 +140,9 @@
                     <?php endif; ?>
                     <?php if(isBinExists("chirpstack")) : ?>
                     <li class="nav-item" name="chirpstack" id="services_chirpstack"> <a class="nav-link" href="chirpstack"><?php echo _("ChirpStack"); ?></a></li>
+                    <?php endif; ?>
+                    <?php if(isBinExists("iotedge")) : ?>
+                    <li class="nav-item" name="iotedge" id="services_iotedge"> <a class="nav-link" href="iotedge"><?php echo _("Azure IoT Edge"); ?></a></li>
                     <?php endif; ?>
                 </ul>
                 </div>

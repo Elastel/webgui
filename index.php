@@ -85,6 +85,7 @@ require_once 'includes/includes.php';
     <script src="app/js/dct.js?version=1.0.3"></script>
     <script src="app/js/custom.js?version=1.0.4"></script>
     <script src="app/js/system.js?version=1.0.0"></script>
+    <script src="app/js/services.js?version=1.0.0"></script>
 
     <?php loadFooterScripts($extraFooterScripts); ?>
   </body>

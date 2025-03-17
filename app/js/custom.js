@@ -250,6 +250,9 @@ function contentLoaded() {
         case "firewall_conf":
             loadFirewall();
             break;
+        case "iotedge":
+            loadIotedge();
+            break;
     }
 }
 
@@ -1458,13 +1461,6 @@ function downloadFile(conf_name) {
     }
     req.send();
 }
-
-$('#chirpstack_region').change(function(){
-    $('#loading').show();
-    $.get('ajax/service/get_service.php?type=chirpstack&region=' + $('#chirpstack_region').val(),function() {
-        $('#loading').hide();
-    }) 
-})
 
 $(document).ready(function(){
     $('.sidebar li a').each(function(){

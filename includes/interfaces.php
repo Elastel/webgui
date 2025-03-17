@@ -215,7 +215,7 @@ function saveTcpConfig($status)
 
                 if (strlen($_FILES['private_key' . $i]['name']) > 0) {
                     if (is_uploaded_file($_FILES['private_key' . $i]['tmp_name'])) {
-                        saveFileUpload($status, $_FILES['private_key' . $i]); 
+                        saveFileUploadInterface($status, $_FILES['private_key' . $i], $i); 
                     }
     
                     $keyName = $_FILES['private_key' . $i]['name'];

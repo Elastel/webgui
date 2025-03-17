@@ -1063,6 +1063,9 @@ function handlePageActions($extraFooterScripts, $page, $config)
         case "/backup_update":
             DisplayBackupUpdate();
             break;
+        case "/iotedge":
+            DisplayIotedge();
+            break;
         default:
             DisplayDashboard($extraFooterScripts);
     }
