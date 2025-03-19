@@ -64,7 +64,7 @@ function DisplayIotedge()
                     ];
                 }
 
-                if (count($lines) <= 1) {
+                if (count($lines) <= 1 || strstr($lines[0], 'NAME') == false) {
                     saveIotedgeList();
                 }
             } else {
@@ -88,12 +88,11 @@ function DisplayIotedge()
 
 function saveIotedgeList()
 {
-    $cmd_check = 'pgrep -f "iotedge list" > /dev/null';
+    $cmd_check = 'sudo pgrep -x iotedge';
     $output = shell_exec($cmd_check);
-
     if (empty($output)) {
-        $cmd_iotedge_list = 'sudo rm -f /tmp/iotedgelist && sudo iotedge list | sudo tee /tmp/iotedgelist &';
-        shell_exec($cmd_iotedge_list);
+        exec('sudo rm -f /tmp/iotedgelist');
+        exec('nohup sudo iotedge list | sudo tee /tmp/iotedgelist >/dev/null 2>&1 &');
     }
 }
 
