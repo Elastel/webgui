@@ -69,11 +69,14 @@ function DisplayThingsWing()
             }
         }
     } else if (isset($_POST['install'])) {
-        if ($model == 'EG500' || $model == 'EG410' || $model == 'ElastBox400')
+        if ($model == 'EG500' || $model == 'ElastBox400')
             exec('curl -L https://storage.thingswing.com/package/install_eg500.sh | sudo bash -s', $return);
-        else if ($model == 'EG324' || $model == 'EG324L') {
-            exec('curl -L https://storage.thingswing.com/package/install_' . strtolower($model) . '.sh | sudo bash -s', $return);
-        }
+        else if ($model == 'EG410')
+            exec('curl -L https://storage.thingswing.com/package/install_eg410.sh | sudo bash -s', $return);
+        else if ($model == 'EG324')
+            exec('curl -L https://storage.thingswing.com/package/install_eg324.sh | sudo bash -s', $return);
+        else if ($model == 'EG324L')
+            exec('curl -L https://storage.thingswing.com/package/install_eg324l_merge.sh | sudo bash -s', $return);
 
         if (strstr(end($return), "success")) {
             $status->addMessage("ThingsWing installed successfully", 'info');
