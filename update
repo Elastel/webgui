@@ -40,7 +40,7 @@ iotedge_package_check() {
                 sudo apt-get install moby-engine -y
                 sudo apt-get install aziot-edge -y
         else
-                ehco "Not support iotedge";
+                echo "Not support iotedge";
         fi
     fi
 }

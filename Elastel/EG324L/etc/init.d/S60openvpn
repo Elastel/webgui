@@ -1,0 +1,92 @@
+#!/bin/sh -e
+#
+# Original version by Robert Leslie
+# <rob@mars.org>, edited by iwj and cs
+# Modified for openvpn by Alberto Gonzalez Iniesta <agi@agi.as>
+# Modified for restarting / starting / stopping single tunnels by Richard Mueller <mueller@teamix.net>
+
+test $DEBIAN_SCRIPT_DEBUG && set -v -x
+
+type=$(uci get openvpn.openvpn.type)
+ROLE=$(uci get openvpn.openvpn.role)
+
+CONFIG_DIR=/etc/openvpn/$ROLE
+
+if [ $1 != "stop" ]; then
+	if [ $type = "off" ]; then
+		exit 0
+	elif [ $type = "config" ]; then
+		NAME=$ROLE.conf
+	else
+		for CONFIG in `cd $CONFIG_DIR; ls *.ovpn 2> /dev/null`; do
+		  NAME=${CONFIG%%.ovpn}.ovpn
+		done
+	fi
+fi
+
+test -d $CONFIG_DIR || exit 0
+
+start_vpn () {
+    printf " $ROLE "
+    start-stop-daemon -S -p /var/run/openvpn.$ROLE.pid -x /usr/sbin/openvpn -- \
+	      --daemon --writepid /var/run/openvpn.$ROLE.pid \
+	      --config $CONFIG_DIR/$NAME --cd $CONFIG_DIR
+    [ $? = 0 ] && echo "OK" || echo "FAIL"
+}
+stop_vpn () {
+    printf " $NAME "
+    start-stop-daemon -K -p /var/run/openvpn.$ROLE.pid -x /usr/sbin/openvpn
+}
+
+case "$1" in
+start)
+  printf "Starting openvpn:"
+
+  if test -e $CONFIG_DIR/$NAME ; then
+	start_vpn
+  else
+	printf " No such VPN: $NAME"
+  fi
+  echo "."
+
+  ;;
+stop)
+  printf "Stopping openvpn:"
+
+  if test -e /var/run/openvpn.$ROLE.pid ; then
+	stop_vpn
+  else
+	printf " No such VPN: $ROLE"
+  fi
+  echo "."
+  ;;
+# We only 'reload' for running VPNs. New ones will only start with 'start' or 'restart'.
+reload|force-reload)
+  printf "Reloading openvpn:"
+# If openvpn if running under a different user than root we'll need to restart
+  if egrep '^( |\t)*user' $CONFIG_DIR/$NAME > /dev/null 2>&1 ; then
+	stop_vpn
+	sleep 1
+	start_vpn
+	printf "(restarted)"
+  else
+	kill -HUP `cat $(/var/run/openvpn.$ROLE.pid)` || true
+  printf " $NAME"
+  fi
+  echo "."
+  ;;
+
+restart)
+  $0 stop $2
+  sleep 1
+  $0 start $2
+  ;;
+*)
+  echo "Usage: $0 {start|stop|reload|restart|force-reload}" >&2
+  exit 1
+  ;;
+esac
+
+exit 0
+
+# vim:set ai et sts=2 sw=2 tw=0:

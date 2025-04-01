@@ -12,6 +12,7 @@ getWifiInterface();
  */
 function DisplayOpenVPNConfig()
 {
+    $model = getModel();
     $status = new StatusMessages();
 
     $cipher=array('BF-CBC', 'DES-EDE-CBC', 'DES-EDE3-CBC', 'AES-128-CBC', 'AES-192-CBC',
@@ -22,9 +23,21 @@ function DisplayOpenVPNConfig()
             'RSA-SHA512', 'SHA224', 'SHA256', 'SHA384', 'SHA512');
 
     if (isset($_POST['SaveOpenVPNSettings']) || isset($_POST['ApplyOpenVpnSettings'])) {
+        // check path
+        $clientPath = "/etc/openvpn/client";
+        if (!is_dir($clientPath)) {
+            mkdir($clientPath, 0777, true);
+        }
+
+        $serverPath = "/etc/openvpn/server";
+        if (!is_dir($serverPath)) {
+            mkdir($serverPath, 0777, true);
+        }
+
         saveOpenVpnConfig($status);
         if (isset($_POST['ApplyOpenVpnSettings'])) {
             $status->addMessage('Attempting to stop OpenVPN', 'info');
+            
             if (isset($_POST['role'])) { 
                 $role = $_POST['role'];
             }
@@ -33,20 +46,29 @@ function DisplayOpenVPNConfig()
                 $type = $_POST['type'];
             }
 
-            exec('sudo /bin/systemctl stop openvpn-client@client', $return);
-            exec('sudo /bin/systemctl disable openvpn-client@client', $return);
-            exec('sudo /bin/systemctl stop openvpn-server@server', $return);
-            exec('sudo /bin/systemctl disable openvpn-server@server', $return);
+            if ($model != "EG324L" && $model != "EC212" && $model != "EC211") {
+                exec('sudo /bin/systemctl stop openvpn-client@client', $return);
+                exec('sudo /bin/systemctl disable openvpn-client@client', $return);
+                exec('sudo /bin/systemctl stop openvpn-server@server', $return);
+                exec('sudo /bin/systemctl disable openvpn-server@server', $return);
+            } else {
+                exec('sudo /etc/init.d/S60openvpn stop');
+            }
+            
             sleep(1);
             if ($type != 'off') {
                 $status->addMessage('Attempting to start OpenVPN', 'info');
-                if ($role == 'client') {
-                    exec('sudo /bin/systemctl enable openvpn-client@client', $return);
-                    exec('sudo /bin/systemctl start openvpn-client@client', $return);
-                    exec("sudo /etc/raspap/openvpn/configauth.sh $tmp_ovpn $auth_flag " .$_SESSION['ap_interface'], $return);
+                if ($model != "EG324L" && $model != "EC212" && $model != "EC211") {
+                    if ($role == 'client') {
+                        exec('sudo /bin/systemctl enable openvpn-client@client', $return);
+                        exec('sudo /bin/systemctl start openvpn-client@client', $return);
+                        exec("sudo /etc/raspap/openvpn/configauth.sh $tmp_ovpn $auth_flag " .$_SESSION['ap_interface'], $return);
+                    } else {
+                        exec('sudo /bin/systemctl enable openvpn-server@server', $return);
+                        exec('sudo /bin/systemctl start openvpn-server@server', $return);
+                    }
                 } else {
-                    exec('sudo /bin/systemctl enable openvpn-server@server', $return);
-                    exec('sudo /bin/systemctl start openvpn-server@server', $return);
+                    exec('sudo /etc/init.d/S60openvpn restart');
                 }
             } else {
                 system('sudo rm /etc/openvpn/client/client.conf', $return);
