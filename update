@@ -239,6 +239,11 @@ sleep 1
 if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" || $model = "EC212" ]]; then
         sudo /etc/init.d/hostapd stop
 	sudo cp -r $path/Elastel/$model/usr/* /usr/
+        #Turn off automatic updates
+        if [[ $model = "EG324" ]]; then
+                sudo systemctl stop unattended-upgrades.service
+                sudo systemctl disable unattended-upgrades.service
+        fi
 elif [ $bit = "32" ]; then
 	sudo cp -r $path/Elastel/$model/32/usr/* /usr/
 fi
