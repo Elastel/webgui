@@ -1042,6 +1042,9 @@ function handlePageActions($extraFooterScripts, $page, $config)
         case "/dnp3cli_conf":
             DisplayDnp3Client();
             break;
+        case "/ethernetip_conf":
+            DisplayEthernetip();
+            break;
         case "/nodered":
             DisplayNodered();
             break;

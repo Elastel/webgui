@@ -374,14 +374,17 @@ function tcpProtocolChange(num) {
     $('#tcp_page_protocol_modbus' + numStr).hide();
     $('#tcp_page_protocol_transparent' + numStr).hide();
     $('#tcp_page_protocol_s7' + numStr).hide();
+    $('#tcp_page_protocol_plc' + numStr).hide();
     $('#tcp_page_protocol_opcua' + numStr).hide();
     $('#tcp_page_protocol_dnp3' + numStr).hide();
     $('#tcp_page_protocol_bacnet' + numStr).hide();
 
     if (selectedText == 'Transparent') {
         $('#tcp_page_protocol_transparent' + numStr).show();
-    } else if (selectedText == 'S7') {
-        $('#tcp_page_protocol_s7' + numStr).show();
+    } else if (selectedText == 'S7' || selectedText == 'Ethernet/IP') {
+        $('#tcp_page_protocol_plc' + numStr).show();
+        if (selectedText == 'S7')
+            $('#tcp_page_protocol_s7' + numStr).show();
     } else if (selectedText == 'OPCUA') {
         $('#tcp_page_protocol_opcua' + numStr).show();
         anonymousCheckTcp(numStr);
@@ -542,6 +545,8 @@ function addSectionTable(table_name, jsonData, option_list) {
         data_type_value = ['Bit', 'Int', 'Float'];
     } else if (table_name == 'opcuacli') {
         data_type_value = ['Bool', 'Byte', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Float', 'String'];
+    } else if (table_name == 'ethernetip') {
+        data_type_value = ['Bool', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Int64', 'UInt64', 'Float', 'Double', 'String'];
     }
     
     var len = Number(jsonData.length);
@@ -876,6 +881,25 @@ function loadDnp3ClientConfig(){
         var option_list = jsonData.option;
         var tmpData = JSON.parse(jsonData[table_name]);
         
+        addSectionTable(table_name, tmpData, option_list);
+    });
+
+    loadRealtimeData();
+    $('#loading').hide();
+}
+
+/*EtherNet/IP Rules*/
+function loadEthernetipConfig(){
+    $('#loading').show();
+    var table_name = 'ethernetip';
+    $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
+        var jsonData = JSON.parse(data);
+        if (jsonData == null)
+            return;
+
+        var option_list = jsonData.option;
+        var tmpData = JSON.parse(jsonData[table_name]);
+
         addSectionTable(table_name, tmpData, option_list);
     });
 
@@ -1525,6 +1549,8 @@ function get_table_data(table_name, option_list) {
         data_type_value = ['Bit', 'Int', 'Float'];
     } else if (table_name == 'opcuacli') {
         data_type_value = ['Bool', 'Byte', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Float', 'String'];
+    } else if (table_name == 'ethernetip') {
+        data_type_value = ['Bool', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Int64', 'UInt64', 'Float', 'Double', 'String'];
     }
 
     var tr = $('#table_' + table_name + ' tr');
@@ -1612,6 +1638,8 @@ function saveData(table_name) {
         data_type_value = ['Bit', 'Int', 'Float'];
     } else if (table_name == 'opcuacli') {
         data_type_value = ['Bool', 'Byte', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Float', 'String'];
+    } else if (table_name == 'ethernetip') {
+        data_type_value = ['Bool', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Int64', 'UInt64', 'Float', 'Double', 'String'];
     }
 
     var page_type = document.getElementById("page_type").value;

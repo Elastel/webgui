@@ -57,6 +57,7 @@ require_once 'includes/things_wing.php';
 require_once 'includes/modbus_router.php';
 require_once 'includes/backup_restore.php';
 require_once 'includes/iotedge.php';
+require_once 'includes/ethernetip.php';
 
 $config = getConfig();
 $model = getModel();

@@ -23,6 +23,7 @@ abstract class TcpProtoEnum {
   const TCP_PROTO_OPCUA = 7;
   const TCP_PROTO_DNP3 = 8;
   const TCP_PROTO_BACNET = 9;
+  const TCP_PROTO_EIP = 10;
 };
 
 function get_io_maps()
@@ -245,7 +246,7 @@ function page_interface_tcp($num)
 
   InputControlCustom(_("Frame Interval"), 'tcp_frame_interval'.$num, 'tcp_frame_interval'.$num, _('ms'), 200);
 
-  $tcp_proto = array('Modbus TCP', 'Transparent', 'S7', 'FX', 'MC', 'ASCII', 'IEC104', 'OPCUA', 'DNP3', 'BACnet/IP');
+  $tcp_proto = array('Modbus TCP', 'Transparent', 'S7', 'FX', 'MC', 'ASCII', 'IEC104', 'OPCUA', 'DNP3', 'BACnet/IP', 'Ethernet/IP');
   SelectControlCustom(_('Protocol'), 'tcp_proto'.$num, $tcp_proto, $tcp_proto[0], 'tcp_proto'.$num, null, "tcpProtocolChange($num)");
 
   echo '<div id="tcp_page_protocol_modbus'.$num.'" name="tcp_page_protocol_modbus'.$num.'">';
@@ -255,9 +256,11 @@ function page_interface_tcp($num)
   echo '<div id="tcp_page_protocol_transparent'.$num.'" name="tcp_page_protocol_transparent'.$num.'">';
   InputControlCustom(_("Reporting Center"), 'tcp_report_center'.$num, 'tcp_report_center'.$num, _('1-2-3-4-5'));
   echo '</div>';
-
+  
+  echo '<div id="tcp_page_protocol_plc'.$num.'" name="tcp_page_protocol_plc'.$num.'">';
   echo '<div id="tcp_page_protocol_s7'.$num.'" name="tcp_page_protocol_s7'.$num.'">';
   InputControlCustom(_("Rack"), 'rack'.$num, 'rack'.$num);
+  echo '</div>';
   InputControlCustom(_("Slot"), 'slot'.$num, 'slot'.$num);
   echo '</div>';
 

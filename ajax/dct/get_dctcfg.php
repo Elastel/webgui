@@ -85,7 +85,8 @@ if ($type == 'datadisplay') {
         echo json_encode($dctdata);
     } else if ($type == 'modbus' || $type == 'ascii' || $type == 's7'|| $type == 'fx' ||
              $type == 'mc' || $type == 'adc' || $type == 'di' || $type == 'do' || 
-             $type == 'iec104' || $type == 'opcuacli' || $type == 'dnp3cli' || $type == 'baccli') {
+             $type == 'iec104' || $type == 'opcuacli' || $type == 'dnp3cli' || $type == 'baccli' ||
+             $type == 'ethernetip') {
         exec("/usr/sbin/get_config dct type $type 1", $data);
         // $dctdata = json_decode($data[0]);
 

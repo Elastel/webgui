@@ -211,6 +211,9 @@ function contentLoaded() {
         case "dnp3cli_conf":
             loadDnp3ClientConfig();
             break;
+        case "ethernetip_conf":
+            loadEthernetipConfig();
+            break;
         case "server_conf":
             loadServerConfig();
             break;
