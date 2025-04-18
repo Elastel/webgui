@@ -6,10 +6,21 @@ require_once 'config.php';
 function DisplayModbusRouter()
 {   
     $status = new StatusMessages();
+    $model = getModel();
+
+    if ($model == "EG324") {
+        $comlist = array('/dev/ttyAMA0'=>'COM1', '/dev/ttyAMA1'=>'COM2', '/dev/ttyAMA2'=>'COM3', '/dev/ttyAMA3'=>'COM4');
+      } else if ($model == "EG324L") {
+        $comlist = array('/dev/ttyS1'=>'COM1', '/dev/ttyS2'=>'COM2', '/dev/ttyS3'=>'COM3', '/dev/ttyS4'=>'COM4');
+      } else if ($model == "EC212") {
+        $comlist = array('/dev/ttyS1'=>'COM1', '/dev/ttyS2'=>'COM2');
+      } else {
+        $comlist = array('/dev/ttyACM0'=>'COM1', '/dev/ttyACM1'=>'COM2');
+      }
 
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['savemodbusroutersettings']) || isset($_POST['applymodbusroutersettings'])) {
-            $ret = saveModbusRouterConfig($status);
+            $ret = saveModbusRouterConfig($status, $comlist);
             if ($ret == false) {
                 $status->addMessage('Error data', 'danger');
             } else {
@@ -40,13 +51,29 @@ function DisplayModbusRouter()
             exec("sudo /usr/local/bin/uci get modbus_router.modbus." . $info, $val);
             $modbusRouterConf[$info] = $val[0];
         }
-    } 
+    }
 
-    echo renderTemplate("modbus_router", compact('status', 'routerStatus', 'statusIcon', 'modbusRouterConf'));
+    $arrInfoCom = array('com', 'baudrate', 'databit', 'stopbit', 'parity');
+    for ($i = 0; $i < count($comlist) - 1; $i ++) {
+        $num = $i + 2;
+        unset($enabled);
+        exec("/usr/local/bin/uci get modbus_router.modbus.enable_com$num", $enabled);
+        $modbusRouterConf['enable_com' . $num] = $enabled[0];
+        if ($enabled[0] == "1") {
+            foreach ($arrInfo as $info) {
+                unset($val);
+                exec("sudo /usr/local/bin/uci get modbus_router.modbus." . $info . $num, $val);
+                $modbusRouterConf[$info . $num] = $val[0];
+            }
+        }
+    }
+
+    echo renderTemplate("modbus_router", compact('status', 'routerStatus', 'statusIcon', 'modbusRouterConf', 'comlist'));
 }
 
-function saveModbusRouterConfig($status)
+function saveModbusRouterConfig($status, $comlist)
 {
+    $comName = '';
     exec("sudo /usr/local/bin/uci set modbus_router.modbus.enabled=" . $_POST['enabled']);
     exec("sudo /usr/local/bin/uci set modbus_router.modbus.mode=" . $_POST['mode']);
     exec("sudo /usr/local/bin/uci set modbus_router.modbus.address=" .$_POST['address']);
@@ -56,6 +83,24 @@ function saveModbusRouterConfig($status)
     exec("sudo /usr/local/bin/uci set modbus_router.modbus.databit=" .$_POST['databit']);
     exec("sudo /usr/local/bin/uci set modbus_router.modbus.stopbit=" .$_POST['stopbit']);
     exec("sudo /usr/local/bin/uci set modbus_router.modbus.parity=" .$_POST['parity']);
+    $comName = $_POST['com'];
+    for ($i = 0; $i < count($comlist) - 1; $i ++) {
+        $num = $i + 2;
+        exec("sudo /usr/local/bin/uci set modbus_router.modbus.enable_com$num=" .$_POST['enable_com' . $num]);
+        if ($_POST['enable_com' . $num]) {
+            if ($comName == $_POST['com' . $num]) {
+                $status->addMessage('The same interface cannot be configured', 'danger');
+                return false;
+            } else {
+                $comName = $_POST['com' . $num];
+            }
+            exec("sudo /usr/local/bin/uci set modbus_router.modbus.com$num=" .$_POST['com' . $num]);
+            exec("sudo /usr/local/bin/uci set modbus_router.modbus.baudrate$num=" .$_POST['baudrate' . $num]);
+            exec("sudo /usr/local/bin/uci set modbus_router.modbus.databit$num=" .$_POST['databit' . $num]);
+            exec("sudo /usr/local/bin/uci set modbus_router.modbus.stopbit$num=" .$_POST['stopbit' . $num]);
+            exec("sudo /usr/local/bin/uci set modbus_router.modbus.parity$num=" .$_POST['parity' . $num]);
+        }
+    }
     exec("sudo /usr/local/bin/uci commit modbus_router");
 
     $status->addMessage('Modbus router configuration updated ', 'success');

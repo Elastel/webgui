@@ -1568,3 +1568,23 @@ function actionBackupFile() {
     })
     .catch(error => console.error("Fail to action:", error));
 }
+
+
+function modbusRouterModeChange()
+{
+    var mode = document.getElementById('mode');
+    if (mode.value == '0') {
+        $('#page_rtu_to_tcp').show();
+    } else {
+        $('#page_rtu_to_tcp').hide();
+    }
+}
+
+function enableModbusRouterCom(checkbox, num)
+{
+    if (checkbox.checked == true) {
+        $('#page_modbus_router_com' + num).show();
+    } else {
+        $('#page_modbus_router_com' + num).hide();
+    }
+}

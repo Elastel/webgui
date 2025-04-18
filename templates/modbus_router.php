@@ -35,23 +35,13 @@
             echo '<div id="page_modbus" name="page_modbus">';
 
             $mode = array('Modbus RTU To Modbus TCP', 'Modbus TCP To Modbus RTU');
-            SelectControlCustom(_('Mode'), 'mode', $mode, ($modbusRouterConf['mode'] != NULL) ? $mode[$modbusRouterConf['mode']] : $mode[0], 'mode');
+            SelectControlCustom(_('Mode'), 'mode', $mode, ($modbusRouterConf['mode'] != NULL) ? $mode[$modbusRouterConf['mode']] : $mode[0], 'mode', null, 'modbusRouterModeChange()');
             echo '<h5>'._("Modbus TCP Settings").'</h5>';
             InputControlCustom(_('IP Address'), 'address', 'address', NULL, $modbusRouterConf['address']);
             InputControlCustom(_('Port'), 'port', 'port', _('1~65535'), ($modbusRouterConf['port'] != NULL) ? $modbusRouterConf['port'] : '502');
 
             echo '<h5>'._("Modbus RTU Settings").'</h5>';
-            exec("cat /etc/fw_model", $model);
             
-            if ($model[0] == "EG324") {
-              $comlist = array('/dev/ttyAMA0'=>'COM1', '/dev/ttyAMA1'=>'COM2', '/dev/ttyAMA2'=>'COM3', '/dev/ttyAMA3'=>'COM4');
-            } else if ($model[0] == "EG324L") {
-              $comlist = array('/dev/ttyS1'=>'COM1', '/dev/ttyS2'=>'COM2', '/dev/ttyS3'=>'COM3', '/dev/ttyS4'=>'COM4');
-            } else if ($model[0] == "EC212") {
-              $comlist = array('/dev/ttyS1'=>'COM1', '/dev/ttyS2'=>'COM2');
-            } else {
-              $comlist = array('/dev/ttyACM0'=>'COM1', '/dev/ttyACM1'=>'COM2');
-            }
             SelectControlCustom(_('COM Interface'), 'com', $comlist, ($modbusRouterConf['com'] != NULL) ? $comlist[$modbusRouterConf['com']] : $comlist[0], 'com');
 
             $baudrate_list = array('1200'=>'1200', '2400'=>'2400', '4800'=>'4800', '9600'=>'9600', '19200'=>'19200', '38400'=>'38400',
@@ -59,13 +49,40 @@
             SelectControlCustom(_('Baudrate'), 'baudrate', $baudrate_list, ($modbusRouterConf['baudrate'] != NULL) ? $modbusRouterConf['baudrate'] : $baudrate_list['115200'], 'baudrate');
 
             $databit_list = array('7'=>'7', '8'=>'8');
-            SelectControlCustom(_('Databit'), 'databit', $databit_list, ($modbusRouterConf['databit'] != NULL) ? $modbusRouterConf['databit'] : $databit_list['8'], 'databit'.$num);
+            SelectControlCustom(_('Databit'), 'databit', $databit_list, ($modbusRouterConf['databit'] != NULL) ? $modbusRouterConf['databit'] : $databit_list['8'], 'databit');
 
             $stopbit_list = array('1'=>'1', '2'=>'2');
-            SelectControlCustom(_('Stopbit'), 'stopbit', $stopbit_list, ($modbusRouterConf['stopbit'] != NULL) ? $modbusRouterConf['stopbit'] : $stopbit_list['1'], 'stopbit'.$num);
+            SelectControlCustom(_('Stopbit'), 'stopbit', $stopbit_list, ($modbusRouterConf['stopbit'] != NULL) ? $modbusRouterConf['stopbit'] : $stopbit_list['1'], 'stopbit');
 
             $parity_list = array('N'=>'None', 'O'=>'Odd', 'E'=>'Even');
-            SelectControlCustom(_('Parity'), 'parity', $parity_list, ($modbusRouterConf['parity'] != NULL) ? $parity_list[$modbusRouterConf['parity']] : $parity_list['N'], 'parity'.$num);
+            SelectControlCustom(_('Parity'), 'parity', $parity_list, ($modbusRouterConf['parity'] != NULL) ? $parity_list[$modbusRouterConf['parity']] : $parity_list['N'], 'parity');
+
+            $show = $modbusRouterConf['mode'] == '0' ? '' : 'style="display: none;"';
+            echo '<div id="page_rtu_to_tcp" name="page_rtu_to_tcp" '.$show.'>';
+            for ($i = 0; $i < count($comlist) - 1; $i ++) {
+              $num = $i + 2;
+              $checked = $modbusRouterConf['enable_com' . $num] == '1' ? 'checked' : '';
+              CheckboxControlCustom(_('Add COM'), 'enable_com' . $num, 'enable_com' . $num, $checked, null, "enableModbusRouterCom(this, $num)");
+              $display = $modbusRouterConf['enable_com' . $num] == '1' ? '' : 'style="display: none;"';
+              echo '<div id="page_modbus_router_com'. $num .'" name="ppage_modbus_router_com'. $num .'" '. $display .'>';
+                SelectControlCustom(_('COM Interface'), 'com' . $num, $comlist, ($modbusRouterConf['com' . $num] != NULL) ? $comlist[$modbusRouterConf['com' . $num]] : $comlist[0], 'com' . $num);
+
+                $baudrate_list = array('1200'=>'1200', '2400'=>'2400', '4800'=>'4800', '9600'=>'9600', '19200'=>'19200', '38400'=>'38400',
+                '57600'=>'57600', '115200'=>'115200', '230400'=>'230400');
+                SelectControlCustom(_('Baudrate'), 'baudrate' . $num, $baudrate_list, ($modbusRouterConf['baudrate' . $num] != NULL) ? $modbusRouterConf['baudrate' . $num] : $baudrate_list['115200'], 'baudrate' . $num);
+
+                $databit_list = array('7'=>'7', '8'=>'8');
+                SelectControlCustom(_('Databit'), 'databit' . $num, $databit_list, ($modbusRouterConf['databit' . $num] != NULL) ? $modbusRouterConf['databit' . $num] : $databit_list['8'], 'databit'. $num);
+
+                $stopbit_list = array('1'=>'1', '2'=>'2');
+                SelectControlCustom(_('Stopbit'), 'stopbit' . $num, $stopbit_list, ($modbusRouterConf['stopbit' . $num] != NULL) ? $modbusRouterConf['stopbit' . $num] : $stopbit_list['1'], 'stopbit'. $num);
+                
+                $parity_list = array('N'=>'None', 'O'=>'Odd', 'E'=>'Even');
+                SelectControlCustom(_('Parity'), 'parity' . $num, $parity_list, ($modbusRouterConf['parity' . $num] != NULL) ? $parity_list[$modbusRouterConf['parity' . $num]] : $parity_list['N'], 'parity'. $num);
+              echo '</div>';
+            }
+
+            echo '</div>';
             echo '</div>';
             echo '</div>';
 
