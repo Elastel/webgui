@@ -73,7 +73,7 @@ function DisplayModbusRouter()
 
 function saveModbusRouterConfig($status, $comlist)
 {
-    $comName = '';
+    $comName = [];
     exec("sudo /usr/local/bin/uci set modbus_router.modbus.enabled=" . $_POST['enabled']);
     exec("sudo /usr/local/bin/uci set modbus_router.modbus.mode=" . $_POST['mode']);
     exec("sudo /usr/local/bin/uci set modbus_router.modbus.address=" .$_POST['address']);
@@ -83,16 +83,16 @@ function saveModbusRouterConfig($status, $comlist)
     exec("sudo /usr/local/bin/uci set modbus_router.modbus.databit=" .$_POST['databit']);
     exec("sudo /usr/local/bin/uci set modbus_router.modbus.stopbit=" .$_POST['stopbit']);
     exec("sudo /usr/local/bin/uci set modbus_router.modbus.parity=" .$_POST['parity']);
-    $comName = $_POST['com'];
+    array_push($comName, $_POST['com']);
     for ($i = 0; $i < count($comlist) - 1; $i ++) {
         $num = $i + 2;
         exec("sudo /usr/local/bin/uci set modbus_router.modbus.enable_com$num=" .$_POST['enable_com' . $num]);
         if ($_POST['enable_com' . $num]) {
-            if ($comName == $_POST['com' . $num]) {
+            if (in_array($_POST['com' . $num], $comName)) {
                 $status->addMessage('The same interface cannot be configured', 'danger');
                 return false;
             } else {
-                $comName = $_POST['com' . $num];
+                array_push($comName, $_POST['com' . $num]);
             }
             exec("sudo /usr/local/bin/uci set modbus_router.modbus.com$num=" .$_POST['com' . $num]);
             exec("sudo /usr/local/bin/uci set modbus_router.modbus.baudrate$num=" .$_POST['baudrate' . $num]);

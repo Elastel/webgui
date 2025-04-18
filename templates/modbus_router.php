@@ -30,9 +30,10 @@
           <form method="POST" action="modbus_router" role="form">
           <?php echo CSRFTokenFieldTag();
             echo '<div class="cbi-section cbi-tblsection">';
-            RadioControlCustom(_('Modbus Router'), 'enabled', 'modbus', 'enableModbus', NULL, $modbusRouterConf['enabled']);
+            RadioControlCustom(_('Modbus Router'), 'enabled', 'modbus', 'enableModbusRouter', NULL, $modbusRouterConf['enabled']);
 
-            echo '<div id="page_modbus" name="page_modbus">';
+            $enable = $modbusRouterConf['enabled'] == '1' ? '' : 'style="display: none;"';
+            echo '<div id="page_modbus_router" name="page_modbus_router" '.$enable.'>';
 
             $mode = array('Modbus RTU To Modbus TCP', 'Modbus TCP To Modbus RTU');
             SelectControlCustom(_('Mode'), 'mode', $mode, ($modbusRouterConf['mode'] != NULL) ? $mode[$modbusRouterConf['mode']] : $mode[0], 'mode', null, 'modbusRouterModeChange()');
@@ -93,12 +94,4 @@
     </div><!-- card -->
   </div><!-- col-lg-12 -->
 </div>
-<script>
-  var a = "<?php echo $modbusRouterConf['enabled']; ?>";
-  if (a == '1') {
-    document.getElementById('page_modbus').style.display = 'block';
-  } else {
-    document.getElementById('page_modbus').style.display = 'none';
-  }
-</script>
 

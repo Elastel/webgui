@@ -1588,3 +1588,12 @@ function enableModbusRouterCom(checkbox, num)
         $('#page_modbus_router_com' + num).hide();
     }
 }
+
+function enableModbusRouter(state) {
+    if (state) {
+      $('#page_modbus_router').show();
+      modbusRouterModeChange();
+    } else {
+      $('#page_modbus_router').hide();
+    }
+}
