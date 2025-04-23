@@ -28,7 +28,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form method="POST" action="bacnet_router" role="form">
-          <?php echo CSRFTokenFieldTag();
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField();;
             echo '<div class="cbi-section cbi-tblsection">';
             RadioControlCustom(_('BACnet Router'), 'enabled', 'bacnet', 'enableBACnet');
 

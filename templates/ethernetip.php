@@ -22,7 +22,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form method="POST" action="ethernetip_conf" role="form">
-            <?php echo CSRFTokenFieldTag() ?>
+            <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
               <input type="hidden" name="table_data" value="" id="hidTD_ethernetip">
               <input type="hidden" name="option_list_ethernetip" value="" id="option_list_ethernetip">
               <div class="cbi-section cbi-tblsection" id="page_ethernetip" name="page_ethernetip">

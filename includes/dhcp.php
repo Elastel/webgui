@@ -121,6 +121,7 @@ function saveDHCPConfig($status)
  */
 function validateDHCPInput()
 {
+    $errors = '';
     define('IFNAMSIZ', 16);
     $iface = $_POST['interface'];
     if (!preg_match('/^[a-zA-Z0-9]+$/', $iface)
@@ -213,9 +214,13 @@ function updateDnsmasqConfig($iface,$status)
     if ($_POST['no-resolv'] == '1') {
         $config .= 'no-resolv'.PHP_EOL;
     }
-    foreach ($_POST['server'] as $server) {
-        $config .= "server=$server".PHP_EOL;
+
+    if (isset($_POST['server'])) {
+        foreach ($_POST['server'] as $server) {
+            $config .= "server=$server".PHP_EOL;
+        }
     }
+    
     if ($_POST['DNS1']) {
         $config .= 'dhcp-option=6,' . $_POST['DNS1'];
         if ($_POST['DNS2']) {

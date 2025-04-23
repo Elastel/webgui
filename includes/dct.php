@@ -615,7 +615,7 @@ function page_im_ex($conf_name) {
       </div>
       </br></br>
       <form method=\"POST\" action=\"" . $conf_name_lower . "_conf\" enctype=\"multipart/form-data\" role=\"form\">";
-      echo CSRFTokenFieldTag();    
+      echo \ElastPro\Tokens\CSRF::hiddenField();;    
       echo "<div class=\"cbi-value\">
           <input hidden=\"hidden\" name=\"page_im_ex_name\" id=\"page_im_ex_name\" value=\"0\">
           <label class=\"cbi-value-title\">"; echo _("Configure Import"); echo "</label>

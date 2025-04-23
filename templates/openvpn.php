@@ -28,7 +28,7 @@
         <div class="card-body">
         <?php $status->showMessages(); ?>
           <form role="form" action="openvpn" enctype="multipart/form-data" method="POST">
-            <?php echo CSRFTokenFieldTag() ?>
+            <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
             <!-- Nav tabs -->
             <ul class="nav nav-tabs">
                 <li class="nav-item"><a class="nav-link active" id="settingstab" href="#openvpnsettings" data-toggle="tab"><?php echo _("Settings"); ?></a></li>

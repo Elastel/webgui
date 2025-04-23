@@ -38,7 +38,7 @@
       <div class="card-body">
         <?php $status->showMessages(); ?>
         <form role="form" action="network_conf" method="POST">
-          <?php echo CSRFTokenFieldTag() ?>
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
         <ul class="nav nav-tabs">
           <li role="presentation" class="nav-item"><a class="nav-link active" href="#wired" aria-controls="wired" role="tab" data-toggle="tab"><?php echo _("Wired"); ?></a></li>
           <?php if ($lte_enabled == '1') { ?>

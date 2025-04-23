@@ -20,7 +20,7 @@
               <div class="card-body wireless">
                 <h4 class="card-title"><?php echo _("ThingsWing"); ?></h4>
                 <form method="POST" action="things_wing" role="form">
-                  <?php echo CSRFTokenFieldTag() ?>
+                  <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
                   <div class="row ml-1">
                       <div class="col-sm">
                         <div class="row mb-1">

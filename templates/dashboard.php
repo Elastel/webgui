@@ -228,7 +228,7 @@
         <div class="col-lg-12 mt-3">
           <div class="row">
             <form action="dashboard" method="POST">
-                <?php echo CSRFTokenFieldTag() ?>
+                <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
               <button type="button" onClick="window.location.reload();" class="btn btn-outline btn-primary"><i class="fas fa-sync-alt"></i> <?php echo _("Refresh") ?></a>
             </form>
           </div>

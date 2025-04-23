@@ -24,7 +24,7 @@
           <form method="POST" action="s7_conf" role="form">
           <input type="hidden" name="table_data" value="" id="hidTD_s7">
           <input type="hidden" name="option_list_s7" value="" id="option_list_s7">
-          <?php echo CSRFTokenFieldTag();
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField();;
           $arr= array(
             array("name"=>"Order",                "style"=>"", "descr"=>"", "ctl"=>"input"),
             array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),

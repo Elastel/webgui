@@ -20,6 +20,12 @@ Description: Default theme for RaspAP
 License: GNU General Public License v3.0
 */
 
+@import url('all.css');
+
+:root {
+  --raspap-theme-color: <?php echo $color; ?>;
+}
+
 body {
   color: #212529;
 }
@@ -592,4 +598,19 @@ canvas#divDBChartBandwidthhourly {
 .conf-btn:hover {
   background-color: #E81123;
   border: 0;
+}
+
+.custom-fullscreen {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    max-width: none;
+}
+
+.custom-fullscreen .modal-content {
+    height: 100%;
+    // background: url('app/img/bg.png') no-repeat center center;
+    background-size: cover !important;
+    border: none; /* 可选：移除边框 */
 }

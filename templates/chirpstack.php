@@ -56,7 +56,7 @@
                             <input class="btn btn-outline btn-primary" type="submit" value="Chirpstack" onClick="window.open(window.location.protocol+'//'+window.location.host+':8080','nr');">
                         </div>
                         <form method="POST" action="chirpstack" role="form">
-                          <?php echo CSRFTokenFieldTag() ?>
+                          <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
                           <div class="row mb-1">
                             <input class="btn btn-success" type="submit" value="<?php echo _("Restart"); ?>" name="restart" />
                           </div>

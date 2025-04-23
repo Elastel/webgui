@@ -1,24 +1,28 @@
 <?php
-require 'includes/csrf.php';
-ensureCSRFSessionToken();
 require_once 'includes/config.php';
+require_once 'includes/autoload.php';
+
+require_once 'includes/CSRF.php';
+require_once 'includes/session.php';
 require_once 'includes/defaults.php';
-require_once RASPI_CONFIG.'/raspap.php';
 require_once 'includes/locale.php';
 require_once 'includes/functions.php';
-require_once 'includes/dct.php';
+
+// Default page actions
 require_once 'includes/dashboard.php';
+require_once 'includes/login.php';
+require_once 'includes/dct.php';
 require_once 'includes/authenticate.php';
 require_once 'includes/admin.php';
 require_once 'includes/dhcp.php';
 require_once 'includes/hostapd.php';
-require_once 'includes/adblock.php';
+// require_once 'includes/adblock.php';
+// require_once 'includes/data_usage.php';
 require_once 'includes/system.php';
 require_once 'includes/sysstats.php';
 require_once 'includes/configure_client.php';
 require_once 'includes/networking.php';
 require_once 'includes/themes.php';
-require_once 'includes/data_usage.php';
 require_once 'includes/about.php';
 require_once 'includes/openvpn.php';
 require_once 'includes/wireguard.php';
@@ -59,7 +63,6 @@ require_once 'includes/backup_restore.php';
 require_once 'includes/iotedge.php';
 require_once 'includes/ethernetip.php';
 
-$config = getConfig();
 $model = getModel();
 $target = getTarget();
 $hostname = getHostname();

@@ -4,11 +4,9 @@ require_once 'includes/includes.php';
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <?php echo CSRFMetaTag() ?>
+    <?php echo \ElastPro\Tokens\CSRF::metaTag(); ?>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
 
     <title><?php echo _("$hostname Configuration Portal"); ?></title>
 
@@ -40,6 +38,7 @@ require_once 'includes/includes.php';
     <meta name="theme-color" content="#ffffff">
   </head>
   <body id="page-top" style="font-family:'Arial','Microsoft YaHei','黑体','宋体',sans-serif">
+    <?php ob_start(); ?>
     <!-- Page Wrapper -->
     <div id="wrapper">
       <!-- Sidebar -->
@@ -56,11 +55,12 @@ require_once 'includes/includes.php';
           <div class="load" id="loading" name="loading"></div>
           <?php
             $extraFooterScripts = array();
-            handlePageActions($extraFooterScripts, $page, $config);
+            handlePageActions($extraFooterScripts, $page);
           ?>
         </div><!-- /.container-fluid -->
       </div><!-- End of Main Content -->
     </div><!-- End of Page Wrapper -->
+    <?php ob_end_flush(); ?>
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top" style="display: inline;">
       <i class="fas fa-angle-up"></i>

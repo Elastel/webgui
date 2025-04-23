@@ -1,6 +1,7 @@
 <?php
 
-require '../../includes/csrf.php';
+require_once '../../includes/autoload.php';
+require_once '../../includes/CSRF.php';
 require_once '../../includes/config.php';
 
 $type = $_GET['type'];
@@ -35,7 +36,7 @@ if ($type == "node_online_update") {
     exec('cd /var/www/html; sudo git checkout *');
     exec('sudo /var/www/html/update reset 2>&1');
 } else if ($type == "download_backup") {
-    unlink("/tmp/backup.tar.gz");
+    exec('sudo rm -f /tmp/backup.tar.gz');
     exec('sudo /var/www/html/installers/backup.sh');
     $file_path = '/tmp/backup.tar.gz';
 

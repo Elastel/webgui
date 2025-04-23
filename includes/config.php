@@ -1,12 +1,13 @@
 <?php
 
 define('ELASTEL_DCT_CONFIG_JSON', '/tmp/dct.json');
-define('RASPI_BRAND_TEXT', 'RaspAP');
+define('RASPI_BRAND_TEXT', 'ElastPro');
 define('RASPI_CONFIG', '/etc/raspap');
 define('RASPI_CONFIG_NETWORK', RASPI_CONFIG.'/networking/defaults.json');
 define('RASPI_ADMIN_DETAILS', RASPI_CONFIG.'/raspap.auth');
 define('RASPI_WIFI_AP_INTERFACE', 'wlan0');
 define('RASPI_CACHE_PATH', sys_get_temp_dir() . '/raspap');
+define('RASPI_SESSION_TIMEOUT', 1440);
 
 // Constants for configuration file paths.
 // These are typical for default RPi installs. Modify if needed.
@@ -33,6 +34,9 @@ define('RASPI_ACCESS_CHECK_DNS', 'one.one.one.one');
 // Constant for the 5GHz wireless regulatory domain
 define('RASPI_5GHZ_ISO_ALPHA2', array('NL','US'));
 define('RASPI_5GHZ_MAX_CHANNEL', 165);
+
+// Enable basic authentication for the web admin.
+define('RASPI_AUTH_ENABLED', true);
 
 // Optional services, set to true to enable.
 define('RASPI_WIFICLIENT_ENABLED', true);

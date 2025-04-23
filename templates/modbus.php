@@ -24,7 +24,7 @@
           <form method="POST" action="modbus_conf" role="form">
             <input type="hidden" name="table_data" value="" id="hidTD_modbus">
             <input type="hidden" name="option_list_modbus" value="" id="option_list_modbus">
-            <?php echo CSRFTokenFieldTag();
+            <?php echo \ElastPro\Tokens\CSRF::hiddenField();;
             $arr= array(
               array("name"=>"Order",                "style"=>"", "descr"=>"", "ctl"=>"input"),
               array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),

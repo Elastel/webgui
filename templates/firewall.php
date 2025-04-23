@@ -23,7 +23,7 @@
       <div class="card-body">
         <?php $status->showMessages(); ?>
         <form method="POST" action="firewall_conf" role="form">
-          <?php echo CSRFTokenFieldTag() ?>
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
 
           <!-- Nav tabs -->
           <ul class="nav nav-tabs mb-3">

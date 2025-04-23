@@ -45,7 +45,7 @@
       <div class="card-body">
         <?php $status->showMessages(); ?>
         <form role="form" action="hostapd_conf" method="POST">
-          <?php echo CSRFTokenFieldTag() ?>
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
 
           <?php require_once 'templates/hostapd/basic.php'; ?>
 

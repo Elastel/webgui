@@ -22,7 +22,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form method="POST" action="gps" role="form">
-          <?php echo CSRFTokenFieldTag() ?>
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
             <div class="cbi-section cbi-tblsection">
               <div class="cbi-value">
                 <label class="cbi-value-title"><?php echo _("GPS"); ?></label>

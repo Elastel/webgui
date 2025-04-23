@@ -22,7 +22,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form method="POST" action="modbus_slave" role="form">
-          <?php echo CSRFTokenFieldTag();
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField();;
             echo '<div class="cbi-section cbi-tblsection">';
             RadioControlCustom(_('Modbus Slave'), 'modbus_slave_enabled', 'modbus_slave', 'enableModbusSlave');
 

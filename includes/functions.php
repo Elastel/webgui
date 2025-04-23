@@ -298,79 +298,6 @@ function filter_comments($var)
 }
 
 /**
- * Saves a CSRF token in the session
- */
-function ensureCSRFSessionToken()
-{
-    if (empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    }
-}
-
-/**
- * Add CSRF Token to form
- */
-function CSRFTokenFieldTag()
-{
-    $token = htmlspecialchars($_SESSION['csrf_token']);
-    return '<input type="hidden" name="csrf_token" value="' . $token . '">';
-}
-
-/**
- * Retuns a CSRF meta tag (for use with xhr, for example)
- */
-function CSRFMetaTag()
-{
-    $token = htmlspecialchars($_SESSION['csrf_token']);
-    return '<meta name="csrf_token" content="' . $token . '">';
-}
-
-/**
- * Validate CSRF Token
- */
-function CSRFValidate()
-{
-    $post_token   = $_POST['csrf_token'];
-    $header_token = $_SERVER['HTTP_X_CSRF_TOKEN'];
-
-    if (empty($post_token) && empty($header_token)) {
-        return false;
-    }
-
-    $request_token = $post_token;
-    if (empty($post_token)) {
-        $request_token = $header_token;
-    }
-
-    if (hash_equals($_SESSION['csrf_token'], $request_token)) {
-        return true;
-    } else {
-        error_log('CSRF violation');
-        return false;
-    }
-}
-
-/**
- * Should the request be CSRF-validated?
- */
-function csrfValidateRequest()
-{
-    $request_method = strtolower($_SERVER['REQUEST_METHOD']);
-    return in_array($request_method, [ "post", "put", "patch", "delete" ]);
-}
-
-/**
- * Handle invalid CSRF
- */
-function handleInvalidCSRFToken()
-{
-    header('HTTP/1.1 500 Internal Server Error');
-    header('Content-Type: text/plain');
-    echo 'Invalid CSRF token';
-    exit;
-}
-
-/**
  * Test whether array is associative
  */
 function isAssoc($arr)
@@ -429,21 +356,33 @@ function GetDistString($input, $string, $offset, $separator)
 }
 
 /**
- *
- * @param  array $arrConfig
+ * Parses a configuration file
+ * Options and values are mapped with "=" characters
+ * Optional $wg flag is used for parsing WireGuard .conf files
+ * @param  array   $arrConfig
+ * @param  boolean $wg
  * @return $config
  */
-function ParseConfig($arrConfig)
+function ParseConfig($arrConfig, $wg = false)
 {
     $config = array();
     foreach ($arrConfig as $line) {
         $line = trim($line);
         if ($line == "" || $line[0] == "#") {
-            continue;
+            if ($wg) {
+                $config[$option] = null;
+                continue;
+            } else {
+                continue;
+            }
         }
 
-        list($option, $value) = array_map("trim", explode("=", $line, 2));
-
+        if (strpos($line, "=") !== false) {
+            list($option, $value) = array_map("trim", explode("=", $line, 2));
+        } else {
+            $option = $line;
+            $value = "";
+        }
         if (empty($config[$option])) {
             $config[$option] = $value ?: true;
         } else {
@@ -915,7 +854,7 @@ function loadFooterScripts($extraFooterScripts)
     }
 }
 
-function handlePageActions($extraFooterScripts, $page, $config)
+function handlePageActions($extraFooterScripts, $page)
 {
     // handle page actions
     switch ($page) {
@@ -950,7 +889,7 @@ function handlePageActions($extraFooterScripts, $page, $config)
             DisplayTorProxyConfig();
             break;
         case "/auth_conf":
-            DisplayAuthConfig($config['admin_user'], $config['admin_pass']);
+            DisplayAuthConfig($_SESSION['user_id']);
             break;
         case "/save_hostapd_conf":
             SaveTORAndVPNConfig();
@@ -1068,6 +1007,9 @@ function handlePageActions($extraFooterScripts, $page, $config)
             break;
         case "/iotedge":
             DisplayIotedge();
+            break;
+        case "/login":
+            DisplayLogin();
             break;
         default:
             DisplayDashboard($extraFooterScripts);

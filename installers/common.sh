@@ -506,8 +506,6 @@ function _move_config_file() {
 
     # Copy config file and make writable by www-data group
     _install_log "Moving configuration file to $raspap_dir"
-    sudo cp "$webroot_dir"/raspap.php "$raspap_dir" || _install_status 1 "Unable to move files to '$raspap_dir'"
-    sudo chown -c $raspap_user:"$raspap_user" "$raspap_dir"/raspap.php || _install_status 1 "Unable change owner and/or group"
 }
 
 # Set up default configuration

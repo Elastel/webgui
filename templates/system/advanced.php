@@ -3,7 +3,7 @@
   <h4 class="mt-3"><?php echo _("Advanced settings") ;?></h4>
     <?php if (!RASPI_MONITOR_ENABLED) : ?>
     <form action="system_info" method="POST">
-    <?php echo CSRFTokenFieldTag() ?>
+    <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
       <div class="row">
         <div class="form-group col-md-6">
           <label for="code"><?php echo _("Web server port") ;?></label>

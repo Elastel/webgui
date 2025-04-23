@@ -58,7 +58,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form method="POST" action="baccli_conf" role="form">
-          <?php echo CSRFTokenFieldTag() ?>
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
             <input type="hidden" name="table_data" value="" id="hidTD_baccli">
             <input type="hidden" name="option_list_baccli" value="" id="option_list_baccli">
             <div class="cbi-section cbi-tblsection" id="page_baccli" name="page_baccli">

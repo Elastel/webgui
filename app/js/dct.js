@@ -236,7 +236,6 @@ function enableBasic(state) {
     if (state) {
       $('#page_basic').show();
       enableCache(document.getElementById('cache_enabled'));
-      enableMinuteData(document.getElementById('minute_enabled'));
     } else {
       $('#page_basic').hide();
     }
@@ -247,14 +246,6 @@ function enableCache(checkbox) {
         $("#page_cache_days").show();
     } else {
         $("#page_cache_days").hide();
-    }
-}
-
-function enableMinuteData(checkbox) {
-    if (checkbox.checked == true) {
-        $("#page_minute_data").show();
-    } else {
-        $("#page_minute_data").hide();
     }
 }
 
@@ -641,7 +632,10 @@ function addSectionTable(table_name, jsonData, option_list) {
 function getRealtimeData() {
     $.get('ajax/dct/get_dctcfg.php?type=datadisplay', function(data) {
         jsonData = JSON.parse(data);
-        //console.log(jsonData);
+        // console.log(jsonData);
+
+        if (jsonData == null)
+            return false;
 
         const trList = document.querySelectorAll('table tr');
         var dnp3 = document.getElementById('option_list_dnp3');
@@ -679,11 +673,14 @@ function getRealtimeData() {
             }
         });
     });
+
+    return true;
 }
 
 function loadRealtimeData() {
-    getRealtimeData();
-    setInterval(getRealtimeData, 1000);
+    if (getRealtimeData()) {
+        setInterval(getRealtimeData, 1000);
+    }  
 }
 
 /*modbus*/

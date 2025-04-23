@@ -11,7 +11,7 @@
       <div class="card-body">
           <form method="POST" action="datadisplay" role="form">
             <input type="hidden" name="table_data" value="" id="hidTD">
-            <?php echo CSRFTokenFieldTag() ?>
+            <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
             <div style="max-height:40rem; overflow-y:auto;">  
               <table class="table cbi-section-table" name="table_modbus" id="table_modbus">
               <label name="msg" id="msg" style="color:red;"></label>

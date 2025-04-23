@@ -1,6 +1,7 @@
 <?php
 
-require '../../includes/csrf.php';
+require_once '../../includes/autoload.php';
+require_once '../../includes/CSRF.php';
 require_once '../../includes/config.php';
 
 // general

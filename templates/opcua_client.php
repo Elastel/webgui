@@ -22,7 +22,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form method="POST" action="opcuacli_conf" role="form">
-            <?php echo CSRFTokenFieldTag() ?>
+            <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
               <input type="hidden" name="table_data" value="" id="hidTD_opcuacli">
               <input type="hidden" name="option_list_opcuacli" value="" id="option_list_opcuacli">
               <div class="cbi-section cbi-tblsection" id="page_opcuacli" name="page_opcuacli">

@@ -22,7 +22,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form method="POST" action="basic_conf" role="form">
-          <?php echo CSRFTokenFieldTag();
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField();;
             echo '<div class="cbi-section cbi-tblsection">';
 
             RadioControlCustom(_('Data Collect'), 'enabled', 'basic', 'enableBasic');

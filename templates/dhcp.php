@@ -45,7 +45,7 @@
       <div class="card-body">
         <?php $status->showMessages(); ?>
         <form method="POST" action="dhcpd_conf" class="js-dhcp-settings-form">
-          <?php echo CSRFTokenFieldTag() ?>
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
 
           <!-- Nav tabs -->
           <ul class="nav nav-tabs mb-3">

@@ -22,7 +22,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form role="form" action="macchina" enctype="multipart/form-data" method="POST">
-          <?php echo CSRFTokenFieldTag() ?>
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
             <div class="cbi-section cbi-tblsection">
                 <div class="cbi-value">
                     <label class="cbi-value-title"><?php echo _("Macchina"); ?></label>

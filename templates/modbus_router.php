@@ -28,7 +28,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form method="POST" action="modbus_router" role="form">
-          <?php echo CSRFTokenFieldTag();
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField();;
             echo '<div class="cbi-section cbi-tblsection">';
             RadioControlCustom(_('Modbus Router'), 'enabled', 'modbus', 'enableModbusRouter', NULL, $modbusRouterConf['enabled']);
 

@@ -1,6 +1,6 @@
 {
-    "name": "RaspAP",
-    "short_name": "RaspAP",
+    "name": "ElastPro",
+    "short_name": "ElastPro",
     "icons": [
         {
             "src": "/dist/icons/android-chrome-192x192.png",

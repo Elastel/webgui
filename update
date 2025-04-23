@@ -96,8 +96,6 @@ fi
 
 if [ "$1" == "reset" ]; then
     echo $1
-    sudo cp $path/raspap.php /etc/raspap/raspap.php
-    chown -R www-data:www-data /etc/raspap/raspap.php
     sudo cp $path/config/hostapd.conf /etc/hostapd/hostapd.conf
     if [ "$model" = "EG324" ]; then
         sed -i "s/nl80211/rtl871xdrv/g" /etc/hostapd/hostapd.conf

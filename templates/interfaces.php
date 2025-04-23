@@ -22,7 +22,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form role="form" action="interfaces_conf" enctype="multipart/form-data" method="POST">
-          <?php echo CSRFTokenFieldTag() ?>
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
 
           <?php if ($model != "ElastBox400") { ?>
           <div class="cbi-section">

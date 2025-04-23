@@ -14,7 +14,7 @@
       </div><!-- /.card-header -->
       <div class="card-body">
         <form role="form" action="backup_restore" enctype="multipart/form-data" method="POST">
-        <?php echo CSRFTokenFieldTag(); ?>
+        <?php echo \ElastPro\Tokens\CSRF::hiddenField();; ?>
           <!-- Nav tabs -->
           <ul class="nav nav-tabs mb-3">
             <li class="nav-item"><a class="nav-link active" href="#actions" data-toggle="tab"><?php echo _("Actions"); ?></a></li>

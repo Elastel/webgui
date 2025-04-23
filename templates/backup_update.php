@@ -19,7 +19,7 @@
           <div class="card-body">
             <h5><?php echo _("Status") ;?></h5>
             <?php 
-              echo CSRFTokenFieldTag();
+              echo \ElastPro\Tokens\CSRF::hiddenField();;
               LabelControlCustom(_("Version:"), 'cur_version', 'cur_version', RASPI_VERSION);
               exec('cat .git/refs/heads/EG-develop', $cur_node);
               exec('cat .git/refs/remotes/origin/EG-develop', $new_node);

@@ -17,7 +17,7 @@
                 <div class="tab-pane active" id="basic">
                     <h4>Basic settings</h4>
                     <form role="form" action="save_hostapd_conf" method="POST">
-                    <?php echo CSRFTokenFieldTag() ?>
+                    <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
                     <div class="row">
                         <div class="form-group col-md-6">
                             <label for="code">VirtualAddrNetwork</label>

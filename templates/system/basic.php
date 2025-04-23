@@ -42,7 +42,7 @@
       </div>
 
       <form action="system_info" method="POST">
-        <?php echo CSRFTokenFieldTag() ?>
+        <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
         <?php if (!RASPI_MONITOR_ENABLED) : ?>
             <input type="submit" class="btn btn-warning" name="system_reboot"   value="<?php echo _("Reboot"); ?>" />
             <input type="submit" class="btn btn-warning" name="system_shutdown" value="<?php echo _("Shutdown"); ?>" />

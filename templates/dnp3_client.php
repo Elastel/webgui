@@ -22,7 +22,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form method="POST" action="dnp3cli_conf" role="form">
-            <?php echo CSRFTokenFieldTag() ?>
+            <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
               <input type="hidden" name="table_data" value="" id="hidTD_dnp3cli">
               <input type="hidden" name="option_list_dnp3cli" value="" id="option_list_dnp3cli">
               <div class="cbi-section cbi-tblsection" id="page_dnp3cli" name="page_dnp3cli">

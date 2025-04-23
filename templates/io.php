@@ -22,7 +22,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form method="POST" action="io_conf" role="form">
-            <?php echo CSRFTokenFieldTag();
+            <?php echo \ElastPro\Tokens\CSRF::hiddenField();;
               if ($adc_index_count > 0) { 
                 $arrADC = array(
                   array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),

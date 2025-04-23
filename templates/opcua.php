@@ -22,7 +22,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form role="form" action="opcua" enctype="multipart/form-data" method="POST">
-          <?php echo CSRFTokenFieldTag();
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField();;
             echo '<div class="cbi-section cbi-tblsection">';
 
             RadioControlCustom(_('OPC UA Server'), 'enabled', 'opcua', 'enableOpcua');

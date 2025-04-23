@@ -24,7 +24,7 @@
           <form method="POST" action="iec104_conf" role="form">
             <input type="hidden" name="table_data" value="" id="hidTD_iec104">
             <input type="hidden" name="option_list_iec104" value="" id="option_list_iec104">
-            <?php echo CSRFTokenFieldTag();
+            <?php echo \ElastPro\Tokens\CSRF::hiddenField();;
             $arr= array(
               array("name"=>"Order",                "style"=>"", "descr"=>""),
               array("name"=>"Device Name",          "style"=>"", "descr"=>""),

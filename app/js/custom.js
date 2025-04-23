@@ -148,117 +148,6 @@ function setupBtns() {
     });
 }
 
-function setCSRFTokenHeader(event, xhr, settings) {
-    var csrfToken = $('meta[name=csrf_token]').attr('content');
-    if (/^(POST|PATCH|PUT|DELETE)$/i.test(settings.type)) {
-        xhr.setRequestHeader("X-CSRF-Token", csrfToken);
-    }
-}
-
-function contentLoaded() {
-    pageCurrent = window.location.href.split("/").pop();
-    switch(pageCurrent) {
-        case "dashboard":
-            loadDashboard();
-            break;
-        case "network_conf":
-            //getAllInterfaces();
-            //setupTabs();
-            //setupBtns();
-            loadInterfaceWiredSelect();
-            break;
-        case "hostapd_conf":
-            loadChannel();
-            break;
-        case "dhcpd_conf":
-            loadInterfaceDHCPSelect();
-            break;
-        case "basic_conf":
-            loadBasicConfig();
-            break;
-        case "interfaces_conf":
-            loadInterfacesConfig();
-            break;
-        case "modbus_conf":
-            loadModbusConfig();
-            break;
-        case "ascii_conf":
-            loadAsciiConfig();
-            break;
-        case "s7_conf":
-            loadS7Config();
-            break;
-		case "fx_conf":
-            loadFxConfig();
-            break;
-        case "mc_conf":
-            loadMcConfig();
-            break;
-        case "iec104_conf":
-            loadIec104Config();
-            break;
-        case "io_conf":
-            loadADCConfig();
-            loadDIConfig();
-            loadDOConfig();
-            break;
-        case "opcuacli_conf":
-            loadOpcuaClientConfig();
-            break;
-        case "baccli_conf":
-            loadBACnetClientConfig();
-            break;
-        case "dnp3cli_conf":
-            loadDnp3ClientConfig();
-            break;
-        case "ethernetip_conf":
-            loadEthernetipConfig();
-            break;
-        case "server_conf":
-            loadServerConfig();
-            break;
-        case "ddns":
-            loadDDNSConfig();
-            break;
-        case "opcua":
-            loadOpcuaConfig();
-            break;
-        case "bacnet":
-            loadBACnetConfig();
-            break;
-        case "dnp3":
-            loadDnp3Config();
-            break;
-        case "modbus_slave":
-            loadModbusSlaveConfig();
-            break;
-        case "datadisplay":
-            loadDataDisplay();
-            break;
-        case "lorawan_conf":
-            loadDataLorawan();
-            break;
-        case "openvpn":
-            loadOpenvpn();
-            break;
-        case "wireguard":
-            loadWireguard();
-            break;
-        case "gps":
-            loadGps();
-            break;
-        case "bacnet_router":
-            loadBacnetRouter();
-            break;
-        case "firewall_conf":
-            loadFirewall();
-            break;
-        case "iotedge":
-            loadIotedge();
-            break;
-    }
-}
-
 function loadBacnetRouter() {
     $.get('ajax/service/get_service.php?type=bacnet_router', function(data) {
         // console.log(data);
@@ -969,24 +858,61 @@ window.addEventListener('load', function() {
     });
 }, false);
 
+let sessionCheckInterval = setInterval(checkSession, 5000);
+
+function checkSession() {
+    // skip session check if on login page
+    if (window.location.pathname === '/login') {
+        return;
+    }
+    var csrfToken = $('meta[name=csrf_token]').attr('content');
+    $.post('ajax/session/do_check_session.php',{'csrf_token': csrfToken},function (data) {
+        if (data.status === 'session_expired') {
+            clearInterval(sessionCheckInterval);
+            showSessionExpiredModal();
+        }
+    }).fail(function (jqXHR, status, err) {
+        console.error("Error checking session status:", status, err);
+    });
+}
+
+function showSessionExpiredModal() {
+    $('#sessionTimeoutModal').modal('show');
+}
+
+$(document).on("click", "#js-session-expired-login", function(e) {
+    const loginModal = $('#modal-admin-login');
+    const redirectUrl = window.location.pathname;
+    window.location.href = `/login?action=${encodeURIComponent(redirectUrl)}`;
+});
+
+// show modal login on page load
+$(document).ready(function () {
+    const params = new URLSearchParams(window.location.search);
+    const redirectUrl = $('#redirect-url').val() || params.get('action') || '/';
+    $('#modal-admin-login').modal('show');
+    $('#redirect-url').val(redirectUrl);
+    $('#username').focus();
+    $('#username').addClass("focusedInput");
+});
+
 // Static Array method
 Array.range = (start, end) => Array.from({length: (end - start)}, (v, k) => k + start);
 
 $(document).on("click", ".js-toggle-password", function(e) {
-    var button = $(e.target)
-    var field  = $(button.data("target"));
+    var button = $(e.currentTarget);
+    var field  = $(button.data("bsTarget"));
     if (field.is(":input")) {
         e.preventDefault();
 
         if (!button.data("__toggle-with-initial")) {
-            button.data("__toggle-with-initial", button.text())
+            $("i", button).removeClass("fas fa-eye").addClass(button.attr("data-toggle-with"));
         }
 
         if (field.attr("type") === "password") {
-            button.text(button.data("toggle-with"));
             field.attr("type", "text");
         } else {
-            button.text(button.data("__toggle-with-initial"));
+            $("i", button).removeClass("fas fa-eye-slash").addClass("fas fa-eye");
             field.attr("type", "password");
         }
     }
@@ -1073,11 +999,6 @@ $(window).bind("load", function() {
       return this.href == url;
     }).parent().addClass('active');
 });
-
-$(document)
-    .ajaxSend(setCSRFTokenHeader)
-    .ready(contentLoaded)
-    .ready(loadWifiStations());
 
 function freqPlanChange() {
     var a = document.getElementById('frequency').value;
@@ -1597,3 +1518,127 @@ function enableModbusRouter(state) {
       $('#page_modbus_router').hide();
     }
 }
+
+function disableValidation(form) {
+    form.removeAttribute("novalidate");
+    form.classList.remove("needs-validation");
+    form.querySelectorAll("[required]").forEach(function (field) {
+        field.removeAttribute("required");
+    });
+}
+
+function setCSRFTokenHeader(event, xhr, settings) {
+    var csrfToken = $('meta[name=csrf_token]').attr('content');
+    if (/^(POST|PATCH|PUT|DELETE)$/i.test(settings.type)) {
+        xhr.setRequestHeader("X-CSRF-Token", csrfToken);
+    }
+}
+
+function contentLoaded() {
+    pageCurrent = window.location.href.split("/").pop();
+    switch(pageCurrent) {
+        case "dashboard":
+            loadDashboard();
+            break;
+        case "network_conf":
+            //getAllInterfaces();
+            //setupTabs();
+            //setupBtns();
+            loadInterfaceWiredSelect();
+            break;
+        case "hostapd_conf":
+            loadChannel();
+            break;
+        case "dhcpd_conf":
+            loadInterfaceDHCPSelect();
+            break;
+        case "basic_conf":
+            loadBasicConfig();
+            break;
+        case "interfaces_conf":
+            loadInterfacesConfig();
+            break;
+        case "modbus_conf":
+            loadModbusConfig();
+            break;
+        case "ascii_conf":
+            loadAsciiConfig();
+            break;
+        case "s7_conf":
+            loadS7Config();
+            break;
+		case "fx_conf":
+            loadFxConfig();
+            break;
+        case "mc_conf":
+            loadMcConfig();
+            break;
+        case "iec104_conf":
+            loadIec104Config();
+            break;
+        case "io_conf":
+            loadADCConfig();
+            loadDIConfig();
+            loadDOConfig();
+            break;
+        case "opcuacli_conf":
+            loadOpcuaClientConfig();
+            break;
+        case "baccli_conf":
+            loadBACnetClientConfig();
+            break;
+        case "dnp3cli_conf":
+            loadDnp3ClientConfig();
+            break;
+        case "ethernetip_conf":
+            loadEthernetipConfig();
+            break;
+        case "server_conf":
+            loadServerConfig();
+            break;
+        case "ddns":
+            loadDDNSConfig();
+            break;
+        case "opcua":
+            loadOpcuaConfig();
+            break;
+        case "bacnet":
+            loadBACnetConfig();
+            break;
+        case "dnp3":
+            loadDnp3Config();
+            break;
+        case "modbus_slave":
+            loadModbusSlaveConfig();
+            break;
+        case "datadisplay":
+            loadDataDisplay();
+            break;
+        case "lorawan_conf":
+            loadDataLorawan();
+            break;
+        case "openvpn":
+            loadOpenvpn();
+            break;
+        case "wireguard":
+            loadWireguard();
+            break;
+        case "gps":
+            loadGps();
+            break;
+        case "bacnet_router":
+            loadBacnetRouter();
+            break;
+        case "firewall_conf":
+            loadFirewall();
+            break;
+        case "iotedge":
+            loadIotedge();
+            break;
+    }
+}
+
+$(document)
+    .ajaxSend(setCSRFTokenHeader)
+    .ready(contentLoaded)
+    .ready(loadWifiStations());
