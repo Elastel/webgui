@@ -31,7 +31,9 @@
 
                 </div>
                 <button type="submit" class="btn btn-outline btn-admin-login rounded-pill w-75 mt-4"><?php echo _("Login") ?></button>
-                <img src="app/img/uri-qr-code.php?uri=https://docs.elastel.com/" class="figure-img img-fluid mt-2" alt="ElastPro docs" style="width:75px;">
+                <a href="https://docs.elastel.com/" class="mt-2 d-block text-decoration-none" target="_blank">
+                  <i class="fas fa-book me-1"></i> User Guide
+                </a>
               </form>
             </div>
           </div><!-- /.col -->
