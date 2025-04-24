@@ -1,9 +1,7 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'includes/config.php';
 require_once 'includes/wifi_functions.php';
-require_once 'app/lib/uploader.php';
 
 getWifiInterface();
 
@@ -13,7 +11,7 @@ getWifiInterface();
 function DisplayOpenVPNConfig()
 {
     $model = getModel();
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
 
     $cipher=array('BF-CBC', 'DES-EDE-CBC', 'DES-EDE3-CBC', 'AES-128-CBC', 'AES-192-CBC',
                 'AES-256-CBC');
@@ -363,7 +361,7 @@ function SaveOpenvpnUpload($status, $file, $role)
             throw new RuntimeException('Invalid parameters');
         }
 
-        $upload = \RaspAP\Uploader\Upload::factory('vpn' . $num, $tmp_destdir);
+        $upload = \ElastPro\Uploader\FileUpload::factory('vpn' . $num, $tmp_destdir);
         $upload->set_max_file_size(64*KB);
         $upload->set_allowed_mime_types(array('text/plain', 'application/octet-stream'));
         $upload->file($file);
@@ -418,7 +416,7 @@ function SaveOVPNConfig($status, $file, $role)
             throw new RuntimeException('Invalid parameters');
         }
 
-        $upload = \RaspAP\Uploader\Upload::factory('ovpn',$tmp_destdir);
+        $upload = \ElastPro\Uploader\FileUpload::factory('ovpn',$tmp_destdir);
         $upload->set_max_file_size(64*KB);
         $upload->set_allowed_mime_types(array('ovpn' => 'text/plain'));
         $upload->file($file);

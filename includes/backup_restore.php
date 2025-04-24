@@ -1,6 +1,5 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'config.php';
 
 function save_upload_file($file) {
@@ -14,7 +13,7 @@ function save_upload_file($file) {
               throw new RuntimeException('Invalid parameters');
           }
   
-          $upload = \RaspAP\Uploader\Upload::factory('upload', $tmp_destdir);
+          $upload = \ElastPro\Uploader\FileUpload::factory('upload', $tmp_destdir);
           $upload->set_max_file_size(2048*KB);
           $upload->set_allowed_mime_types(array('text/plain', 'application/octet-stream', 'application/gzip'));
           $upload->file($file);
@@ -99,8 +98,6 @@ function DisplayBackupRestore()
                     exec("tar tzf /tmp/backup.tar.gz", $tmp);
                     $upload_backup_list = implode("\n", $tmp);
                 }
-            } else {
-                $status->addMessage('fail to upload file', 'danger');
             }
         }
     }

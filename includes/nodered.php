@@ -5,7 +5,7 @@ require_once 'includes/functions.php';
 
 function DisplayNodered()
 {
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
     if (isset($_POST['restart'])) {
         exec('sudo systemctl restart nodered.service');
     }

@@ -1,11 +1,10 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'config.php';
 
 function DisplayThingsWing()
 {   
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
     $model = getModel();
 
     $enable = file_exists("/usr/local/baseagent/baseagent");

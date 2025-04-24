@@ -1,11 +1,10 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'config.php';
 
 function DisplayBasic()
 {   
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
 
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['savebasicsettings']) || isset($_POST['applybasicsettings'])) {
@@ -37,7 +36,6 @@ function saveBasicConfig($status)
     }
 
     $json_data = json_encode($data);
-    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
     file_put_contents(ELASTEL_DCT_CONFIG_JSON, $json_data);
     exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct basic');
     $status->addMessage('dct configuration updated ', 'success');

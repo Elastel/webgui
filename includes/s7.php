@@ -1,6 +1,5 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'config.php';
 
 /**
@@ -8,7 +7,7 @@ require_once 'config.php';
  */
 function DisplayS7()
 {
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
 
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['saves7settings']) || isset($_POST['applys7settings'])) {
@@ -38,7 +37,6 @@ function DisplayS7()
 function saveS7Config($status)
 {
     $data = $_POST['table_data'];
-    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
     file_put_contents(ELASTEL_DCT_CONFIG_JSON, $data);
     exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct s7');
 

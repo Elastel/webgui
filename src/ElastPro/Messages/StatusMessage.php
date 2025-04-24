@@ -1,5 +1,8 @@
 <?php
-class StatusMessages
+
+namespace ElastPro\Messages;
+
+class StatusMessage
 {
     public $messages = array();
 

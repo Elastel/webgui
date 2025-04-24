@@ -1,11 +1,10 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'config.php';
 
 function DisplayModbusSlave()
 {   
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
 
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['savemodbusslavesettings']) || isset($_POST['applymodbusslavesettings'])) {
@@ -40,7 +39,6 @@ function saveModbusSlaveConfig($status)
     exec("sudo /usr/local/bin/uci set dct.modbus_slave.slave_id=" .$_POST['slave_id']);
 
     $data = $_POST['table_data'];
-    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
     file_put_contents(ELASTEL_DCT_CONFIG_JSON, $data);
     exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct modbus_slave_point');
 

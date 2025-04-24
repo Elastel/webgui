@@ -1,6 +1,5 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'includes/config.php';
 
 /**
@@ -9,7 +8,7 @@ require_once 'includes/config.php';
 function DisplayWireGuardConfig()
 {
     $model = getModel();
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['savewgsettings']) || isset($_POST['applywgsettings'])){
             $optRules     = '1';
@@ -199,7 +198,7 @@ function SaveWireGuardUpload($status, $file, $optRules)
             throw new RuntimeException('Invalid parameters');
         }
 
-        $upload = \RaspAP\Uploader\Upload::factory('wg',$tmp_destdir);
+        $upload = \ElastPro\Uploader\FileUpload::factory('wg',$tmp_destdir);
         $upload->set_max_file_size(64*KB);
         $upload->set_allowed_mime_types(array('text/plain'));
         $upload->file($file);

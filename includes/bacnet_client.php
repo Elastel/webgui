@@ -1,11 +1,10 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'config.php';
 
 function DisplayBACnetClient()
 {   
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
 
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['savebacclisettings']) || isset($_POST['applybacclisettings'])) {
@@ -74,7 +73,6 @@ function saveBACnetClientConfig($status)
     exec("sudo /usr/local/bin/uci set dct.bacnet_client.collect_mode=" .$_POST['collect_mode']);
 
     $data = $_POST['table_data'];
-    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
     file_put_contents(ELASTEL_DCT_CONFIG_JSON, $data);
     exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct baccli');
 

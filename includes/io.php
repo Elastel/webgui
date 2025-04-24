@@ -1,6 +1,5 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'config.php';
 
 /**
@@ -8,7 +7,7 @@ require_once 'config.php';
  */
 function DisplayIO()
 {
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
     $model = getModel();
 
     if (!RASPI_MONITOR_ENABLED) {
@@ -90,7 +89,6 @@ function DisplayIO()
 function saveADC($status)
 {
     $data = $_POST['tableDataADC'];
-    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
     file_put_contents(ELASTEL_DCT_CONFIG_JSON, $data);
     exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct adc');
 }
@@ -98,7 +96,6 @@ function saveADC($status)
 function saveDI($status)
 {
     $data = $_POST['tableDataDI'];
-    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
     file_put_contents(ELASTEL_DCT_CONFIG_JSON, $data);
     exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct di');
 }
@@ -106,7 +103,6 @@ function saveDI($status)
 function saveDO($status)
 {
     $data = $_POST['tableDataDO'];
-    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
     file_put_contents(ELASTEL_DCT_CONFIG_JSON, $data);
     exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct do');
 }

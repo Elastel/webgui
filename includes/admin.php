@@ -1,10 +1,7 @@
 <?php
-
-require_once 'includes/status_messages.php';
-
 function DisplayAuthConfig($username)
 {
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
     $auth = new \ElastPro\Auth\HTTPAuth;
     $config = $auth->getAuthConfig();
     $username = $config['admin_user'];
@@ -18,20 +15,19 @@ function DisplayAuthConfig($username)
             } elseif ($new_username == '') {
                 $status->addMessage('Username must not be empty', 'danger');
             } else {
-                if (!file_exists(RASPI_ADMIN_DETAILS)) {
-                    $tmpauth = fopen(RASPI_ADMIN_DETAILS, 'w');
-                    fclose($tmpauth);
-                }
-
-                if ($auth_file = fopen(RASPI_ADMIN_DETAILS, 'w')) {
-                    fwrite($auth_file, $new_username.PHP_EOL);
-                    fwrite($auth_file, password_hash($_POST['newpass'], PASSWORD_BCRYPT).PHP_EOL);
-                    fclose($auth_file);
-                    $_SESSION['user_id'] = $username;
-                    $status->addMessage('Admin password updated');
-                    $auth->logout();
-                } else {
+                $data = sprintf(
+                    "%s\n%s\n",
+                    $new_username,
+                    password_hash($_POST['newpass'], PASSWORD_BCRYPT)
+                );
+                $tempFile = RASPI_ADMIN_DETAILS . '.tmp';
+                if (file_put_contents($tempFile, $data) === false) {
                     $status->addMessage('Failed to update admin password', 'danger');
+                } else {
+                    rename($tempFile, RASPI_ADMIN_DETAILS);
+                    $_SESSION['user_id'] = $new_username;
+                    $status->addMessage('Admin password updated', 'success');
+                    $auth->logout();
                 }
             }
         } else {

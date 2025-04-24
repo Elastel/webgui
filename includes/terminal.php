@@ -1,12 +1,11 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'config.php';
 
 function DisplayTerminal()
 {
 
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['saveterminalsettings']) || isset($_POST['applyterminalsettings'])) {
             exec("sudo /usr/local/bin/uci set terminal.terminal.port=" .$_POST['port']);
@@ -75,7 +74,7 @@ function SaveUploadFile($status, $file)
             throw new RuntimeException('Invalid parameters');
         }
 
-        $upload = \RaspAP\Uploader\Upload::factory('terminal' . $num, $tmp_destdir);
+        $upload = \ElastPro\Uploader\FileUpload::factory('terminal' . $num, $tmp_destdir);
         $upload->set_max_file_size(2048*KB);
         $upload->set_allowed_mime_types(array('text/plain', 'application/x-sharedlib', 'application/octet-stream'));
         $upload->file($file);

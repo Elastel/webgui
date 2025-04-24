@@ -1,11 +1,10 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'config.php';
 
 function DisplayServer()
 {   
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
 
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['saveserversettings']) || isset($_POST['applyserversettings'])) {
@@ -33,7 +32,7 @@ function SaveServerUpload($status, $file, $num)
             throw new RuntimeException('Invalid parameters');
         }
 
-        $upload = \RaspAP\Uploader\Upload::factory('server' . $num, $tmp_destdir);
+        $upload = \ElastPro\Uploader\FileUpload::factory('server' . $num, $tmp_destdir);
         $upload->set_max_file_size(64*KB);
         $upload->set_allowed_mime_types(array('text/plain'));
         $upload->file($file);
@@ -127,7 +126,6 @@ function saveServerConfig($status)
     }
 
     $json_data = json_encode($data);
-    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
     file_put_contents(ELASTEL_DCT_CONFIG_JSON, $json_data);
     exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct server');
 

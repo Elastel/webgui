@@ -1,13 +1,12 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'config.php';
 
 function DisplayInterfaces()
 {   
     $model = getModel();
     $target = getTarget();
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
 
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['saveinterfacesettings']) || isset($_POST['applyinterfacesettings'])) {
@@ -22,58 +21,7 @@ function DisplayInterfaces()
 
     echo renderTemplate('interfaces', compact('status', 'model', 'target'));
 }
-/*
-exec("sudo /usr/local/bin/uci set dct.opcua.security_policy=" .$_POST['security_policy']);
-        if ($_POST['security_policy'] != '0') {
-            if (strlen($_FILES['certificate']['name']) > 0) {
-                if (is_uploaded_file($_FILES['certificate']['tmp_name'])) {
-                    saveFileUpload($status, $_FILES['certificate']);
-                }
-                $certName = $_FILES['certificate']['name'];
-                exec("sudo /usr/local/bin/uci set dct.opcua.certificate='$certName'");
-            }
 
-            // get uri
-            if ($_POST['uri'] == null) {
-                exec("sudo /usr/local/bin/uci get dct.opcua.certificate", $certFile);
-                $uri_path = "/etc/ssl/opcua/$certFile[0]";
-                if (!is_dir($uri_path)) {
-                    exec("data=$(openssl x509 -in $uri_path -inform der -noout -text | grep URI) && echo $" . '{data#*URI:}' . " | awk -F ' ' '{print $0}'", $uri);
-                    if (strlen($uri[0]) > 0) {
-                        exec("sudo /usr/local/bin/uci set dct.opcua.uri=$uri[0]");
-                    }
-                }
-            } else {
-                exec("sudo /usr/local/bin/uci set dct.opcua.uri=" .$_POST['uri']);
-            }
-
-            if (strlen($_FILES['private_key']['name']) > 0) {
-                if (is_uploaded_file($_FILES['private_key']['tmp_name'])) {
-                    saveFileUpload($status, $_FILES['private_key']); 
-                }
-
-                $keyName = $_FILES['private_key']['name'];
-                exec("sudo /usr/local/bin/uci set dct.opcua.private_key='$keyName'");
-            }
-
-            if (strlen($_FILES['trust_crt']['name'][0]) > 0) {
-                $count = count($_FILES['trust_crt']['name']);
-                for ($i = 0; $i < $count; $i++) {
-                    if (is_uploaded_file($_FILES['trust_crt']['tmp_name'][$i])) {
-                        $tmp_config = $_FILES['trust_crt']['tmp_name'][$i];
-                        system("sudo mv $tmp_config /etc/ssl/opcua/" . $_FILES['trust_crt']['name'][$i]);
-                        system("sudo chmod 644 /etc/ssl/opcua/" . $_FILES['trust_crt']['name'][$i]);
-                        $trustName .= $_FILES['trust_crt']['name'][$i];
-                        if ($i < ($count - 1))
-                            $trustName .= ";";
-                    }    
-                }
-
-                exec("sudo /usr/local/bin/uci set dct.opcua.trust_crt='$trustName'");
-            }
-        }
-    }
-*/
 function saveComConfig($status, $model)
 {
     if ($model == "EG500") {
@@ -111,7 +59,6 @@ function saveComConfig($status, $model)
 
     $json_data = json_encode($data);
     
-    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
     file_put_contents(ELASTEL_DCT_CONFIG_JSON, $json_data);
     exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct com');
 }
@@ -128,7 +75,7 @@ function saveFileUploadInterface($status, $file, $index)
             throw new RuntimeException('Invalid parameters');
         }
 
-        $upload = \RaspAP\Uploader\Upload::factory('interfaces', $tmp_destdir);
+        $upload = \ElastPro\Uploader\FileUpload::factory('interfaces', $tmp_destdir);
         $upload->set_max_file_size(64*KB);
         $upload->set_allowed_mime_types(array('text/plain', 'application/octet-stream'));
         $upload->file($file);
@@ -244,7 +191,6 @@ function saveTcpConfig($status)
     }
 
     $json_data = json_encode($data);
-    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
     file_put_contents(ELASTEL_DCT_CONFIG_JSON, $json_data);
     exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct tcp_server');
 }

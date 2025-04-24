@@ -5,7 +5,7 @@ require_once 'includes/functions.php';
 
 function DisplayDocker()
 {
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
     if (isset($_POST['restart'])) {
         exec('sudo systemctl restart docker.service');
     }

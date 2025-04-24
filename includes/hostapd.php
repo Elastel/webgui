@@ -1,7 +1,4 @@
 <?php
-
-require_once 'status_messages.php';
-require_once 'app/lib/system.php';
 require_once 'includes/wifi_functions.php';
 require_once 'includes/config.php';
 
@@ -14,8 +11,8 @@ getWifiInterface();
 function DisplayHostAPDConfig()
 {
     $model = getModel();
-    $status = new StatusMessages();
-    $system = new \RaspAP\System\Sysinfo;
+    $status = new \ElastPro\Messages\StatusMessage;
+    $system = new \ElastPro\System\Sysinfo;
     $arrConfig = array();
     if ($model == "EG324") {
         $arr80211Standard = [

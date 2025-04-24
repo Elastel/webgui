@@ -1,11 +1,10 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'config.php';
 
 function DisplayDnp3()
 {   
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
 
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['savednp3settings']) || isset($_POST['applydnp3settings'])) {
@@ -41,7 +40,6 @@ function saveDnp3Config($status)
     exec("sudo /usr/local/bin/uci set dct.dnp3_server.master_address=" .$_POST['master_address']);
 
     $data = $_POST['table_data'];
-    file_put_contents(ELASTEL_DCT_CONFIG_JSON, '');
     file_put_contents(ELASTEL_DCT_CONFIG_JSON, $data);
     exec('sudo /usr/sbin/set_config ' . ELASTEL_DCT_CONFIG_JSON . ' dct dnp3');
 

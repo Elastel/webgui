@@ -1,8 +1,3 @@
-<?php
-
-require_once 'app/lib/Parsedown.php';
-
-?>
 <div class="row">
   <div class="col-lg-12">
     <div class="card">
@@ -14,7 +9,6 @@ require_once 'app/lib/Parsedown.php';
         </div><!-- ./row -->
       </div><!-- ./card-header -->
       <div class="card-body">
-
         <!-- about general tab -->
         <div class="tab-pane active" id="aboutgeneral">
           <div class="row">

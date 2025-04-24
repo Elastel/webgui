@@ -1,8 +1,6 @@
 <?php
 
-require_once 'app/lib/system.php';
-
-$system = new \RaspAP\System\Sysinfo;
+$system = new \ElastPro\System\Sysinfo;
 
 $hostname = $system->hostname();
 $uptime   = $system->uptime();

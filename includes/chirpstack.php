@@ -5,7 +5,7 @@ require_once 'includes/functions.php';
 
 function DisplayChirpstack()
 {
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
     if (isset($_POST['restart'])) {
         exec('sudo systemctl restart chirpstack.service');
         exec('sudo systemctl restart chirpstack-gateway-bridge.service');

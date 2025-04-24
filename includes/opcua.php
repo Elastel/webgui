@@ -1,11 +1,10 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'config.php';
 
 function DisplayOpcua()
 {   
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
 
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['savesettings']) || isset($_POST['applysettings'])) {
@@ -35,7 +34,7 @@ function saveFileUpload($status, $file)
             throw new RuntimeException('Invalid parameters');
         }
 
-        $upload = \RaspAP\Uploader\Upload::factory('opcua', $tmp_destdir);
+        $upload = \ElastPro\Uploader\FileUpload::factory('opcua', $tmp_destdir);
         $upload->set_max_file_size(64*KB);
         $upload->set_allowed_mime_types(array('text/plain', 'application/octet-stream'));
         $upload->file($file);

@@ -3,8 +3,6 @@
 require_once 'includes/config.php';
 require_once 'includes/wifi_functions.php';
 require_once 'includes/functions.php';
-require_once 'app/lib/system.php';
-
 
 function timeCalculation($seconds)
 {
@@ -92,7 +90,7 @@ function get_revison()
 function DisplayDashboard(&$extraFooterScripts)
 {
     getWifiInterface();
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
     // Need this check interface name for proper shell execution.
     if (!preg_match('/^([a-zA-Z0-9]+)$/', $_SESSION['wifi_client_interface'])) {
         $status->addMessage(_('Interface name invalid.'), 'danger');
@@ -257,7 +255,7 @@ function DisplayDashboard(&$extraFooterScripts)
         $sn = $tmp[0];
     }
 
-    $system = new \RaspAP\System\Sysinfo;
+    $system = new \ElastPro\System\Sysinfo;
     $uptime   = $system->uptime();
     $cores    = $system->processorCount();
 

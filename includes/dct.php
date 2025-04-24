@@ -641,7 +641,7 @@ function save_import_file($section, $status, $file) {
             throw new RuntimeException('Invalid parameters');
         }
 
-        $upload = \RaspAP\Uploader\Upload::factory('import', $tmp_destdir);
+        $upload = \ElastPro\Uploader\FileUpload::factory('import', $tmp_destdir);
         $upload->set_max_file_size(2048*KB);
         $upload->set_allowed_mime_types(array('text/plain', 'application/octet-stream'));
         $upload->file($file);

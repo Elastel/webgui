@@ -1,6 +1,5 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'includes/functions.php';
 
 function saveFirewallConfig()
@@ -100,7 +99,7 @@ function saveFirewallConfig()
  */
 function DisplayFirewall()
 {
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
     if (isset($_POST['savefirewallsettings']) || isset($_POST['applyfirewallsettings'])) {
         saveFirewallConfig($status);
         exec('sudo /usr/local/bin/uci commit firewall');

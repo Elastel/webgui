@@ -1,8 +1,6 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'config.php';
-require_once 'app/lib/system.php';
 
 /**
  * Find the version of the Raspberry Pi
@@ -75,7 +73,7 @@ function RPiVersion()
 function DisplaySystem()
 {
 
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
     $model = getModel();
 
     if (isset($_POST['applyProperties'])) {
@@ -191,7 +189,7 @@ function DisplaySystem()
     );
 
     #fetch system status variables.
-    $system = new \RaspAP\System\Sysinfo;
+    $system = new \ElastPro\System\Sysinfo;
 
     // $hostname = $system->hostname();
     $uptime   = $system->uptime();

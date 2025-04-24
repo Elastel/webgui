@@ -1,11 +1,10 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'config.php';
 
 function DisplayLorawan()
 {   
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
 
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['savesettings']) || isset($_POST['applysettings'])) {
@@ -36,7 +35,7 @@ function SaveLorawanUpload($status, $file, $file_name)
             throw new RuntimeException('Invalid parameters');
         }
 
-        $upload = \RaspAP\Uploader\Upload::factory('lorawan', $tmp_destdir);
+        $upload = \ElastPro\Uploader\FileUpload::factory('lorawan', $tmp_destdir);
         $upload->set_max_file_size(64*KB);
         $upload->set_allowed_mime_types(array('lorawan' => 'text/plain'));
         $upload->file($file);

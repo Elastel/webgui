@@ -20,7 +20,7 @@ function DisplayIotedge()
         'private_key'
     ];
 
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['saveiotedgesettings']) || isset($_POST['applyiotedgesettings'])) {
             saveIotedgeConfig($status, $iotedge_option);
@@ -108,7 +108,7 @@ function saveFileUploadIotedge($status, $file)
             throw new RuntimeException('Invalid parameters');
         }
 
-        $upload = \RaspAP\Uploader\Upload::factory('iotedge', $tmp_destdir);
+        $upload = \ElastPro\Uploader\FileUpload::factory('iotedge', $tmp_destdir);
         $upload->set_max_file_size(64*KB);
         $upload->set_allowed_mime_types(array('text/plain', 'application/octet-stream'));
         $upload->file($file);
@@ -175,7 +175,6 @@ function saveIotedgeConfig($status, $iotedge_option)
 
     $jsonData = json_encode($data, JSON_PRETTY_PRINT);
 
-    file_put_contents('/tmp/iotedge.json', '');
     file_put_contents('/tmp/iotedge.json', $jsonData);
     exec('sudo /usr/sbin/set_config /tmp/iotedge.json iotedge iotedge');
     $status->addMessage('iotedge configuration updated ', 'success');

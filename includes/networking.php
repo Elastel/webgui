@@ -1,12 +1,11 @@
 <?php
 
-require_once 'includes/status_messages.php';
 require_once 'includes/internetRoute.php';
 
 function DisplayNetworkingConfig()
 {
     $model = getModel();
-    $status = new StatusMessages();
+    $status = new \ElastPro\Messages\StatusMessage;
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['savenetworksettings']) || isset($_POST['applynetworksettings'])) {
             saveStaticConfig($status);
