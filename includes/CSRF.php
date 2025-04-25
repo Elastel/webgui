@@ -4,7 +4,7 @@ namespace ElastPro\Tokens;
 
 class CSRF
 {
-    protected static ?CSRFTokenizer $instance = null;
+    protected static $instance = null;
 
     /*
      * Get the CSRFTokenizer instance (singleton)
