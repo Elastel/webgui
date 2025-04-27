@@ -1,4 +1,4 @@
-    <ul class="navbar-nav sidebar sidebar-light d-none d-md-block accordion <?php echo (isset($toggleState)) ? $toggleState : null ; ?>" id="accordionSidebar">
+    <ul class="navbar-nav sidebar sidebar-light d-block accordion <?php echo (isset($toggleState)) ? $toggleState : null ; ?>" id="accordionSidebar">
         <!-- Divider -->
         <hr class="sidebar-divider my-0">
         <div class="row">
@@ -175,5 +175,5 @@
         </li>
         <?php endif; ?>
         <!-- Divider -->
-        <hr class="sidebar-divider d-none d-md-block">
+        <hr class="sidebar-divider d-block">
     </ul>

@@ -128,7 +128,7 @@ th {
   min-height: calc(100vh / 3);
 }
 
-.loading-spinner::before {
+/* .loading-spinner::before {
   position: absolute;
   top: 0;
   left: 0;
@@ -138,13 +138,13 @@ th {
   justify-content: center;
   align-items: center;
   color: var(--raspap-text-muted);
-  content: "\f1ce"; /* Unicode for the circle-notch icon */
+  content: "\f1ce";
   font-family: "Font Awesome 5 Free";
-  font-weight: 900; /* Adjust as needed */
-  font-size: 54px; /* Adjust icon size as needed */
+  font-weight: 900;
+  font-size: 54px;
   animation: spin 1.2s linear infinite;
   width: 100%;
-}
+} */
 
 @keyframes spin {
     0% { transform: rotate(0deg); }

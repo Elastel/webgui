@@ -4,77 +4,49 @@ target=$(cat /etc/target_model)
 bit=$(getconf LONG_BIT)
 path="/var/www/html"
 
-echo $(date +%F%n%T):failed > /etc/update_status
+echo $(date +%F%n%T):failed >/etc/update_status
 
-if [ ! -n "$model" ]; then
-        model="EG500"
-fi
-
-if [ ! -n "$target" ]; then
-        target=$model
-fi
-
+model=${model:-"EG500"}
+target=${target:-$model}
 echo model:$model
 
 install_package_if_needed() {
-    local package_name=$1
-    local cmd_name=$2
+        local package_name=$1
+        local cmd_name=$2
 
-    if ! type "$cmd_name" >/dev/null 2>&1; then
-        echo "$package_name is NOT installed!"
-        sudo apt-get install "$package_name" -y
-
-        if [ $? -ne 0 ]; then
-            echo "Failed to install $package_name."
-            exit 4
+        if ! command -v "$cmd_name" >/dev/null 2>&1; then
+                echo "$package_name is NOT installed!"
+                sudo apt-get install -y "$package_name" || {
+                        echo "Failed to install $package_name."
+                        exit 4
+                }
         fi
-    fi
 }
 
 iotedge_package_check() {
-    if ! type "iotedge" >/dev/null 2>&1; then
-        echo "iotedge is NOT installed!"
-        if [ $model == "EG500" -o $model == "EG410" -o $model == "ElastBox400" ]; then
-                curl https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb > /tmp/packages-microsoft-prod.deb
-                sudo apt install /tmp/packages-microsoft-prod.deb
-		sudo apt-get update
-                sudo apt-get install moby-engine -y
-		echo 'Yes, do as I say!' | sudo apt-get install aziot-edge
-        else
-                echo "Not support iotedge";
+        if ! command -v "iotedge" >/dev/null 2>&1; then
+                echo "iotedge is NOT installed!"
+                if [[ $model == "EG500" || $model == "EG410" || $model == "ElastBox400" ]]; then
+                        curl https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb >/tmp/packages-microsoft-prod.deb
+                        sudo apt install /tmp/packages-microsoft-prod.deb
+                        sudo apt-get update
+                        sudo apt-get install moby-engine -y
+                        echo 'Yes, do as I say!' | sudo apt-get install aziot-edge
+                else
+                        echo "Not support iotedge"
+                fi
         fi
-    fi
 }
 
-if [ $model == "EG500" -o $model == "EG410" -o $model == "ElastBox400" ]; then
-#check openvpn
-        install_package_if_needed "openvpn" "openvpn"
-#check wireguard
-        install_package_if_needed "wireguard" "wg"
-
-#close nft service
-        sudo systemctl stop nftables.service
-        sleep 1
-        sudo systemctl disable nftables.service
-fi
-
-iotedge_package_check
-
-if [ $model != "EG324L" -a $model != "EC212" ]; then
-        #check msmtp
-        install_package_if_needed "msmtp" "msmtp"
-        #check mutt
-        install_package_if_needed "mutt" "mutt"
-        install_package_if_needed "dos2unix" "dos2unix"
-
+set_resolvconf() {
         # check resolvconf
         resolvconf_path=/etc/resolvconf/resolv.conf.d/head
         resolvconf_cmd=$(which resolvconf)
-        if [[ -e $resolvconf_path &&  -e $resolvconf_cmd ]]; then
+        if [[ -e $resolvconf_path && -e $resolvconf_cmd ]]; then
                 echo "$resolvconf_path" " is exist"
         else
                 sudo apt-get install resolvconf -y
-                if [ $? -ne 0 ] ; then
+                if [ $? -ne 0 ]; then
                         echo "Failed to install resolvconf."
                         exit 4
                 fi
@@ -83,8 +55,79 @@ if [ $model != "EG324L" -a $model != "EC212" ]; then
         if grep -q "nameserver 8.8.8.8" $resolvconf_path; then
                 echo "nameserver exist"
         else
-                echo -e "nameserver 8.8.8.8\nnameserver 8.8.4.4" >> $resolvconf_path
+                echo -e "nameserver 8.8.8.8\nnameserver 8.8.4.4" >>$resolvconf_path
         fi
+}
+
+reset_configuration() {
+        sudo cp $path/config/hostapd.conf /etc/hostapd/hostapd.conf
+        [[ $model == "EG324" ]] && sed -i "s/nl80211/rtl871xdrv/g" /etc/hostapd/hostapd.conf
+        sudo cp $path/config/90_raspap.conf /etc/sysctl.d/90_raspap.conf
+        sudo sysctl -p /etc/sysctl.d/90_raspap.conf
+        sudo cp $path/config/090_br0.conf /etc/dnsmasq.d/090_br0.conf
+        sudo cp $path/config/dhcpcd.conf /etc/dhcpcd.conf
+        sudo cp $path/config/Muttrc /etc/Muttrc
+        sudo cp $path/config/msmtprc /etc/msmtprc
+        sudo cp $path/config/defaults.json /etc/raspap/networking/
+        sudo cp -r $path/config/elastpro/etc/* /etc/
+        sudo cp -r $path/Elastel/$model/etc/* /etc/
+        sudo rm -r /etc/openvpn/client/*
+        sudo rm -r /etc/openvpn/server/*
+        sudo rm -r /etc/wireguard/wg0.conf
+        sleep 1
+        if [[ $model != "EG324L" && $model != "EC212" ]]; then
+                sudo cp $path/config/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
+                sudo cp $path/config/global_conf.json /etc/global_conf.json
+                sudo cp $path/config/hostapd.service /lib/systemd/system/hostapd.service
+                # reset wifi ssid
+                sub_mac=$(ifconfig eth0 | grep ether | awk '{print $2}' | cut -f 5-6 -d ":" | tr -d ":")
+
+                if [ ! -f /etc/udev/rules.d/99-wifi-hotplug.rules ]; then
+                        sudo cp $path/config/99-wifi-hotplug.rules /etc/udev/rules.d/
+                fi
+
+                if [[ -e "/etc/chirpstack" ]]; then
+                        sudo cp $path/config/chirpstack.toml /etc/chirpstack/chirpstack.toml
+                        sudo cp $path/config/chirpstack-gateway-bridge.toml /etc/chirpstack-gateway-bridge/chirpstack-gateway-bridge.toml
+                fi
+        else
+                if [ -f /etc/init.d/S42htset ]; then
+                        sudo rm /etc/init.d/S42htset
+                        sudo rm -r /etc/htset
+                fi
+
+                sudo cp $path/config/edaemon.conf /etc/edaemon.conf
+                sub_mac=$(ifconfig eth0 | grep HWaddr | awk '{print $5}' | cut -f 5-6 -d ":" | tr -d ":")
+
+                zonelist=$(ls /usr/share/zoneinfo/ | wc -l)
+                if [[ $zonelist == "0" ]]; then
+                        tar xzvf $path/config/zoneinfo.tar.gz -C /usr/share/
+                fi
+
+                sudo rm /etc/localtime && sudo ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+        fi
+
+        ssid="$target"_"$sub_mac"
+        sed -i "s/ssid.*/ssid=$ssid/" /etc/hostapd/hostapd.conf
+        sudo /etc/raspap/lighttpd/configport.sh 80 '' /etc/lighttpd/lighttpd.conf
+        sync
+}
+
+if [[ $model == "EG500" || $model == "EG410" || $model == "ElastBox400" ]]; then
+        install_package_if_needed "openvpn" "openvpn"
+        install_package_if_needed "wireguard" "wg"
+
+        sudo systemctl stop nftables.service
+        sudo systemctl disable nftables.service
+fi
+
+iotedge_package_check
+
+if [[ $model != "EG324L" && $model != "EC212" ]]; then
+        install_package_if_needed "msmtp" "msmtp"
+        install_package_if_needed "mutt" "mutt"
+        install_package_if_needed "dos2unix" "dos2unix"
+        set_resolvconf
 fi
 
 sleep 1
@@ -95,64 +138,11 @@ if [ $model == "EG324" ]; then
 fi
 
 if [ "$1" == "reset" ]; then
-    echo $1
-    sudo cp $path/config/hostapd.conf /etc/hostapd/hostapd.conf
-    if [ "$model" = "EG324" ]; then
-        sed -i "s/nl80211/rtl871xdrv/g" /etc/hostapd/hostapd.conf
-    fi
-    sudo cp $path/config/90_raspap.conf /etc/sysctl.d/90_raspap.conf
-    sudo sysctl -p /etc/sysctl.d/90_raspap.conf
-    sudo cp $path/config/090_br0.conf /etc/dnsmasq.d/090_br0.conf
-    sudo cp $path/config/dhcpcd.conf /etc/dhcpcd.conf
-    sudo cp $path/config/Muttrc /etc/Muttrc
-    sudo cp $path/config/msmtprc /etc/msmtprc
-    sudo cp $path/config/defaults.json /etc/raspap/networking/
-    sudo cp $path/config/elastpro/etc/* /etc/ -r
-    sudo cp $path/Elastel/$model/etc/* /etc/ -r
-    sudo rm -r /etc/openvpn/client/*
-    sudo rm -r /etc/openvpn/server/*
-    sudo rm -r /etc/wireguard/wg0.conf
-    sleep 1
-    if [ $model != "EG324L" -a $model != "EC212" ]; then
-        sudo cp $path/config/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
-        sudo cp $path/config/global_conf.json /etc/global_conf.json
-        sudo cp $path/config/hostapd.service /lib/systemd/system/hostapd.service
-        # reset wifi ssid
-        sub_mac=$(ifconfig eth0 | grep ether | awk '{print $2}' | cut -f 5-6 -d ":" | tr -d ":")
-
-        if [ ! -f /etc/udev/rules.d/99-wifi-hotplug.rules ]; then
-                sudo cp $path/config/99-wifi-hotplug.rules /etc/udev/rules.d/
-        fi
-
-        if [[ -e "/etc/chirpstack" ]]; then
-                sudo cp $path/config/chirpstack.toml /etc/chirpstack/chirpstack.toml
-                sudo cp $path/config/chirpstack-gateway-bridge.toml /etc/chirpstack-gateway-bridge/chirpstack-gateway-bridge.toml
-        fi
-    else
-        if [ -f /etc/init.d/S42htset ]; then
-                sudo rm /etc/init.d/S42htset
-                sudo rm -r /etc/htset
-        fi
-
-        sudo cp $path/config/edaemon.conf /etc/edaemon.conf
-        sub_mac=$(ifconfig eth0 | grep HWaddr | awk '{print $5}' | cut -f 5-6 -d ":" | tr -d ":")
-
-        zonelist=$(ls /usr/share/zoneinfo/ | wc -l)
-        if [[ $zonelist == "0" ]]; then
-                tar xzvf $path/config/zoneinfo.tar.gz -C /usr/share/
-        fi
-
-        sudo rm /etc/localtime && sudo ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-    fi
-    
-
-    ssid="$target"_"$sub_mac"
-    sed -i "s/ssid.*/ssid=$ssid/" /etc/hostapd/hostapd.conf
-    sudo /etc/raspap/lighttpd/configport.sh 80 '' /etc/lighttpd/lighttpd.conf
-    sync
+        echo $1
+        reset_configuration
 else
-    sudo cp $path/Elastel/$model/etc/init.d/* /etc/init.d/
-    sudo cp $path/config/elastpro/etc/init.d/* /etc/init.d/ -r
+        sudo cp $path/Elastel/$model/etc/init.d/* /etc/init.d/
+        sudo cp $path/config/elastpro/etc/init.d/* /etc/init.d/ -r
 fi
 
 sudo cp $path/config/cron-logrotate /etc/cron.d/
@@ -167,7 +157,7 @@ sudo cp $path/installers/bacnet_update /usr/sbin/
 sync
 sleep 1
 
-if [ $model != "EG324L" -a $model != "EC212" ]; then
+if [[ $model != "EG324L" && $model != "EC212" ]]; then
         if [ -f /etc/sudoers.d/090_raspap ]; then
                 sudo rm /etc/sudoers.d/090_raspap
         fi
@@ -180,8 +170,8 @@ else
         fi
 fi
 
-if [[ $model = "EG500" || $model = "EG410" || $model = "ElastBox400" ]]; then
-        if [ ! -n "$(grep 'pcf8563' /boot/config.txt)"  ]; then
+if [[ $model == "EG500" || $model == "EG410" || $model == "ElastBox400" ]]; then
+        if [ ! -n "$(grep 'pcf8563' /boot/config.txt)" ]; then
                 echo "not pcf8563"
                 sudo bash -c "echo 'dtoverlay=i2c-rtc,pcf8563' >> /boot/config.txt"
         fi
@@ -194,12 +184,12 @@ if [[ $model = "EG500" || $model = "EG410" || $model = "ElastBox400" ]]; then
 fi
 sleep 1
 sync
-if [ $model != "EG324" -a $model != "EG324L" -a $model != "EC212" ]; then
-	echo -e "Start feed dog 0"
-	sudo /var/www/html/installers/feed_dog.sh 0 &
-else 
+if [[ $model != "EG324" && $model != "EG324L" && $model != "EC212" ]]; then
+        echo -e "Start feed dog 0"
+        sudo /var/www/html/installers/feed_dog.sh 0 &
+else
         echo -e "Start feed dog 1"
-        sudo /var/www/html/installers/feed_dog.sh 1 & 
+        sudo /var/www/html/installers/feed_dog.sh 1 &
 fi
 
 sleep 1
@@ -214,8 +204,8 @@ sleep 1
 
 sleep 1
 
-app_array=("bacnet_router" "dct" "ddns" "edaemon" "failover" "firewall" \
-        "gps" "lte" "macchina" "modbus_router" "terminal" "init-wifi" \
+app_array=("bacnet_router" "dct" "ddns" "edaemon" "failover" "firewall"
+        "gps" "lte" "macchina" "modbus_router" "terminal" "init-wifi"
         "iotedge")
 
 for item in "${app_array[@]}"; do
@@ -235,28 +225,28 @@ done
 
 sync
 sleep 1
-if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" || $model = "EC212" ]]; then
+if [[ $bit == "64" || $model == "EG324" || $model == "EG324L" || $model == "EC212" ]]; then
         sudo /etc/init.d/hostapd stop
-	sudo cp -r $path/Elastel/$model/usr/* /usr/
+        sudo cp -r $path/Elastel/$model/usr/* /usr/
         #Turn off automatic updates
         if [[ $model = "EG324" ]]; then
                 sudo systemctl stop unattended-upgrades.service
                 sudo systemctl disable unattended-upgrades.service
         fi
-elif [ $bit = "32" ]; then
-	sudo cp -r $path/Elastel/$model/32/usr/* /usr/
-fi
-
-sleep 1
-
-if [[ $bit = "64" || $model = "EG324" || $model = "EG324L" || $model = "EC212" ]]; then
         sudo cp $path/Elastel/$model/sbin/* /sbin/
 elif [ $bit = "32" ]; then
+        sudo cp -r $path/Elastel/$model/32/usr/* /usr/
         sudo cp $path/Elastel/$model/32/sbin/* /sbin/
 fi
+
+if [[ $model == "EC212" ]]; then
+        sudo chmod 444 /etc/init.d/S50mosquitto /etc/init.d/S50sshd /etc/init.d/S59snmpd
+        sudo cp $path/config/15-fastcgi-php.conf-EC212 /etc/lighttpd/conf-enabled/15-fastcgi-php.conf
+fi
+
 sync
 echo -e "Complete to update, it will reboot system."
-echo $(date +%F%n%T) > /etc/fw_date
-echo $(date +%F%n%T):success > /etc/update_status
+echo $(date +%F%n%T) >/etc/fw_date
+echo $(date +%F%n%T):success >/etc/update_status
 sleep 5
 sudo reboot

@@ -2062,7 +2062,7 @@ function getWebshowDate() {
             for (var key in jsonData) {
                 //console.log(key + ":" + jsonData[key]);
                 if ((num % 4) == 0) {
-                    data += "<tr class=\"tr cbi-section-table-descr\" style='border:0;'>\n"
+                    data += "<tr class=\"tr table-label-container\" style='border:0;'>\n"
                 }
 
                 data += "<td style='border:0'>\n";

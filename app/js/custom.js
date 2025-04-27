@@ -976,21 +976,21 @@ $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
     setCookie('sidebarToggled',toggled, 90);
 });
 
-$(function() {
-    if ($(window).width() < 768) {
-        $('.sidebar').addClass('toggled');
-        setCookie('sidebarToggled',false, 90);
-    }
-});
+// $(function() {
+//     if ($(window).width() < 768) {
+//         $('.sidebar').addClass('toggled');
+//         setCookie('sidebarToggled',false, 90);
+//     }
+// });
 
-$(window).on("load resize",function(e) {
-    if ($(window).width() > 768) {
-        $('.sidebar').removeClass('d-none d-md-block');
-        if (getCookie('sidebarToggled') == 'false') {
-            $('.sidebar').removeClass('toggled');
-        }
-    }
-});
+// $(window).on("load resize",function(e) {
+//     if ($(window).width() > 768) {
+//         $('.sidebar').removeClass('d-none d-md-block');
+//         if (getCookie('sidebarToggled') == 'false') {
+//             $('.sidebar').removeClass('toggled');
+//         }
+//     }
+// });
 
 // Adds active class to current nav-item
 $(window).bind("load", function() {

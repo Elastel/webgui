@@ -300,12 +300,16 @@ canvas#divDBChartBandwidthhourly {
   margin-left:0rem;
 }
 .cbi-value-title {
-  width: 15rem;
+  width: 100%;
+  max-width: 15rem;
+  min-width: 5rem;
   text-align:right;
   margin-right:0.5rem;
 }
 .cbi-input-text {
-  min-width: 20rem;
+  width: 100%;
+  min-width: 5rem;
+  max-width: 20rem;
   height: calc(1.5em + 0.75rem);
   color: #6e707e;
   background-color: #fff;
@@ -329,7 +333,9 @@ canvas#divDBChartBandwidthhourly {
 }
 
 .cbi-input-select {
-  min-width: 20rem;
+  width: 100%;
+  max-width: 20rem;
+  min-width: 5rem;
   height: calc(1.5em + 0.75rem);
   color: #6e707e;
   background-color: #fff;
@@ -368,12 +374,13 @@ canvas#divDBChartBandwidthhourly {
 }
 
 .cbi-section-create {
-	display: inline-flex;
-	align-items: center;
-	margin: .5rem -3px;
+	display: flex;
+  align-items: center;
+  margin: 0.5rem -3px;
+  flex-wrap: wrap;
 }
 
-.cbi-button-add{
+.cbi-button-add {
   font-size: 1rem;
   margin-top: 2rem;
   text-transform: uppercase;
@@ -382,6 +389,13 @@ canvas#divDBChartBandwidthhourly {
   color: #fff;
   border: thin solid <?php echo $color; ?>;
   background-color: <?php echo $color; ?>;
+  max-width: 100%;
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 
 #popLayer,
@@ -543,6 +557,15 @@ canvas#divDBChartBandwidthhourly {
 @keyframes spin {
   0% {transform: rotate(0deg);}
   100% {transform: rotate(360deg);}
+}
+
+.table-label-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .table-label-key{

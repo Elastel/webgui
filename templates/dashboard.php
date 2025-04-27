@@ -97,10 +97,8 @@
               <div class="card h-100">
                 <div class="card-body wireless">
                 <?php foreach($routeInfo as $route): ?>
-                  <?php if ($route['interface'] == "eth0") { ?>
+                  <?php if (isset($route['interface']) && $route['interface'] == "eth0") { ?>
                     <h4 class="card-title"><?php echo _("Wired Network Status"); ?></h4>
-                  <?php } ?>
-                  <?php if ($route['interface'] == "eth0") {?>
                     <div class="row ml-1">
                       <div class="col-sm">
                         <div class="row mb-1">
@@ -162,6 +160,8 @@
                         </div>
                       </div>
                     </div>
+                    </br>
+                    </br>
                   <?php } ?>
                   <?php if ($wifiInfo['interface'] == "wlan0") { ?>
                     <h4 class="card-title"><?php echo _("WIFI Network Status"); ?></h4>
