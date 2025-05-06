@@ -1,8 +1,8 @@
 <div class="tab-pane fade" id="radio">
-  <div class="row">
+  <div>
     <div class="cbi-value">
         <label class="cbi-value-title"><?php echo _("Radio 0 enable"); ?></label>
-        <input type="checkbox" class="cbi-input-checkbox" onchange="enableRadio0(this)" name="radio0_enable" id="radio0_enable" value="1"/>
+        <input type="checkbox"  onchange="enableRadio0(this)" name="radio0_enable" id="radio0_enable" value="1"/>
     </div>
 
     <div id="page_radio0" name="page_radio0">
@@ -13,7 +13,7 @@
 
         <div class="cbi-value">
             <label class="cbi-value-title"><?php echo _("Radio_0 for tx"); ?></label>
-            <input type="checkbox" class="cbi-input-checkbox" onchange="enableRadio0Tx(this)" name="radio0_tx" id="radio0_tx" value="1"/>
+            <input type="checkbox"  onchange="enableRadio0Tx(this)" name="radio0_tx" id="radio0_tx" value="1"/>
         </div>
 
         <div id="page_radio0_tx" name="page_radio0_tx">
@@ -30,7 +30,7 @@
 
     <div class="cbi-value">
         <label class="cbi-value-title"><?php echo _("Radio 1 enable"); ?></label>
-        <input type="checkbox" class="cbi-input-checkbox" onchange="enableRadio1(this)" name="radio1_enable" id="radio1_enable" value="1"/>
+        <input type="checkbox"  onchange="enableRadio1(this)" name="radio1_enable" id="radio1_enable" value="1"/>
     </div>
 
     <div id="page_radio1" name="page_radio1">
@@ -41,7 +41,7 @@
 
         <div class="cbi-value">
             <label class="cbi-value-title"><?php echo _("Radio_1 for tx"); ?></label>
-            <input type="checkbox" class="cbi-input-checkbox" onchange="enableRadio1Tx(this)" name="radio1_tx" id="radio1_tx" value="1"/>
+            <input type="checkbox"  onchange="enableRadio1Tx(this)" name="radio1_tx" id="radio1_tx" value="1"/>
         </div>
     </div>
   </div><!-- /.row -->

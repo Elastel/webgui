@@ -138,21 +138,25 @@ function saveLorawanConfig($status)
             $data['SX130x_conf']['radio_1']['enable'] = false;
         }
         
-        $channels = array('channel_enable', 'channel_radio', 'channel_if');
         for ($i = 0; $i < 8; $i++) {
-            if ($_POST['channel_enable' . $i] == '1') {
-                $data['SX130x_conf']['chan_multiSF_' . $i]['enable'] = true;
-                if ($_POST['channel_radio' . $i] != '') {
-                    $data['SX130x_conf']['chan_multiSF_' . $i]['radio'] = intval($_POST['channel_radio' . $i]);
-                }
-
-                if ($_POST['channel_if' . $i] != '') {
-                    $data['SX130x_conf']['chan_multiSF_' . $i]['if'] = intval($_POST['channel_if' . $i]);
-                }
-            } else {
-                $data['SX130x_conf']['chan_multiSF_' . $i]['enable'] = false;
-            }
+            $data['SX130x_conf']['chan_multiSF_' . $i]['enable'] = true;
         }
+        
+        // $channels = array('channel_enable', 'channel_radio', 'channel_if');
+        // for ($i = 0; $i < 8; $i++) {
+        //     if ($_POST['channel_enable' . $i] == '1') {
+        //         $data['SX130x_conf']['chan_multiSF_' . $i]['enable'] = true;
+        //         if ($_POST['channel_radio' . $i] != '') {
+        //             $data['SX130x_conf']['chan_multiSF_' . $i]['radio'] = intval($_POST['channel_radio' . $i]);
+        //         }
+
+        //         if ($_POST['channel_if' . $i] != '') {
+        //             $data['SX130x_conf']['chan_multiSF_' . $i]['if'] = intval($_POST['channel_if' . $i]);
+        //         }
+        //     } else {
+        //         $data['SX130x_conf']['chan_multiSF_' . $i]['enable'] = false;
+        //     }
+        // }
 
         $json_strings = json_encode($data);
         file_put_contents("/tmp/global_conf.json", $json_strings);

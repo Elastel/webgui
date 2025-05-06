@@ -321,6 +321,7 @@ canvas#divDBChartBandwidthhourly {
 .cbi-input-checkbox {
   text-align:left;
 }
+
 .cbi-value-description {
     font-size: small;
     padding-top: 0.4rem;

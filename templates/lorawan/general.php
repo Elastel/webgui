@@ -1,5 +1,5 @@
 <div class="tab-pane active" id="general">
-  <div class="row">
+  <div>
     <div class="cbi-value">
         <label class="cbi-value-title"><?php echo _("Working Mode"); ?></label>
         <select id="type" name="type" class="cbi-input-select" onchange="typeChangeLorawan()">
