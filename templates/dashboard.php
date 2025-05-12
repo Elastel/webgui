@@ -118,6 +118,9 @@
                           <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("MAC:"); ?></div><div class="col-xs-3" > <?php echo $route["mac"]; ?></div>
                           <?php } ?>
                         </div>
+                        <div class="row mb-1">
+                          <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("Metric:"); ?></div><div class="col-xs-3"><?php echo $route["metric"]; ?></div>
+                        </div>
                       </div>
                     </div>
                     </br>
@@ -158,6 +161,9 @@
                         <div class="row mb-1">
                           <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("Uptime:"); ?></div><div class="col-xs-3"><?php echo $lteInfo["uptime"]; ?></div>
                         </div>
+                        <div class="row mb-1">
+                          <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("Metric:"); ?></div><div class="col-xs-3"><?php echo $lteInfo["metric"]; ?></div>
+                        </div>
                       </div>
                     </div>
                     </br>
@@ -181,6 +187,9 @@
                         </div>
                         <div class="row mb-1">
                           <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("Gateway:"); ?></div><div class="col-xs-3"><?php echo $wifiInfo["gateway"]; ?></div>
+                        </div>
+                        <div class="row mb-1">
+                          <div class="col-xs-3" style="color: #858796; width: 7rem"><?php echo _("Metric:"); ?></div><div class="col-xs-3"><?php echo $wifiInfo["metric"]; ?></div>
                         </div>
                       </div>
                     </div>

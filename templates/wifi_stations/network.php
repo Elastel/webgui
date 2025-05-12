@@ -62,9 +62,7 @@
 					<input type="password" disabled class="form-control" aria-describedby="passphrase" name="passphrase<?php echo $index ?>" value="" />
 				<?php } else { ?>
 					<input type="password" class="form-control" aria-describedby="passphrase" name="passphrase<?php echo $index ?>" value="<?php echo $network['passphrase'] ?>" data-target="#update<?php echo $index ?>" data-colors="#ffd0d0,#d0ffd0">
-					<div class="input-group-append">
-						<button class="btn btn-outline-secondary js-toggle-password" type="button" data-target="[name=passphrase<?php echo $index ?>]" data-toggle-with="<?php echo _("Hide") ?>">Show</button>
-					</div>
+					<div class="input-group-text js-toggle-password" data-bs-target="[name=passphrase<?php echo $index ?>]" data-toggle-with="fas fa-eye-slash"><i class="mx-2 fas fa-eye"></i></div>
 				<?php } ?>
 			</div>
 		</div>
