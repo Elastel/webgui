@@ -32,6 +32,8 @@
 
             InputControlCustom(_('Report Period'), 'report_period', 'report_period', _('Seconds'), '10');
 
+            CheckboxControlCustom(_('Batch Reporting'), 'batch_reporting', 'batch_reporting');
+
             CheckboxControlCustom(_('Enable Cache'), 'cache_enabled', 'cache_enabled', null, _('Cache History Data'), 'enableCache(this)');
 
             echo '<div id="page_cache_days" name="page_cache_days">';

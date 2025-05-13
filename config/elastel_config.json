@@ -1,5 +1,5 @@
 {
-    "basic_option" : ["enabled", "collect_period", "report_period", "cache_enabled", "cache_day", "minute_enabled",
+    "basic_option" : ["enabled", "collect_period", "report_period", "batch_reporting", "cache_enabled", "cache_day", "minute_enabled",
 						"minute_period", "hour_enabled", "day_enabled"],
     "com_option" : ["enabled", "baudrate", "databit", "stopbit", "parity", "frame_interval",
 					"proto", "cmd_interval", "report_center", "slave_address", "master_address", "frames",

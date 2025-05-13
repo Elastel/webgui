@@ -27,6 +27,7 @@ function saveBasicConfig($status)
     if ($_POST['enabled'] == "1") {
         $data['collect_period'] = $_POST['collect_period'];
         $data['report_period'] = $_POST['report_period'];
+        $data['batch_reporting'] = $_POST['batch_reporting'] ?? '0';
         $data['cache_enabled'] = $_POST['cache_enabled'] ?? '0';
         $data['cache_day'] = $_POST['cache_day'];
         $data['minute_enabled'] = $_POST['minute_enabled'] ?? '0';

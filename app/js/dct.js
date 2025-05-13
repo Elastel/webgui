@@ -191,7 +191,7 @@ function loadBasicConfig() {
     $('#loading').show();
     $.get('ajax/dct/get_dctcfg.php?type=basic',function(data) {
         var jsonData = JSON.parse(data);
-        var arr = ['collect_period', 'report_period', 'cache_enabled', 'cache_day', 'minute_enabled',
+        var arr = ['collect_period', 'report_period', 'batch_reporting', 'cache_enabled', 'cache_day', 'minute_enabled',
         'minute_period', 'hour_enabled', 'day_enabled'];
 
         $('#enabled').val(jsonData.enabled);
@@ -205,7 +205,7 @@ function loadBasicConfig() {
                 }
     
                 if (info == 'cache_enabled' || info == 'minute_enabled' || info == 'hour_enabled' || 
-                    info == 'day_enabled') {
+                    info == 'day_enabled' || info == 'batch_reporting') {
                     $('#' + info).prop('checked', (jsonData[info] == '1') ? true:false);
                 } else {
                     $('#' + info).val(jsonData[info]);
