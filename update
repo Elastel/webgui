@@ -242,6 +242,9 @@ fi
 if [[ $model == "EC212" ]]; then
         sudo chmod 444 /etc/init.d/S50mosquitto /etc/init.d/S50sshd /etc/init.d/S59snmpd
         sudo cp $path/config/15-fastcgi-php.conf-EC212 /etc/lighttpd/conf-enabled/15-fastcgi-php.conf
+        if [ ! -d "/etc/dropbear" ]; then
+                sudo mkdir -p /etc/dropbear
+        fi
 fi
 
 sync

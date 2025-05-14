@@ -1011,6 +1011,10 @@ function handlePageActions($extraFooterScripts, $page)
         case "/login":
             DisplayLogin();
             break;
+        case "/logout":
+            $auth = new \ElastPro\Auth\HTTPAuth();
+            $auth->logout();
+            break;
         default:
             DisplayDashboard($extraFooterScripts);
     }

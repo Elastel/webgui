@@ -11,7 +11,7 @@ function DisplayLogin()
     // initialize auth object
     $auth = new \ElastPro\Auth\HTTPAuth;
     $status = null;
-    $redirectUrl = null;
+    $redirectUrl = "dashboard";
 
     // handle page action
     if (RASPI_AUTH_ENABLED) {

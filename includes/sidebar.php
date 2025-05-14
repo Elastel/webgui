@@ -174,6 +174,9 @@
             <a class="nav-link" href="about"><i class="fas fa-info-circle fa-fw mr-2"></i><span class="nav-label"><?php echo _("About Elastel"); ?></a>
         </li>
         <?php endif; ?>
+        <li class="nav-item">
+            <a class="nav-link" href="logout"><i class="fas fa-sign-out-alt mr-2"></i><span class="nav-label"><?php echo _("Logout"); ?></a>
+        </li>
         <!-- Divider -->
         <hr class="sidebar-divider d-block">
     </ul>
