@@ -349,11 +349,26 @@ echo "<div class=\"tab-pane $active\" id=\"server$num\">
 
             <div name=\"page_encap$num\" id=\"page_encap$num\">
               <div class=\"cbi-value\">
-                <label class=\"cbi-value-title\">"; echo _("Encapsulation Type"); echo "</label>
+                <label class=\"cbi-value-title\">"; echo _("Payload Format"); echo "</label>
                 <select id=\"encap_type$num\" name=\"encap_type$num\" class=\"cbi-input-select\" onchange=\"encapChange($num)\">
                   <option value=\"0\">Transparent</option>
                   <option value=\"1\" selected=\"\">JSON</option>
                 </select>
+              </div>
+            </div>
+
+            <div name=\"page_json$num\" id=\"page_json$num\">
+              <div class=\"cbi-value\">
+                <label class=\"cbi-value-title\">"; echo _("JSON Format"); echo "</label>
+                <select id=\"json_format$num\" name=\"json_format$num\" class=\"cbi-input-select\" onchange=\"jsonChange($num)\">
+                  <option value=\"0\">base-format</option>
+                  <option value=\"1\" selected=\"\">elastpro-format</option>
+                  <option value=\"2\">array-format</option>
+                </select>
+                <i class=\"fas fa-question-circle\"
+                  style=\"color:#17a2b8;cursor:pointer;margin-left:0.5rem;\"
+                  title=''>
+                </i>
               </div>
             </div>
 

@@ -1140,7 +1140,7 @@ function loadServerConfig() {
     $.get('ajax/dct/get_dctcfg.php?type=server',function(data){
         var jsonData = JSON.parse(data);
 
-        var arr = ["proto", "encap_type", "server_addr", "http_url", "server_port", "cache_enabled", 
+        var arr = ["proto", "encap_type", "json_format", "server_addr", "http_url", "server_port", "cache_enabled", 
         "register_packet", "register_packet_hex", "heartbeat_packet", "heartbeat_packet_hex", "heartbeat_interval",
         "mqtt_heartbeat_interval", "mqtt_pub_topic", "mqtt_sub_topic", "mqtt_username", "mqtt_password", "sparkplug_group_id",
         "sparkplug_node_id", "sparkplug_device_id", "mqtt_client_id", "mqtt_tls_enabled", "certificate_type", "mqtt_ca", "mqtt_cert", "mqtt_key", 
@@ -1172,6 +1172,7 @@ function loadServerConfig() {
                         $('#' + info + i).val(jsonData[info + i]);
                     }
                     protocolChange(i);
+                    jsonChange(i);
                 });           
             } else {
                 $('#page_server' + i).hide(); 
@@ -1265,9 +1266,29 @@ function encapChange(num) {
     } else if (encap_type == 1) {
         $('#page_json' + num).show();
         $('#page_hj212_' + num).hide();
+        jsonChange(num);
     } else if (encap_type == 2) {
         $('#page_json' + num).hide();
         $('#page_hj212_' + num).show();
+    }
+}
+
+function jsonChange(num) {
+    var select = document.getElementById('json_format' + num);
+    var icon = select.nextElementSibling;
+    if (!icon || !icon.classList.contains('fa-question-circle')) return;
+
+    var value = select.value;
+    if (value === "0") {
+        icon.setAttribute('title', '{"ts":1747208633000,"temperature":27}');
+    } else if (value === "1") {
+        icon.setAttribute('title', '{"ts":1747208633000,"params":{"temperature":27}}');
+    } else if (value === "2") {
+        icon.setAttribute('title', '{"ts":1747208633000,"params":[{"name":"temperature", "value":27}]}');
+    }
+
+    if ($(icon).data('bs.tooltip')) {
+        $(icon).attr('data-original-title', icon.getAttribute('title')).tooltip('update');
     }
 }
 
