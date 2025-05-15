@@ -11,12 +11,17 @@ $type_arr = array(
 );
 
 if ($type == 'datadisplay') {
-    exec('cat /tmp/webshow', $dctdata);
-    if ($dctdata[0] != NULL){
-        echo $dctdata[0];
-    }  else {
-        echo "{}";
+    $webData = '/tmp/webshow';
+    $factor_list = '/tmp/factor_list';
+    if (file_exists($webData)) {
+        $dctdata["data"] = file_get_contents($webData);
     }
+
+    if (file_exists($factor_list)) {
+        $dctdata["factor_list"] = file_get_contents($factor_list);
+    }
+
+    echo json_encode($dctdata);
 } else if ($type == 'tag_write') {
     $tagName = $_GET['tagName'];
     $value = $_GET['value'];

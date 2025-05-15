@@ -80,7 +80,7 @@
                         </ul>
                     </div>
                 </li>
-                <li class="nav-item" name="datadisplay" id="dct_datadisplay"><a class="nav-link" href="datadisplay"><?php echo _("Data Display"); ?></a></li>
+                <li class="nav-item" name="datadisplay" id="dct_datadisplay"><a class="nav-link" href="datadisplay"><?php echo _("Data Monitoring"); ?></a></li>
             </ul>
             </div>
         </li>

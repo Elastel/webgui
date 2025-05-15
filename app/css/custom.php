@@ -379,6 +379,7 @@ canvas#divDBChartBandwidthhourly {
   align-items: center;
   margin: 0.5rem -3px;
   flex-wrap: wrap;
+  gap: 2rem;
 }
 
 .cbi-button-add {
@@ -635,5 +636,11 @@ canvas#divDBChartBandwidthhourly {
     height: 100%;
     // background: url('app/img/bg.png') no-repeat center center;
     background-size: cover !important;
-    border: none; /* 可选：移除边框 */
+    border: none;
+}
+
+#page_datadisplay {
+  max-height: 35rem;
+  overflow-y: auto;
+  height: auto;
 }

@@ -41,10 +41,26 @@ function writeValueByTag(object) {
     container.style.alignItems = "center";
     container.style.gap = "10px";
 
-    const label = document.createElement('label');
-    label.textContent = tagName + ':';
-    label.style.display = 'block';
-    label.style.marginBottom = '10px';
+    let labelOrSelect;
+    if (tagName.includes(';')) {
+        const select = document.createElement('select');
+        select.style.display = 'block';
+        select.style.marginBottom = '10px';
+        select.style.padding = '5px';
+        tagName.split(';').forEach(function(item) {
+            const option = document.createElement('option');
+            option.value = item;
+            option.textContent = item;
+            select.appendChild(option);
+        });
+        labelOrSelect = select;
+    } else {
+        const label = document.createElement('label');
+        label.textContent = tagName + ':';
+        label.style.display = 'block';
+        label.style.marginBottom = '10px';
+        labelOrSelect = label;
+    }
 
     const input = document.createElement('input');
     input.type = 'number';
@@ -77,7 +93,7 @@ function writeValueByTag(object) {
     closeButton.style.border = 'none';
     closeButton.style.cursor = 'pointer';
 
-    container.appendChild(label);
+    container.appendChild(labelOrSelect);
     container.appendChild(input);
     container.appendChild(writeButton);
 
@@ -95,13 +111,19 @@ function writeValueByTag(object) {
     });
 
     writeButton.addEventListener('click', () => {
-        let params = 'tagName=' + tagName + '&' + 'value=' + input.value
+        let params = '';
+        if (tagName.includes(';')) {
+            const selectedValue = labelOrSelect.value;
+            params = 'tagName=' + selectedValue + '&' + 'value=' + input.value;
+        } else {
+            params = 'tagName=' + tagName + '&' + 'value=' + input.value
+        }
+        
         if (input.value.length > 0) {
             $.get('ajax/dct/get_dctcfg.php?type=tag_write&' + params, function(data) {}); 
         } else {
             alert("The input cannot be empty!");
         }
-        
     });
 }
 
@@ -631,7 +653,12 @@ function addSectionTable(table_name, jsonData, option_list) {
 /*datadisplay*/
 function getRealtimeData() {
     $.get('ajax/dct/get_dctcfg.php?type=datadisplay', function(data) {
-        jsonData = JSON.parse(data);
+        if (!data.includes("data")) {
+            return;
+        }
+        
+        tmp = JSON.parse(data);
+        jsonData = JSON.parse(tmp['data']);
         // console.log(jsonData);
 
         if (jsonData == null)
@@ -2066,49 +2093,104 @@ function loadModbusSlaveConfig() {
     });
 }
 
+function addDataDisplyItem(tbody, table, jsonData, key, keywords) {
+    if (jsonData.hasOwnProperty(key)) {
+        if (!key.includes(keywords) && keywords.length > 0) {
+            return false;
+        }
+
+        var td = table.querySelector('td[name="' + key + '"]');
+        if (td) {
+            var tr = td.parentNode;
+            tr.children[1].textContent = jsonData[key];
+        } else {
+            var tr = document.createElement('tr');
+            tr.className = "tr cbi-section-table-descr";
+
+            // key
+            var tdKey = document.createElement('td');
+            tdKey.style.textAlign = "center";
+            tdKey.setAttribute('name', "factor_name");
+            tdKey.textContent = key;
+            tr.appendChild(tdKey);
+
+            // value
+            var tdValue = document.createElement('td');
+            tdValue.style.textAlign = "center";
+            tdValue.textContent = jsonData[key];
+            tr.appendChild(tdValue);
+
+            // button
+            var tdBtn = document.createElement('td');
+            tdBtn.style.textAlign = "center";
+            let button = document.createElement("button");
+            button.textContent = "Write";
+            button.classList.add("btn-primary");
+            button.style = "border-radius: 0.5rem;";
+            button.addEventListener("click", function (event) {
+                event.preventDefault();
+                writeValueByTag(this);
+            });
+            tdBtn.appendChild(button);
+            tr.appendChild(tdBtn);
+            tbody.appendChild(tr);
+        }
+    }
+}
+
 /*datadisplay*/
 function getWebshowDate() {
     $.get('ajax/dct/get_dctcfg.php?type=datadisplay', function(data) {
-        jsonData = JSON.parse(data);
-        var num = 0;
-        var table = document.getElementsByTagName("table")[0]; 
-        var data = [];
-        var flag = 0;
-        if ($('table tr').length) {
-            for (var key in jsonData) {
-                $('#' + key ).html(jsonData[key]);
-                num++;
+        if (data.includes("data")) {
+            tmp = JSON.parse(data);
+            jsonData = JSON.parse(tmp['data']);
+            if (data.includes("factor_list")) {
+                factorList = JSON.parse(tmp['factor_list']);
             }
         } else {
+            return;
+        }
+
+        if (jsonData == null || Object.keys(jsonData).length == 0) {
+            return;
+        }
+
+        var table = document.getElementsByTagName("table")[0];
+        var keywords = document.getElementsByName("keywords")[0].value;
+        var select = document.getElementById('current_rule').value || "all";
+        var trs = table.querySelectorAll('tr');
+        trs.forEach(function(tr) {
+            var td = tr.querySelector('td[name]');
+            if (td) {
+                var key = td.getAttribute('name');
+                if (!jsonData.hasOwnProperty(key) || (keywords.length > 0 && !key.includes(keywords))) {
+                    tr.remove();
+                }
+            }
+        });
+
+        var table = document.getElementById("table_modbus");
+        if (!table.tBodies.length) {
+            table.appendChild(document.createElement('tbody'));
+        }
+        var tbody = table.tBodies[0];
+        if (select == "all") {
             for (var key in jsonData) {
-                //console.log(key + ":" + jsonData[key]);
-                if ((num % 4) == 0) {
-                    data += "<tr class=\"tr table-label-container\" style='border:0;'>\n"
-                }
-
-                data += "<td style='border:0'>\n";
-                data += "<label class='table-label-key' id=" + key + "1 >" + key + ":" + "</label>\n";
-                data += "<label class='table-label-value' id=" + key + " >" + jsonData[key] + "</label>\n";
-                data += "</td>\n";
-
-                num++;
-                if ( num > 0 && ((num % 4) == 0)) {
-                    flag = 1;
-                    data += "</tr>\n";
-                    flag = 0;
+                if (!addDataDisplyItem(tbody, table, jsonData, key, keywords)) {
+                    continue;
                 }
             }
+        } else {
+            factorList.forEach(function(item) {
+                if (!item.startsWith(select + '-')) {
+                    return;
+                }
 
-            if (flag == 0 && num > 0) {
-                data += "</tr>\n";
-            }
-
-            table.innerHTML += data;
-            if (num > 0) {
-                $('#msg').hide();
-            } else {
-                $('#msg').html("Data collection in progress, please check later...");
-            }
+                var key = item.substring(item.indexOf('-') + 1);
+                if (!addDataDisplyItem(tbody, table, jsonData, key, keywords)) {
+                    return;
+                }
+            });
         }
     });
 }
