@@ -127,7 +127,7 @@
                     </br>
                   <?php } ?>
                   <?php endforeach ?>
-                  <?php if ($lteInfo['enabled'] == "1") { ?>
+                  <?php if (isset($lteInfo['iccid']) && strlen($lteInfo['iccid']) > 0) { ?>
                     <h4 class="card-title"><?php echo _("LTE Network Status"); ?></h4>
                     <div class="row ml-1">
                       <div class="col-sm">
