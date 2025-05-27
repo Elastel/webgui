@@ -75,13 +75,11 @@ function DisplayNetworkingConfig()
     $lte_interface = '';
     $lte_enabled = 0;
     exec('ls /sys/class/net | grep -v lo', $interfaces);
+    exec("uci get network.swan.ifname", $cur_interface);
     foreach( $interfaces as $k=>$v) {
-        if($v == 'wwan0') {
+        if($v == $cur_interface[0]) {
             $lte_enabled = 1;
-            $lte_interface = ['wwan0'];
-        } else if ($v == 'usb0') {
-            $lte_enabled = 1;
-            $lte_interface = ['usb0'];
+            $lte_interface = [$cur_interface[0]];
         }
     }
 

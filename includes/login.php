@@ -11,7 +11,7 @@ function DisplayLogin()
     // initialize auth object
     $auth = new \ElastPro\Auth\HTTPAuth;
     $status = null;
-    $redirectUrl = "dashboard";
+    $redirectUrl = null;
 
     // handle page action
     if (RASPI_AUTH_ENABLED) {
@@ -19,7 +19,7 @@ function DisplayLogin()
             // authenticate user
             $username = $_POST['username'];
             $password = $_POST['password'];
-            $redirectUrl = $_POST['redirect-url'];
+            $redirectUrl = ($_POST['redirect-url'] === "/logout") ? "/" : $_POST['redirect-url'];
             if ($auth->login($username, $password)) {
                 $config = $auth->getAuthConfig();
                 header('Location: ' . $redirectUrl);

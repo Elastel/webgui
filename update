@@ -181,18 +181,17 @@ if [[ $model == "EG500" || $model == "EG410" || $model == "ElastBox400" ]]; then
         sudo ln -s /etc/init.d/loragw /etc/rc5.d/S10loragw
         sudo /etc/init.d/loragw stop
         sudo cp $path/installers/reset_lgw.sh /usr/sbin/
-fi
-sleep 1
-sync
-if [[ $model != "EG324" && $model != "EG324L" && $model != "EC212" ]]; then
+        sudo cp $path/config/modules.conf /etc/modules-load.d/
+
         echo -e "Start feed dog 0"
         sudo /var/www/html/installers/feed_dog.sh 0 &
 else
+        sudo cp $path/99-option.rules /etc/udev/rules.d/
         echo -e "Start feed dog 1"
         sudo /var/www/html/installers/feed_dog.sh 1 &
 fi
-
 sleep 1
+sync
 
 [ -n "$(pgrep daemond)" ] && {
         sudo kill -9 $(pgrep daemond)

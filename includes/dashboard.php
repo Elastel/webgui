@@ -84,6 +84,22 @@ function get_revison()
     }
 }
 
+function getInterfaceMetric($iface) {
+    $routes = shell_exec("ip route");
+
+    foreach (explode("\n", $routes) as $line) {
+        if (strpos($line, 'default') !== false && strpos($line, "dev $iface") !== false) {
+            if (preg_match('/metric (\d+)/', $line, $matches)) {
+                return $matches[1];
+            } else {
+                return '0';
+            }
+        }
+    }
+
+    return null;
+}
+
 /**
  * Show dashboard page.
  */
@@ -182,11 +198,11 @@ function DisplayDashboard(&$extraFooterScripts)
         $routeInfo[0]['mac'] = $mac[0];
     }
 
-    exec('ip route | awk \'/default/ && /eth0/ {print $NF}\'', $metric);
-    $routeInfo[0]['metric'] = $metric[0];
-    
+    $routeInfo[0]['metric'] = getInterfaceMetric('eth0') ?? '-';
+
     exec('ip route | grep "default"  | grep -c "'. $lte_ifname[0] .'"', $enabled);
     $lteInfo = array();
+    $lteInfo["enabled"] = $enabled[0];
     if (file_exists("/dev/ttyUSB2")) {
         exec('ifconfig '. $lte_ifname[0] .' | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep -v "255.255."', $ip_address);
         exec('ifconfig '. $lte_ifname[0] .' | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep "255.255."', $netmask);
@@ -197,8 +213,6 @@ function DisplayDashboard(&$extraFooterScripts)
 		exec('uci -P /var/state/ get dangle.dev.sim', $sim);
         exec('uci -P /var/state/ get dangle.dev.connect', $lte_status);
         exec('uci -P /var/state/ get dangle.dev.uptime', $uptime);
-        exec('ip route | awk \'/default/ && /'. $lte_ifname[0] .'/ {print $NF}\'', $lte_metric);
-		
         if ($enabled[0] == '0') {
             $lte_status[0] = "DISCONNECTED";
         }
@@ -213,7 +227,7 @@ function DisplayDashboard(&$extraFooterScripts)
         $lteInfo["lte_status"] = $lte_status[0]  ?? "DISCONNECTED";
 		$lteInfo["sim"] = $sim[0] ?? '-';
         $lteInfo["uptime"] = $uptime[0] ? timeCalculation($uptime[0]) : '-';
-        $lteInfo["metric"] = $lte_metric[0] ?? '-';
+        $lteInfo["metric"] = getInterfaceMetric($lte_ifname[0]) ?? '-';
     }
 
     exec('ip route | grep "default"  | grep -c "wlan0"', $wifi_enabled);
@@ -223,14 +237,13 @@ function DisplayDashboard(&$extraFooterScripts)
         exec('ifconfig wlan0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep -v "255.255."', $wifi_ip);
         exec('ifconfig wlan0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep "255.255."', $wifi_netmask);
         exec("ip route show | grep default | grep wlan0 | awk '{print $3}'", $wifi_gateway);
-        exec('ip route | awk \'/default/ && /wlan0/ {print $NF}\'', $wifi_metric);
 
         $wifiInfo["interface"] = 'wlan0';
         // $wifiInfo["ssid"] = $ssid[0];
         $wifiInfo["ip"] = $wifi_ip[0];
         $wifiInfo["netmask"] = $wifi_netmask[0];
         $wifiInfo["gateway"] = $wifi_gateway[0];
-        $wifiInfo["metric"] = $wifi_metric[0];
+        $wifiInfo["metric"] = getInterfaceMetric('wlan0') ?? '-';
     }
 
     exec("cat /proc/sys/kernel/hostname", $tmp);
