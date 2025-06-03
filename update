@@ -186,7 +186,7 @@ if [[ $model == "EG500" || $model == "EG410" || $model == "ElastBox400" ]]; then
         echo -e "Start feed dog 0"
         sudo /var/www/html/installers/feed_dog.sh 0 &
 else
-        sudo cp $path/99-option.rules /etc/udev/rules.d/
+        sudo cp $path/config/99-option.rules /etc/udev/rules.d/
         echo -e "Start feed dog 1"
         sudo /var/www/html/installers/feed_dog.sh 1 &
 fi
@@ -244,6 +244,7 @@ if [[ $model == "EC212" ]]; then
         if [ ! -d "/etc/dropbear" ]; then
                 sudo mkdir -p /etc/dropbear
         fi
+        sed -i '/^sshd/d' "/etc/edaemon.conf"
 fi
 
 sync
