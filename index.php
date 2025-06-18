@@ -37,7 +37,7 @@ require_once 'includes/includes.php';
     <meta name="msapplication-TileColor" content="#b91d47">
     <meta name="theme-color" content="#ffffff">
   </head>
-  <body id="page-top" style="font-family:'Arial','Microsoft YaHei','黑体','宋体',sans-serif">
+  <body id="page-top" style="font-family:'Arial','Microsoft YaHei',sans-serif">
     <?php ob_start(); ?>
     <!-- Page Wrapper -->
     <div id="wrapper">

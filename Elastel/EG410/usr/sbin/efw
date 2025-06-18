@@ -11,7 +11,6 @@ add_rules_general()
 
 	nft add rule inet efw $1 ct state related,established accept
 
-# 添加基本配置允许访问 localhost：（comment后的为注释）
 	if [ "$1" == "input" ]; then
 		nft add rule inet efw $1 iif "lo" accept comment \"Accept any localhost traffic\"
 		nft add rule inet efw $1 iif != "lo" ip daddr 127.0.0.0/8 counter drop comment \"drop connections to loopback not coming from loopback\"
@@ -169,15 +168,12 @@ add_rules_traffic() {
 }
 
 add_rules() {
-# 1. 添加表 efw
 	nft add table inet efw
 
-# handle_reject
 	nft add chain inet efw handle_reject
 	nft add rule inet efw handle_reject meta l4proto tcp reject with tcp reset
 	nft add rule inet efw handle_reject reject
 
-# 获取general配置添加input、forward 和 output 三个基本链。
 	input=$(uci get firewall.general.input)
 	output=$(uci get firewall.general.output)
 	forward=$(uci get firewall.general.forward)
@@ -185,7 +181,6 @@ add_rules() {
 	add_rules_general output $output
 	add_rules_general forward $forward
 
-# 获取SYN-flood protection 和 Drop invalid packets 配置并设置
 	synflood_protect=$(uci get firewall.general.synflood_protect)
 	drop_invalid=$(uci get firewall.general.drop_invalid)
 	
@@ -199,12 +194,10 @@ add_rules() {
 		nft add rule inet efw input ct state invalid drop
 	fi
 	
-# 添加端口转发
 	nft -- add chain inet efw prerouting { type nat hook prerouting priority -100 \; }
 	nft add chain inet efw postrouting { type nat hook postrouting priority 100 \; }
 	add_rules_forward
 
-# 通讯规则（ip过滤）
 	#nft add table ip filter
 	# nft add chain inet efw input_wan
 	# nft add chain inet efw input_lan

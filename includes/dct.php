@@ -607,7 +607,6 @@ echo "<div class=\"tab-pane $active\" id=\"server$num\">
 
 function conf_im_ex($conf_name)
 {
-  echo "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp";
   echo "<input type=\"button\" class=\"cbi-button-add\" name=\"confBox\" value=\"Configure Import Export\" onclick=\"conf_im_ex('$conf_name')\">";
 }
 
