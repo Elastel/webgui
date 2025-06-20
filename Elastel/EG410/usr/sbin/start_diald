@@ -9,6 +9,7 @@ if [ "$proto" = "3g" -o "$proto" = "lte" ]; then
 	password=$(uci get network.$1.password)
 	auth_type=$(uci get network.$1.auth_type)
 	dialnumber=$(uci get network.$1.dialnumber)
+	data_saving_mode=$(uci get network.$1.data_saving_mode)
 
 	/usr/sbin/diald ${apn:+-a $apn} \
 		-o $proto				\
@@ -17,5 +18,6 @@ if [ "$proto" = "3g" -o "$proto" = "lte" ]; then
 		${password:+-p $password} \
 		${auth_type:+-s $auth_type} \
 		${dialnumber:+-d $dialnumber} \
+		${data_saving_mode:+-m $data_saving_mode} \
 		-i $sect >/dev/null &
 fi

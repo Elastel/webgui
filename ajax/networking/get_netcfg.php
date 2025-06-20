@@ -83,12 +83,14 @@ if (isset($interface)) {
     exec("sudo /usr/local/bin/uci get network.swan.auth", $auth_type);
     exec("sudo /usr/local/bin/uci get network.swan.username", $apn_user);
     exec("sudo /usr/local/bin/uci get network.swan.password", $apn_pass);
+    exec("sudo /usr/local/bin/uci get network.swan.data_saving_mode", $data_saving_mode);
     $dhcpdata['lte_metric'] = $lte_metric[0];
     $dhcpdata['Apn'] = $apn[0];
     $dhcpdata['Pin'] = $pin[0];
     $dhcpdata['ApnUser'] = $apn_user[0];
     $dhcpdata['ApnPass'] = $apn_pass[0];
     $dhcpdata['AuthType'] = $auth_type[0];
+    $dhcpdata['data_saving_mode'] = $data_saving_mode[0];
     
     if (!isset($dhcpdata['AuthType'])) {
         $dhcpdata['AuthType'] = 'none';

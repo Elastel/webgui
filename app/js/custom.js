@@ -575,6 +575,7 @@ function loadInterfaceWiredSelect() {
         $('#txtpassword').val(jsonData.ApnPass);
         $('#auth_type').val(jsonData.AuthType);
         $('#wan-multi').prop('checked', (jsonData.wan_multi == '1') ? true : false);
+        $('#data_saving_mode').prop('checked', (jsonData.data_saving_mode == '1') ? true : false);
         $('#lte_metric').val(jsonData.lte_metric);
 
         if (jsonData.StaticIP !== null && jsonData.StaticIP !== '') {

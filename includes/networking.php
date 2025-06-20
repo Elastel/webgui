@@ -157,7 +157,7 @@ function saveLteConfig($status)
     $iface = $_POST['interface'];
     $return = 1;
 
-    if ($iface == 'wwan0') {
+    if ($iface == 'wwan0' || $iface == 'usb0' || strpos($iface, 'eth') !== false) {
         $auth_type = $_POST['auth_type'];
         $error = array();
 
@@ -330,6 +330,7 @@ function updateLteConfigNetwork($iface0, $status)
         exec('sudo /usr/local/bin/uci set network.swan.username=' .$_POST['username']);
         exec('sudo /usr/local/bin/uci set network.swan.password=' .$_POST['password']);
     }
+    exec('sudo /usr/local/bin/uci set network.swan.data_saving_mode=' .$_POST['data_saving_mode']);
 
     return $result;
 }

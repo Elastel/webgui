@@ -51,6 +51,14 @@
       <input type="text" id="txtpassword" class="form-control" name="password" value="" />
     </div>
   </div>
+  <div class="row">
+    <div class="form-group col-md-6">
+      <div class="custom-control custom-switch">
+        <input class="custom-control-input" id="data_saving_mode" type="checkbox" name="data_saving_mode" value="1">
+        <label class="custom-control-label" for="data_saving_mode"><?php echo _("Enable data saving mode") ?></label>
+      </div>
+    </div>
+  </div>
 </div><!-- /.tab-pane | basic tab -->
 <script type="text/javascript">
     function authTypeChange(){
