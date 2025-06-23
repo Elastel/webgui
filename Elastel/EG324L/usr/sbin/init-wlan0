@@ -29,7 +29,9 @@ if [ $WLAN0_EXIST = "0" ]; then
 fi
 
 /etc/init.d/S50hostapd stop
-sleep 1
+/etc/init.d/S80dnsmasq stop
+/etc/init.d/S80dhcpcd stop
+pkill -f /usr/sbin/wifi_dongle_check.sh
 
 if [ $WIFI_CLINET_ENABLE = "1" ]; then
 	brctl delif br0 wlan0
@@ -38,22 +40,26 @@ if [ $WIFI_CLINET_ENABLE = "1" ]; then
 		wpa_supplicant -Dwext -iwlan0 -c/etc/wpa_supplicant/wpa_supplicant.conf -B & >/dev/null
 	}
 
-	[ -n "$(pgrep busybox)" ] && {
-		sleep 1
-		kill -9 $(pgrep busybox)
-	}
+	# [ -n "$(pgrep busybox)" ] && {
+	# 	sleep 1
+	# 	kill -9 $(pgrep busybox)
+	# }
 
-	busybox udhcpc -q -i wlan0 & >/dev/null
+	# busybox udhcpc -q -i wlan0 & >/dev/null
 else
 	if [ $WIFI_ENABLE = "1" ]; then
 		brctl addif br0 wlan0
+		ifconfig wlan0 down
 		sleep 1
-		/etc/init.d/S50hostapd restart
+		ifconfig wlan0 up 0.0.0.0
+		sleep 1
+		/etc/init.d/S50hostapd start
+
+		# check wifi dongle
+		/usr/sbin/wifi_dongle_check.sh  > /dev/null 2>&1 &
 	fi
 fi
 
 sleep 1
+/etc/init.d/S80dhcpcd restart
 /etc/init.d/S80dnsmasq restart
-
-# check wifi dongle
-/usr/sbin/wifi_dongle_check.sh &

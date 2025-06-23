@@ -127,6 +127,8 @@ if [[ $model != "EG324L" && $model != "EC212" ]]; then
         install_package_if_needed "msmtp" "msmtp"
         install_package_if_needed "mutt" "mutt"
         install_package_if_needed "dos2unix" "dos2unix"
+        install_package_if_needed "wireless-tools" "iwconfig"
+        install_package_if_needed "bridge-utils" "brctl"
         set_resolvconf
 fi
 

@@ -83,12 +83,13 @@ function removeDHCPConfig($iface,$status)
             } else {
                 $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0 eth0' . PHP_EOL, number_format($count), 31);
             }
-        } else {
+
+         } else {
             if ($enablewificlient == '1') {
                 $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1' . PHP_EOL, number_format($count), 31);
             } else {
                 $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0' . PHP_EOL, number_format($count), 31);
-            } 
+            }
         }
     } else {
         $dhcp_cfg = $orgin_str;
@@ -905,23 +906,23 @@ function switchWifiMode($enabled)
             }
         }
     }
-    
+
     file_put_contents($tmp_dhcpcd_conf, implode("\n", $lines) . "\n");
     exec("sudo cp $tmp_dhcpcd_conf $dhcpcd_conf");
-    
+
+    exec("sudo kill -9 $(pgrep -x wpa_supplicant)");
     if ($model == "EG324" || $model == "EG324L" || $model == "EC212") {
         exec("sudo /usr/sbin/init-wlan0 &");
+        sleep(3);
     } else {
         if ($enabled == 1) {
             // switch to sta mode
             exec("sudo systemctl stop hostapd.service; sudo systemctl mask hostapd.service; sleep 1; sudo systemctl disable hostapd.service; sudo brctl delif br0 wlan0");
             exec("sudo systemctl restart dhcpcd.service; sudo systemctl restart dnsmasq.service");
-            exec("sudo kill -9 $(pgrep -x wpa_supplicant)");
             $cmd = "sudo wpa_supplicant -B -Dnl80211 -c/etc/wpa_supplicant/wpa_supplicant.conf -i". $_SESSION['wifi_client_interface'];
             shell_exec($cmd);
         } else {
             // switch to ap mode
-            exec("sudo kill -9 $(pgrep -x wpa_supplicant)");
             exec("sudo ifconfig wlan0 down; sleep 1; sudo ifconfig wlan0 up; sudo brctl addif br0 wlan0");
             exec("sudo systemctl unmask hostapd.service; sudo systemctl enable hostapd.service; sleep 1; sudo systemctl start hostapd.service");
             exec("sudo systemctl restart dhcpcd.service; sudo systemctl restart dnsmasq.service");

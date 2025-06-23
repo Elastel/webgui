@@ -3,18 +3,25 @@ echo "Start to search usb wifi..."
 WIFIID=`id_wifi`
 echo "Find usb wifi $WIFIID."
 
-
 if [ $WIFIID = "rtl8188eu" ];then
+	modprobe -r r8188eu
+	sleep 1
 	modprobe r8188eu
 elif [ $WIFIID = "rtl8192eu" ];then
+	modprobe -r 8192eu
+	sleep 1
 	modprobe 8192eu
 elif [ $WIFIID = "mt7601u" ];then
 	modprobe -r mt7601u
 	modprobe -r rtnet7601Uap
 	modprobe rtnet7601Uap
 elif [ $WIFIID = "rtl8811cu" ];then
+	modprobe -r 8821cu
+	sleep 1
 	modprobe 8821cu
 elif [ $WIFIID = "rtl8812bu" ];then
+	modprobe -r 88x2bu
+	sleep 1
 	modprobe 88x2bu
 else
 	exit
@@ -22,9 +29,11 @@ fi
 
 WIFI_ENABLE=$(uci get wifi.wifi.enabled)
 WIFI_CLINET_ENABLE=$(uci get wifi.wifi_client.enabled)
+LAN_IP=$(uci get network.lan.ip);
 
 systemctl stop hostapd.service
-sleep 1
+systemctl stop dhcpcd.service
+systemctl stop dnsmasq.service
 
 if [ $WIFI_CLINET_ENABLE = "1" ]; then
 	brctl delif br0 wlan0
@@ -40,10 +49,9 @@ if [ $WIFI_CLINET_ENABLE = "1" ]; then
 		kill -9 $(pgrep busybox)
 	}
 
-	busybox udhcpc -q -i wlan0 & >/dev/null
+	# busybox udhcpc -q -i wlan0 & >/dev/null
 else
 	if [ $WIFI_ENABLE = "1" ]; then
-		brctl addif br0 wlan0
 		ifconfig wlan0 down
 		sleep 1
 		ifconfig wlan0 up 0.0.0.0
@@ -53,6 +61,7 @@ else
 		systemctl enable hostapd.service
 		sleep 1
 		systemctl start hostapd.service
+		brctl addif br0 wlan0
 	else
 		systemctl mask hostapd.service
 		systemctl disable hostapd.service
@@ -60,7 +69,5 @@ else
 	fi
 fi
 
-sleep 1
-systemctl stop dnsmasq.service
-sleep 1
 systemctl start dnsmasq.service
+systemctl start dhcpcd.service

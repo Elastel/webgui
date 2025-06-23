@@ -31,7 +31,7 @@ function DisplayWPAConfig()
         }
         
         if ($model == "EG324" || $model == "EG324L" || $model == "EC212") {
-            exec("sudo /usr/sbin/init-wlan0 >/dev/null");
+            exec("sudo /usr/sbin/init-wlan0 &");
         }
     } elseif (isset($_POST['wpa_reinit'])) {
         $status->addMessage('Reinitializing wpa_supplicant', 'info', false);
