@@ -1,3 +1,4 @@
+<?php $_SESSION['lastActivity'] = time(); ?>
     <ul class="navbar-nav sidebar sidebar-light d-block accordion <?php echo (isset($toggleState)) ? $toggleState : null ; ?>" id="accordionSidebar">
         <!-- Divider -->
         <hr class="sidebar-divider my-0">

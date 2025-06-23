@@ -256,10 +256,20 @@ function updateDHCPConfigNetwork($iface0,$status)
     // $cfg[] = $_POST['DefaultRoute'] == '1' ? 'gateway' : 'nogateway';
     $orgin_str = file_get_contents(RASPI_DHCPCD_CONFIG);
     $count = strpos($orgin_str, 'denyinterfaces');
+    exec("sudo /usr/local/bin/uci get wifi.wifi_client.enabled", $tmp);
+    $enablewificlient = $tmp[0];
     if ($_POST['wan-multi'] == '1') {
-        $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0 eth0' . PHP_EOL, number_format($count), 31);
+        if ($enablewificlient == '1') {
+            $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 eth0' . PHP_EOL, number_format($count), 31);
+        } else {
+            $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0 eth0' . PHP_EOL, number_format($count), 31);
+        }
     } else {
-        $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0     ' . PHP_EOL, number_format($count), 31);
+        if ($enablewificlient == '1') {
+            $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1' . PHP_EOL, number_format($count), 31);
+        } else {
+            $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0' . PHP_EOL, number_format($count), 31);
+        }
     }
 
     if (!preg_match('/^interface\s'.$iface0.'$/m', $dhcp_cfg)) {
@@ -290,10 +300,20 @@ function updateDHCPConfigMetric($iface0,$status)
     // $cfg[] = $_POST['DefaultRoute'] == '1' ? 'gateway' : 'nogateway';
     $orgin_str = file_get_contents(RASPI_DHCPCD_CONFIG);
     $count = strpos($orgin_str, 'denyinterfaces');
+    exec("sudo /usr/local/bin/uci get wifi.wifi_client.enabled", $tmp);
+    $enablewificlient = $tmp[0];
     if ($_POST['wan-multi'] == '1') {
-        $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0 eth0' . PHP_EOL, number_format($count), 31);
+        if ($enablewificlient == '1') {
+            $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 eth0' . PHP_EOL, number_format($count), 31);
+        } else {
+            $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0 eth0' . PHP_EOL, number_format($count), 31);
+        }
     } else {
-        $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0     ' . PHP_EOL, number_format($count), 31);
+        if ($enablewificlient == '1') {
+            $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1' . PHP_EOL, number_format($count), 31);
+        } else {
+            $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0' . PHP_EOL, number_format($count), 31);
+        } 
     }
 
     if (!preg_match('/^interface\s'.$iface0.'$/m', $dhcp_cfg)) {

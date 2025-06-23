@@ -3,14 +3,12 @@
 # up network services in a specific order and timing to avoid race conditions.
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-NAME=raspapd
-DESC="Service control for RaspAP"
 CONFIGFILE="/etc/raspap/hostapd.ini"
 DAEMONPATH="/lib/systemd/system/raspapd.service"
 OPENVPNENABLED=$(pidof openvpn | wc -l)
 
 WIFIENABLED=$(uci get wifi.wifi.enabled)
-WIFIECLIENTNABLED=$(uci get wifi.wifi_client.enabled)
+WIFICLIENTENABLED=$(uci get wifi.wifi_client.enabled)
 
 positional=()
 while [[ $# -gt 0 ]]
@@ -51,12 +49,7 @@ if [ "${action}" = "stop" ]; then
     exit 0
 fi
 
-# if [ -f "$DAEMONPATH" ] && [ ! -z "$interface" ]; then
-#     echo "Changing RaspAP Daemon --interface to $interface"
-#     sed -i "s/\(--interface \)[[:alnum:]]*/\1$interface/" "$DAEMONPATH"
-# fi
-
-if [ $interface = "br0" -o  $interface = "uap0" ]; then
+if [[ "$interface" == "br0" || "$interface" == "uap0" ]]; then
     lan_mac_conf=$(uci get network.lan.mac)
     cur_mac=$(cat /sys/class/net/br0/address)
     if [[ -n "$lan_mac_conf" ]]; then
@@ -94,7 +87,7 @@ fi
 
 # Start services, mitigating race conditions
 echo "Starting network services..."
-if [ $WIFIECLIENTNABLED = "1" ]; then
+if [[ "$WIFICLIENTENABLED" == "1" ]]; then
     systemctl mask hostapd.service
     systemctl disable hostapd.service
     brctl delif br0 wlan0
@@ -105,7 +98,7 @@ if [ $WIFIECLIENTNABLED = "1" ]; then
 	}
     
 else
-    if [ $WIFIENABLED = "1" ]; then
+    if [[ "$WIFIENABLED" == "1" ]]; then
         kill -9 $(pgrep wpa_supplicant)
         brctl addif br0 wlan0
         sudo sed -i "s/eth1 wlan0/eth1/g" /etc/dhcpcd.conf
@@ -116,25 +109,13 @@ else
         systemctl enable hostapd.service
         sleep 1
         systemctl start hostapd.service
-
-        # if [ $WIFIECLIENTNABLED = "1" ]; then
-        #     uci set wifi.wifi_client.enabled=0
-        #     uci commit wifi
-        #     sleep 1
-        #     reboot
-        # fi
     else
         systemctl mask hostapd.service
         systemctl disable hostapd.service
-        # if [ $WIFIECLIENTNABLED = "1" ]; then
-        #     brctl delif br0 wlan0
-        #     kill -9 $(pgrep wpa_supplicant)
-        #     wpa_supplicant -Dwext -iwlan0 -c/etc/wpa_supplicant.conf -B &> /dev/null
-        # fi
     fi
 fi
 
-sleep "${seconds}"
+sleep "${seconds:-1}"
 
 # check br0 ip
 BR0_IP=$(ip route | grep -c br0)
@@ -159,7 +140,7 @@ systemctl start systemd-networkd
 systemctl enable systemd-networkd
 
 systemctl start dhcpcd.service
-sleep "${seconds}"
+sleep "${seconds:-1}"
 
 systemctl start dnsmasq.service
 

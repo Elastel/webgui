@@ -2,6 +2,7 @@
 
 require_once '../../includes/autoload.php';
 require_once '../../includes/CSRF.php';
+require_once '../../includes/session.php';
 require_once '../../includes/config.php';
 require_once '../../includes/defaults.php';
 require_once '../../includes/functions.php';
@@ -16,9 +17,10 @@ $enabled = $_GET['enable'];
 if (isset($enabled)) {
     exec("sudo /usr/local/bin/uci set wifi.wifi_client.enabled=" . $enabled);
     exec("sudo /usr/local/bin/uci commit wifi");
-    exec('sudo /etc/raspap/hostapd/servicestart.sh --interface br0 --seconds 3');
+    switchWifiMode($enabled);
 }
 
+// getWifiInterface();
 knownWifiStations($networks);
 nearbyWifiStations($networks, !isset($_REQUEST["refresh"]));
 connectedWifiStations($networks);

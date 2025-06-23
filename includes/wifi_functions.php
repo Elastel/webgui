@@ -16,12 +16,14 @@ function knownWifiStations(&$networks)
                 $networks[$ssid] = $network;
                 $network = null;
                 $ssid = null;
-            } elseif ($lineArr = preg_split('/\s*=\s*/', trim($line))) {
+            } elseif ($lineArr = preg_split('/\s*=\s*/', trim($line), 2)) {
                 switch (strtolower($lineArr[0])) {
                 case 'ssid':
                     $ssid = trim($lineArr[1], '"');
                     $ssid = str_replace('P"','',$ssid);
                     $network['ssid'] = $ssid;
+                    $index = getNetworkIdBySSID($ssid);
+                    $network['index'] = $index;
                     break;
                 case 'psk':
                     if (array_key_exists('passphrase', $network)) {
@@ -57,13 +59,11 @@ function nearbyWifiStations(&$networks, $cached = true)
 
     $scan_results = cache(
         $cacheKey, function () {
+            exec('sudo killall -q wpa_cli');
             exec('sudo wpa_cli -i ' .$_SESSION['wifi_client_interface']. ' scan');
             sleep(3);
-
-            exec('sudo wpa_cli -i ' .$_SESSION['wifi_client_interface']. ' scan_results', $stdout);
-            array_shift($stdout);
-
-            return implode("\n", $stdout);
+            $stdout = shell_exec('sudo wpa_cli -i ' .$_SESSION['wifi_client_interface']. ' scan_results');
+            return preg_split("/\n/", $stdout);
         }
     );
 
@@ -77,44 +77,46 @@ function nearbyWifiStations(&$networks, $cached = true)
         if ( isset($lastnet['index']) ) $index = $lastnet['index'] + 1;
     }
     
-    foreach (explode("\n", $scan_results) as $network) {
-        $arrNetwork = preg_split("/[\t]+/", $network);  // split result into array
+    if (is_array($scan_results)) {
+        array_shift($scan_results);
+        foreach ($scan_results as $network) {
+            $arrNetwork = preg_split("/[\t]+/", $network);  // split result into array
+            $ssid = $arrNetwork[4];
 
-        $ssid = trim($arrNetwork[4]);
+            // exclude raspap ssid
+            if (empty($ssid) || $ssid == $ap_ssid) {
+                continue;
+            }
 
-        // exclude raspap ssid
-        if (empty($ssid) || $ssid == $ap_ssid) {
-            continue;
-        }
+            // filter SSID string: unprintable 7bit ASCII control codes, delete or quotes -> ignore network
+            if (preg_match('[\x00-\x1f\x7f\'\`\´\"]', $ssid)) {
+                continue;
+            }
 
-        // filter SSID string: unprintable 7bit ASCII control codes, delete or quotes -> ignore network
-        if (preg_match('[\x00-\x1f\x7f\'\`\´\"]', $ssid)) {
-            continue;
-        }
+            // If network is saved
+            if (array_key_exists($ssid, $networks)) {
+                $networks[$ssid]['visible'] = true;
+                $networks[$ssid]['channel'] = ConvertToChannel($arrNetwork[1]);
+                // TODO What if the security has changed?
+            } else {
+                $networks[$ssid] = array(
+                    'ssid' => $ssid,
+                    'configured' => false,
+                    'protocol' => ConvertToSecurity($arrNetwork[3]),
+                    'channel' => ConvertToChannel($arrNetwork[1]),
+                    'passphrase' => '',
+                    'visible' => true,
+                    'connected' => false,
+                    'index' => $index
+                );
+                ++$index;
+            }
 
-        // If network is saved
-        if (array_key_exists($ssid, $networks)) {
-            $networks[$ssid]['visible'] = true;
-            $networks[$ssid]['channel'] = ConvertToChannel($arrNetwork[1]);
-            // TODO What if the security has changed?
-        } else {
-            $networks[$ssid] = array(
-                'ssid' => $ssid,
-                'configured' => false,
-                'protocol' => ConvertToSecurity($arrNetwork[3]),
-                'channel' => ConvertToChannel($arrNetwork[1]),
-                'passphrase' => '',
-                'visible' => true,
-                'connected' => false,
-                'index' => $index
-            );
-            ++$index;
-        }
-
-        // Save RSSI, if the current value is larger than the already stored
-        if (array_key_exists(4, $arrNetwork) && array_key_exists($arrNetwork[4], $networks)) {
-            if (! array_key_exists('RSSI', $networks[$arrNetwork[4]]) || $networks[$ssid]['RSSI'] < $arrNetwork[2]) {
-                $networks[$ssid]['RSSI'] = $arrNetwork[2];
+            // Save RSSI, if the current value is larger than the already stored
+            if (array_key_exists(4, $arrNetwork) && array_key_exists($arrNetwork[4], $networks)) {
+                if (! array_key_exists('RSSI', $networks[$arrNetwork[4]]) || $networks[$ssid]['RSSI'] < $arrNetwork[2]) {
+                    $networks[$ssid]['RSSI'] = $arrNetwork[2];
+                }
             }
         }
     }
@@ -157,19 +159,19 @@ function sortNetworksByRSSI(&$networks)
  */
 function getWifiInterface()
 {
-    $arrHostapdConf = array();
-    if (file_exists(RASPI_CONFIG.'/hostapd.ini')) {
-        $arrHostapdConf = parse_ini_file(RASPI_CONFIG.'/hostapd.ini');
-    }
+    $hostapdIni = RASPI_CONFIG . '/hostapd.ini';
+    $arrHostapdConf = file_exists($hostapdIni) ? parse_ini_file($hostapdIni) : [];
     
-    $iface = $_SESSION['ap_interface'] = isset($arrHostapdConf['WifiInterface']) ?  $arrHostapdConf['WifiInterface'] : RASPI_WIFI_AP_INTERFACE;
+    $iface = $_SESSION['ap_interface'] = $arrHostapdConf['WifiInterface'] ?? RASPI_WIFI_AP_INTERFACE;
+    if (!validateInterface($iface)) {
+        $iface = RASPI_WIFI_AP_INTERFACE;
+    }
+
     // check for 2nd wifi interface -> wifi client on different interface
     exec("iw dev | awk '$1==\"Interface\" && $2!=\"$iface\" {print $2}'",$iface2);
     $client_iface = $_SESSION['wifi_client_interface'] = (empty($iface2) ? $iface : trim($iface2[0]));
 
-    // specifically for rpi0W in AP-STA mode, the above check ends up with the interfaces
-    // crossed over (wifi_client_interface vs 'ap_interface'), because the second interface (uap0) is 
-    // created by raspap and used as the access point.
+    // handle special case for RPi Zero W in AP-STA mode
     if ($client_iface == "uap0"  && ($arrHostapdConf['WifiAPEnable'] ?? 0)){
         $_SESSION['wifi_client_interface'] = $iface;
         $_SESSION['ap_interface'] = $client_iface; 
@@ -184,12 +186,14 @@ function getWifiInterface()
  */
 function reinitializeWPA($force)
 {
+    $iface = escapeshellarg($_SESSION['wifi_client_interface']);
     if ($force == true) {
-        $cmd = escapeshellcmd("sudo /bin/rm /var/run/wpa_supplicant/".$_SESSION['wifi_client_interface']);
-        $result = exec($cmd);
+        $cmd = "sudo /bin/rm /var/run/wpa_supplicant/$iface";
+        $result = shell_exec($cmd);
     }
-    $cmd = escapeshellcmd("sudo /sbin/wpa_supplicant -B -Dnl80211 -c/etc/wpa_supplicant/wpa_supplicant.conf -i". $_SESSION['wifi_client_interface']);
+    $cmd = "sudo wpa_supplicant -B -Dnl80211 -c/etc/wpa_supplicant/wpa_supplicant.conf -i$iface";
     $result = shell_exec($cmd);
+    sleep(1);
     return $result;
 }
 
@@ -202,3 +206,85 @@ function ssid2utf8($ssid) {
     return  evalHexSequence($ssid);
 }
 
+/*
+ * Parses output of wpa_cli list_networks, compares with known networks
+ * from wpa_supplicant, and adds with wpa_cli if not found
+ *
+ * @param array $networks
+ */
+function setKnownStationsWPA($networks)
+{
+    $iface = escapeshellarg($_SESSION['wifi_client_interface']);
+    $output = shell_exec("sudo wpa_cli -i $iface list_networks");
+    $lines = explode("\n", $output);
+    array_shift($lines);
+    $wpaCliNetworks = [];
+
+    foreach ($lines as $line) {
+        $data = explode("\t", trim($line));
+        if (!empty($data) && count($data) >= 2) {
+            $id = $data[0];
+            $ssid = $data[1];
+            $item = [
+                'id' => $id,
+                'ssid' => $ssid
+            ];
+            $wpaCliNetworks[] = $item;
+        }
+    }
+    foreach ($networks as $network) {
+        $ssid = $network['ssid'];
+        if (!networkExists($ssid, $wpaCliNetworks)) {
+            $ssid = escapeshellarg('"'.$network['ssid'].'"');
+            $psk = escapeshellarg('"'.$network['passphrase'].'"');
+            $protocol = $network['protocol'];
+            $netid = trim(shell_exec("sudo wpa_cli -i $iface add_network"));
+            if (isset($netid) && !isset($known[$netid])) {
+                $commands = [
+                    "sudo wpa_cli -i $iface set_network $netid ssid $ssid",
+                    "sudo wpa_cli -i $iface set_network $netid psk $psk",
+                    "sudo wpa_cli -i $iface enable_network $netid"
+                ];
+                if ($protocol === 'Open') {
+                    $commands[1] = "sudo wpa_cli -i $iface set_network $netid key_mgmt NONE";
+                }
+                foreach ($commands as $cmd) {
+                    exec($cmd);
+                    usleep(1000);
+                }
+            }
+        }
+    }
+}
+
+/*
+ * Parses wpa_cli list_networks output and returns the id
+ * of a corresponding network SSID
+ *
+ * @param string $ssid
+ * @return integer id
+ */
+function getNetworkIdBySSID($ssid) {
+    $iface = escapeshellarg($_SESSION['wifi_client_interface']);
+    $cmd = "sudo wpa_cli -i $iface list_networks";
+    $output = [];
+    exec($cmd, $output);
+    array_shift($output);
+    foreach ($output as $line) {
+        $columns = preg_split('/\t/', $line);
+        if (count($columns) >= 3 && trim($columns[1]) === trim($ssid)) {
+            return $columns[0]; // return network ID
+        }
+    }
+    return null;
+}
+
+function networkExists($ssid, $collection)
+{
+    foreach ($collection as $network) {
+        if ($network['ssid'] === $ssid) {
+            return true;
+        }
+    }
+    return false;
+}
