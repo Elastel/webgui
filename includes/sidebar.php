@@ -24,7 +24,9 @@
                     <div class="collapse navbar-collapse" id="navbar-collapse-wan">
                         <ul class="nav navbar-nav navbar-right">
                             <li class="nav-item" name="wired" id="network_wan_wired"><a class="nav-link" href="wired_conf"><?php echo _("Wired"); ?></a></li>
+                            <?php if (file_exists('/dev/ttyUSB1')) : ?>
                             <li class="nav-item" name="lte" id="network_wan_lte"><a class="nav-link" href="lte_conf"><?php echo _("LTE"); ?></a></li>
+                            <?php endif; ?>
                         </ul>
                     </div>
                 </li>
