@@ -30,29 +30,30 @@
       <div class="card-header">
         <div class="row">
           <div class="col">
-            <?php echo _("WAN"); ?>
+            <?php
+              if ($type == 'wired') {
+                echo _("Wired");
+                $action = 'wired_conf';
+              } else if ($type == 'lte') {
+                echo _("LTE");
+                $action = 'lte_conf';
+              }
+            ?>
           </div>
         </div><!-- ./row -->
       </div><!-- ./card-header -->
-
       <div class="card-body">
         <?php $status->showMessages(); ?>
-        <form role="form" action="network_conf" method="POST">
-          <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
-        <ul class="nav nav-tabs">
-          <li role="presentation" class="nav-item"><a class="nav-link active" href="#wired" aria-controls="wired" role="tab" data-toggle="tab"><?php echo _("Wired"); ?></a></li>
-          <?php if ($lte_enabled == '1') { ?>
-          <li role="presentation" class="nav-item"><a class="nav-link" href="#lte" aria-controls="lte" role="tab" data-toggle="tab"><?php echo _("LTE"); ?></a></li>
-          <?php } ?>
-        </ul>
-        <!-- Tab panes -->
-        <div class="tab-content">
-            <?php echo renderTemplate("networking/wired", $__template_data) ?>
-            <?php if ($lte_enabled == '1') { 
-              echo renderTemplate("networking/lte", $__template_data);
-            } ?>
-        </div><!-- /.tab-content -->
-
+        <form role="form" action="<?php echo $action; ?>" method="POST">
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField();
+            if ($type == 'wired') {
+              echo renderTemplate("networking/wired", $__template_data);
+            } else if ($type == 'lte') {
+              if ($lte_enabled == '1') { 
+                echo renderTemplate("networking/lte", $__template_data);
+              } 
+            }
+          ?>
         <?php echo $buttons ?>
         </form>
       </div><!-- /.card-body -->

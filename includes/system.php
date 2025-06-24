@@ -78,7 +78,7 @@ function DisplaySystem()
 
     if (isset($_POST['applyProperties'])) {
         if (isset($_POST['hostname'])) {
-            if ($model != "EG324L") {
+            if ($model != "EG324L" && $model != "EC212") {
                 exec("cat /proc/sys/kernel/hostname", $buff);
                 $old_hostname = $buff[0];
                 $new_hostname = $_POST['hostname'];

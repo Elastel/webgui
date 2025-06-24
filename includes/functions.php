@@ -74,22 +74,27 @@ function removeDHCPConfig($iface,$status)
 {
     $orgin_str = file_get_contents(RASPI_DHCPCD_CONFIG);
     if ($iface == "eth0") {
-        $count = strpos($orgin_str, "denyinterfaces");
         exec("sudo /usr/local/bin/uci get wifi.wifi_client.enabled", $tmp);
         $enablewificlient = $tmp[0];
+
         if ($_POST['wan-multi'] == '1') {
             if ($enablewificlient == '1') {
-                $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 eth0' . PHP_EOL, number_format($count), 31);
+                $new_deny = 'denyinterfaces eth1 eth0';
             } else {
-                $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0 eth0' . PHP_EOL, number_format($count), 31);
+                $new_deny = 'denyinterfaces eth1 wlan0 eth0';
             }
-
-         } else {
+        } else {
             if ($enablewificlient == '1') {
-                $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1' . PHP_EOL, number_format($count), 31);
+                $new_deny = 'denyinterfaces eth1';
             } else {
-                $dhcp_cfg = substr_replace($orgin_str, 'denyinterfaces eth1 wlan0' . PHP_EOL, number_format($count), 31);
+                $new_deny = 'denyinterfaces eth1 wlan0';
             }
+        }
+
+        if (preg_match('/^denyinterfaces.*$/m', $orgin_str)) {
+            $dhcp_cfg = preg_replace('/^denyinterfaces.*$/m', $new_deny, $orgin_str, 1);
+        } else {
+            $dhcp_cfg = rtrim($orgin_str) . PHP_EOL . $new_deny . PHP_EOL;
         }
     } else {
         $dhcp_cfg = $orgin_str;
@@ -943,8 +948,11 @@ function handlePageActions($extraFooterScripts, $page)
         case "/wpa_conf":
             DisplayWPAConfig();
             break;
-        case "/network_conf":
-            DisplayNetworkingConfig();
+        case "/wired_conf":
+            DisplayNetworkingConfig('wired');
+            break;
+        case "/lte_conf":
+            DisplayNetworkingConfig('lte');
             break;
         case "/hostapd_conf":
             DisplayHostAPDConfig();

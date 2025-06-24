@@ -1,4 +1,4 @@
-<div class="tab-pane fade" id="lte">
+<div class="tab-pane" id="lte">
   <h4 class="mt-3"><?php echo _("LTE settings") ;?></h4>
   <div class="row">
     <div class="form-group col-md-6">

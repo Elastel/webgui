@@ -1,5 +1,5 @@
 <body>
-<div class="tab-pane active" id="wired">
+<div class="tab-pane" id="wired">
   <h4 class="mt-3"><?php echo _("Wired settings"); ?></h4>
   <div class="row">
     <div class="form-group col-md-6">

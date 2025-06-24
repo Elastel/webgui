@@ -17,7 +17,17 @@
             </a>
             <div class="collapse navbar-collapse" id="navbar-collapse-network">
             <ul class="nav navbar-nav navbar-right">
-                <li class="nav-item" name="wan" id="network_wan" ><a class="nav-link" href="network_conf"><?php echo _("WAN"); ?></a></li>
+                <li class="nav-item" id="page_wan">
+                    <a class="nav-link navbar-toggle collapsed" id="wan" href="#" data-toggle="collapse" data-target="#navbar-collapse-wan">
+                        <?php echo _("WAN"); ?>
+                    </a>
+                    <div class="collapse navbar-collapse" id="navbar-collapse-wan">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="nav-item" name="wired" id="network_wan_wired"><a class="nav-link" href="wired_conf"><?php echo _("Wired"); ?></a></li>
+                            <li class="nav-item" name="lte" id="network_wan_lte"><a class="nav-link" href="lte_conf"><?php echo _("LTE"); ?></a></li>
+                        </ul>
+                    </div>
+                </li>
                 <li class="nav-item" name="lan" id="network_lan" ><a class="nav-link" href="dhcpd_conf"><?php echo _("LAN"); ?></a></li>
                 <li class="nav-item" name="wifi" id="network_wifi" ><a class="nav-link" href="hostapd_conf"><?php echo _("WiFi AP"); ?></a></li>
                 <li class="nav-item" name="wifi_client" id="network_wifi_client" ><a class="nav-link" href="wpa_conf"><?php echo _("WiFi Client"); ?></a></li>

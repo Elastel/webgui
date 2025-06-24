@@ -558,47 +558,50 @@ $('.js-enable-wifi-stations').on('click', function() {
 Populates the wired network form fields
 Option toggles are set dynamically depending on the loaded configuration
 */
-function loadInterfaceWiredSelect() {
+function loadInterfaceWiredSelect(type) {
     var strInterface = $('#cbxdhcpiface').val();
     $.get('ajax/networking/get_netcfg.php?iface='+strInterface,function(data){
         jsonData = JSON.parse(data);
-        $('#txtipaddress').val(jsonData.StaticIP);
-        $('#txtsubnetmask').val(jsonData.SubnetMask);
-        $('#txtgateway').val(jsonData.StaticRouters);
-        $('#default-route').prop('checked', jsonData.DefaultRoute);
-        $('#txtdns1').val(jsonData.StaticDNS1);
-        $('#txtdns2').val(jsonData.StaticDNS2);
-        $('#txtmetric').val(jsonData.Metric);
-        $('#txtapn').val(jsonData.Apn);
-        $('#txtpin').val(jsonData.Pin);
-        $('#txtusername').val(jsonData.ApnUser);
-        $('#txtpassword').val(jsonData.ApnPass);
-        $('#auth_type').val(jsonData.AuthType);
-        $('#wan-multi').prop('checked', (jsonData.wan_multi == '1') ? true : false);
-        $('#data_saving_mode').prop('checked', (jsonData.data_saving_mode == '1') ? true : false);
-        $('#lte_metric').val(jsonData.lte_metric);
+        if (type == "wired") {
+            $('#txtipaddress').val(jsonData.StaticIP);
+            $('#txtsubnetmask').val(jsonData.SubnetMask);
+            $('#txtgateway').val(jsonData.StaticRouters);
+            $('#default-route').prop('checked', jsonData.DefaultRoute);
+            $('#txtdns1').val(jsonData.StaticDNS1);
+            $('#txtdns2').val(jsonData.StaticDNS2);
+            $('#txtmetric').val(jsonData.Metric);
+            $('#wan-multi').prop('checked', (jsonData.wan_multi == '1') ? true : false);
 
-        if (jsonData.StaticIP !== null && jsonData.StaticIP !== '') {
-            $('#chkstatic').closest('.btn').button('toggle');
-            $('#chkstatic').closest('.btn').button('toggle').blur();
-            $('#chkstatic').blur();
-            $('#chkfallback').prop('disabled', true);
-            $('#static_ip').show(); 
-        } else {
-            $('#chkdhcp').closest('.btn').button('toggle');
-            $('#chkdhcp').closest('.btn').button('toggle').blur();
-            $('#chkdhcp').blur();
-            $('#chkfallback').prop('disabled', false);
-            $('#static_ip').hide();
-        }
+            if (jsonData.StaticIP !== null && jsonData.StaticIP !== '') {
+                $('#chkstatic').closest('.btn').button('toggle');
+                $('#chkstatic').closest('.btn').button('toggle').blur();
+                $('#chkstatic').blur();
+                $('#chkfallback').prop('disabled', true);
+                $('#static_ip').show(); 
+            } else {
+                $('#chkdhcp').closest('.btn').button('toggle');
+                $('#chkdhcp').closest('.btn').button('toggle').blur();
+                $('#chkdhcp').blur();
+                $('#chkfallback').prop('disabled', false);
+                $('#static_ip').hide();
+            }
+        } else if (type == "lte") {
+           $('#txtapn').val(jsonData.Apn);
+            $('#txtpin').val(jsonData.Pin);
+            $('#txtusername').val(jsonData.ApnUser);
+            $('#txtpassword').val(jsonData.ApnPass);
+            $('#auth_type').val(jsonData.AuthType);
+            $('#data_saving_mode').prop('checked', (jsonData.data_saving_mode == '1') ? true : false);
+            $('#lte_metric').val(jsonData.lte_metric);
 
-        if (jsonData.AuthType == 'none') {
-            $('#username').hide();
-            $('#password').hide();
-        } else {
-            $('#username').show();
-            $('#password').show();
-        }
+            if (jsonData.AuthType == 'none') {
+                $('#username').hide();
+                $('#password').hide();
+            } else {
+                $('#username').show();
+                $('#password').show();
+            }
+        } 
     });
 }
 
@@ -1417,6 +1420,11 @@ $(document).ready(function(){
                 $('#navbar-collapse-remote').addClass('show');
                 $('#remote').removeClass('collapsed');
             } else if (id.includes('network_')) {
+                if (id.includes('network_wan')) {
+                    $('#navbar-collapse-wan').addClass('show')
+                    $('#wan').removeClass('collapsed');
+                }
+
                 $('#navbar-collapse-network').addClass('show');
                 $('#network').removeClass('collapsed');
             } else if (id.includes('convert_')) {
@@ -1541,11 +1549,11 @@ function contentLoaded() {
         case "dashboard":
             loadDashboard();
             break;
-        case "network_conf":
-            //getAllInterfaces();
-            //setupTabs();
-            //setupBtns();
-            loadInterfaceWiredSelect();
+        case "wired_conf":
+            loadInterfaceWiredSelect("wired");
+            break;
+        case "lte_conf":
+            loadInterfaceWiredSelect("lte");
             break;
         case "hostapd_conf":
             loadChannel();
