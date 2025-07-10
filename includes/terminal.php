@@ -75,8 +75,8 @@ function SaveUploadFile($status, $file)
         }
 
         $upload = \ElastPro\Uploader\FileUpload::factory('terminal' . $num, $tmp_destdir);
-        $upload->set_max_file_size(2048*KB);
-        $upload->set_allowed_mime_types(array('text/plain', 'application/x-sharedlib', 'application/octet-stream'));
+        $upload->set_max_file_size(10*1024*KB);
+        $upload->set_allowed_mime_types(array());
         $upload->file($file);
         $validation = new validation;
         $upload->callbacks($validation, array('check_name_length'));

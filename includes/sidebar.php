@@ -27,6 +27,9 @@
                             <?php if (file_exists('/dev/ttyUSB1')) : ?>
                             <li class="nav-item" name="lte" id="network_wan_lte"><a class="nav-link" href="lte_conf"><?php echo _("LTE"); ?></a></li>
                             <?php endif; ?>
+                            <?php if (isRunning('wpa_supplicant')) : ?>
+                            <li class="nav-item" name="wpa" id="network_wan_wpa"><a class="nav-link" href="wlan0_conf"><?php echo _("WiFi Client"); ?></a></li>
+                            <?php endif; ?>
                         </ul>
                     </div>
                 </li>

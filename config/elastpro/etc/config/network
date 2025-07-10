@@ -16,6 +16,10 @@ config interface 'swan'
 	option ifname 'wwan0'
 	option auth 'none'
 
+config interface 'wifi'
+	option device 'wlan0'
+	option proto 'dhcp'
+
 config setting 'detection'
 	option secondary_addr '8.8.8.8'
 	option primary_addr '1.1.1.1'

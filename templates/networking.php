@@ -37,6 +37,9 @@
               } else if ($type == 'lte') {
                 echo _("LTE");
                 $action = 'lte_conf';
+              } else if ($type == 'wlan0') {
+                echo _("WiFi Client");
+                $action = 'wlan0_conf';
               }
             ?>
           </div>
@@ -52,6 +55,8 @@
               if ($lte_enabled == '1') { 
                 echo renderTemplate("networking/lte", $__template_data);
               } 
+            } else if ($type == 'wlan0') {
+                echo renderTemplate("networking/wlan0", $__template_data);
             }
           ?>
         <?php echo $buttons ?>

@@ -2,9 +2,9 @@
   <h4 class="mt-3"><?php echo _("LTE settings") ;?></h4>
   <div class="row">
     <div class="form-group col-md-6">
-      <label for="cbxinterface"><?php echo _("Interface") ;?></label>
+      <label for="code"><?php echo _("Interface") ;?></label>
       <?php
-        SelectorOptions('interface', $lte_interface, null, 'cbxinterface');
+        SelectorOptions('interface', $lte_interface, null, 'cbxdhcpiface');
       ?>
     </div>
   </div>

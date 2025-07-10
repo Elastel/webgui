@@ -107,6 +107,13 @@ reset_configuration() {
                 sudo rm /etc/localtime && sudo ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
         fi
 
+        if [[ $model == "EC212" ]]; then
+                # set lan
+                cp $path/config/dhcpcd-eth0.conf /etc/dhcpcd.conf
+                uci set network.wan.wan_multi='1'
+                uci commit network
+        fi
+
         ssid="$target"_"$sub_mac"
         sed -i "s/ssid.*/ssid=$ssid/" /etc/hostapd/hostapd.conf
         sudo /etc/raspap/lighttpd/configport.sh 80 '' /etc/lighttpd/lighttpd.conf

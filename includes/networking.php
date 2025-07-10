@@ -25,6 +25,8 @@ function DisplayNetworkingConfig($type)
                 }
             } elseif ($type == 'lte') {
                 saveLteConfig($status);
+            } elseif ($type == 'wlan0') {
+                saveWlan0Config($status);
             }
 
             exec('sudo /usr/local/bin/uci commit network');
@@ -52,7 +54,6 @@ function DisplayNetworkingConfig($type)
                         exec('sudo /etc/init.d/S80dhcpcd restart');
                     }
                     
-
                     if ($_POST['adapter-ip'] == '0') {
                         // add dns to resolv.conf
                         if ($_POST['DNS1'] !== '' || $_POST['DNS2'] !== '') {
@@ -69,14 +70,18 @@ function DisplayNetworkingConfig($type)
                     }
                 } elseif ($type == 'lte') {
                     exec('sudo /etc/init.d/lte restart > /dev/null');
+                } elseif ($type == 'wlan0') {
+                    exec('sudo dhcpcd -n wlan0 > /dev/null');
                 }
 
+                $status->addMessage('Network for '.$type.' updated.', 'success');
                 exec('sudo /etc/init.d/failover restart > /dev/null');
             }
         }
     }
 
     $wired_interface = ['eth0'];
+    $wlan0_interface = ['wlan0'];
     $lte_interface = '';
     $lte_enabled = 0;
 
@@ -98,6 +103,13 @@ function DisplayNetworkingConfig($type)
         }
 
         $lte_mac = exec('cat /sys/class/net/wwan0/address');
+    } else if ($type == 'wlan0') {
+        exec('uci get network.wifi.mac', $mac_conf);
+        if ($mac_conf[0] != '') {
+            $wlan0_mac = $mac_conf[0];
+        } else {
+            $wlan0_mac = exec('cat /sys/class/net/wlan0/address');
+        }
     }
 
     // $routeInfo = getRouteInfo(true);
@@ -106,10 +118,12 @@ function DisplayNetworkingConfig($type)
         'type',
         'wired_interface',
         'lte_interface',
+        'wlan0_interface',
         //'routeInfo',
         'lte_enabled',
         'wired_mac',
-        'lte_mac'
+        'lte_mac',
+        'wlan0_mac'
     ));
 }
 
@@ -144,13 +158,13 @@ function saveStaticConfig($status)
         // handle disable dhcp option
         if ($_POST['adapter-ip'] == '1') {
             exec('sudo uci set network.wan.proto=dhcp');
-            updateDHCPConfigMetric($iface0,$status);
+            updateDHCPConfigMetric($iface0, '', $status);
         } else {
             //$status->addMessage('updateDHCPConfig');
             exec('sudo uci set network.wan.proto=static');
-            $errors = validateDHCPInputNetwork();
+            $errors = validateDHCPInputNetwork($iface0, '');
             if (empty($errors)) {
-                $return = updateDHCPConfigNetwork($iface0, $status);
+                $return = updateDHCPConfigNetwork($iface0, '', $status);
             } else {
                 $status->addMessage($errors, 'danger');
             }
@@ -183,29 +197,62 @@ function saveLteConfig($status)
     }
 }
 
+function saveWlan0Config($status)
+{
+    $iface = $_POST['wlan0_interface'];
+    $return = 1;
+    if ($iface == 'wlan0') {
+        exec('sudo uci set network.wifi.device=wlan0');;
+        if ($_POST['wlan0_Metric'] !== '') {
+            exec('sudo /usr/local/bin/uci set network.wifi.metric=' . $_POST['wlan0_Metric']);
+        } else {
+            exec('sudo /usr/local/bin/uci set network.wifi.metric=203');
+        }
+
+        if (filter_var($_POST['wlan0_mac'], FILTER_VALIDATE_MAC)) {
+            exec('sudo /usr/local/bin/uci set network.wifi.mac=' . $_POST['wlan0_mac']);
+        }
+
+        // handle disable dhcp option
+        if ($_POST['wlan0_adapter-ip'] == '1') {
+            exec('sudo uci set network.wifi.proto=dhcp');
+            updateDHCPConfigMetric($iface, 'wlan0_', $status);
+        } else {
+            //$status->addMessage('updateDHCPConfig');
+            exec('sudo uci set network.wifi.proto=static');
+            $errors = validateDHCPInputNetwork($iface, 'wlan0_');
+            if (empty($errors)) {
+                $return = updateDHCPConfigNetwork($iface, 'wlan0_', $status);
+            } else {
+                $status->addMessage($errors, 'danger');
+            }
+            return true;
+        }
+    }
+}
+
 /**
  * Validates DHCP user input from the $_POST object
  *
  * @return string $errors
  */
-function validateDHCPInputNetwork()
+function validateDHCPInputNetwork($iface0, $head)
 {
     define('IFNAMSIZ', 16);
-    $iface0 = $_POST['interface0'];
     if (!preg_match('/^[a-zA-Z0-9]+$/', $iface0)
         || strlen($iface0) >= IFNAMSIZ
     ) {
         $errors .= _('Invalid interface name.').'<br />'.PHP_EOL;
     }
-    if (!filter_var($_POST['StaticIP'], FILTER_VALIDATE_IP) && !empty($_POST['StaticIP'])) {
+    if (!filter_var($_POST[$head.'StaticIP'], FILTER_VALIDATE_IP) && !empty($_POST[$head.'StaticIP'])) {
         $errors .= _('Invalid static IP address.').'<br />'.PHP_EOL;
     }
-    if (!filter_var($_POST['SubnetMask'], FILTER_VALIDATE_IP) && !empty($_POST['SubnetMask'])) {
+    if (!filter_var($_POST[$head.'SubnetMask'], FILTER_VALIDATE_IP) && !empty($_POST[$head.'SubnetMask'])) {
         $errors .= _('Invalid subnet mask.').'<br />'.PHP_EOL;
     }
-    if (!filter_var($_POST['DefaultGateway'], FILTER_VALIDATE_IP) && !empty($_POST['DefaultGateway'])) {
+    if (!filter_var($_POST[$head.'DefaultGateway'], FILTER_VALIDATE_IP) && !empty($_POST[$head.'DefaultGateway'])) {
         $errors .= _('Invalid default gateway.').'<br />'.PHP_EOL;
-        var_dump($_POST['DefaultGateway']);
+        var_dump($_POST[$head.'DefaultGateway']);
         die();
     }
 
@@ -238,61 +285,71 @@ function validateLteInputNetwork()
  * @param object $status
  * @return boolean $result
  */
-function updateDHCPConfigNetwork($iface0,$status)
+function updateDHCPConfigNetwork($iface0, $head, $status)
 {
-    $cfg[] = '# RaspAP '.$iface0.' configuration';
+    $keyword = 'ElastPro';
+    $orgin_str = file_get_contents(RASPI_DHCPCD_CONFIG);
+    if (strpos($orgin_str, $keyword) == false) {
+        $keyword = 'RaspAP';
+    }
+
+    $cfg[] = "# $keyword ".$iface0.' configuration';
     $cfg[] = 'interface '.$iface0;
 
-    if (isset($_POST['StaticIP'])) {
-        $mask = ($_POST['SubnetMask'] !== '' && $_POST['SubnetMask'] !== '0.0.0.0') ? '/'.mask2cidr($_POST['SubnetMask']) : null;
-        $cfg[] = 'static ip_address='.$_POST['StaticIP'].$mask;
+    if (isset($_POST[$head.'StaticIP'])) {
+        $mask = ($_POST[$head.'SubnetMask'] !== '' && $_POST[$head.'SubnetMask'] !== '0.0.0.0') ? '/'.mask2cidr($_POST[$head.'SubnetMask']) : null;
+        $cfg[] = 'static ip_address='.$_POST[$head.'StaticIP'].$mask;
     }
-    if (isset($_POST['DefaultGateway'])) {
-      $cfg[] = 'static routers='.$_POST['DefaultGateway'];
+    if (isset($_POST[$head.'DefaultGateway'])) {
+      $cfg[] = 'static routers='.$_POST[$head.'DefaultGateway'];
     }
-    if ($_POST['DNS1'] !== '' || $_POST['DNS2'] !== '') {
-        $cfg[] = 'static domain_name_server='.$_POST['DNS1'].' '.$_POST['DNS2'];
+    if (isset($_POST[$head.'DNS1']) && ($_POST[$head.'DNS1'] !== '' || $_POST[$head.'DNS2'] !== '')) {
+        $cfg[] = 'static domain_name_server='.$_POST[$head.'DNS1'].' '.$_POST[$head.'DNS2'];
     }
-    if ($_POST['Metric'] !== '') {
-      $cfg[] = 'metric '.$_POST['Metric'];
+    if ($_POST[$head.'Metric'] !== '') {
+      $cfg[] = 'metric '.$_POST[$head.'Metric'];
     }
-    if ($_POST['Fallback'] == 1) {
+    
+    if ($_POST[$head.'Fallback'] == 1) {
         $cfg[] = 'profile static_'.$iface0;
         $cfg[] = 'fallback static_'.$iface0;
     }
 
-    // $cfg[] = $_POST['DefaultRoute'] == '1' ? 'gateway' : 'nogateway';
-    $orgin_str = file_get_contents(RASPI_DHCPCD_CONFIG);
-    exec("sudo /usr/local/bin/uci get wifi.wifi_client.enabled", $tmp);
-    $enablewificlient = $tmp[0];
-    if ($_POST['wan-multi'] == '1') {
-        if ($enablewificlient == '1') {
-            $new_deny = 'denyinterfaces eth1 eth0';
+    // $cfg[] = $_POST[$head.'DefaultRoute'] == '1' ? 'gateway' : 'nogateway';
+    if (strlen($head) == 0) {
+        exec("sudo /usr/local/bin/uci get wifi.wifi_client.enabled", $tmp);
+        $enablewificlient = $tmp[0];
+        if ($_POST['wan-multi'] == '1') {
+            if ($enablewificlient == '1') {
+                $new_deny = 'denyinterfaces eth1 eth0';
+            } else {
+                $new_deny = 'denyinterfaces eth1 wlan0 eth0';
+            }
         } else {
-            $new_deny = 'denyinterfaces eth1 wlan0 eth0';
+            if ($enablewificlient == '1') {
+                $new_deny = 'denyinterfaces eth1';
+            } else {
+                $new_deny = 'denyinterfaces eth1 wlan0';
+            }
         }
-    } else {
-        if ($enablewificlient == '1') {
-            $new_deny = 'denyinterfaces eth1';
-        } else {
-            $new_deny = 'denyinterfaces eth1 wlan0';
-        }
-    }
 
-    if (preg_match('/^denyinterfaces.*$/m', $orgin_str)) {
-        $dhcp_cfg = preg_replace('/^denyinterfaces.*$/m', $new_deny, $orgin_str, 1);
+        if (preg_match('/^denyinterfaces.*$/m', $orgin_str)) {
+            $dhcp_cfg = preg_replace('/^denyinterfaces.*$/m', $new_deny, $orgin_str, 1);
+        } else {
+            $dhcp_cfg = rtrim($orgin_str) . PHP_EOL . $new_deny . PHP_EOL;
+        }
     } else {
-        $dhcp_cfg = rtrim($orgin_str) . PHP_EOL . $new_deny . PHP_EOL;
+        $dhcp_cfg = rtrim($orgin_str) . PHP_EOL;
     }
+    
 
     if (!preg_match('/^interface\s'.$iface0.'$/m', $dhcp_cfg)) {
-        $cfg[] = PHP_EOL;
-        $cfg = join(PHP_EOL, $cfg);
+        $cfg = join(PHP_EOL, $cfg) . PHP_EOL;
         $dhcp_cfg .= $cfg;
         $status->addMessage('DHCP configuration for '.$iface0.' added.', 'success');
     } else {
-        $cfg = join(PHP_EOL, $cfg);
-        $pattern = '/^#\sRaspAP\s' . preg_quote($iface0, '/') . '\sconfiguration.*?(?=^#\sRaspAP\s|\z)/ms';
+        $cfg = join(PHP_EOL, $cfg) . PHP_EOL;
+        $pattern = "/^#\s$keyword\s" . preg_quote($iface0, '/') . "\sconfiguration.*?(?=^#\s$keyword\s|\z)/ms";
         if (preg_match($pattern, $dhcp_cfg)) {
             $dhcp_cfg = preg_replace($pattern, $cfg, $dhcp_cfg, 1);
         } 
@@ -304,52 +361,94 @@ function updateDHCPConfigNetwork($iface0,$status)
     return $result;
 }
 
-function updateDHCPConfigMetric($iface0,$status)
+function updateDHCPConfigMetric($iface0, $head, $status)
 {
-    $cfg[] = '# RaspAP '.$iface0.' configuration';
+    $keyword = 'ElastPro';
+    $orgin_str = file_get_contents(RASPI_DHCPCD_CONFIG);
+    if (strpos($orgin_str, $keyword) == false) {
+        $keyword = 'RaspAP';
+    }
+    
+    $cfg[] = "# $keyword ".$iface0.' configuration';
     $cfg[] = 'interface '.$iface0;
 
-    if ($_POST['Metric'] !== '') {
-      $cfg[] = 'metric '.$_POST['Metric'];
+    if ($_POST[$head.'Metric'] !== '') {
+      $cfg[] = 'metric '.$_POST[$head.'Metric'];
     }
 
     // $cfg[] = $_POST['DefaultRoute'] == '1' ? 'gateway' : 'nogateway';
-    $orgin_str = file_get_contents(RASPI_DHCPCD_CONFIG);
-    exec("sudo /usr/local/bin/uci get wifi.wifi_client.enabled", $tmp);
-    $enablewificlient = $tmp[0];
-    if ($_POST['wan-multi'] == '1') {
-        if ($enablewificlient == '1') {
-            $new_deny = 'denyinterfaces eth1 eth0';
+    if (strlen($head) == 0) {
+        exec("sudo /usr/local/bin/uci get wifi.wifi_client.enabled", $tmp);
+        $enablewificlient = $tmp[0];
+        if ($_POST['wan-multi'] == '1') {
+            if ($enablewificlient == '1') {
+                $new_deny = 'denyinterfaces eth1 eth0';
+            } else {
+                $new_deny = 'denyinterfaces eth1 wlan0 eth0';
+            }
         } else {
-            $new_deny = 'denyinterfaces eth1 wlan0 eth0';
+            if ($enablewificlient == '1') {
+                $new_deny = 'denyinterfaces eth1';
+            } else {
+                $new_deny = 'denyinterfaces eth1 wlan0';
+            }
+        }
+
+        if (preg_match('/^denyinterfaces.*$/m', $orgin_str)) {
+            $dhcp_cfg = preg_replace('/^denyinterfaces.*$/m', $new_deny, $orgin_str, 1);
+        } else {
+            $dhcp_cfg = rtrim($orgin_str) . PHP_EOL . $new_deny . PHP_EOL;
         }
     } else {
-        if ($enablewificlient == '1') {
-            $new_deny = 'denyinterfaces eth1';
-        } else {
-            $new_deny = 'denyinterfaces eth1 wlan0';
-        }
+        $dhcp_cfg = rtrim($orgin_str) . PHP_EOL;
     }
-
-    if (preg_match('/^denyinterfaces.*$/m', $orgin_str)) {
-        $dhcp_cfg = preg_replace('/^denyinterfaces.*$/m', $new_deny, $orgin_str, 1);
-    } else {
-        $dhcp_cfg = rtrim($orgin_str) . PHP_EOL . $new_deny . PHP_EOL;
-    }
-
+    
     if (!preg_match('/^interface\s'.$iface0.'$/m', $dhcp_cfg)) {
-        $cfg[] = PHP_EOL;
-        $cfg = join(PHP_EOL, $cfg);
+        $cfg = join(PHP_EOL, $cfg) . PHP_EOL;
         $dhcp_cfg .= $cfg;
         $status->addMessage('DHCP configuration for '.$iface0.' added.', 'success');
     } else {
-        $cfg = join(PHP_EOL, $cfg);
-        $pattern = '/^#\sRaspAP\s' . preg_quote($iface0, '/') . '\sconfiguration.*?(?=^#\sRaspAP\s|\z)/ms';
+        $cfg = join(PHP_EOL, $cfg) . PHP_EOL;
+        $pattern = "/^#\s$keyword\s" . preg_quote($iface0, '/') . "\sconfiguration.*?(?=^#\s$keyword\s|\z)/ms";
         if (preg_match($pattern, $dhcp_cfg)) {
             $dhcp_cfg = preg_replace($pattern, $cfg, $dhcp_cfg, 1);
-        } else {
-            $dhcp_cfg .= "\n" . $cfg . "\n";
         }
+
+        $status->addMessage('DHCP configuration for '.$iface0.' updated.', 'success');
+    }
+    file_put_contents('/tmp/dhcpddata', $dhcp_cfg);
+    system('sudo cp /tmp/dhcpddata '.RASPI_DHCPCD_CONFIG, $result);
+
+    return $result;
+}
+
+function updateLteMetric($iface0,$status)
+{
+    $keyword = 'ElastPro';
+    $orgin_str = file_get_contents(RASPI_DHCPCD_CONFIG);
+    if (strpos($orgin_str, $keyword) == false) {
+        $keyword = 'RaspAP';
+    }
+    
+    $cfg[] = "# $keyword ".$iface0.' configuration';
+    $cfg[] = 'interface '.$iface0;
+
+    if ($_POST['lte_metric'] !== '') {
+      $cfg[] = 'metric '.$_POST['lte_metric'];
+    }
+
+    $dhcp_cfg = rtrim($orgin_str) . PHP_EOL;
+    if (!preg_match('/^interface\s'.$iface0.'$/m', $dhcp_cfg)) {
+        $cfg = join(PHP_EOL, $cfg) . PHP_EOL;
+        $dhcp_cfg .= $cfg;
+        $status->addMessage('DHCP configuration for '.$iface0.' added.', 'success');
+    } else {
+        $cfg = join(PHP_EOL, $cfg) . PHP_EOL;
+        $pattern = "/^#\s$keyword\s" . preg_quote($iface0, '/') . "\sconfiguration.*?(?=^#\s$keyword\s|\z)/ms";
+        if (preg_match($pattern, $dhcp_cfg)) {
+            $dhcp_cfg = preg_replace($pattern, $cfg, $dhcp_cfg, 1);
+        }
+
         $status->addMessage('DHCP configuration for '.$iface0.' updated.', 'success');
     }
     file_put_contents('/tmp/dhcpddata', $dhcp_cfg);
@@ -377,6 +476,8 @@ function updateLteConfigNetwork($iface0, $status)
         exec('sudo /usr/local/bin/uci set network.swan.password=' .$_POST['password']);
     }
     exec('sudo /usr/local/bin/uci set network.swan.data_saving_mode=' .$_POST['data_saving_mode']);
+
+    updateLteMetric($iface0, $status);
 
     return $result;
 }

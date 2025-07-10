@@ -232,7 +232,7 @@ function DisplayDashboard(&$extraFooterScripts)
 
     exec('ip route | grep "default"  | grep -c "wlan0"', $wifi_enabled);
     $wifiInfo = array();
-    if ($wifi_enabled[0] == "1") {
+    if ($wifi_enabled[0] != "0") {
         // exec("/bin/cat /etc/wpa_supplicant/wpa_supplicant.conf | grep ssid | awk -F \\\" '{ print $2 }'", $ssid);
         exec('ifconfig wlan0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep -v "255.255."', $wifi_ip);
         exec('ifconfig wlan0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep "255.255."', $wifi_netmask);

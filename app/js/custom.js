@@ -562,6 +562,7 @@ function loadInterfaceWiredSelect(type) {
     var strInterface = $('#cbxdhcpiface').val();
     $.get('ajax/networking/get_netcfg.php?iface='+strInterface,function(data){
         jsonData = JSON.parse(data);
+        console.log(type);
         if (type == "wired") {
             $('#txtipaddress').val(jsonData.StaticIP);
             $('#txtsubnetmask').val(jsonData.SubnetMask);
@@ -601,7 +602,30 @@ function loadInterfaceWiredSelect(type) {
                 $('#username').show();
                 $('#password').show();
             }
-        } 
+        } else if (type == "wlan0") {
+            $('#wlan0_txtipaddress').val(jsonData.StaticIP);
+            $('#wlan0_txtsubnetmask').val(jsonData.SubnetMask);
+            $('#wlan0_txtgateway').val(jsonData.StaticRouters);
+            $('#wlan0_default-route').prop('checked', jsonData.DefaultRoute);
+            $('#wlan0_txtdns1').val(jsonData.StaticDNS1);
+            $('#wlan0_txtdns2').val(jsonData.StaticDNS2);
+            $('#wlan0_txtmetric').val(jsonData.Metric);
+
+            if (jsonData.StaticIP !== null && jsonData.StaticIP !== '') {
+                $('#wlan0_chkstatic').closest('.btn').button('toggle');
+                $('#wlan0_chkstatic').closest('.btn').button('toggle').blur();
+                $('#wlan0_chkstatic').blur();
+                $('#wlan0_chkfallback').prop('disabled', true);
+                $('#static_ip').show(); 
+            } else {
+                console.log(jsonData.StaticIP);
+                $('#wlan0_chkdhcp').closest('.btn').button('toggle');
+                $('#wlan0_chkdhcp').closest('.btn').button('toggle').blur();
+                $('#wlan0_chkdhcp').blur();
+                $('#wlan0_chkfallback').prop('disabled', false);
+                $('#static_ip').hide();
+            }
+        }
     });
 }
 
@@ -1554,6 +1578,9 @@ function contentLoaded() {
             break;
         case "lte_conf":
             loadInterfaceWiredSelect("lte");
+            break;
+        case "wlan0_conf":
+            loadInterfaceWiredSelect("wlan0");
             break;
         case "hostapd_conf":
             loadChannel();
