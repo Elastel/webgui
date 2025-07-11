@@ -4,17 +4,22 @@ PROG=/usr/sbin/failoverd
 
 do_start()
 {
+	enabled=$(uci get network.detection.enabled)
+	[ "$enabled" = "1" ] || return
+
 	$PROG &
 }
 
 do_stop()
 {
-  killall -q failoverd
+	killall -q failoverd
 	sleep 1
 	[ -n "$(pgrep failoverd)" ] && {
 		sleep 1
-		kill -9 $(pgrep failoverd)
+		kill -9 $(pgrep -x failoverd)
 	}
+
+	uci -P /var/state/ set network.wan.link='none'
 }
 
 case "$1" in
@@ -29,9 +34,7 @@ case "$1" in
 	$0 start
 	;;
   *)
-	echo "Usage: $SCRIPTNAME {start|stop|restart}" >&2
+	echo "Usage: $0 {start|stop|restart}" >&2
 	exit 3
 	;;
 esac
-
-:

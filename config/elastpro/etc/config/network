@@ -25,4 +25,5 @@ config setting 'detection'
 	option primary_addr '1.1.1.1'
 	option enabled_reboot '0'
 	option reboot_inter '10'
+	option enabled '1'
 

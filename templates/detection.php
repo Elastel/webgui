@@ -24,32 +24,40 @@
           <form method="POST" action="detection_conf" role="form">
           <?php echo \ElastPro\Tokens\CSRF::hiddenField(); ?>
             <div class="cbi-section cbi-tblsection">
-                <div id="page_detection" name="page_detection">
-                    <div class="cbi-value">
-                        <label class="cbi-value-title">Primary Detection Server</label>
-                        <input type="text" class="cbi-input-text" name="primary_addr" id="primary_addr" 
-                        value="<?php echo ($primary_addr[0] != null ? $primary_addr[0] : ""); ?>" />
-                    </div>
-                    
-                    <div class="cbi-value">
-                        <label class="cbi-value-title">Second Detection Server</label>
-                        <input type="text" class="cbi-input-text" name="secondary_addr" id="secondary_addr" 
-                        value="<?php echo ($secondary_addr[0] != null ? $secondary_addr[0] : ""); ?>" />
-                    </div>
+              <div class="cbi-value">
+                <label class="cbi-value-title"><?php echo _("Online Detection"); ?></label>
+                <input class="cbi-input-radio" id="detection_enable" name="enabled" value="1" type="radio" <?php echo ($enabled[0] == 1 ? 'checked' : ""); ?> onchange="enableDetection(true)">
+                <label ><?php echo _("Enable"); ?></label>
 
-                    <div class="cbi-value">
-                        <label class="cbi-value-title">Enable Reboot</label>
-                        <input type="checkbox" class="cbi-input-checkbox" onchange="enableReboot(this)" name="enabled_reboot" id="enabled_reboot" 
-                        value="1" <?php echo ($enabled_reboot[0] == 1 ? 'checked' : ""); ?> />
-                    </div>
-                    <div class="cbi-value" id="page_reboot" name="page_reboot" <?php if ($enabled_reboot[0] != 1) { ?> style="display: none;" <?php } ?> >
-                        <label class="cbi-value-title">Reboot After Interval</label>
-                        <input type="text" class="cbi-input-text" name="reboot_inter" id="reboot_inter" 
-                        value="<?php echo ($reboot_inter[0] != null ? $reboot_inter[0] : ""); ?>" />
-                        <label class="cbi-value-description">Minutes</label>
-                    </div>
+                <input class="cbi-input-radio" id="detection_disable" name="enabled" value="0" type="radio" <?php echo ($enabled[0] != 1 ? 'checked' : ""); ?> onchange="enableDetection(false)">
+                <label ><?php echo _("Disable"); ?></label>
+              </div>
 
-                </div>
+              <div id="page_detection" name="page_detection">
+                  <div class="cbi-value">
+                      <label class="cbi-value-title">Primary Detection Server</label>
+                      <input type="text" class="cbi-input-text" name="primary_addr" id="primary_addr" 
+                      value="<?php echo ($primary_addr[0] != null ? $primary_addr[0] : ""); ?>" />
+                  </div>
+                  
+                  <div class="cbi-value">
+                      <label class="cbi-value-title">Second Detection Server</label>
+                      <input type="text" class="cbi-input-text" name="secondary_addr" id="secondary_addr" 
+                      value="<?php echo ($secondary_addr[0] != null ? $secondary_addr[0] : ""); ?>" />
+                  </div>
+
+                  <div class="cbi-value">
+                      <label class="cbi-value-title">Enable Reboot</label>
+                      <input type="checkbox" class="cbi-input-checkbox" onchange="enableReboot(this)" name="enabled_reboot" id="enabled_reboot" 
+                      value="1" <?php echo ($enabled_reboot[0] == 1 ? 'checked' : ""); ?> />
+                  </div>
+                  <div class="cbi-value" id="page_reboot" name="page_reboot" <?php if ($enabled_reboot[0] != 1) { ?> style="display: none;" <?php } ?> >
+                      <label class="cbi-value-title">Reboot After Interval</label>
+                      <input type="text" class="cbi-input-text" name="reboot_inter" id="reboot_inter" 
+                      value="<?php echo ($reboot_inter[0] != null ? $reboot_inter[0] : ""); ?>" />
+                      <label class="cbi-value-description">Minutes</label>
+                  </div>
+              </div>
             </div>
             <?php echo $buttons ?>
           </form>
@@ -64,6 +72,19 @@
         } else {
             $("#page_reboot").hide();
         }
-    } 
+    }
+
+    function enableDetection(state) {
+      if (state) {
+        $('#page_detection').show();
+      } else {
+        $('#page_detection').hide();
+      }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+      var enabled = document.getElementById('detection_enable').checked;
+      enableDetection(enabled);
+  });
 </script>
 
