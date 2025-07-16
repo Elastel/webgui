@@ -562,7 +562,6 @@ function loadInterfaceWiredSelect(type) {
     var strInterface = $('#cbxdhcpiface').val();
     $.get('ajax/networking/get_netcfg.php?iface='+strInterface,function(data){
         jsonData = JSON.parse(data);
-        console.log(type);
         if (type == "wired") {
             $('#txtipaddress').val(jsonData.StaticIP);
             $('#txtsubnetmask').val(jsonData.SubnetMask);

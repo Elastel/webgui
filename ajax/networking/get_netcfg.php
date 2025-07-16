@@ -8,6 +8,8 @@ require_once '../../includes/functions.php';
 $interface = $_GET['iface'];
 
 if (isset($interface)) {
+    exec("uci get network.swan.ifname", $tmp);
+    $lte_interfaces = $tmp[0];
     if ($interface == 'br0') {
         exec('cat '. escapeshellarg(RASPI_DNSMASQ_PREFIX.$interface.'.conf'), $return);
         $conf = ParseConfig($return);
@@ -49,7 +51,7 @@ if (isset($interface)) {
     } else if ($interface == 'eth0') {
         exec("sudo /usr/local/bin/uci get network.wan.wan_multi", $wan_multi);
         $dhcpdata['wan_multi'] = $wan_multi[0];
-    } else if ($interface == 'wwan0' || $interface == 'usb0' || $interface == 'eth1') {
+    } else if ($interface == $lte_interfaces) {
         exec("sudo /usr/local/bin/uci get network.swan.metric", $lte_metric);
         exec("sudo /usr/local/bin/uci get network.swan.apn", $apn);
         exec("sudo /usr/local/bin/uci get network.swan.pincode", $pin);
