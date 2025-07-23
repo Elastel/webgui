@@ -63,7 +63,12 @@ class Sysinfo
 
     public function systemTemperature()
     {
-        $cpuTemp = file_get_contents("/sys/class/thermal/thermal_zone0/temp");
+        if (!file_exists("/sys/class/thermal/thermal_zone0/temp")) {
+            return "N/A";
+        } else {
+            $cpuTemp = file_get_contents("/sys/class/thermal/thermal_zone0/temp");
+        }
+        
         return number_format((float)$cpuTemp/1000, 1);
     }
 

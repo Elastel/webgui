@@ -4,7 +4,7 @@
         <hr class="sidebar-divider my-0">
         <div class="row">
             <div class="col-xs ml-3 sidebar-brand-icon">
-            <img src="app/img/<?php echo ( ($target != null && $target != 'EC211') ? "$hostname.php" : "elastel.php"); ?>" class="navbar-logo" width="200" height="50">
+            <img src="app/img/<?php echo getLogo($target, $hostname); ?>" class="navbar-logo" width="200" height="50">
             </div>
         </div>
         <li class="nav-item">

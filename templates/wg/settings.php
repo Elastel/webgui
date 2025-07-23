@@ -120,15 +120,13 @@
       </div>
     </div>
 
-    <div id="page_wg">
-      <div class="cbi-value">
-        <label class="cbi-value-title"><?php echo _("Configuration File(.conf)"); ?></label>
-        <label for="wg" class="cbi-file-lable">
-            <input type="button" class="cbi-file-btn" id="wg_btn" value="<?php echo _("Choose file"); ?>">
-            <span id="wg_text"><?php echo _("No file chosen"); ?></span>
-            <input type="file" class="cbi-file" name="wgFile" id="wgFile" onchange="wgFileChange()">
-        </label>
-      </div>
+    <div id="page_wg" class="cbi-value">
+      <label class="cbi-value-title"><?php echo _("Configuration File(.conf)"); ?></label>
+      <label for="wg" class="cbi-file-lable">
+          <input type="button" class="cbi-file-btn" id="wg_btn" value="<?php echo _("Choose file"); ?>">
+          <span id="wg_text"><?php echo _("No file chosen"); ?></span>
+          <input type="file" class="cbi-file" name="wgFile" id="wgFile" onchange="wgFileChange()">
+      </label>
     </div>
   </div><!-- /.row -->
 </div><!-- /.tab-pane | settings tab -->

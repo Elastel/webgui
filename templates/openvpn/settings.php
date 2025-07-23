@@ -141,21 +141,19 @@
         </div>
       </div>
     </div>
-
-    <div id="page_ovpn" name="page_ovpn">
-      <div class="cbi-value">
-        <label class="cbi-value-title"><?php echo _("OVPN File(.ovpn)"); ?></label>
-        <label for="ovpn" class="cbi-file-lable">
-            <input type="button" class="cbi-file-btn" id="ovpn_btn" value="<?php echo _("Choose file"); ?>">
-            <span id="ovpn_text"><?php echo _("No file chosen"); ?></span>
-            <input type="file" class="cbi-file" name="ovpn" id="ovpn" onchange="ovpnFileChangeVpn()">
-        </label>
-      </div>
+    
+    <div id="page_ovpn" name="page_ovpn" class="cbi-value">
+      <label class="cbi-value-title"><?php echo _("OVPN File(.ovpn)"); ?></label>
+      <label class="cbi-file-lable" for="ovpn">
+          <input type="button" class="cbi-file-btn" id="ovpn_btn" value="<?php echo _("Choose file"); ?>">
+          <span id="ovpn_text"><?php echo _("No file chosen"); ?></span>
+          <input type="file" class="cbi-file" name="ovpn" id="ovpn" onchange="ovpnFileChangeVpn()">
+      </label>
     </div>
 
     <div class="cbi-value" id="page_user_pwd" name="page_user_pwd">
       <label class="cbi-value-title"><?php echo _("Username&Password"); ?></label>
-      <textarea name="text_user_pwd" id="text_user_pwd" style="vertical-align: middle;" cols="30" rows="5"></textarea>
+      <textarea name="text_user_pwd" id="text_user_pwd" style="vertical-align: middle; width: 100%; max-width: 15rem; height: 5em; min-height: 3em; resize: vertical;"></textarea>
       <label class="cbi-value-description"><?php echo _("eg: username passwd"); ?></label>
     </div>
   </div>

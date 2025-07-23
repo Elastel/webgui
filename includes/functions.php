@@ -765,6 +765,30 @@ function get_public_ip()
     return $public_ip[0];
 }
 
+function getFavicon($target, $hostname)
+{
+    $name='';
+    if ($target != null && file_exists('/var/www/html/app/icons/'.$hostname.'_favicon.png')) {
+        $name = $hostname . "_favicon.png";
+    } else {
+        $name = "favicon.png";
+    }
+
+    return $name;
+}
+
+function getLogo($target, $hostname)
+{
+    $name='';
+    if ($target != null && file_exists('/var/www/html/app/img/'.$hostname.'.php')) {
+        $name = $hostname . ".php";
+    } else {
+        $name = "elastel.php";
+    }
+
+    return $name;
+}
+
 function getModel()
 {
     exec('cat /etc/fw_model', $model);

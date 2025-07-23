@@ -80,6 +80,9 @@ function get_revison()
     } else {
         exec('cat /proc/cpuinfo', $cpuinfo_array);
         $rev = trim(array_pop(explode(':', array_pop(preg_grep("/^model name/", $cpuinfo_array)))));
+        if ($rev == null || $rev == '') {
+            $rev = trim(array_pop(explode(':', array_pop(preg_grep("/^Processor/", $cpuinfo_array)))));
+        }
         return $rev;
     }
 }
@@ -184,21 +187,7 @@ function DisplayDashboard(&$extraFooterScripts)
         }
     }
 
-    if ($dhcpdata['StaticIP'] == null || $dhcpdata['StaticIP'] == ' ') { 
-        $routeInfo = getRouteInfo(true);
-    } else {
-        $routeInfo = array();
-        $routeInfo[0]['interface'] = 'eth0';
-        $routeInfo[0]['ip-address'] = $dhcpdata['StaticIP'];
-        $routeInfo[0]['gateway'] = $dhcpdata['StaticRouters'];
-        $routeInfo[0]['netmask'] = $dhcpdata['SubnetMask'];
-        // $routeInfo[0]['dns1'] = $dhcpdata['StaticDNS1'];
-        // $routeInfo[0]['dns2'] = $dhcpdata['StaticDNS2'];
-        exec('cat /sys/class/net/eth0/address', $mac);
-        $routeInfo[0]['mac'] = $mac[0];
-    }
-
-    $routeInfo[0]['metric'] = getInterfaceMetric('eth0') ?? '-';
+    $routeInfo = getRouteInfo(true);
 
     exec('ip route | grep "default"  | grep -c "'. $lte_ifname[0] .'"', $enabled);
     $lteInfo = array();
@@ -228,22 +217,6 @@ function DisplayDashboard(&$extraFooterScripts)
 		$lteInfo["sim"] = $sim[0] ?? '-';
         $lteInfo["uptime"] = $uptime[0] ? timeCalculation($uptime[0]) : '-';
         $lteInfo["metric"] = getInterfaceMetric($lte_ifname[0]) ?? '-';
-    }
-
-    exec('ip route | grep "default"  | grep -c "wlan0"', $wifi_enabled);
-    $wifiInfo = array();
-    if ($wifi_enabled[0] != "0") {
-        // exec("/bin/cat /etc/wpa_supplicant/wpa_supplicant.conf | grep ssid | awk -F \\\" '{ print $2 }'", $ssid);
-        exec('ifconfig wlan0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep -v "255.255."', $wifi_ip);
-        exec('ifconfig wlan0 | grep -Eo "([0-9]+[.]){3}[0-9]+" | grep "255.255."', $wifi_netmask);
-        exec("ip route show | grep default | grep wlan0 | awk '{print $3}'", $wifi_gateway);
-
-        $wifiInfo["interface"] = 'wlan0';
-        // $wifiInfo["ssid"] = $ssid[0];
-        $wifiInfo["ip"] = $wifi_ip[0];
-        $wifiInfo["netmask"] = $wifi_netmask[0];
-        $wifiInfo["gateway"] = $wifi_gateway[0];
-        $wifiInfo["metric"] = getInterfaceMetric('wlan0') ?? '-';
     }
 
     exec("cat /proc/sys/kernel/hostname", $tmp);
@@ -331,7 +304,6 @@ function DisplayDashboard(&$extraFooterScripts)
             "routeInfo",
             "lteInfo",
             "statusIcon",
-            "wifiInfo",
             'cur_hostname',
             'model',
             'kernel_version',

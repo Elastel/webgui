@@ -213,7 +213,7 @@ sync
 sleep 1
 
 app_array=("bacnet_router" "dct" "ddns" "edaemon" "failover" "firewall"
-        "gps" "lte" "macchina" "modbus_router" "terminal" "init-wifi"
+        "gps" "lte" "modbus_router" "terminal" "init-wifi"
         "iotedge")
 
 for item in "${app_array[@]}"; do
