@@ -1170,6 +1170,9 @@ function handlePageActions($extraFooterScripts, $page)
         case "/iotedge":
             DisplayIotedge();
             break;
+        case "/hmi":
+            DisplayHmi();
+            break;
         case "/login":
             DisplayLogin();
             break;

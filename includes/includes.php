@@ -62,6 +62,7 @@ require_once 'includes/modbus_router.php';
 require_once 'includes/backup_restore.php';
 require_once 'includes/iotedge.php';
 require_once 'includes/ethernetip.php';
+require_once 'includes/hmi.php';
 
 $model = getModel();
 $target = getTarget();
