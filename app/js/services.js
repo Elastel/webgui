@@ -150,3 +150,7 @@ function changeLabel(input_object, label_new_text) {
     let label = input.previousElementSibling;
     label.textContent = label_new_text;
 }
+
+$(document).on("click", "#gen_apikey", function(e) {
+    $('#txtapikey').val(genPassword(32).toLowerCase());
+});

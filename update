@@ -10,13 +10,46 @@ model=${model:-"EG500"}
 target=${target:-$model}
 echo model:$model
 
+update_python_version() {
+        CURRENT_VER=$(python3 -V 2>&1 | awk '{print $2}')
+        echo "Python3 version: $CURRENT_VER"
+
+        python3 -c 'import sys; exit(0 if sys.version_info >= (3,7) else 1)'
+        if [ $? -eq 0 ]; then
+                return
+        fi
+
+        echo "Python3 < 3.7，installing Python 3.8..."
+
+        apt-get update
+        apt-get install -y python3.8 python3.8-dev python3.8-distutils
+
+        if [ ! -f /usr/bin/python3.8 ]; then
+                echo "Python 3.8 install failed!"
+                exit 1
+        fi
+
+        if [ -L /usr/bin/python3 ]; then
+                CURRENT_LINK=$(readlink -f /usr/bin/python3)
+                mv /usr/bin/python3 /usr/bin/python3.bak
+        fi
+
+        update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 2
+
+        if [ -n "$CURRENT_LINK" ] && [ -f "$CURRENT_LINK" ]; then
+                update-alternatives --install /usr/bin/python3 python3 "$CURRENT_LINK" 1
+        fi
+
+        update-alternatives --set python3 /usr/bin/python3.8
+}
+
 install_package_if_needed() {
         local package_name=$1
         local cmd_name=$2
 
         if ! command -v "$cmd_name" >/dev/null 2>&1; then
                 echo "$package_name is NOT installed!"
-                sudo apt-get install -y "$package_name" || {
+                apt-get install -y "$package_name" || {
                         echo "Failed to install $package_name."
                         exit 4
                 }
@@ -28,10 +61,10 @@ iotedge_package_check() {
                 echo "iotedge is NOT installed!"
                 if [[ $model == "EG500" || $model == "EG410" || $model == "ElastBox400" ]]; then
                         curl https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb >/tmp/packages-microsoft-prod.deb
-                        sudo apt install /tmp/packages-microsoft-prod.deb
-                        sudo apt-get update
-                        sudo apt-get install moby-engine -y
-                        echo 'Yes, do as I say!' | sudo apt-get install aziot-edge
+                        apt install /tmp/packages-microsoft-prod.deb
+                        apt-get update
+                        apt-get install moby-engine -y
+                        echo 'Yes, do as I say!' | apt-get install aziot-edge
                 else
                         echo "Not support iotedge"
                 fi
@@ -45,7 +78,7 @@ set_resolvconf() {
         if [[ -e $resolvconf_path && -e $resolvconf_cmd ]]; then
                 echo "$resolvconf_path" " is exist"
         else
-                sudo apt-get install resolvconf -y
+                apt-get install resolvconf -y
                 if [ $? -ne 0 ]; then
                         echo "Failed to install resolvconf."
                         exit 4
@@ -60,43 +93,43 @@ set_resolvconf() {
 }
 
 reset_configuration() {
-        sudo cp $path/config/hostapd.conf /etc/hostapd/hostapd.conf
+        cp $path/config/hostapd.conf /etc/hostapd/hostapd.conf
         [[ $model == "EG324" ]] && sed -i "s/nl80211/rtl871xdrv/g" /etc/hostapd/hostapd.conf
-        sudo cp $path/config/90_raspap.conf /etc/sysctl.d/90_raspap.conf
-        sudo sysctl -p /etc/sysctl.d/90_raspap.conf
-        sudo cp $path/config/090_br0.conf /etc/dnsmasq.d/090_br0.conf
-        sudo cp $path/config/dhcpcd.conf /etc/dhcpcd.conf
-        sudo cp $path/config/Muttrc /etc/Muttrc
-        sudo cp $path/config/msmtprc /etc/msmtprc
-        sudo cp $path/config/defaults.json /etc/raspap/networking/
-        sudo cp -r $path/config/elastpro/etc/* /etc/
-        sudo cp -r $path/Elastel/$model/etc/* /etc/
-        sudo rm -r /etc/openvpn/client/*
-        sudo rm -r /etc/openvpn/server/*
-        sudo rm -r /etc/wireguard/wg0.conf
+        cp $path/config/90_raspap.conf /etc/sysctl.d/90_raspap.conf
+        sysctl -p /etc/sysctl.d/90_raspap.conf
+        cp $path/config/090_br0.conf /etc/dnsmasq.d/090_br0.conf
+        cp $path/config/dhcpcd.conf /etc/dhcpcd.conf
+        cp $path/config/Muttrc /etc/Muttrc
+        cp $path/config/msmtprc /etc/msmtprc
+        cp $path/config/defaults.json /etc/raspap/networking/
+        cp -r $path/config/elastpro/etc/* /etc/
+        cp -r $path/Elastel/$model/etc/* /etc/
+        rm -r /etc/openvpn/client/*
+        rm -r /etc/openvpn/server/*
+        rm -r /etc/wireguard/wg0.conf
         sleep 1
         if [[ $model != "EG324L" && $model != "EC212" ]]; then
-                sudo cp $path/config/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
-                sudo cp $path/config/global_conf.json /etc/global_conf.json
-                sudo cp $path/config/hostapd.service /lib/systemd/system/hostapd.service
+                cp $path/config/090_raspap.conf /etc/dnsmasq.d/090_raspap.conf
+                cp $path/config/global_conf.json /etc/global_conf.json
+                cp $path/config/hostapd.service /lib/systemd/system/hostapd.service
                 # reset wifi ssid
                 sub_mac=$(ifconfig eth0 | grep ether | awk '{print $2}' | cut -f 5-6 -d ":" | tr -d ":")
 
                 if [ ! -f /etc/udev/rules.d/99-wifi-hotplug.rules ]; then
-                        sudo cp $path/config/99-wifi-hotplug.rules /etc/udev/rules.d/
+                        cp $path/config/99-wifi-hotplug.rules /etc/udev/rules.d/
                 fi
 
                 if [[ -e "/etc/chirpstack" ]]; then
-                        sudo cp $path/config/chirpstack.toml /etc/chirpstack/chirpstack.toml
-                        sudo cp $path/config/chirpstack-gateway-bridge.toml /etc/chirpstack-gateway-bridge/chirpstack-gateway-bridge.toml
+                        cp $path/config/chirpstack.toml /etc/chirpstack/chirpstack.toml
+                        cp $path/config/chirpstack-gateway-bridge.toml /etc/chirpstack-gateway-bridge/chirpstack-gateway-bridge.toml
                 fi
         else
                 if [ -f /etc/init.d/S42htset ]; then
-                        sudo rm /etc/init.d/S42htset
-                        sudo rm -r /etc/htset
+                        rm /etc/init.d/S42htset
+                        rm -r /etc/htset
                 fi
 
-                sudo cp $path/config/edaemon.conf /etc/edaemon.conf
+                cp $path/config/edaemon.conf /etc/edaemon.conf
                 sub_mac=$(ifconfig eth0 | grep HWaddr | awk '{print $5}' | cut -f 5-6 -d ":" | tr -d ":")
 
                 zonelist=$(ls /usr/share/zoneinfo/ | wc -l)
@@ -104,7 +137,7 @@ reset_configuration() {
                         tar xzvf $path/config/zoneinfo.tar.gz -C /usr/share/
                 fi
 
-                sudo rm /etc/localtime && sudo ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+                rm /etc/localtime && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
         fi
 
         if [[ $model == "EC212" ]]; then
@@ -116,16 +149,49 @@ reset_configuration() {
 
         ssid="$target"_"$sub_mac"
         sed -i "s/ssid.*/ssid=$ssid/" /etc/hostapd/hostapd.conf
-        sudo /etc/raspap/lighttpd/configport.sh 80 '' /etc/lighttpd/lighttpd.conf
+        /etc/raspap/lighttpd/configport.sh 80 '' /etc/lighttpd/lighttpd.conf
         sync
 }
+
+# restapi init
+if [[ $model != "EG324L" && $model != "EC212" ]]; then
+        update_python_version
+        systemctl stop restapi.service
+
+        if ! command -v pip3 >/dev/null 2>&1; then
+                echo "pip3 is NOT installed! Installing..."
+                apt-get update
+                apt-get install -y python3-pip
+        else
+                echo "pip3 is already installed, upgrading pip3..."
+                python3 -m pip install --upgrade pip
+        fi
+        
+        pip3 install -r $path/api/requirements.txt
+
+        if [ $? -ne 0 ]; then
+                echo "pip3 requirements install failed!"
+                exit 5
+        fi
+
+        if [ ! -d "/etc/raspap/api" ]; then
+                mkdir -p /etc/raspap/api
+        fi
+        
+        cp -r $path/api/* /etc/raspap/api/
+
+        if [ ! -f /etc/systemd/system/restapi.service ]; then
+                cp $path/installers/restapi.service /etc/systemd/system/
+                systemctl enable restapi.service
+        fi
+fi
 
 if [[ $model == "EG500" || $model == "EG410" || $model == "ElastBox400" ]]; then
         install_package_if_needed "openvpn" "openvpn"
         install_package_if_needed "wireguard" "wg"
 
-        sudo systemctl stop nftables.service
-        sudo systemctl disable nftables.service
+        systemctl stop nftables.service
+        systemctl disable nftables.service
 fi
 
 iotedge_package_check
@@ -142,7 +208,7 @@ fi
 sleep 1
 if [ $model == "EG324" ]; then
         if [ ! -f /usr/lib/arm-linux-gnueabihf/libjson-c.so.4 ]; then
-                sudo ln -sf /usr/lib/arm-linux-gnueabihf/libjson-c.so /usr/lib/arm-linux-gnueabihf/libjson-c.so.4
+                ln -sf /usr/lib/arm-linux-gnueabihf/libjson-c.so /usr/lib/arm-linux-gnueabihf/libjson-c.so.4
         fi
 fi
 
@@ -150,28 +216,28 @@ if [ "$1" == "reset" ]; then
         echo $1
         reset_configuration
 else
-        sudo cp $path/Elastel/$model/etc/init.d/* /etc/init.d/
-        sudo cp $path/config/elastpro/etc/init.d/* /etc/init.d/ -r
+        cp $path/Elastel/$model/etc/init.d/* /etc/init.d/
+        cp $path/config/elastpro/etc/init.d/* /etc/init.d/ -r
 fi
 
-sudo cp $path/config/cron-logrotate /etc/cron.d/
-sudo cp $path/config/logrotate-rsyslog /etc/logrotate.d/rsyslog
-sudo chown -R root:root /etc/logrotate.d/rsyslog
-sudo cp $path/config/journald.conf /etc/systemd/journald.conf
-sudo cp $path/config/elastel_config.json /etc/elastel_config.json
-sudo cp $path/config/rules.v4 /etc/iptables/rules.v4
-sudo cp $path/installers/service*.sh /etc/raspap/hostapd
-sudo cp $path/installers/configport.sh /etc/raspap/lighttpd/
-sudo cp $path/installers/bacnet_update /usr/sbin/
+cp $path/config/cron-logrotate /etc/cron.d/
+cp $path/config/logrotate-rsyslog /etc/logrotate.d/rsyslog
+chown -R root:root /etc/logrotate.d/rsyslog
+cp $path/config/journald.conf /etc/systemd/journald.conf
+cp $path/config/elastel_config.json /etc/elastel_config.json
+cp $path/config/rules.v4 /etc/iptables/rules.v4
+cp $path/installers/service*.sh /etc/raspap/hostapd
+cp $path/installers/configport.sh /etc/raspap/lighttpd/
+cp $path/installers/bacnet_update /usr/sbin/
 sync
 sleep 1
 
 if [[ $model != "EG324L" && $model != "EC212" ]]; then
         if [ -f /etc/sudoers.d/090_raspap ]; then
-                sudo rm /etc/sudoers.d/090_raspap
+                rm /etc/sudoers.d/090_raspap
         fi
-        sudo cp $path/config/090_elastpro /etc/sudoers.d/
-        sudo chown -c root:www-data /etc/raspap/hostapd/*.sh
+        cp $path/config/090_elastpro /etc/sudoers.d/
+        chown -c root:www-data /etc/raspap/hostapd/*.sh
 else
         result=$(ls /etc/ssl/certs/ | wc -l)
         if [[ $result == "0" ]]; then
@@ -182,32 +248,32 @@ fi
 if [[ $model == "EG500" || $model == "EG410" || $model == "ElastBox400" ]]; then
         if [ ! -n "$(grep 'pcf8563' /boot/config.txt)" ]; then
                 echo "not pcf8563"
-                sudo bash -c "echo 'dtoverlay=i2c-rtc,pcf8563' >> /boot/config.txt"
+                bash -c "echo 'dtoverlay=i2c-rtc,pcf8563' >> /boot/config.txt"
         fi
         sleep 1
 
-        sudo rm /etc/rc5.d/S10loragw
-        sudo ln -sf /etc/init.d/loragw /etc/rc5.d/S10loragw
-        sudo /etc/init.d/loragw stop
-        sudo cp $path/installers/reset_lgw.sh /usr/sbin/
-        sudo cp $path/config/modules.conf /etc/modules-load.d/
+        rm /etc/rc5.d/S10loragw
+        ln -sf /etc/init.d/loragw /etc/rc5.d/S10loragw
+        /etc/init.d/loragw stop
+        cp $path/installers/reset_lgw.sh /usr/sbin/
+        cp $path/config/modules.conf /etc/modules-load.d/
 
         echo -e "Start feed dog 0"
-        sudo /var/www/html/installers/feed_dog.sh 0 &
+        /var/www/html/installers/feed_dog.sh 0 &
 else
-        sudo cp $path/config/99-option.rules /etc/udev/rules.d/
+        cp $path/config/99-option.rules /etc/udev/rules.d/
         echo -e "Start feed dog 1"
-        sudo /var/www/html/installers/feed_dog.sh 1 &
+        /var/www/html/installers/feed_dog.sh 1 &
 fi
 sleep 1
 sync
 
 [ -n "$(pgrep daemond)" ] && {
-        sudo kill -9 $(pgrep daemond)
+        kill -9 $(pgrep daemond)
 }
 
 [ -n "$(pgrep edaemon)" ] && {
-        sudo kill -9 $(pgrep edaemon)
+        kill -9 $(pgrep edaemon)
 }
 
 sleep 1
@@ -217,41 +283,41 @@ app_array=("bacnet_router" "dct" "ddns" "edaemon" "failover" "firewall"
         "iotedge")
 
 for item in "${app_array[@]}"; do
-        sudo /etc/init.d/$item stop
+        /etc/init.d/$item stop
         if [ "$model" != "EG324L" ] && [ "$model" != "EC212" ]; then
-                sudo update-rc.d $item remove
+                update-rc.d $item remove
                 if [ "$item" == "init-wifi" ] || [ "$item" == "terminal" ]; then
-                        sudo ln -sf /etc/init.d/$item /etc/rc5.d/S01$item
+                        ln -sf /etc/init.d/$item /etc/rc5.d/S01$item
                 else
-                        sudo ln -sf /etc/init.d/$item /etc/rc5.d/S10$item
+                        ln -sf /etc/init.d/$item /etc/rc5.d/S10$item
                 fi
         else
-                sudo rm /etc/init.d/S90$item
-                sudo ln -sf /etc/init.d/$item /etc/init.d/S90$item
+                rm /etc/init.d/S90$item
+                ln -sf /etc/init.d/$item /etc/init.d/S90$item
         fi
 done
 
 sync
 sleep 1
 if [[ $bit == "64" || $model == "EG324" || $model == "EG324L" || $model == "EC212" ]]; then
-        sudo /etc/init.d/hostapd stop
-        sudo cp -r $path/Elastel/$model/usr/* /usr/
+        /etc/init.d/hostapd stop
+        cp -r $path/Elastel/$model/usr/* /usr/
         #Turn off automatic updates
         if [[ $model = "EG324" ]]; then
-                sudo systemctl stop unattended-upgrades.service
-                sudo systemctl disable unattended-upgrades.service
+                systemctl stop unattended-upgrades.service
+                systemctl disable unattended-upgrades.service
         fi
-        sudo cp $path/Elastel/$model/sbin/* /sbin/
+        cp $path/Elastel/$model/sbin/* /sbin/
 elif [ $bit = "32" ]; then
-        sudo cp -r $path/Elastel/$model/32/usr/* /usr/
-        sudo cp $path/Elastel/$model/32/sbin/* /sbin/
+        cp -r $path/Elastel/$model/32/usr/* /usr/
+        cp $path/Elastel/$model/32/sbin/* /sbin/
 fi
 
 if [[ $model == "EC212" ]]; then
-        sudo chmod 444 /etc/init.d/S50mosquitto /etc/init.d/S50sshd /etc/init.d/S59snmpd
-        sudo cp $path/config/15-fastcgi-php.conf-EC212 /etc/lighttpd/conf-enabled/15-fastcgi-php.conf
+        chmod 444 /etc/init.d/S50mosquitto /etc/init.d/S50sshd /etc/init.d/S59snmpd
+        cp $path/config/15-fastcgi-php.conf-EC212 /etc/lighttpd/conf-enabled/15-fastcgi-php.conf
         if [ ! -d "/etc/dropbear" ]; then
-                sudo mkdir -p /etc/dropbear
+                mkdir -p /etc/dropbear
         fi
         sed -i '/^sshd/d' "/etc/edaemon.conf"
 fi
@@ -261,4 +327,4 @@ echo -e "Complete to update, it will reboot system."
 echo $(date +%F%n%T) >/etc/fw_date
 echo $(date +%F%n%T):success >/etc/update_status
 sleep 5
-sudo reboot
+reboot

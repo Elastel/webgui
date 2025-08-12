@@ -161,6 +161,9 @@
                     <?php if(isBinExists("iotedge")) : ?>
                     <li class="nav-item" name="iotedge" id="services_iotedge"> <a class="nav-link" href="iotedge"><?php echo _("Azure IoT Edge"); ?></a></li>
                     <?php endif; ?>
+                    <?php if((isBinExists("pip3") || isBinExists("python3")) &&  file_exists('/etc/raspap/api/')): ?>
+                    <li class="nav-item" name="restapi" id="services_restapi"> <a class="nav-link" href="restapi"><?php echo _("RestAPI"); ?></a></li>
+                    <?php endif; ?>
                 </ul>
                 </div>
             </li>

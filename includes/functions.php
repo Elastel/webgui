@@ -1176,6 +1176,9 @@ function handlePageActions($extraFooterScripts, $page)
         case "/login":
             DisplayLogin();
             break;
+        case "/restapi":
+            DisplayRestapi();
+            break;
         case "/logout":
             $auth = new \ElastPro\Auth\HTTPAuth();
             $auth->logout();
