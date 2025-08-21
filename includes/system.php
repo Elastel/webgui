@@ -93,13 +93,7 @@ function DisplaySystem()
 
         if (isset($_POST['timezones'])) {
             $timezone = $_POST['timezones'];
-            if ($model != 'EG324L' && $model != 'EC212') {
-                exec("sudo timedatectl set-timezone $timezone");
-            } else {
-                exec("sudo rm /etc/localtime");
-                exec("sudo ln -s /usr/share/zoneinfo/$timezone /etc/localtime");
-            }
-                
+            exec("sudo ln -sf /usr/share/zoneinfo/$timezone /etc/localtime");
         }
 
         $status->addMessage('Update success', 'success');
@@ -251,23 +245,18 @@ function DisplaySystem()
     exec("date '+%Y-%m-%d %H:%M:%S'", $tmp);
     $current_time = $tmp[0];
 
-    if ($model != 'EG324L' && $model != 'EC212') {
-        exec("cat /etc/timezone", $cur_timezone);
-        $_SESSION['timezones'] = $cur_timezone[0];
+    exec("readlink /etc/localtime", $cur_timezone);
+    if ($cur_timezone[0] == null) {
+        exec("sudo ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime");
+        $_SESSION['timezones'] = "Asia/Shanghai";
     } else {
-        exec("readlink /etc/localtime", $cur_timezone);
-        if ($cur_timezone[0] == null) {
-            exec("sudo rm /etc/localtime && sudo ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime");
-            $_SESSION['timezones'] = "Asia/Shanghai";
-        } else {
-            $substring = "zoneinfo/";
-            $result = strstr($cur_timezone[0], $substring, false);
-            $result = substr($result, strlen($substring));
+        $substring = "zoneinfo/";
+        $result = strstr($cur_timezone[0], $substring, false);
+        $result = substr($result, strlen($substring));
 
-            $_SESSION['timezones'] = $result;
-        }
+        $_SESSION['timezones'] = $result;
     }
-
+    
     unset($tmp);
     exec("cat /proc/sys/kernel/hostname", $tmp);
     $cur_hostname = $tmp[0];
