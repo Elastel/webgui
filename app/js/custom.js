@@ -1650,39 +1650,22 @@ function contentLoaded() {
             loadInterfacesConfig();
             break;
         case "modbus_conf":
-            loadModbusConfig();
-            break;
         case "ascii_conf":
-            loadAsciiConfig();
-            break;
         case "s7_conf":
-            loadS7Config();
-            break;
-        case "fx_conf":
-            loadFxConfig();
-            break;
+		case "fx_conf":
         case "mc_conf":
-            loadMcConfig();
-            break;
         case "iec104_conf":
-            loadIec104Config();
+        case "opcuacli_conf":
+        case "baccli_conf":
+        case "dnp3cli_conf":
+        case "ethernetip_conf":
+        case "mbuscli_conf":
+            loadRulesConfig(pageCurrent.split('_')[0]);
             break;
         case "io_conf":
-            loadADCConfig();
-            loadDIConfig();
-            loadDOConfig();
-            break;
-        case "opcuacli_conf":
-            loadOpcuaClientConfig();
-            break;
-        case "baccli_conf":
-            loadBACnetClientConfig();
-            break;
-        case "dnp3cli_conf":
-            loadDnp3ClientConfig();
-            break;
-        case "ethernetip_conf":
-            loadEthernetipConfig();
+            loadRulesConfig('adc');
+            loadRulesConfig('di');
+            loadRulesConfig('do');
             break;
         case "server_conf":
             loadServerConfig();

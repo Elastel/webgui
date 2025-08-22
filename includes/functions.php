@@ -1146,6 +1146,9 @@ function handlePageActions($extraFooterScripts, $page)
         case "/ethernetip_conf":
             DisplayEthernetip();
             break;
+        case "/mbuscli_conf":
+            DisplayMbusClient();
+            break;
         case "/nodered":
             DisplayNodered();
             break;
