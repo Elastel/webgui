@@ -644,3 +644,36 @@ canvas#divDBChartBandwidthhourly {
   overflow-y: auto;
   height: auto;
 }
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+    width: 200px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    width: 20rem;
+    max-height: 150px;
+    overflow-y: auto;
+    left: 18.8rem
+}
+
+.dropdown-content div {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.dropdown-content div:hover {
+    background-color: #f1f1f1;
+}
+
+.show {
+    display: block;
+}

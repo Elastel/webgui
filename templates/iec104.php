@@ -29,10 +29,10 @@
               array("name"=>"Order",                "style"=>"", "descr"=>""),
               array("name"=>"Device Name",          "style"=>"", "descr"=>""),
               array("name"=>"Belonged Interface",   "style"=>"", "descr"=>""),
-              array("name"=>"Tag Name",          "style"=>"", "descr"=>"Multiple Tags Are Separated By Semicolon"),
-              array("name"=>"Type ID",              "style"=>"", "descr"=>""),
-              array("name"=>"Start IOA",            "style"=>"", "descr"=>"0~255"),
-              array("name"=>"Common Address",       "style"=>"", "descr"=>""),
+              array("name"=>"Tag Name",             "style"=>"", "descr"=>"Multiple Tags Are Separated By Semicolon"),
+              array("name"=>"Type ID - IOA",          "style"=>"", "descr"=>""),
+              // array("name"=>"Start IOA",            "style"=>"", "descr"=>"0~255"),
+              // array("name"=>"Common Address",       "style"=>"", "descr"=>""),
               // array("name"=>"Data Type",            "style"=>"", "descr"=>""),
               array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus"),
               array("name"=>"Operator",             "style"=>"display:none", "descr"=>"0 + - * /"),
@@ -80,11 +80,19 @@
 
       InputControlCustom(_('Tag Name'), $table_name.'.factor_name', $table_name.'.factor_name', _('Multiple Tags Are Separated By Semicolon'));
       
-      SelectControlCustom(_('Type ID'), $table_name.'.type_id', $type_id_list, $type_id_list[0], $table_name.'.type_id');
+      // SelectControlCustom(_('Type ID - IOA'), $table_name.'.type_id', $type_id_list, $type_id_list[0], $table_name.'.type_id');
+    ?>
+      <div class="cbi-value">
+          <input type="hidden" name="iec104_discover_data" value="" id="iec104_discover_data">
+          <label class="cbi-value-title"><?php echo _("Type ID - IOA"); ?></label>
+          <input type="text" class="cbi-input-text" name="iec104.type_id" id="iec104.type_id" oninput="iec104FilterFunction()">
+          <div id="typeIdList" class="dropdown-content"></div>
+          <button class="btn rounded-right btn_iec104discover" type="button"><i class="fas fa-sync"></i></button>
+      </div>
+    <?php
+      // InputControlCustom(_('Start IOA'), $table_name.'.start_addr', $table_name.'.start_addr', _('0~65535'));
 
-      InputControlCustom(_('Start IOA'), $table_name.'.start_addr', $table_name.'.start_addr', _('0~65535'));
-
-      InputControlCustom(_('Common Address'), $table_name.'.common_addr', $table_name.'.common_addr');
+      // InputControlCustom(_('Common Address'), $table_name.'.common_addr', $table_name.'.common_addr');
 
       // SelectControlCustom(_('Data Type'), $table_name.'.data_type', $data_type_list, $data_type_list[0], $table_name.'.data_type');
 

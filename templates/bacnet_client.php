@@ -9,42 +9,6 @@
   ob_end_clean();
 ?>
 
-<style>
-    /* 基本样式 */
-    .dropdown {
-        position: relative;
-        display: inline-block;
-        width: 200px;
-    }
-
-    .dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: white;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-        z-index: 1;
-        width: 20rem;
-        max-height: 150px;
-        overflow-y: auto;
-        left: 18.8rem
-    }
-
-    .dropdown-content div {
-        padding: 10px;
-        cursor: pointer;
-    }
-
-    .dropdown-content div:hover {
-        background-color: #f1f1f1;
-    }
-
-    .show {
-        display: block;
-    }
-</style>
-
 <div class="row">
   <div class="col-lg-12">
     <div class="card">
@@ -67,8 +31,8 @@
                 array("name"=>"Order",                "style"=>"", "descr"=>"", "ctl"=>"input"),
                 array("name"=>"Device Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
                 array("name"=>"Belonged Interface",   "style"=>"", "descr"=>"", "ctl"=>"select"),
-                array("name"=>"Tag Name",          "style"=>"", "descr"=>"", "ctl"=>"input"),
-                array("name"=>"Object Device ID",            "style"=>"", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"Tag Name",             "style"=>"", "descr"=>"", "ctl"=>"input"),
+                array("name"=>"Object Device ID",     "style"=>"", "descr"=>"", "ctl"=>"input"),
                 array("name"=>"Object Identifier",    "style"=>"", "descr"=>"", "ctl"=>"input"),
                 array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
                 array("name"=>"Operator",             "style"=>"display:none", "descr"=>"0 + - * /", "ctl"=>"select"),

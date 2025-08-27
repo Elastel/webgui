@@ -118,22 +118,22 @@ function get_belonged_interface($com_proto, $tcp_proto)
   exec("sudo uci get dct.tcp_server.proto4", $tcp4_proto);
   exec("sudo uci get dct.tcp_server.proto5", $tcp5_proto);
 
-  if ($com1_enable[0] == "1" && 
+  if ($com1_enable[0] == "1" && $com_proto != -1 &&
       ($com1_proto[0] == $com_proto || $com1_proto[0] + $com_proto == ComProtoEnum::COM_PROTO_MODBUS_ASCII )) {
     $option_list["COM1"] = "COM1";
     $found = true;
   }
-  if ($com2_enable[0] == "1" && 
+  if ($com2_enable[0] == "1" && $com_proto != -1 && 
       ($com2_proto[0] == $com_proto || $com2_proto[0] + $com_proto == ComProtoEnum::COM_PROTO_MODBUS_ASCII )) {
     $option_list["COM2"] = "COM2";
     $found = true;
   }
-  if ($com3_enable[0] == "1" && 
+  if ($com3_enable[0] == "1" && $com_proto != -1 && 
       ($com3_proto[0] == $com_proto || $com3_proto[0] + $com_proto == ComProtoEnum::COM_PROTO_MODBUS_ASCII )) {
     $option_list["COM3"] = "COM3";
     $found = true;
   }
-  if ($com4_enable[0] == "1" && 
+  if ($com4_enable[0] == "1" && $com_proto != -1 && 
       ($com4_proto[0] == $com_proto || $com4_proto[0] + $com_proto == ComProtoEnum::COM_PROTO_MODBUS_ASCII )) {
     $option_list["COM4"] = "COM4";
     $found = true;

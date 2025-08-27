@@ -603,8 +603,6 @@ function addSectionTable(table_name, jsonData, option_list) {
             key == 'report_type' || key == 'alarm_up' || key == 'alarm_down' || key == 'phone_num' || 
             key == 'email' || key == 'contents' || key == 'retry_interval' || key == 'again_interval') {
                 contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
-            } else if (key == 'type_id') {
-                contents += '   <td style="text-align:center" name="'+key+'">'+ (type_id_list[Number(jsonData[i][key])]) +'</td>\n';
             } else if (key == 'data_type') {
                 contents += '   <td style="text-align:center" name="'+key+'">'+ (data_type_value[Number(jsonData[i][key])]) +'</td>\n';
             } else if (key == 'reg_type') {
@@ -736,14 +734,12 @@ function get_bacnet_server_discover(callback) {
 }
 
 function updateDeviceIdList() {
-    var data = null;
     const options_device_id = [];
-
     const device_id_list = document.getElementById('deviceIdList');
 
     get_bacnet_server_discover(function(data) {
         // console.log(data);
-        if (data && data != 'null') {
+        if (data && data != 'null' && data != '[]') {
             $('#bacnet_discover_data').val(data);
             var jsonData = JSON.parse(data);
             for (var i = 0; i < jsonData.length; i++) {
@@ -757,11 +753,93 @@ function updateDeviceIdList() {
                 div.onclick = () => selectItem(option);
                 device_id_list.appendChild(div);
             });
+            device_id_list.classList.add('show');
         } else {
             $('#bacnet_discover_data').val("");
             device_id_list.innerHTML = '';
+            document.getElementById('baccli.object_device_id').value = "-";
         }
     });
+}
+
+function get_iec104_server_discover(callback) {
+    const interface = document.getElementById('iec104.belonged_com').value;
+    // console.log(interface);
+    $.get('ajax/dct/get_dctcfg.php?type=iec104discover&interface=' + interface, function(data) {
+        callback(data);
+    })
+}
+
+function selectItemIec104(value) {
+    const input = document.getElementById('iec104.type_id');
+    const list = document.getElementById('typeIdList');
+    // console.log(value);
+    input.value = value;
+    list.classList.remove('show');
+}
+
+function updateTypeIdList() {
+    const options_type_id = [];
+    const list = document.getElementById('typeIdList');
+
+    get_iec104_server_discover(function(data) {
+        if (data && data != 'null' && data != '[]') {
+            $('#iec104_discover_data').val(data);
+            var jsonData = JSON.parse(data);
+            list.innerHTML = '';
+            for (var i = 0; i < jsonData.length; i++) {
+                options_type_id[i] = jsonData[i];
+            }
+
+            list.innerHTML = '';
+            options_type_id.forEach(option => {
+                const div = document.createElement('div');
+                div.textContent = option;
+                div.onclick = () => selectItemIec104(option);
+                list.appendChild(div);
+            });
+            list.classList.add('show');
+        } else {
+            $('#iec104_discover_data').val("");
+            list.innerHTML = '';
+            document.getElementById('iec104.type_id').value = "-";
+        }
+    });
+}
+
+function iec104FilterFunction() {
+    const input = document.getElementById('iec104.type_id');
+    const list = document.getElementById('typeIdList');
+    const options_type_id = [];
+    var data = document.getElementById('iec104_discover_data').value;
+
+    if (data.length < 3)
+        return;
+
+    // console.log(data);
+    var jsonData = JSON.parse(data);
+    
+    for (var i = 0; i < jsonData.length; i++) {
+        options_type_id[i] = jsonData[i];
+    }
+
+    //console.log(options_type_id);
+    // const filter = input.value.toLowerCase();
+    filteredOptions = options_type_id;
+    //const filteredOptions = options_type_id.filter(option => option.toLowerCase().includes(filter));
+    list.innerHTML = '';
+    if (filteredOptions.length > 0) {
+        filteredOptions.forEach(option => {
+            // console.log(option);
+            const div = document.createElement('div');
+            div.textContent = option;
+            div.onclick = () => selectItemIec104(option);
+            list.appendChild(div);
+        });
+        list.classList.add('show');
+    } else {
+        list.classList.remove('show');
+    }
 }
 
 function selectItem(value) {
@@ -913,6 +991,11 @@ function loadBACnetClientConfig() {
 $('.btn_bacdiscover').click(function(){
     // console.log("btn_bacdiscover");
     updateDeviceIdList();
+})
+
+$('.btn_iec104discover').click(function(){
+    // console.log("btn_iec104discover");
+    updateTypeIdList();
 })
 
 function enableBACnet(state) {
@@ -1430,8 +1513,6 @@ function get_table_data(table_name, option_list) {
                         cur_status = status_value.indexOf(val);
                     
                     tmp += '"' + option + '":"' + cur_status + '",';
-                } else if (option == 'type_id') {
-                    tmp += '"' + option + '":"' + findKey(type_id_list, val) + '",';
                 } else if (option == "belonged_com"  && val.includes('Network')) {
                     tmp += '"' + option + '":"TCP' + val.slice(-1) + '",'
                 } else  {
@@ -1521,8 +1602,6 @@ function saveData(table_name) {
             option_value[option] = document.getElementById(table_name + '.'  + option).checked ? '1' : '0';
         } else if (option == 'index') {
             option_value[option] = document.getElementById(table_name + '.'  + option + '.' + io_type).value;
-        } else if (option == 'type_id') {
-            option_value[option] = type_id_list[document.getElementById(table_name + '.'  + option).value];
         } else {
             // console.log(option);
             if (option != null)
@@ -1648,7 +1727,7 @@ function editData(object, table_name) {
         var val = tds.filter('[name="'+ option +'"]').text();
 
         if (option == 'data_type' || option == 'reg_type' || option == 'word_len' || option == 'cap_type' ||
-            option == 'cap_type' || option == 'mode' || option == 'count_method' || option == 'init_status' || option == 'type_id') {
+            option == 'cap_type' || option == 'mode' || option == 'count_method' || option == 'init_status') {
             setSelectByText(table_name + '.'  + option, val);
         } else if (option == 'index') {
             document.getElementById(table_name + '.'  + option + '.' + io_type).value = val;

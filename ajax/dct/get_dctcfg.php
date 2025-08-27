@@ -70,6 +70,33 @@ if ($type == 'datadisplay') {
             echo json_encode($dctdata);
         }
     }
+} else if (strstr($type, 'iec104discover')) {
+    $interface = $_GET['interface'];
+    if (strstr($interface, 'TCP') != null) {
+        $num = filter_var($interface, FILTER_SANITIZE_NUMBER_INT);
+        exec("uci get dct.tcp_server.server_addr$num", $tmp);
+        $address = $tmp[0];
+        unset($tmp);
+        exec("uci get dct.tcp_server.server_port$num", $tmp);
+        $port = $tmp[0];
+        unset($tmp);
+        exec("pgrep dctd", $pids);
+        if (!empty($pids)) {
+            foreach ($pids as $pid) {
+                exec("sudo kill -9 $pid");
+            }
+        }
+        sleep(1);
+        exec("sudo /usr/sbin/iec104_client_scan $address $port");
+        exec('cat /tmp/iec104discover', $data);
+        if ($data[0] != null) {
+            $arr = explode(';', $data[0]);
+            $arr = array_filter($arr);
+            echo json_encode($arr);
+        }
+    } else if (strstr($interface, 'COM') != null) {
+        ;
+    }
 } else {
     if (file_exists('/etc/elastel_config.json')) {
         $fileContent = file_get_contents('/etc/elastel_config.json');
