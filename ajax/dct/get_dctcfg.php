@@ -25,7 +25,12 @@ if ($type == 'datadisplay') {
 } else if ($type == 'tag_write') {
     $tagName = $_GET['tagName'];
     $value = $_GET['value'];
-    $cmd = "sudo /usr/sbin/tag_writer '{\"$tagName\": $value}'";
+    if (ctype_digit($value)) {
+        $cmd = "sudo /usr/sbin/tag_writer '{\"$tagName\": $value}'";
+    } else {
+        $cmd = "sudo /usr/sbin/tag_writer '{\"$tagName\": \"$value\"}'";
+    }
+    
     exec($cmd, $dctdata);
     echo $dctdata[0];
 } else if (strstr($type, 'download')) {
@@ -97,6 +102,22 @@ if ($type == 'datadisplay') {
     } else if (strstr($interface, 'COM') != null) {
         ;
     }
+} else if (strstr($type, 'snmp_scan')) {
+    $oid = $_GET['oid'];
+    $interface = $_GET['interface'];
+    $num = filter_var($interface, FILTER_SANITIZE_NUMBER_INT);
+    exec("uci get dct.tcp_server.server_addr$num", $tmp);
+    $address = $tmp[0];
+    unset($tmp);
+    exec("uci get dct.tcp_server.server_port$num", $tmp);
+    $port = (!empty($tmp[0])) ? $tmp[0] : '161';
+    exec("sudo snmpbulkwalk -v2c -c public $address:$port $oid", $data);
+    if (!empty($data)) {
+        // 保留原始结构（每行一个结果）
+        echo implode(PHP_EOL, $data);
+    } else {
+        echo '';
+    }
 } else {
     if (file_exists('/etc/elastel_config.json')) {
         $fileContent = file_get_contents('/etc/elastel_config.json');
@@ -119,7 +140,7 @@ if ($type == 'datadisplay') {
     } else if ($type == 'modbus' || $type == 'ascii' || $type == 's7'|| $type == 'fx' ||
              $type == 'mc' || $type == 'adc' || $type == 'di' || $type == 'do' || 
              $type == 'iec104' || $type == 'opcuacli' || $type == 'dnp3cli' || $type == 'baccli' ||
-             $type == 'ethernetip' || $type == 'mbuscli') {
+             $type == 'ethernetip' || $type == 'mbuscli' || $type == 'snmpcli') {
         exec("/usr/sbin/get_config dct type $type 1", $data);
         // $dctdata = json_decode($data[0]);
 

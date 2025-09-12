@@ -1660,6 +1660,7 @@ function contentLoaded() {
         case "dnp3cli_conf":
         case "ethernetip_conf":
         case "mbuscli_conf":
+        case "snmpcli_conf":
             loadRulesConfig(pageCurrent.split('_')[0]);
             break;
         case "io_conf":

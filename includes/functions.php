@@ -1149,6 +1149,9 @@ function handlePageActions($extraFooterScripts, $page)
         case "/mbuscli_conf":
             DisplayMbusClient();
             break;
+        case "/snmpcli_conf":
+            DisplaySnmpClient();
+            break;
         case "/nodered":
             DisplayNodered();
             break;

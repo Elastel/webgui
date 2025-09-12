@@ -92,6 +92,7 @@ body {
 
 .nav-item {
   font-size: 0.85rem;
+  max-width: 100%;
 }
 
 .nav-tabs .nav-link.active,
@@ -109,6 +110,7 @@ a.nav-link.active {
 
 .sidebar .nav-item .nav-link {
   padding: 0.6rem 0.6rem 0.6rem 1.0rem;
+  max-width: 100%;
 }
 
 .alert-success {

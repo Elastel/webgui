@@ -74,6 +74,7 @@
                             <?php endif; ?>
                             <li class="nav-item" name="ethernetip" id="dct_south_ethernetip"><a class="nav-link" href="ethernetip_conf"><?php echo _("EtherNet/IP Rules"); ?></a></li>
                             <li class="nav-item" name="mbus_client" id="dct_south_mbus_client"><a class="nav-link" href="mbuscli_conf"><?php echo _("Mbus Rules"); ?></a></li>
+                            <li class="nav-item" name="snmp_client" id="dct_south_snmp_client"><a class="nav-link" href="snmpcli_conf"><?php echo _("SNMP Rules"); ?></a></li>
                             <?php if (isIoExistts()) : ?>
                             <li class="nav-item" name="io" id="dct_south_io"><a class="nav-link" href="io_conf"><?php echo _("IO"); ?></a></li>
                             <?php endif; ?>
