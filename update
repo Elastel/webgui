@@ -155,6 +155,9 @@ reset_configuration() {
                 cp $path/config/dhcpcd-eth0.conf /etc/dhcpcd.conf
                 uci set network.wan.wan_multi='1'
                 uci commit network
+		if [[ $model == "EG410" ]]; then
+			cp /var/www/html/config/raspap-br0-member-eth0.network /etc/systemd/network/
+		fi
         fi
 
         ssid="$target"_"$sub_mac"
