@@ -150,7 +150,7 @@ reset_configuration() {
                 rm /etc/localtime && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
         fi
 
-        if [[ $model == "EC212" ]]; then
+        if [[ $model == "EC212" || $model == "EG410" ]]; then
                 # set lan
                 cp $path/config/dhcpcd-eth0.conf /etc/dhcpcd.conf
                 uci set network.wan.wan_multi='1'
