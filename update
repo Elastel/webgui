@@ -62,7 +62,10 @@ install_lib_if_needed() {
 
         if ! ldconfig -p | grep -q "$lib"; then
                 echo "$lib is NOT installed, installing $pkg ..."
-                apt install -y "$pkg"
+                apt-get install -y "$pkg" || {
+                        echo "Failed to install $pkg."
+                        exit 4
+                }
         fi
 }
 

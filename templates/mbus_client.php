@@ -9,6 +9,38 @@
   ob_end_clean();
 ?>
 
+<style>
+  #output {
+    font-family: Arial, sans-serif;
+  }
+
+  #output table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  #output th, 
+  #output td {
+    border: 1px solid #ccc;
+    padding: 6px 10px;
+    text-align: left;
+  }
+
+  #output th {
+    background: #f4f4f4;
+  }
+
+  #output .section {
+    margin-bottom: 20px;
+  }
+
+  #output .title {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+</style>
+
 <div class="row">
   <div class="col-lg-12">
     <div class="card">
@@ -33,6 +65,8 @@
                   array("name"=>"Belonged Interface",   "style"=>"", "descr"=>"", "ctl"=>"select"),
                   array("name"=>"Tag Name",             "style"=>"", "descr"=>"", "ctl"=>"input"),
                   array("name"=>"Address",              "style"=>"", "descr"=>"", "ctl"=>"input"),
+                  array("name"=>"ID",                   "style"=>"", "descr"=>"", "ctl"=>"input"),
+                  array("name"=>"Data Type",            "style"=>"", "descr"=>"", "ctl"=>"select"),
                   array("name"=>"Reporting Center",     "style"=>"", "descr"=>"Multiple Servers Are Separated By Minus", "ctl"=>"input"),
                   array("name"=>"Operator",             "style"=>"display:none", "descr"=>"0 + - * /", "ctl"=>"select"),
                   array("name"=>"Operation Expression", "style"=>"display:none", "descr"=>"", "ctl"=>"input"),
@@ -79,6 +113,11 @@
       InputControlCustom(_('Tag Name'), $table_name.'.factor_name', $table_name.'.factor_name');
 
       InputControlCustom(_('Address'), $table_name.'.address', $table_name.'.address');
+
+      InputControlCustom(_('ID'), $table_name.'.id', $table_name.'.id');
+
+      $data_type_list = ["Double", "String"];
+      SelectControlCustom(_('Data Type'), $table_name.'.data_type', $data_type_list, $data_type_list[0], $table_name.'.data_type');
 
       InputControlCustom(_('Reporting Center'), $table_name.'.server_center', $table_name.'.server_center', _('Multiple Servers Are Separated By Minus'));
 
@@ -127,3 +166,24 @@
     <button class="cbi-button cbi-button-positive important" onclick="saveData('mbuscli')"><?php echo _("Save"); ?></button>
   </div>
 </div><!-- popBox -->
+</br>
+<div name="mbus_scan" id="mbus_scan">
+  <div class="cbi-value">
+    <h4><?php echo _("Tip: Use an Mbus address scan to identify the data that needs to be collected.");?></h4>
+  </div>
+  <div class="cbi-value">
+    <a><?php echo _("Interface:");?></a>
+    <select id="scan_interface" class="cbi-input-select" name="scan_interface" style="width: 100%; max-width: 10rem; min-width: 5rem;">
+    <?php
+      foreach ($interface_list as $key => $value) {
+        echo "<option value='$key'>$value</option>";
+      }
+    ?>
+    </select>
+    &nbsp;&nbsp;&nbsp;
+    <a><?php echo _("Address:");?></a>
+    <input type="text" class="cbi-input-text" id="scan_address" name="scan_address" value="" style="width: 100%; max-width: 10rem; min-width: 5rem;" placeholder="<?php echo _("Enter address");?>">
+    <button class="cbi-button cbi-button-positive important" id="btn_scan" onclick="mbusScan()"><?php echo _("Scan"); ?></button>
+  </div>
+  <div class="cbi-value" id="output"></div>
+</div>

@@ -879,6 +879,24 @@ function isIoExistts()
     }
 }
 
+function get_serial_device_list()
+{
+    $comlist = array();
+    $model = getModel();
+
+    if ($model == "EG324") {
+        $comlist = array('/dev/ttyAMA0'=>'COM1', '/dev/ttyAMA1'=>'COM2', '/dev/ttyAMA2'=>'COM3', '/dev/ttyAMA3'=>'COM4');
+    } else if ($model == "EG324L") {
+        $comlist = array('/dev/ttyS1'=>'COM1', '/dev/ttyS2'=>'COM2', '/dev/ttyS3'=>'COM3', '/dev/ttyS4'=>'COM4');
+    } else if ($model == "EC212") {
+        $comlist = array('/dev/ttyS1'=>'COM1', '/dev/ttyS2'=>'COM2');
+    } else {
+        $comlist = array('/dev/ttyACM0'=>'COM1', '/dev/ttyACM1'=>'COM2');
+    }
+
+    return $comlist;
+}
+
 function getBetweenStrings($src, $string)
 {
     $tmp = strstr($src, $string);

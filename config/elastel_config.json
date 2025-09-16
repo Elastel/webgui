@@ -92,7 +92,7 @@
 	"ethernetip_option" : ["order", "device_name", "belonged_com", "factor_name", "tag_addressing", "data_type", "server_center", 
 						"operator", "operand", "ex", "accuracy", "sms_reporting",
 						"report_type", "alarm_up", "alarm_down", "phone_num", "email", "contents", "retry_interval", "again_interval", "enabled"],
-	"mbuscli_option" : ["order", "device_name", "belonged_com", "factor_name", "address", "server_center", "operator", "operand", "ex", "accuracy", "sms_reporting",
+	"mbuscli_option" : ["order", "device_name", "belonged_com", "factor_name", "address", "id", "data_type", "server_center", "operator", "operand", "ex", "accuracy", "sms_reporting",
 						"report_type", "alarm_up", "alarm_down", "phone_num", "email", "contents", "retry_interval", "again_interval", "enabled"],
 	"snmpcli_option" : ["order", "device_name", "belonged_com", "factor_name", "oid", "data_type", "server_center", "operator", "operand", "ex", "accuracy", "sms_reporting",
 						"report_type", "alarm_up", "alarm_down", "phone_num", "email", "contents", "retry_interval", "again_interval", "enabled"],

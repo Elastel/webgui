@@ -138,9 +138,18 @@
     <h4><?php echo _("Tip: Use an OID scan to identify the data that needs to be collected.");?></h4>
   </div>
   <div class="cbi-value">
+    <a><?php echo _("Interface:");?></a>
+    <select id="scan_interface" class="cbi-input-select" name="scan_interface" style="width: 100%; max-width: 15rem; min-width: 5rem;">
+    <?php
+      foreach ($interface_list as $key => $value) {
+        echo "<option value='$key'>$value</option>";
+      }
+    ?>
+    </select>
+    &nbsp;&nbsp;&nbsp;
     <a><?php echo _("OID:");?></a>
     <input type="text" id="scan_oid" name="scan_oid" value="" style="width: 100%; max-width: 20rem; min-width: 8rem;" placeholder="<?php echo _("Enter OID");?>">
-    <button class="cbi-button cbi-button-positive important" onclick="snmpScan()"><?php echo _("Scan"); ?></button>
+    <button class="cbi-button cbi-button-positive important" id="btn_scan" onclick="snmpScan()"><?php echo _("Scan"); ?></button>
   </div>
   <div class="cbi-value" id="snmp_result">
     <textarea id="snmp_result_area" name="snmp_result_area" rows="10" cols="150"></textarea>

@@ -5,17 +5,7 @@ require_once 'config.php';
 function DisplayModbusRouter()
 {   
     $status = new \ElastPro\Messages\StatusMessage;
-    $model = getModel();
-
-    if ($model == "EG324") {
-        $comlist = array('/dev/ttyAMA0'=>'COM1', '/dev/ttyAMA1'=>'COM2', '/dev/ttyAMA2'=>'COM3', '/dev/ttyAMA3'=>'COM4');
-      } else if ($model == "EG324L") {
-        $comlist = array('/dev/ttyS1'=>'COM1', '/dev/ttyS2'=>'COM2', '/dev/ttyS3'=>'COM3', '/dev/ttyS4'=>'COM4');
-      } else if ($model == "EC212") {
-        $comlist = array('/dev/ttyS1'=>'COM1', '/dev/ttyS2'=>'COM2');
-      } else {
-        $comlist = array('/dev/ttyACM0'=>'COM1', '/dev/ttyACM1'=>'COM2');
-      }
+    $comlist = get_serial_device_list();
 
     if (!RASPI_MONITOR_ENABLED) {
         if (isset($_POST['savemodbusroutersettings']) || isset($_POST['applymodbusroutersettings'])) {

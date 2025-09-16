@@ -592,6 +592,8 @@ function get_data_type_value(table_name) {
         data_type_value = ['Bool', 'Int16', 'UInt16', 'Int32', 'UInt32', 'Int64', 'UInt64', 'Float', 'Double', 'String'];
     } else if (table_name == 'snmpcli') {
         data_type_value = ['Int32', 'UInt32', 'Counter64', 'String'];
+    } else if (table_name == 'mbuscli') {
+        data_type_value = ['Double', 'String'];
     }
 
     return data_type_value;
@@ -781,18 +783,108 @@ function loadRulesConfig(table_name) {
         var option_list = jsonData.option;
         var tmpData = JSON.parse(jsonData[table_name]);
         addSectionTable(table_name, tmpData, option_list);
+        $('#loading').hide();
     });
 
     loadRealtimeData();
-    $('#loading').hide();
 }
 
 function snmpScan() {
-    const interface = document.getElementById('snmpcli.belonged_com').value;
+    $('#loading').show();
+    const btn = document.getElementById("btn_scan"); // 获取按钮对象
+    btn.disabled = true;
+    const interface = document.getElementById('scan_interface').value;
     const oid = document.getElementById('scan_oid').value;
     $.get('ajax/dct/get_dctcfg.php?type=snmp_scan&interface=' + interface + '&oid=' + oid, function(data) {
         // console.log(data);
         $('#snmp_result_area').val(data);
+        $('#loading').hide();
+        btn.disabled = false;
+    })
+}
+
+function parseMBusXML(xmlString) {
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlString, "application/xml");
+
+  // 提取 SlaveInformation
+  const slaveInfo = {};
+  const infoNode = xmlDoc.querySelector("SlaveInformation");
+  if (infoNode) {
+    infoNode.childNodes.forEach(node => {
+      if (node.nodeType === 1) {
+        slaveInfo[node.nodeName] = node.textContent;
+      }
+    });
+  }
+
+  // 提取 DataRecord
+  const records = [];
+  xmlDoc.querySelectorAll("DataRecord").forEach(rec => {
+    const obj = { id: rec.getAttribute("id") }; // 保存id
+    rec.childNodes.forEach(node => {
+      if (node.nodeType === 1) {
+        obj[node.nodeName] = node.textContent.trim();
+      }
+    });
+    records.push(obj);
+  });
+
+  return { slaveInfo, records };
+}
+
+function formatValue(value, unit) {
+  if (value === null || value === undefined || value.trim() === "") {
+    return "";
+  }
+
+  let num = Number(value);
+  if (isNaN(num)) return value;
+
+  if (unit && unit.trim() !== "" && unit !== "-") {
+    return num.toFixed(6).replace(/\.?0+$/, "");
+  } else {
+    return Math.floor(num).toString();
+  }
+}
+
+function mbusScan() {
+    $('#loading').show();
+    const btn = document.getElementById("btn_scan"); // 获取按钮对象
+    btn.disabled = true;
+    document.getElementById("output").innerHTML = "";
+    const interface = document.getElementById('scan_interface').value;
+    const address = document.getElementById('scan_address').value;
+    $.get('ajax/dct/get_dctcfg.php?type=mbus_scan&interface=' + interface + '&address=' + address, function(data) {
+        let isXml = data.trim().startsWith('<') && data.trim().endsWith('>');
+        const output = document.getElementById("output");
+        if (isXml) {
+            const { slaveInfo, records } = parseMBusXML(data);
+            let html = "";
+
+            // Slave Information
+            html += `<div class="section"><div class="title">Slave Information</div>`;
+            html += `<table><tbody>`;
+            for (const key in slaveInfo) {
+                html += `<tr><th>${key}</th><td>${slaveInfo[key]}</td></tr>`;
+            }
+            html += `</tbody></table></div>`;
+
+            // Data Records
+            html += `<div class="section"><div class="title">Data Records</div>`;
+            html += `<table><thead><tr><th>ID</th><th>Quantity</th><th>Value</th><th>Unit</th></tr></thead><tbody>`;
+            records.forEach(rec => {
+                const valueText = formatValue(rec.Value, rec.Unit);
+                html += `<tr><td>${rec.id}</td><td>${rec.Quantity}</td><td>${valueText}</td><td>${rec.Unit}</td></tr>`;
+            });
+            html += `</tbody></table></div>`;
+
+            output.innerHTML = html;
+        } else {
+            output.innerHTML = '<span style="color:red;">' + data + '</span>';
+        }
+        $('#loading').hide();
+        btn.disabled = false;
     })
 }
 

@@ -2,6 +2,7 @@
 require_once '../../includes/autoload.php';
 require_once '../../includes/CSRF.php';
 require_once '../../includes/config.php';
+require_once '../../includes/functions.php';
 
 $type = $_GET['type'];
 
@@ -101,6 +102,33 @@ if ($type == 'datadisplay') {
         }
     } else if (strstr($interface, 'COM') != null) {
         ;
+    }
+} else if (strstr($type, 'mbus_scan')) {
+    $address = $_GET['address'];
+    $interface = $_GET['interface'];
+    $num = filter_var($interface, FILTER_SANITIZE_NUMBER_INT);
+    exec("uci get dct.com.baudrate$num", $tmp);
+    $baudrate = $tmp[0];
+    $comlist = get_serial_device_list();
+    $device = array_search($interface, $comlist);
+    exec("pgrep dctd", $pids);
+    if (!empty($pids)) {
+        foreach ($pids as $pid) {
+            exec("sudo kill -9 $pid");
+        }
+    }
+    sleep(1);
+    exec("sudo mbus-serial-request-data -d -b $baudrate $device $address", $data);
+    exec('sudo /etc/init.d/dct restart >/dev/null');
+    if (!empty($data)) {
+        if (preg_match('/<MBusData.*<\/MBusData>/s', implode(PHP_EOL, $data), $matches)) {
+            $result = $matches[0];
+            echo $result;
+        } else {
+            echo 'No MBusData found';
+        }
+    } else {
+        echo 'No MBusData found';
     }
 } else if (strstr($type, 'snmp_scan')) {
     $oid = $_GET['oid'];
