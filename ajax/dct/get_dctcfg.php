@@ -139,9 +139,8 @@ if ($type == 'datadisplay') {
     unset($tmp);
     exec("uci get dct.tcp_server.server_port$num", $tmp);
     $port = (!empty($tmp[0])) ? $tmp[0] : '161';
-    exec("sudo snmpbulkwalk -v2c -c public $address:$port $oid", $data);
+    exec("sudo snmpbulkwalk -v2c -c public -On $address:$port $oid", $data);
     if (!empty($data)) {
-        // 保留原始结构（每行一个结果）
         echo implode(PHP_EOL, $data);
     } else {
         echo '';

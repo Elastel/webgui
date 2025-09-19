@@ -791,7 +791,7 @@ function loadRulesConfig(table_name) {
 
 function snmpScan() {
     $('#loading').show();
-    const btn = document.getElementById("btn_scan"); // 获取按钮对象
+    const btn = document.getElementById("btn_scan");
     btn.disabled = true;
     const interface = document.getElementById('scan_interface').value;
     const oid = document.getElementById('scan_oid').value;
@@ -807,7 +807,7 @@ function parseMBusXML(xmlString) {
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(xmlString, "application/xml");
 
-  // 提取 SlaveInformation
+  // SlaveInformation
   const slaveInfo = {};
   const infoNode = xmlDoc.querySelector("SlaveInformation");
   if (infoNode) {
@@ -818,10 +818,10 @@ function parseMBusXML(xmlString) {
     });
   }
 
-  // 提取 DataRecord
+  // DataRecord
   const records = [];
   xmlDoc.querySelectorAll("DataRecord").forEach(rec => {
-    const obj = { id: rec.getAttribute("id") }; // 保存id
+    const obj = { id: rec.getAttribute("id") };
     rec.childNodes.forEach(node => {
       if (node.nodeType === 1) {
         obj[node.nodeName] = node.textContent.trim();
@@ -850,7 +850,7 @@ function formatValue(value, unit) {
 
 function mbusScan() {
     $('#loading').show();
-    const btn = document.getElementById("btn_scan"); // 获取按钮对象
+    const btn = document.getElementById("btn_scan");
     btn.disabled = true;
     document.getElementById("output").innerHTML = "";
     const interface = document.getElementById('scan_interface').value;

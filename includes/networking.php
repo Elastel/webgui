@@ -51,6 +51,8 @@ function DisplayNetworkingConfig($type)
                             exec('sudo systemctl start dhcpcd.service');
                         }
                     } else {
+                        exec('sudo ip addr flush dev eth0');
+                        sleep(1);
                         exec('sudo /etc/init.d/S80dhcpcd restart');
                     }
                     
