@@ -73,7 +73,7 @@ function DisplayNetworkingConfig($type)
                 } elseif ($type == 'lte') {
                     exec('sudo /etc/init.d/lte restart > /dev/null');
                 } elseif ($type == 'wlan0') {
-                    exec('sudo dhcpcd -n wlan0 > /dev/null');
+                    exec('sudo dhcpcd -n wlan0');
                 }
 
                 $status->addMessage('Network for '.$type.' updated.', 'success');

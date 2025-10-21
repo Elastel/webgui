@@ -1017,7 +1017,7 @@ function switchWifiMode($enabled)
             setMetricByIface('wlan0', get_default_route_metric('eth0') + 1);
             exec("sudo systemctl stop hostapd.service; sudo systemctl mask hostapd.service; sleep 1; sudo systemctl disable hostapd.service; sudo brctl delif br0 wlan0");
             exec("sudo systemctl restart dhcpcd.service; sudo systemctl restart dnsmasq.service");
-            $cmd = "sudo wpa_supplicant -B -Dnl80211 -c/etc/wpa_supplicant/wpa_supplicant.conf -i". $_SESSION['wifi_client_interface'];
+            $cmd = "sudo wpa_supplicant -B -i ". $_SESSION['wifi_client_interface'] ." -c /etc/wpa_supplicant/wpa_supplicant.conf &> /dev/null";
             shell_exec($cmd);
         } else {
             // switch to ap mode

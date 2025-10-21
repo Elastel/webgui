@@ -94,9 +94,9 @@ if [[ "$WIFICLIENTENABLED" == "1" ]]; then
     sudo sed -i "s/eth1 wlan0/eth1/g" /etc/dhcpcd.conf
 
     [ -n "$(pgrep wpa_supplicant)" ] || {
-		wpa_supplicant -Dwext -iwlan0 -c/etc/wpa_supplicant/wpa_supplicant.conf -B &> /dev/null
-	}
-    
+        wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf &> /dev/null
+        # wpa_supplicant -Dwext -iwlan0 -c/etc/wpa_supplicant/wpa_supplicant.conf -B &> /dev/null
+    }
 else
     if [[ "$WIFIENABLED" == "1" ]]; then
         kill -9 $(pgrep wpa_supplicant)

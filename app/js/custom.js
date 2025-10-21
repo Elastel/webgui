@@ -814,59 +814,36 @@ Additional: https://git.kernel.org/pub/scm/linux/kernel/git/sforshee/wireless-re
 // }
 
 function loadChannelSelect(selected) {
-    var iface = $('#cbxinterface').val();
-    var hwmodeText = '';
-    var csrfToken = $('meta[name=csrf_token]').attr('content');
+    var hw_mode = $('#cbxhwmode').val();
+    var channel_select = $('#cbxchannel');
+    var btn_save = $('#btnSaveHostapd');
+    if (selected === null || typeof selected === 'undefined') {
+        selected = $('#cbxchannel').val();
+    }
+    var selectableChannels = [];
 
-    // update hardware mode tooltip
-    // setHardwareModeTooltip();
+    // Map selected hw_mode to available channels
+    if (hw_mode === 'b' || hw_mode === 'g' || hw_mode === 'n') {
+        selectableChannels = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
+    } else {
+        selectableChannels = ['34', '36', '38', '40', '42', '44', '46', '48', '149', '153', '157', '161', '165'];
+    }
 
-    $.post('ajax/networking/get_frequencies.php',{'interface': iface, 'csrf_token': csrfToken, 'selected': selected},function(response){
-        var hw_mode = $('#cbxhwmode').val();
-        var country_code = $('#cbxcountries').val();
-        var channel_select = $('#cbxchannel');
-        var btn_save = $('#btnSaveHostapd');
-        var data = JSON.parse(response);
-        var selectableChannels = [];
+    // Set channel select with available values
+    channel_select.empty();
+    if (selectableChannels[0] === null) {
+        channel_select.append($("<option></option>").attr("value", "").text("---"));
+        channel_select.prop("disabled", true);
+        btn_save.prop("disabled", true);
+    } else {
+        channel_select.prop("disabled", false);
+        btn_save.prop("disabled", false);
 
-        console.log(data);
-
-        // Map selected hw_mode to available channels
-        if (hw_mode === 'a') {
-            selectableChannels = data.filter(item => item.MHz.toString().startsWith('5'));
-        } else if (hw_mode !== 'ac') {
-            selectableChannels = data.filter(item => item.MHz.toString().startsWith('24'));
-        } else if (hw_mode === 'b') {
-            selectableChannels = data.filter(item => item.MHz.toString().startsWith('24'));
-        } else if (hw_mode === 'ac') {
-            selectableChannels = data.filter(item => item.MHz.toString().startsWith('5'));
-        }
-
-        // If selected channel doeesn't exist in allowed channels, set default or null (unsupported)
-        if (!selectableChannels.find(item => item.Channel === selected)) {
-            if (selectableChannels.length === 0) {
-                selectableChannels[0] = { Channel: null };
-            } else {
-                defaultChannel = selectableChannels[0].Channel;
-                selected = defaultChannel
-            }
-        }
-
-        // Set channel select with available values
-        channel_select.empty();
-        if (selectableChannels[0].Channel === null) {
-            channel_select.append($("<option></option>").attr("value", "").text("---"));
-            channel_select.prop("disabled", true);
-            btn_save.prop("disabled", true);
-        } else {
-            channel_select.prop("disabled", false);
-            btn_save.prop("disabled", false);
-            $.each(selectableChannels, function(key,value) {
-                channel_select.append($("<option></option>").attr("value", value.Channel).text(value.Channel));
-            });
-            channel_select.val(selected);
-        }
-    });
+        selectableChannels.forEach(channel => {
+            channel_select.append($("<option></option>").attr("value", channel).text(channel));
+        });
+        channel_select.val(selected);
+    }
 }
 
 /* Updates the selected blocklist

@@ -10,6 +10,20 @@ model=${model:-"EG500"}
 target=${target:-$model}
 echo model:$model
 
+restapi=0
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --restapi)
+            restapi=1
+            shift
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
+
 update_python_version() {
         CURRENT_VER=$(python3 -V 2>&1 | awk '{print $2}')
         echo "Python3 version: $CURRENT_VER"
@@ -170,35 +184,37 @@ reset_configuration() {
 }
 
 # restapi init
-if [[ $model != "EG324L" && $model != "EC212" ]]; then
-        update_python_version
-        systemctl stop restapi.service
+if [[ $restapi -eq 1 ]]; then
+        if [[ $model != "EG324L" && $model != "EC212" ]]; then
+                update_python_version
+                systemctl stop restapi.service
 
-        if ! command -v pip3 >/dev/null 2>&1; then
-                echo "pip3 is NOT installed! Installing..."
-                apt-get update
-                apt-get install -y python3-pip
-        else
-                echo "pip3 is already installed, upgrading pip3..."
-                python3 -m pip install --upgrade pip
-        fi
-        
-        pip3 install -r $path/api/requirements.txt
+                if ! command -v pip3 >/dev/null 2>&1; then
+                        echo "pip3 is NOT installed! Installing..."
+                        apt-get update
+                        apt-get install -y python3-pip
+                else
+                        echo "pip3 is already installed, upgrading pip3..."
+                        python3 -m pip install --upgrade pip
+                fi
+                
+                pip3 install -r $path/api/requirements.txt
 
-        if [ $? -ne 0 ]; then
-                echo "pip3 requirements install failed!"
-                exit 5
-        fi
+                if [ $? -ne 0 ]; then
+                        echo "pip3 requirements install failed!"
+                        exit 5
+                fi
 
-        if [ ! -d "/etc/raspap/api" ]; then
-                mkdir -p /etc/raspap/api
-        fi
-        
-        cp -r $path/api/* /etc/raspap/api/
+                if [ ! -d "/etc/raspap/api" ]; then
+                        mkdir -p /etc/raspap/api
+                fi
+                
+                cp -r $path/api/* /etc/raspap/api/
 
-        if [ ! -f /etc/systemd/system/restapi.service ]; then
-                cp $path/installers/restapi.service /etc/systemd/system/
-                systemctl enable restapi.service
+                if [ ! -f /etc/systemd/system/restapi.service ]; then
+                        cp $path/installers/restapi.service /etc/systemd/system/
+                        systemctl enable restapi.service
+                fi
         fi
 fi
 

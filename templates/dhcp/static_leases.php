@@ -39,7 +39,7 @@
           <input type="text" name="comment" value="" placeholder="<?php echo _("Optional comment") ?>" class="form-control">
         </div>
         <div class="col-md-2 col-xs-3">
-          <button type="button" class="btn btn-outline-success js-add-dhcp-static-lease"><i class="far fa-plus-square"></i></button>
+          <button type="button" class="btn btn-outline-success js-add-dhcp-static-lease"><i class="fas fa-plus-square"></i></button>
         </div>
       </div>
 
