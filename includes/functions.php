@@ -777,10 +777,42 @@ function getFavicon($target, $hostname)
     return $name;
 }
 
+function setLoginLogo($target, $hostname)
+{
+    $name='';
+    if ($target != null && strpos($target, "IQEG") !== false) {
+        $name = "Iqflow.png";
+        echo '<img src="app/img/'.$name.'" class="navbar-logo" alt="logo" class="img-fluid" style="width: 20rem;">';
+    } else if ($target != null && file_exists('/var/www/html/app/img/'.$hostname.'.php')) {
+        $name = $hostname . ".png";
+        echo '<img src="app/img/'.$name.'" class="navbar-logo" alt="logo" class="img-fluid" style="width: 20rem;">';
+    } else {
+        $name = "elastel.png";
+        echo '<img src="app/img/'.$name.'" class="navbar-logo" class="img-fluid" style="max-width: 100px;">';
+        echo '<h2 class="login-brand">' . htmlspecialchars(RASPI_BRAND_TEXT) . '</h2>';
+    }
+}
+
+function setLoginGuide($target, $hostname)
+{
+    $url='';
+    if ($target != null && strpos($target, "IQEG") !== false) {
+        $url = "https://docs.iqflow.io/";
+    } else {
+        $url = "https://docs.elastel.com/";
+    }
+
+    echo '<a href="'.$url.'" class="mt-2 d-block text-decoration-none" target="_blank">
+           <i class="fas fa-book me-1"></i> User Guide
+         </a>';
+}
+
 function getLogo($target, $hostname)
 {
     $name='';
-    if ($target != null && file_exists('/var/www/html/app/img/'.$hostname.'.php')) {
+    if ($target != null && strpos($target, "IQEG") !== false) {
+        $name = "Iqflow.php";
+    } else if ($target != null && file_exists('/var/www/html/app/img/'.$hostname.'.php')) {
         $name = $hostname . ".php";
     } else {
         $name = "elastel.php";

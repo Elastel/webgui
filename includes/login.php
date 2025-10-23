@@ -12,6 +12,7 @@ function DisplayLogin()
     $auth = new \ElastPro\Auth\HTTPAuth;
     $status = null;
     $redirectUrl = null;
+    $target = getTarget();
 
     // handle page action
     if (RASPI_AUTH_ENABLED) {
@@ -33,7 +34,8 @@ function DisplayLogin()
     echo renderTemplate(
         "login", compact(
             "status",
-            "redirectUrl"
+            "redirectUrl",
+            "target"
         )
     );
 }

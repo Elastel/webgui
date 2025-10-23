@@ -183,6 +183,22 @@ reset_configuration() {
         sync
 }
 
+set_immutable_if_needed() {
+    local FILE="$1"
+
+    if [ -z "$FILE" ]; then
+        return 1
+    fi
+
+    if [ ! -e "$FILE" ]; then
+        return 1
+    fi
+
+    if ! lsattr "$FILE" 2>/dev/null | grep -q 'i'; then
+        sudo chattr +i "$FILE"
+    fi
+}
+
 # restapi init
 if [[ $restapi -eq 1 ]]; then
         if [[ $model != "EG324L" && $model != "EC212" ]]; then
@@ -217,6 +233,9 @@ if [[ $restapi -eq 1 ]]; then
                 fi
         fi
 fi
+
+set_immutable_if_needed "/etc/fw_model"
+set_immutable_if_needed "/etc/target_model"
 
 if [[ $model == "EG500" || $model == "EG410" || $model == "ElastBox400" || $model == "EG324" ]]; then
         install_package_if_needed "openvpn" "openvpn"

@@ -8,8 +8,7 @@
           <div class="col-12">
             <!-- branding -->
             <div class="text-center mb-3">
-              <img src="app/img/<?php echo (($target != null) ? ($hostname . ".png") : "elastel.png"); ?>" class="navbar-logo" alt="Elastel logo" class="img-fluid" style="max-width: 100px;">
-              <h2 class="login-brand"><?php echo htmlspecialchars(RASPI_BRAND_TEXT); ?></h2>
+              <?php setLoginLogo($target, $hostname); ?>
               <div class="mt-2 admin-login"><?php echo _("Administrator login") ?></div>
               <div class="text-center text-danger mt-1 mb-3"><?php echo $status ?></div>
             </div>
@@ -31,9 +30,7 @@
 
                 </div>
                 <button type="submit" class="btn btn-outline btn-admin-login rounded-pill w-75 mt-4"><?php echo _("Login") ?></button>
-                <a href="https://docs.elastel.com/" class="mt-2 d-block text-decoration-none" target="_blank">
-                  <i class="fas fa-book me-1"></i> User Guide
-                </a>
+                <?php setLoginGuide($target, $hostname); ?>
               </form>
             </div>
           </div><!-- /.col -->
