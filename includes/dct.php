@@ -198,7 +198,7 @@ function page_interface_com($num)
   SelectControlCustom(_('Protocol'), 'com_proto'.$num, $com_proto, $com_proto[0], 'com_proto'.$num, null, "comProtocolChange($num)");
 
   echo '<div id="com_page_protocol_modbus'.$num.'" name="com_page_protocol_modbus'.$num.'">';
-  InputControlCustom(_("Command Interval"), 'com_cmd_interval'.$num, 'com_cmd_interval'.$num, _('ms'), 2);
+  InputControlCustom(_("Command Interval"), 'com_cmd_interval'.$num, 'com_cmd_interval'.$num, _('ms'), 10);
   echo '</div>';
 
   echo '<div id="com_page_protocol_transparent'.$num.'" name="com_page_protocol_transparent'.$num.'">';
@@ -252,7 +252,7 @@ function page_interface_tcp($num)
   SelectControlCustom(_('Protocol'), 'tcp_proto'.$num, $tcp_proto, $tcp_proto[0], 'tcp_proto'.$num, null, "tcpProtocolChange($num)");
 
   echo '<div id="tcp_page_protocol_modbus'.$num.'" name="tcp_page_protocol_modbus'.$num.'">';
-  InputControlCustom(_("Command Interval"), 'tcp_cmd_interval'.$num, 'tcp_cmd_interval'.$num, _('ms'), 2);
+  InputControlCustom(_("Command Interval"), 'tcp_cmd_interval'.$num, 'tcp_cmd_interval'.$num, _('ms'), 10);
   echo '</div>';
 
   echo '<div id="tcp_page_protocol_transparent'.$num.'" name="tcp_page_protocol_transparent'.$num.'">';

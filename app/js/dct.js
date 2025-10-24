@@ -454,6 +454,8 @@ function tcpProtocolChange(num) {
         $('#tcp_page_protocol_snmp' + numStr).show();
         snmpVersionChangeTcp(num);
         securityLevelChangeTcp(num);
+    } else {
+        $('#tcp_page_protocol_modbus' + numStr).show();
     }
 }
 

@@ -11,11 +11,16 @@ target=${target:-$model}
 echo model:$model
 
 restapi=0
+reset=0
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --restapi)
             restapi=1
+            shift
+            ;;
+        reset)
+            reset=1
             shift
             ;;
         *)
@@ -265,8 +270,8 @@ if [ $model == "EG324" ]; then
         fi
 fi
 
-if [ "$1" == "reset" ]; then
-        echo $1
+if [[ $reset -eq 1 ]]; then
+        echo "reset"
         reset_configuration
 else
         cp $path/Elastel/$model/etc/init.d/* /etc/init.d/
