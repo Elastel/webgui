@@ -1013,6 +1013,8 @@ function selectItem(value) {
 
     input.value = value;
     device_id_list.classList.remove('show');
+
+    filterFunctionObject();
 }
 
 function selectItemObject(value) {
