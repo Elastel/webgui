@@ -2,6 +2,22 @@
 version: 1.0.0
 */
 
+function getReportingCenterFlag(p) {
+    let flag = 0;
+
+    if (p && p.length > 0) {
+        const parts = p.split('-');
+        for (let i = 0; i < parts.length && i < 5; i++) {
+            const n = parseInt(parts[i], 10);
+            if (n > 0 && n <= 5) {
+                flag |= (1 << (n - 1));
+            }
+        }
+    }
+
+    return flag;
+}
+
 function doesColumnExist(tableId, columnName) {
     var table = document.getElementById(tableId);
     var headers = table.querySelectorAll('th');
@@ -20,6 +36,8 @@ function writeValueByTag(object) {
     if (serverCenter == '' || serverCenter == '-') {
         serverCenter = '0';
     }
+
+    var flag = getReportingCenterFlag(serverCenter);
 
     const overlay = document.createElement('div');
     overlay.style.position = 'fixed';
@@ -118,12 +136,12 @@ function writeValueByTag(object) {
         let params = '';
         if (tagName.includes(';')) {
             const selectedValue = labelOrSelect.value;
-            params = 'tagName=' + selectedValue + ';' + serverCenter + '&' + 'value=' + input.value;
+            params = 'tagName=' + selectedValue + ';' + flag + '&' + 'value=' + input.value;
         } else {
-            params = 'tagName=' + tagName + ';' + serverCenter + '&' + 'value=' + input.value
+            params = 'tagName=' + tagName + ';' + flag + '&' + 'value=' + input.value
         }
         
-        console.log(params);
+        // console.log(params);
         if (input.value.length > 0) {
             $.get('ajax/dct/get_dctcfg.php?type=tag_write&' + params, function(data) {}); 
         } else {
@@ -761,12 +779,13 @@ function getRealtimeData() {
                     var factor = tr.querySelector('td[name="factor_name"]').innerHTML;
                     var serverCenter = tr.querySelector('td[name="server_center"]').innerHTML;
                     var factorList = factor.split(';');
+                    var flag = getReportingCenterFlag(serverCenter);
                     factorList.forEach((key) => {
-                        // console.log(key);
+                        // console.log(flag);
                         var jsonValue = '';
                         jsonResult.forEach(item => {
                             const [name, index, value] = item;
-                            if (name == key && ((1 << (serverCenter -1)) == parseInt(index) || index == 0)) {
+                            if (name == key && (flag == parseInt(index) || index == 0)) {
                                 jsonValue = value;
                                 return;
                             }
@@ -2042,7 +2061,6 @@ function loadDnp3Config() {
                     select.appendChild(newOption);
                 });
             }
-            
         }
         
         if (jsonData.hasOwnProperty("dnp3")) {
