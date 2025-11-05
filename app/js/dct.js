@@ -664,7 +664,7 @@ function addSectionTable(table_name, jsonData, option_list) {
             if (!jsonData[i].hasOwnProperty(key)) {
                 if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy' ||
                 key == 'report_type' || key == 'alarm_up' || key == 'alarm_down' || key == 'phone_num' || 
-                key == 'email' || key == 'contents' || key == 'retry_interval' || key == 'again_interval') {
+                key == 'email' || key == 'event_server_center' || key == 'contents' || key == 'retry_interval' || key == 'again_interval') {
                     contents += '   <td style="display:none" name="'+key+'">-</td>\n';
                 } else if (key == 'enabled' || key == 'sms_reporting') {
                     contents += '   <td style="' + ((key == 'enabled') ? 'text-align:center' : 'display:none') + '"><input type="checkbox" name="' +
@@ -689,7 +689,7 @@ function addSectionTable(table_name, jsonData, option_list) {
 
             if (key == 'operator' || key == 'operand' || key == 'ex' || key == 'accuracy' ||
             key == 'report_type' || key == 'alarm_up' || key == 'alarm_down' || key == 'phone_num' || 
-            key == 'email' || key == 'contents' || key == 'retry_interval' || key == 'again_interval') {
+            key == 'email' || key == 'event_server_center' || key == 'contents' || key == 'retry_interval' || key == 'again_interval') {
                 contents += '   <td style="display:none" name="'+key+'">'+ (jsonData[i][key] != null ? jsonData[i][key] : "-") +'</td>\n';
             } else if (key == 'data_type') {
                 contents += '   <td style="text-align:center" name="'+key+'">'+ (data_type_value[Number(jsonData[i][key])]) +'</td>\n';
@@ -1810,7 +1810,7 @@ function saveData(table_name) {
         option_list.forEach(function(option){
             if (option == 'operator' || option == 'operand' || option == 'ex' || option == 'accuracy' ||
                 option == 'report_type' || option == 'alarm_up' || option == 'alarm_down' || option == 'phone_num' || 
-                option == 'email' || option == 'contents' || option == 'retry_interval' || option == 'again_interval') {
+                option == 'email' || option == 'event_server_center' || option == 'contents' || option == 'retry_interval' || option == 'again_interval') {
                 contents += '   <td style="display:none" name="'+option+'">'+ (option_value[option].length > 0 ? option_value[option] : "-") +'</td>\n';
             } else if (option == 'enabled' || option == 'sms_reporting') {
                 contents += '   <td style="' + ((option == 'enabled') ? 'text-align:center' : 'display:none') + '"><input type="checkbox" name="' + option

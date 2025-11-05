@@ -22,7 +22,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form method="POST" action="ddns" role="form">
-          <?php echo \ElastPro\Tokens\CSRF::hiddenField();; 
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField();
             echo '<div class="cbi-section cbi-tblsection">';
 
             RadioControlCustom(_('DDNS'), 'enabled', 'ddns', 'enableDDNS');

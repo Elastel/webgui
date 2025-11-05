@@ -22,7 +22,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form role="form" action="iotedge" enctype="multipart/form-data" method="POST">
-          <?php echo \ElastPro\Tokens\CSRF::hiddenField();;
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField();
             echo '<div class="cbi-section cbi-tblsection">';
               RadioControlCustom(_('Azure IoT Edge'), 'enabled', 'iotedge', 'enableIotedge');
 

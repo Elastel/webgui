@@ -22,7 +22,7 @@
       <div class="card-body">
           <?php $status->showMessages(); ?>
           <form method="POST" action="dnp3" role="form">
-          <?php echo \ElastPro\Tokens\CSRF::hiddenField();;
+          <?php echo \ElastPro\Tokens\CSRF::hiddenField();
             echo '<div class="cbi-section cbi-tblsection">';
             RadioControlCustom(_('DNP3 Server'), 'dnp3_enabled', 'dnp3_server', 'enableDnp3');
 
