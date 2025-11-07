@@ -109,6 +109,9 @@ if ($type == 'datadisplay') {
     $num = filter_var($interface, FILTER_SANITIZE_NUMBER_INT);
     exec("uci get dct.com.baudrate$num", $tmp);
     $baudrate = $tmp[0];
+    unset($tmp);
+    exec("uci get dct.com.frame_interval$num", $tmp);
+    $frame = $tmp[0];
     $comlist = get_serial_device_list();
     $device = array_search($interface, $comlist);
     exec("pgrep dctd", $pids);
@@ -118,7 +121,7 @@ if ($type == 'datadisplay') {
         }
     }
     sleep(1);
-    exec("sudo mbus-serial-request-data -d -b $baudrate $device $address", $data);
+    exec("sudo mbus-serial-request-data -d -b $baudrate -f $frame $device $address", $data);
     exec('sudo /etc/init.d/dct restart >/dev/null');
     if (!empty($data)) {
         if (preg_match('/<MBusData.*<\/MBusData>/s', implode(PHP_EOL, $data), $matches)) {

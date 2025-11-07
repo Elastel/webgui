@@ -18,8 +18,9 @@ fi
 /sbin/ifconfig eth0 up
 /sbin/ifconfig eth1 up
 
-sbin/modprobe option
-sbin/modprobe tun
+/sbin/modprobe option
+/sbin/modprobe tun
+/sbin/modprobe cdc_ether
 
 echo /sbin/mdev > /proc/sys/kernel/hotplug
 /sbin/mdev -s
