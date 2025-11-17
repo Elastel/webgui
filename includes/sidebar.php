@@ -4,7 +4,7 @@
         <hr class="sidebar-divider my-0">
         <div class="row">
             <div class="col-xs ml-3 sidebar-brand-icon">
-            <img src="app/img/<?php echo getLogo($target, $hostname); ?>" class="navbar-logo" width="200" height="50">
+            <?php setSidbarLogo($target, $hostname); ?>
             </div>
         </div>
         <li class="nav-item">
@@ -125,7 +125,9 @@
             </a>
             <div class="collapse navbar-collapse" id="navbar-collapse-remote">
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="nav-item" name="things_wing" id="remote_things_wing"> <a class="nav-link" href="things_wing"><?php echo _("ThingsWing"); ?></a></li>
+                    <?php if ((strpos($target, "IQEG") === false && strpos($target, "IQEC") === false)) { ?>
+                        <li class="nav-item" name="things_wing" id="remote_things_wing"> <a class="nav-link" href="things_wing"><?php echo _("ThingsWing"); ?></a></li>
+                    <?php } ?>
                     <li class="nav-item" name="ddns" id="remote_ddns"> <a class="nav-link" href="ddns"><?php echo _("DDNS"); ?></a></li>
                     <li class="nav-item" id="page_vpn">
                         <a class="nav-link navbar-toggle collapsed" id="test" href="#" data-toggle="collapse" data-target="#navbar-collapse-vpn">
