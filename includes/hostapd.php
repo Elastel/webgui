@@ -392,25 +392,6 @@ function updateHostapdConfig($ignore_broadcast_ssid,$wifiAPEnable,$bridgedEnable
     } else {
         $config = 'driver=nl80211'.PHP_EOL;
     }
-
-    
-    if (isset($_POST['enable_wifi_client'])) {
-        exec('sudo /usr/local/bin/uci set wifi.wifi_client.enabled=1');
-    } else {
-        exec('sudo /usr/local/bin/uci get wifi.wifi_client.enabled', $ret);
-        if ($ret[0] == '1') {
-            exec('sudo /usr/local/bin/uci set wifi.wifi_client.enabled=0');
-            exec("sudo /usr/bin/killall wpa_supplicant");
-        }
-        
-        if (isset($_POST['disable_wifi_ap'])) {
-            exec('sudo /usr/local/bin/uci set wifi.wifi.enabled=0');
-        } else {
-            exec('sudo /usr/local/bin/uci set wifi.wifi.enabled=1');
-        }
-    }
-
-    exec("sudo /usr/local/bin/uci commit wifi");
     
     $config.= 'ctrl_interface='.RASPI_HOSTAPD_CTRL_INTERFACE.PHP_EOL;
     $config.= 'ctrl_interface_group=0'.PHP_EOL;

@@ -28,7 +28,7 @@
           <div class="cbi-section">
             <h4>Serial Port Setting</h4>
             <ul class="nav nav-tabs">
-              <?php if ($model == "EG500" || $model == "EG410") { ?>
+              <?php if ($model == "EG500" || $model == "EG410" || $model == "EG510") { ?>
                 <li role="presentation" class="nav-item"><a class="nav-link active" href="#com1" aria-controls="com1" role="tab" data-toggle="tab"><?php echo _("COM1/RS485"); ?></a></li>
                 <li role="presentation" class="nav-item"><a class="nav-link" href="#com2" aria-controls="com2" role="tab" data-toggle="tab"><?php echo _("COM2/RS232"); ?></a></li>
               <?php } else if ($model == "EC212") { ?>

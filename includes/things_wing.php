@@ -68,7 +68,7 @@ function DisplayThingsWing()
             }
         }
     } else if (isset($_POST['install'])) {
-        if ($model == 'EG500' || $model == 'ElastBox400' || $model == 'EG410')
+        if ($model == 'EG500' || $model == 'ElastBox400' || $model == 'EG410' || $model == 'EG510')
             exec('curl -L https://storage.thingswing.com/package/install_eg500.sh | sudo bash -s', $return);
         else if ($model == 'EG324')
             exec('curl -L https://storage.thingswing.com/package/install_eg324.sh | sudo bash -s', $return);

@@ -871,6 +871,11 @@ function isIoExistts()
             $do_index_count += 2;
             $com_count = 2;
             break;
+        case "EG510":
+            $di_index_count += 6;
+            $do_index_count += 6;
+            $com_count = 2;
+            break;
     }
 
     for ($i = 1; $i <= $com_count; $i++) {
@@ -924,6 +929,8 @@ function get_serial_device_list()
         $comlist = array('/dev/ttyS1'=>'COM1', '/dev/ttyS2'=>'COM2', '/dev/ttyS3'=>'COM3', '/dev/ttyS4'=>'COM4');
     } else if ($model == "EC212") {
         $comlist = array('/dev/ttyS1'=>'COM1', '/dev/ttyS2'=>'COM2');
+    } else if ($model == "EG510") {
+        $comlist = array('/dev/ttyCH9344USB0'=>'COM1', '/dev/ttyCH9344USB1'=>'COM2');
     } else {
         $comlist = array('/dev/ttyACM0'=>'COM1', '/dev/ttyACM1'=>'COM2');
     }

@@ -22,6 +22,8 @@ else
 		else
 			iface="/dev/ttyS2"
 		fi
+	elif [ $model == "EG510" ]; then
+		iface="/dev/ttyCH9344USB0"
 	else
 		iface="/dev/ttyACM0"
 	fi

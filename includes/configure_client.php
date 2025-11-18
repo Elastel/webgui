@@ -131,7 +131,7 @@ function DisplayWPAConfig()
             if ($ok) {
                 system('sudo cp /tmp/wifidata ' . RASPI_WPA_SUPPLICANT_CONFIG, $returnval);
                 if ($returnval == 0) {
-                    exec('sudo wpa_cli -i ' . $_SESSION['wifi_client_interface'] . ' reconfigure', $reconfigure_out, $reconfigure_return);
+                    exec('sudo wpa_cli -i ' . $iface . ' reconfigure', $reconfigure_out, $reconfigure_return);
                     if ($reconfigure_return == 0) {
                         $status->addMessage('Wifi settings updated successfully', 'success');
                         $networks = $tmp_networks;
@@ -147,7 +147,7 @@ function DisplayWPAConfig()
         }
     }
 
-    $clientInterface = $_SESSION['wifi_client_interface'];
+    $clientInterface = $iface;
 
     $isRunning = (bool) trim(shell_exec('pgrep wpa_supplicant'));
     $ifaceStatus = $isRunning ? "up" : "down";

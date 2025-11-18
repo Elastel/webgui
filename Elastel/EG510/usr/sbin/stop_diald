@@ -1,0 +1,14 @@
+#!/bin/sh
+
+killall diald
+killall udhcpc
+killall quectel-CM
+
+pid=$(pgrep diald)
+[ -n "$pid" ] && kill -9 $pid
+
+pid=$(pgrep quectel-CM)
+[ -n "$pid" ] && kill -9 $pid
+
+#uci -P /var/state/ set dangle.wan.disabled=1
+

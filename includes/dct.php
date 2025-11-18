@@ -49,6 +49,11 @@ function get_io_maps()
           $do_index_count += 2;
           $com_count = 2;
           break;
+      case "EG510":
+          $di_index_count += 6;
+          $do_index_count += 6;
+          $com_count = 2;
+          break;
   }
 
   for ($i = 1; $i <= $com_count; $i++) {

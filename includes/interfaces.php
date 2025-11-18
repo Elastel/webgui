@@ -24,7 +24,7 @@ function DisplayInterfaces()
 
 function saveComConfig($status, $model)
 {
-    if ($model == "EG500") {
+    if ($model == "EG500" || $model == "EG410" || $model == "EG510" || $model == "EC212") {
         $count = 2;
     } else {
         $count = 4;
