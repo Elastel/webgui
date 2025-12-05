@@ -619,6 +619,8 @@ function get_data_type_value(table_name) {
         data_type_value = ['Int32', 'UInt32', 'Counter64', 'String'];
     } else if (table_name == 'mbuscli') {
         data_type_value = ['Double', 'String'];
+    } else if (table_name == 'iec1107') {
+        data_type_value = ['Int', 'Float', 'String'];
     }
 
     return data_type_value;
@@ -817,7 +819,7 @@ function loadRealtimeData() {
 /*Rules*/
 function loadRulesConfig(table_name) {
     $('#loading').show();
-    $.get('ajax/dct/get_dctcfg.php?type=' + table_name,function(data){
+    $.get('ajax/dct/get_dctcfg.php?type=' + table_name + '&rule=1',function(data){
         // console.log(data);
         var jsonData = JSON.parse(data);
         if (jsonData == null)
@@ -984,6 +986,37 @@ function selectItemIec104(value) {
     list.classList.remove('show');
 }
 
+function iec104FilterFunction() {
+    const list = document.getElementById('typeIdList');
+    const options_type_id = [];
+    var data = document.getElementById('iec104_discover_data').value;
+
+    if (data.length < 3)
+        return;
+
+    // console.log(data);
+    var jsonData = JSON.parse(data);
+    
+    for (var i = 0; i < jsonData.length; i++) {
+        options_type_id[i] = jsonData[i];
+    }
+
+    filteredOptions = options_type_id;
+    list.innerHTML = '';
+    if (filteredOptions.length > 0) {
+        filteredOptions.forEach(option => {
+            // console.log(option);
+            const div = document.createElement('div');
+            div.textContent = option;
+            div.onclick = () => selectItemIec104(option);
+            list.appendChild(div);
+        });
+        list.classList.add('show');
+    } else {
+        list.classList.remove('show');
+    }
+}
+
 function updateTypeIdList() {
     const options_type_id = [];
     const list = document.getElementById('typeIdList');
@@ -1013,11 +1046,26 @@ function updateTypeIdList() {
     });
 }
 
-function iec104FilterFunction() {
-    const input = document.getElementById('iec104.type_id');
-    const list = document.getElementById('typeIdList');
+function get_iec1107_server_discover(callback) {
+    const interface = document.getElementById('iec1107.belonged_com').value;
+    // console.log(interface);
+    $.get('ajax/dct/get_dctcfg.php?type=iec1107discover&interface=' + interface, function(data) {
+        callback(data);
+    })
+}
+
+function selectItemIec1107(value) {
+    const input = document.getElementById('iec1107.obis');
+    const list = document.getElementById('obisList');
+    // console.log(value);
+    input.value = value;
+    list.classList.remove('show');
+}
+
+function iec1107FilterFunction() {
+    const list = document.getElementById('obisList');
     const options_type_id = [];
-    var data = document.getElementById('iec104_discover_data').value;
+    var data = document.getElementById('iec1107_discover_data').value;
 
     if (data.length < 3)
         return;
@@ -1029,23 +1077,50 @@ function iec104FilterFunction() {
         options_type_id[i] = jsonData[i];
     }
 
-    //console.log(options_type_id);
-    // const filter = input.value.toLowerCase();
     filteredOptions = options_type_id;
-    //const filteredOptions = options_type_id.filter(option => option.toLowerCase().includes(filter));
     list.innerHTML = '';
     if (filteredOptions.length > 0) {
         filteredOptions.forEach(option => {
             // console.log(option);
             const div = document.createElement('div');
             div.textContent = option;
-            div.onclick = () => selectItemIec104(option);
+            div.onclick = () => selectItemIec1107(option);
             list.appendChild(div);
         });
         list.classList.add('show');
     } else {
         list.classList.remove('show');
     }
+}
+
+
+function updateObisList() {
+    const options_type_id = [];
+    const list = document.getElementById('obisList');
+
+    get_iec1107_server_discover(function(data) {
+        if (data && data != 'null' && data != '[]') {
+            $('#iec1107_discover_data').val(data);
+            var jsonData = JSON.parse(data);
+            list.innerHTML = '';
+            for (var i = 0; i < jsonData.length; i++) {
+                options_type_id[i] = jsonData[i];
+            }
+
+            list.innerHTML = '';
+            options_type_id.forEach(option => {
+                const div = document.createElement('div');
+                div.textContent = option;
+                div.onclick = () => selectItemIec1107(option);
+                list.appendChild(div);
+            });
+            list.classList.add('show');
+        } else {
+            $('#iec1107_discover_data').val("");
+            list.innerHTML = '';
+            document.getElementById('iec1107.obis').value = "-";
+        }
+    });
 }
 
 function selectItem(value) {
@@ -1204,6 +1279,11 @@ $('.btn_bacdiscover').click(function(){
 $('.btn_iec104discover').click(function(){
     // console.log("btn_iec104discover");
     updateTypeIdList();
+})
+
+$('.btn_iec1107discover').click(function(){
+    // console.log("btn_iec104discover");
+    updateObisList();
 })
 
 function enableBACnet(state) {

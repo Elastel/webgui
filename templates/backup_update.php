@@ -21,8 +21,8 @@
             <?php 
               echo \ElastPro\Tokens\CSRF::hiddenField();;
               LabelControlCustom(_("Version:"), 'cur_version', 'cur_version', RASPI_VERSION);
-              exec('cat .git/refs/heads/EG-develop', $cur_node);
-              exec('cat .git/refs/remotes/origin/EG-develop', $new_node);
+              exec('cat /var/www/html/.git/refs/remotes/origin/$(git branch --show-current)', $new_node);
+              exec('cat /var/www/html/.git/refs/heads/$(git branch --show-current)', $cur_node);
             ?>
             <div class="cbi-value">
               <label class="cbi-value-title"><?php echo _("Current node:");?></label>

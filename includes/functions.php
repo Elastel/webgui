@@ -1211,6 +1211,9 @@ function handlePageActions($extraFooterScripts, $page)
         case "/snmpcli_conf":
             DisplaySnmpClient();
             break;
+        case "/iec1107_conf":
+            DisplayIec1107();
+            break;
         case "/nodered":
             DisplayNodered();
             break;

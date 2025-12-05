@@ -66,6 +66,7 @@ require_once 'includes/hmi.php';
 require_once 'includes/restapi.php';
 require_once 'includes/mbus_client.php';
 require_once 'includes/snmp_client.php';
+require_once 'includes/iec1107.php';
 
 $model = getModel();
 $target = getTarget();

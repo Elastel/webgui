@@ -296,6 +296,7 @@ if [[ $model != "EG324L" && $model != "EC212" ]]; then
         fi
         cp $path/config/090_elastpro /etc/sudoers.d/
         chown -c root:www-data /etc/raspap/hostapd/*.sh
+        chown -R www-data:www-data /var/www/html
 else
         result=$(ls /etc/ssl/certs/ | wc -l)
         if [[ $result == "0" ]]; then

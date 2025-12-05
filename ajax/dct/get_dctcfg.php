@@ -103,6 +103,27 @@ if ($type == 'datadisplay') {
     } else if (strstr($interface, 'COM') != null) {
         ;
     }
+} else if (strstr($type, 'iec1107discover')) {
+    $interface = $_GET['interface'];
+    if (strstr($interface, 'COM') != null) {
+        $comlist = get_serial_device_list();
+        $device = array_search($interface, $comlist);
+        exec("pgrep dctd", $pids);
+        if (!empty($pids)) {
+            foreach ($pids as $pid) {
+                exec("sudo kill -9 $pid");
+            }
+        }
+        sleep(1);
+        exec("sudo /usr/sbin/iec1107_client_scan $device");
+    }
+
+    exec('cat /tmp/iec1107discover', $data);
+    if ($data[0] != null) {
+        $arr = explode(';', $data[0]);
+        $arr = array_filter($arr);
+        echo json_encode($arr);
+    }
 } else if (strstr($type, 'mbus_scan')) {
     $address = $_GET['address'];
     $interface = $_GET['interface'];
@@ -149,6 +170,7 @@ if ($type == 'datadisplay') {
         echo '';
     }
 } else {
+    $rule = $_GET['rule'];
     if (file_exists('/etc/elastel_config.json')) {
         $fileContent = file_get_contents('/etc/elastel_config.json');
         $config = json_decode($fileContent, true);
@@ -167,10 +189,7 @@ if ($type == 'datadisplay') {
         exec("/usr/sbin/get_config dct name $type 5", $data);
         $dctdata = json_decode($data[0]);
         echo json_encode($dctdata);
-    } else if ($type == 'modbus' || $type == 'ascii' || $type == 's7'|| $type == 'fx' ||
-             $type == 'mc' || $type == 'adc' || $type == 'di' || $type == 'do' || 
-             $type == 'iec104' || $type == 'opcuacli' || $type == 'dnp3cli' || $type == 'baccli' ||
-             $type == 'ethernetip' || $type == 'mbuscli' || $type == 'snmpcli') {
+    } else if ($rule == '1') {
         exec("/usr/sbin/get_config dct type $type 1", $data);
         // $dctdata = json_decode($data[0]);
 

@@ -25,8 +25,10 @@ if ($type == "node_online_update") {
         // check current node update
         exec('cat /var/www/html/.git/refs/remotes/origin/$(git branch --show-current)', $new_node);
         exec('cat /var/www/html/.git/refs/heads/$(git branch --show-current)', $cur_node);
+        exec('sudo chown -R www-data:www-data /var/www/html; sudo find /var/www/html -type f -exec dos2unix {} + >/dev/null 2>&1');
+        sleep(2);
         if ($new_node[0] == $cur_node[0]) {
-            exec('sudo git checkout *; sudo /var/www/html/update 2>&1', $info);
+            exec('sudo git reset --hard HEAD; sudo /var/www/html/update 2>&1', $info);
             $data['log'] = $info[0];
         } else {
             $data['error'] = "Fail to update node";

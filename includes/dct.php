@@ -11,6 +11,7 @@ abstract class ComProtoEnum {
   const COM_PROTO_MODBUS2IO = 7;
   const COM_PROTO_MODBUS_ASCII = 8;
   const COM_PROTO_MBUS = 9;
+  const COM_PROTO_IEC1107 = 10;
 };
 
 abstract class TcpProtoEnum {
@@ -199,7 +200,9 @@ function page_interface_com($num)
 
   InputControlCustom(_("Frame Interval"), 'com_frame_interval'.$num, 'com_frame_interval'.$num, _('ms'), 200);
 
-  $com_proto = array('Modbus RTU', 'Transparent', 'FX', 'MC', 'ASCII', 'DNP3', 'BACnet/MSTP', 'Modbus2io', 'Modbus ASCII', 'Mbus');
+  $com_proto = array('Modbus RTU', 'Transparent', 'FX', 'MC', 
+                  'ASCII', 'DNP3', 'BACnet/MSTP', 'Modbus2io', 
+                  'Modbus ASCII', 'Mbus', 'IEC62056-21');
   SelectControlCustom(_('Protocol'), 'com_proto'.$num, $com_proto, $com_proto[0], 'com_proto'.$num, null, "comProtocolChange($num)");
 
   echo '<div id="com_page_protocol_modbus'.$num.'" name="com_page_protocol_modbus'.$num.'">';

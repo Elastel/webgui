@@ -36,7 +36,9 @@
                 <li class="nav-item" name="lan" id="network_lan" ><a class="nav-link" href="dhcpd_conf"><?php echo _("LAN"); ?></a></li>
                 <li class="nav-item" name="wifi" id="network_wifi" ><a class="nav-link" href="hostapd_conf"><?php echo _("WiFi AP"); ?></a></li>
                 <li class="nav-item" name="wifi_client" id="network_wifi_client" ><a class="nav-link" href="wpa_conf"><?php echo _("WiFi Client"); ?></a></li>
+                <?php if (isBinExists("failoverd")) : ?>
                 <li class="nav-item" name="online_detection" id="network_online_detection" ><a class="nav-link" href="detection_conf"><?php echo _("Online Detection"); ?></a></li>
+                <?php endif; ?>
                 <?php if (isBinExists("lora_pkt_fwd")) : ?>
                 <li class="nav-item" name="lorawan" id="network_lorawan" ><a class="nav-link" href="lorawan_conf"><?php echo _("LoRaWan"); ?></a></li>
                 <?php endif; ?>
@@ -46,6 +48,7 @@
             </ul>
             </div>
         </li>
+        <?php if(isBinExists("dctd")) : ?>
         <li class="nav-item" id="page_dct">
             <a class="nav-link navbar-toggle collapsed" id="dct" href="#" data-toggle="collapse" data-target="#navbar-collapse-dct">
                 <i class="fas fa-exchange-alt fa-fw mr-2"></i>
@@ -75,13 +78,13 @@
                             <li class="nav-item" name="ethernetip" id="dct_south_ethernetip"><a class="nav-link" href="ethernetip_conf"><?php echo _("EtherNet/IP Rules"); ?></a></li>
                             <li class="nav-item" name="mbus_client" id="dct_south_mbus_client"><a class="nav-link" href="mbuscli_conf"><?php echo _("Mbus Rules"); ?></a></li>
                             <li class="nav-item" name="snmp_client" id="dct_south_snmp_client"><a class="nav-link" href="snmpcli_conf"><?php echo _("SNMP Rules"); ?></a></li>
+                            <li class="nav-item" name="iec1107" id="dct_south_iec1107"><a class="nav-link" href="iec1107_conf"><?php echo _("IEC62056-21 Rules"); ?></a></li>
                             <?php if (isIoExistts()) : ?>
                             <li class="nav-item" name="io" id="dct_south_io"><a class="nav-link" href="io_conf"><?php echo _("IO"); ?></a></li>
                             <?php endif; ?>
                         </ul>
                     </div>
                 </li>
-                
                 <li class="nav-item" id="page_north">
                     <a class="nav-link navbar-toggle collapsed" id="north" href="#" data-toggle="collapse" data-target="#navbar-collapse-north">
                         <?php echo _("North Apps"); ?>
@@ -102,6 +105,8 @@
             </ul>
             </div>
         </li>
+        <?php endif; ?>
+        <?php if(isBinExists("router-mstp") || isBinExists("router-modbus")) : ?>
         <li class="nav-item" id="page_convert">
             <a class="nav-link navbar-toggle collapsed" id="protocol_convert" href="#" data-toggle="collapse" data-target="#navbar-collapse-convert">
                 <i class="fas fa-server fa-fw mr-2"></i>
@@ -118,6 +123,8 @@
             </ul>
             </div>
         </li>
+        <?php endif; ?>
+        <?php if(isBinExists("baseagent") || isBinExists("openvpn") || isBinExists("wg") || isBinExists("noip2")) : ?>
         <li class="nav-item" id="page_remote">
             <a class="nav-link navbar-toggle collapsed" id="remote" href="#" data-toggle="collapse" data-target="#navbar-collapse-remote">
                 <i class="fas fa-key fa-fw mr-2"></i>
@@ -126,25 +133,34 @@
             <div class="collapse navbar-collapse" id="navbar-collapse-remote">
                 <ul class="nav navbar-nav navbar-right">
                     <?php if ((strpos($target, "IQEG") === false && strpos($target, "IQEC") === false)) { ?>
+                        <?php if(isBinExists("baseagent")) : ?>
                         <li class="nav-item" name="things_wing" id="remote_things_wing"> <a class="nav-link" href="things_wing"><?php echo _("ThingsWing"); ?></a></li>
+                        <?php endif; ?>
                     <?php } ?>
+                    <?php if(isBinExists("noip2")) : ?>
                     <li class="nav-item" name="ddns" id="remote_ddns"> <a class="nav-link" href="ddns"><?php echo _("DDNS"); ?></a></li>
+                    <?php endif; ?>
+                    <?php if(isBinExists("openvpn") || isBinExists("wg")) : ?>
                     <li class="nav-item" id="page_vpn">
                         <a class="nav-link navbar-toggle collapsed" id="test" href="#" data-toggle="collapse" data-target="#navbar-collapse-vpn">
                             <?php echo _("VPN"); ?>
                         </a>
                         <div class="collapse navbar-collapse" id="navbar-collapse-vpn">
                             <ul class="nav navbar-nav navbar-right">
+                                <?php if(isBinExists("openvpn")) : ?>
                                 <li class="nav-item" name="openvpn" id="remote_vpn_openvpn"> <a class="nav-link" href="openvpn"><?php echo _("OpenVPN"); ?></a></li>
+                                <?php endif; ?>
                                 <?php if(isBinExists("wg") && isBinExists("wg-quick")) : ?>
                                 <li class="nav-item" name="wireguard" id="remote_vpn_wireguard"> <a class="nav-link" href="wireguard"><?php echo _("WireGuard"); ?></a></li>
                                 <?php endif; ?>
                             </ul>
                         </div>
                     </li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </li>
+        <?php endif; ?>
         <?php if(isBinExists("node-red") || isBinExists("dockerd") || isBinExists("chirpstack") || isBinExists("iotedge")) : ?>
             <li class="nav-item" id="page_services">
                 <a class="nav-link navbar-toggle collapsed" id="services" href="#" data-toggle="collapse" data-target="#navbar-collapse-services">

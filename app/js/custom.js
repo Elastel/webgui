@@ -1638,6 +1638,7 @@ function contentLoaded() {
         case "ethernetip_conf":
         case "mbuscli_conf":
         case "snmpcli_conf":
+        case "iec1107_conf":
             loadRulesConfig(pageCurrent.split('_')[0]);
             break;
         case "io_conf":
