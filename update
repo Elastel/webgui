@@ -161,7 +161,6 @@ reset_configuration() {
                         rm -r /etc/htset
                 fi
 
-                cp $path/config/edaemon.conf /etc/edaemon.conf
                 sub_mac=$(ifconfig eth0 | grep HWaddr | awk '{print $5}' | cut -f 5-6 -d ":" | tr -d ":")
 
                 zonelist=$(ls /usr/share/zoneinfo/ | wc -l)
@@ -287,6 +286,7 @@ cp $path/config/rules.v4 /etc/iptables/rules.v4
 cp $path/installers/service*.sh /etc/raspap/hostapd
 cp $path/installers/configport.sh /etc/raspap/lighttpd/
 cp $path/installers/bacnet_update /usr/sbin/
+cp $path/config/edaemon.conf /etc/edaemon.conf
 sync
 sleep 1
 
@@ -345,7 +345,7 @@ sleep 1
 
 app_array=("bacnet_router" "dct" "ddns" "edaemon" "failover" "firewall"
         "gps" "lte" "modbus_router" "terminal" "init-wifi"
-        "iotedge")
+        "iotedge" "schedule")
 
 for item in "${app_array[@]}"; do
         /etc/init.d/$item stop

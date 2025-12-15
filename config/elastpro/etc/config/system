@@ -10,3 +10,6 @@ config setting 'system'
 	option lte_enabled '1'
 	option sms_password 'admin'
 
+config setting 'scheduled'
+	option enabled '0'
+

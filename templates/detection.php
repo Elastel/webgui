@@ -47,6 +47,13 @@
                   </div>
 
                   <div class="cbi-value">
+                      <label class="cbi-value-title">Detection Period</label>
+                      <input type="text" class="cbi-input-text" name="detect_period" id="detect_period" 
+                      value="<?php echo ($detect_period[0] != null ? $detect_period[0] : ""); ?>" />
+                      <label class="cbi-value-description">Minutes</label>
+                  </div>
+
+                  <div class="cbi-value">
                       <label class="cbi-value-title">Enable Reboot</label>
                       <input type="checkbox" class="cbi-input-checkbox" onchange="enableReboot(this)" name="enabled_reboot" id="enabled_reboot" 
                       value="1" <?php echo ($enabled_reboot[0] == 1 ? 'checked' : ""); ?> />

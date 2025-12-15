@@ -1241,6 +1241,9 @@ function handlePageActions($extraFooterScripts, $page)
         case "/hmi":
             DisplayHmi();
             break;
+        case "/scheduled":
+            DisplayScheduled();
+            break;
         case "/login":
             DisplayLogin();
             break;

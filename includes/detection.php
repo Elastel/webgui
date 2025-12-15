@@ -23,6 +23,7 @@ function DisplayDetectionConfig()
     exec("sudo /usr/local/bin/uci get network.detection.enabled", $enabled);
     exec("sudo /usr/local/bin/uci get network.detection.primary_addr", $primary_addr);
     exec("sudo /usr/local/bin/uci get network.detection.secondary_addr", $secondary_addr);
+    exec("sudo /usr/local/bin/uci get network.detection.detect_period", $detect_period);
     exec("sudo /usr/local/bin/uci get network.detection.enabled_reboot", $enabled_reboot);
     exec("sudo /usr/local/bin/uci get network.detection.reboot_inter", $reboot_inter);
 
@@ -30,6 +31,7 @@ function DisplayDetectionConfig()
         'status', 
         'primary_addr', 
         'secondary_addr', 
+        'detect_period',
         'enabled_reboot', 
         'reboot_inter',
         'enabled'
@@ -46,6 +48,7 @@ function saveDetectionConfig($status)
     if ($_POST['enabled'] == "1") {
         exec("sudo /usr/local/bin/uci set network.detection.primary_addr=" .$_POST['primary_addr']);
         exec("sudo /usr/local/bin/uci set network.detection.secondary_addr=" .$_POST['secondary_addr']);
+        exec("sudo /usr/local/bin/uci set network.detection.detect_period=" .$_POST['detect_period']);
         if ($_POST['enabled_reboot'] == "1") {
             exec("sudo /usr/local/bin/uci set network.detection.enabled_reboot=" .$_POST['enabled_reboot']);
             exec("sudo /usr/local/bin/uci set network.detection.reboot_inter=" .$_POST['reboot_inter']);
