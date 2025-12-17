@@ -82,10 +82,10 @@ require_once 'includes/includes.php';
     <script src="dist/sb-admin-2/js/sb-admin-2.js"></script>
 
     <!-- Custom JS -->
-    <script src="app/js/dct.js?version=1.0.8"></script>
-    <script src="app/js/custom.js?version=1.0.7"></script>
-    <script src="app/js/system.js?version=1.0.0"></script>
-    <script src="app/js/services.js?version=1.0.0"></script>
+    <script src="app/js/dct.js?<?php echo filemtime('app/js/dct.js'); ?>"></script>
+    <script src="app/js/custom.js?<?php echo filemtime('app/js/custom.js'); ?>"></script>
+    <script src="app/js/system.js?<?php echo filemtime('app/js/system.js'); ?>"></script>
+    <script src="app/js/services.js?<?php echo filemtime('app/js/services.js'); ?>"></script>
 
     <?php loadFooterScripts($extraFooterScripts); ?>
   </body>
