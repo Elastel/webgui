@@ -46,7 +46,7 @@ if ($type == "node_online_update") {
         $data['error'] = 'No network!';
     }
 } else if ($type == "reset_configs") {
-    exec('cd /var/www/html; sudo git checkout *');
+    exec('cd /var/www/html; sudo git reset --hard HEAD');
     exec('sudo /var/www/html/update reset 2>&1');
 } else if ($type == "download_backup") {
     exec('sudo rm -f /tmp/backup.tar.gz');
