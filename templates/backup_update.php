@@ -21,8 +21,10 @@
             <?php 
               echo \ElastPro\Tokens\CSRF::hiddenField();;
               LabelControlCustom(_("Version:"), 'cur_version', 'cur_version', RASPI_VERSION);
-              exec('cat /var/www/html/.git/refs/remotes/origin/$(git branch --show-current)', $new_node);
-              exec('cat /var/www/html/.git/refs/heads/$(git branch --show-current)', $cur_node);
+              $cmd_get_local_node = "cd /var/www/html; git for-each-ref --format='%(objectname)' refs/heads/$(git rev-parse --abbrev-ref HEAD)";
+              $cmd_get_remote_node = "cd /var/www/html; git for-each-ref --format='%(objectname)' refs/remotes/origin/$(git rev-parse --abbrev-ref HEAD)";
+              exec($cmd_get_local_node, $cur_node);
+              exec($cmd_get_remote_node, $new_node);
             ?>
             <div class="cbi-value">
               <label class="cbi-value-title"><?php echo _("Current node:");?></label>

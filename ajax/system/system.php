@@ -5,28 +5,37 @@ require_once '../../includes/CSRF.php';
 require_once '../../includes/config.php';
 
 $type = $_GET['type'];
-exec("uci -P /var/state get network.wan.link", $network_status);
+$host = "github.com";
+$network_status = false;
+
+if ($type == "node_online_update" || $type == "update_node") {
+  $ping = exec("ping -c 3 -W 5 " . escapeshellarg($host), $output, $status);
+  if ($status === 0) {
+      $network_status = true;
+  }
+  
+  $cmd_get_local_node = "cd /var/www/html; sudo git for-each-ref --format='%(objectname)' refs/heads/$(git rev-parse --abbrev-ref HEAD)";
+  $cmd_get_remote_node = "cd /var/www/html; sudo git for-each-ref --format='%(objectname)' refs/remotes/origin/$(git rev-parse --abbrev-ref HEAD)";
+}
 
 if ($type == "node_online_update") {
-    if ($network_status[0] != 'none') {
+    if ($network_status) {
         exec('cd /var/www/html; sudo git fetch origin');
     }
 
-    exec('cat /var/www/html/.git/refs/remotes/origin/$(git branch --show-current)', $new_node);
+    exec($cmd_get_remote_node, $new_node);
     $data['new_node'] = $new_node[0];
 
-    exec('cat /var/www/html/.git/refs/heads/$(git branch --show-current)', $cur_node);
+    exec($cmd_get_local_node, $cur_node);
     $data['cur_node'] = $cur_node[0];
 } else if ($type == "update_node") {
-    if ($network_status[0] != 'none') {
+    if ($network_status) {
         exec('cd /var/www/html; sudo git fetch origin');
-        exec('cd /var/www/html; sudo git reset --hard origin/$(git branch --show-current)');
-        exec('cd /var/www/html; sudo git pull origin $(git branch --show-current)');
+        exec('cd /var/www/html; sudo git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)');
+        exec('cd /var/www/html; sudo git pull origin $(git rev-parse --abbrev-ref HEAD)');
         // check current node update
-        exec('cat /var/www/html/.git/refs/remotes/origin/$(git branch --show-current)', $new_node);
-        exec('cat /var/www/html/.git/refs/heads/$(git branch --show-current)', $cur_node);
-        exec('sudo chown -R www-data:www-data /var/www/html; sudo find /var/www/html -type f -exec dos2unix {} + >/dev/null 2>&1');
-        sleep(2);
+        exec($cmd_get_remote_node, $new_node);
+        exec($cmd_get_local_node, $cur_node);
         if ($new_node[0] == $cur_node[0]) {
             exec('sudo git reset --hard HEAD; sudo /var/www/html/update 2>&1', $info);
             $data['log'] = $info[0];
