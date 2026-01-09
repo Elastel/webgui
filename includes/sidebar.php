@@ -133,7 +133,7 @@
             <div class="collapse navbar-collapse" id="navbar-collapse-remote">
                 <ul class="nav navbar-nav navbar-right">
                     <?php if ((strpos($target, "IQEG") === false && strpos($target, "IQEC") === false)) { ?>
-                        <?php if(isBinExists("baseagent")) : ?>
+                        <?php if(isBinExists("baseagent") || file_exists("/usr/local/baseagent/baseagent")) : ?>
                         <li class="nav-item" name="things_wing" id="remote_things_wing"> <a class="nav-link" href="things_wing"><?php echo _("ThingsWing"); ?></a></li>
                         <?php endif; ?>
                     <?php } ?>
