@@ -387,6 +387,7 @@ function comProtocolChange(num) {
     $('#com_page_protocol_dnp3' + numStr).hide();
     $('#com_page_protocol_bacnet' + numStr).hide();
     $('#com_page_controller_model' + numStr).hide();
+    $('#com_page_protocol_dlms' + numStr).hide();
 
     if (selectedText == 'Transparent') {
         $('#com_page_protocol_transparent' + numStr).show();
@@ -396,8 +397,115 @@ function comProtocolChange(num) {
         $('#com_page_protocol_bacnet' + numStr).show();
     } else if (selectedText == 'Modbus2io') {
         $('#com_page_controller_model' + numStr).show();
+    } else if (selectedText == 'DLMS') {
+        $('#com_page_protocol_dlms' + numStr).show();
+        dlmsAuthChangeCom(num);
     } else {
         $('#com_page_protocol_modbus' + numStr).show();
+    }
+}
+
+function dlmsAuthChangeCom(num) {
+    var numStr = num.toString();
+    var selectElement = document.getElementById('com_dlms_auth' + numStr);
+    if (!selectElement.value) {
+        selectElement.value = "0";
+        selectElement.dispatchEvent(new Event('change'));
+        return;
+    }
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var selectedText = selectedOption.text;
+
+    if (selectedText == 'None') {
+        $('#com_page_dlms_password' + numStr).hide();
+        $('#com_page_security_dlms' + numStr).hide();
+    } else if (selectedText == 'Low' || selectedText == 'High' || 
+        selectedText == 'HighMd5' || selectedText == 'HighSha1' ||
+        selectedText == 'HighSha256') {
+        $('#com_page_dlms_password' + numStr).show();
+        $('#com_page_security_dlms' + numStr).hide();
+    } else if (selectedText == 'HighGmac') {
+        $('#com_page_dlms_password' + numStr).hide();
+        $('#com_page_security_dlms' + numStr).show();
+    }
+    dlmsSecurityChangeCom(num);
+}
+
+function dlmsAuthChangeTcp(num) {
+    var numStr = num.toString();
+    var selectElement = document.getElementById('tcp_dlms_auth' + numStr);
+    if (!selectElement.value) {
+        selectElement.value = "0";
+        selectElement.dispatchEvent(new Event('change'));
+        return;
+    }
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var selectedText = selectedOption.text;
+
+    if (selectedText == 'None') {
+        $('#tcp_page_dlms_password' + numStr).hide();
+        $('#tcp_page_security_dlms' + numStr).hide();
+    } else if (selectedText == 'Low' || selectedText == 'High' || 
+        selectedText == 'HighMd5' || selectedText == 'HighSha1' ||
+        selectedText == 'HighSha256') {
+        $('#tcp_page_dlms_password' + numStr).show();
+        $('#tcp_page_security_dlms' + numStr).hide();
+    } else if (selectedText == 'HighGmac') {
+        $('#tcp_page_dlms_password' + numStr).hide();
+        $('#tcp_page_security_dlms' + numStr).show();
+    }
+    dlmsSecurityChangeTcp(num);
+}
+
+function dlmsSecurityChangeCom(num)
+{
+    var numStr = num.toString();
+    var selectElement = document.getElementById('com_dlms_security_level' + numStr);
+    if (!selectElement.value) {
+        selectElement.value = "0";
+        selectElement.dispatchEvent(new Event('change'));
+        return;
+    }
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var selectedText = selectedOption.text;
+    if (selectedText == 'None') {
+        $('#com_page_authentication_dlms' + numStr).hide();
+        $('#com_page_encrypted_dlms' + numStr).hide();
+    } else if (selectedText == 'Authentication') {
+        $('#com_page_authentication_dlms' + numStr).show();
+        $('#com_page_encrypted_dlms' + numStr).hide();
+    } else if (selectedText == 'Encryption') {
+        $('#com_page_authentication_dlms' + numStr).hide();
+        $('#com_page_encrypted_dlms' + numStr).show();
+    } else if (selectedText == 'AuthenticationEncryption') {
+        $('#com_page_authentication_dlms' + numStr).show();
+        $('#com_page_encrypted_dlms' + numStr).show();
+    }
+}
+
+function dlmsSecurityChangeTcp(num)
+{
+    var numStr = num.toString();
+    var selectElement = document.getElementById('tcp_dlms_security_level' + numStr);
+    if (!selectElement.value) {
+        selectElement.value = "0";
+        selectElement.dispatchEvent(new Event('change'));
+        return;
+    }
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var selectedText = selectedOption.text;
+    if (selectedText == 'None') {
+        $('#tcp_page_authentication_dlms' + numStr).hide();
+        $('#tcp_page_encrypted_dlms' + numStr).hide();
+    } else if (selectedText == 'Authentication') {
+        $('#tcp_page_authentication_dlms' + numStr).show();
+        $('#tcp_page_encrypted_dlms' + numStr).hide();
+    } else if (selectedText == 'Encryption') {
+        $('#tcp_page_authentication_dlms' + numStr).hide();
+        $('#tcp_page_encrypted_dlms' + numStr).show();
+    } else if (selectedText == 'AuthenticationEncryption') {
+        $('#tcp_page_authentication_dlms' + numStr).show();
+        $('#tcp_page_encrypted_dlms' + numStr).show();
     }
 }
 
@@ -458,6 +566,7 @@ function tcpProtocolChange(num) {
     $('#tcp_page_protocol_dnp3' + numStr).hide();
     $('#tcp_page_protocol_bacnet' + numStr).hide();
     $('#tcp_page_protocol_snmp' + numStr).hide();
+    $('#tcp_page_protocol_dlms' + numStr).hide();
 
     if (selectedText == 'Transparent') {
         $('#tcp_page_protocol_transparent' + numStr).show();
@@ -477,6 +586,9 @@ function tcpProtocolChange(num) {
         $('#tcp_page_protocol_snmp' + numStr).show();
         snmpVersionChangeTcp(num);
         securityLevelChangeTcp(num);
+    } else if (selectedText == 'DLMS') {
+        $('#tcp_page_protocol_dlms' + numStr).show();
+        dlmsAuthChangeTcp(num);
     } else {
         $('#tcp_page_protocol_modbus' + numStr).show();
     }
@@ -619,7 +731,7 @@ function get_data_type_value(table_name) {
         data_type_value = ['Int32', 'UInt32', 'Counter64', 'String'];
     } else if (table_name == 'mbuscli') {
         data_type_value = ['Double', 'String'];
-    } else if (table_name == 'iec1107') {
+    } else if (table_name == 'iec1107' || table_name == 'dlms') {
         data_type_value = ['Int', 'Float', 'String'];
     }
 
@@ -741,14 +853,13 @@ function addSectionTable(table_name, jsonData, option_list) {
 /*datadisplay*/
 function getRealtimeData() {
     $.get('ajax/dct/get_dctcfg.php?type=datadisplay', function(data) {
-        if (!data.includes("data")) {
+        if (!data.includes('"data"')) {
             return;
         }
-        
+        // console.log(data);
         tmp = JSON.parse(data);
         jsonData = JSON.parse(tmp['data']);
-        // console.log(jsonData);
-
+        
         if (jsonData == null)
             return false;
 
@@ -843,6 +954,19 @@ function snmpScan() {
     $.get('ajax/dct/get_dctcfg.php?type=snmp_scan&interface=' + interface + '&oid=' + oid, function(data) {
         // console.log(data);
         $('#snmp_result_area').val(data);
+        $('#loading').hide();
+        btn.disabled = false;
+    })
+}
+
+function dlmsScan() {
+    $('#loading').show();
+    const btn = document.getElementById("btn_scan");
+    btn.disabled = true;
+    const interface = document.getElementById('scan_interface').value;
+    $.get('ajax/dct/get_dctcfg.php?type=dlms_scan&interface=' + interface, function(data) {
+        // console.log(data);
+        $('#dlms_result_area').val(data);
         $('#loading').hide();
         btn.disabled = false;
     })
@@ -1928,7 +2052,13 @@ function saveData(table_name) {
                 }
             } else {
                 // console.log(table.rows[Number(page_type)].querySelector('td[name="'+ option +'"]').innerHTML);
-                table.rows[Number(page_type)].querySelector('td[name="'+ option +'"]').innerHTML = (option_value[option].length > 0 ? option_value[option] : "-");
+                var option_value_display = '';
+                if (option == "belonged_com"  && option_value[option].includes('TCP')) {
+                    option_value_display = (option_value[option].length > 0 ? option_value[option].replace('TCP', 'Network Node') : "-")
+                } else {
+                    option_value_display = (option_value[option].length > 0 ? option_value[option] : "-")
+                }
+                table.rows[Number(page_type)].querySelector('td[name="'+ option +'"]').innerHTML = option_value_display;
             }
         })
     }

@@ -169,6 +169,82 @@ if ($type == 'datadisplay') {
     } else {
         echo '';
     }
+} else if (strstr($type, 'dlms_scan')) {
+    $auth_list = [_('None'), 'Low', 'High', 'HighMd5', 'HighSha1', 'HighGmac', 'HighSha256'];
+    $cmd = '';
+    $uci_section = '';
+
+    $interface = $_GET['interface'];
+    $num = filter_var($interface, FILTER_SANITIZE_NUMBER_INT);
+    if (strstr($interface, 'COM') != null) {
+        $comlist = get_serial_device_list();
+        $device = array_search($interface, $comlist);
+        $uci_section = "com";
+        $cmd = "sudo /usr/sbin/dlms_scan -S $device";
+    } else if (strstr($interface, 'TCP') != null) {
+        $uci_section = "tcp_server";
+        exec("uci get dct.$uci_section.server_addr$num", $tmp);
+        $address = $tmp[0];
+        unset($tmp);
+        exec("uci get dct.$uci_section.server_port$num", $tmp);
+        $port = $tmp[0];
+        unset($tmp);
+        $cmd = "sudo /usr/sbin/dlms_scan -h $address -p $port";
+    }
+
+    if ($cmd == '') {
+        echo '';
+        return;
+    }
+
+    exec("uci get dct.$uci_section.dlms_client_address$num", $tmp);
+    $client_id = $tmp[0];
+    unset($tmp);
+    exec("uci get dct.$uci_section.dlms_server_address$num", $tmp);
+    $server_id = $tmp[0];
+    unset($tmp);
+    exec("pgrep dctd", $pids);
+    if (!empty($pids)) {
+        foreach ($pids as $pid) {
+            exec("sudo kill -9 $pid");
+        }
+    }
+    sleep(1);
+    $cmd .= " -c $client_id -s $server_id";
+    exec("uci get dct.$uci_section.dlms_auth$num", $tmp);
+    $auth = $tmp[0];
+    unset($tmp);
+    if ($auth == '5') {
+        $security_level_list = [_('None'), 'Authentication', 'Encryption', 'AuthenticationEncryption'];
+        $client_title = exec("uci get dct.$uci_section.dlms_client_title$num");
+        $invocation_counter = exec("uci get dct.$uci_section.dlms_invocation_counter$num");
+        $security_level = exec("uci get dct.$uci_section.dlms_security_level$num");
+        $sec_level_str = $security_level_list[$security_level];
+        $cmd .= " -a HighGmac -C $sec_level_str";
+        $authentication_key = exec("uci get dct.$uci_section.dlms_authentication_key$num");
+        $cipher_Key = exec("uci get dct.$uci_section.dlms_cipher_Key$num");
+        if ($security_level == '1') {
+            $cmd .= " -A $authentication_key";
+        } else if ($security_level == '2') {
+            $cmd .= " -B $cipher_Key";
+        } else if ($security_level == '3') {
+            $cmd .= " -A $authentication_key -B $cipher_Key";
+        }
+        $cmd .= " -T $client_title -v $invocation_counter";
+    } else if ($auth != '0') {
+        exec("uci get dct.$uci_section.dlms_password$num", $tmp);
+        $password = $tmp[0];
+        unset($tmp);
+        $auth_str = $auth_list[$auth];
+        $cmd .= " -a $auth_str -P $password";
+    }
+
+    exec($cmd, $data);
+    if (!empty($data)) {
+        echo implode(PHP_EOL, $data);
+    } else {
+        echo '';
+    }
 } else {
     $rule = $_GET['rule'];
     if (file_exists('/etc/elastel_config.json')) {

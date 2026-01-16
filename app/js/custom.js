@@ -1639,6 +1639,7 @@ function contentLoaded() {
         case "mbuscli_conf":
         case "snmpcli_conf":
         case "iec1107_conf":
+        case "dlms_conf":
             loadRulesConfig(pageCurrent.split('_')[0]);
             break;
         case "io_conf":

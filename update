@@ -176,12 +176,12 @@ reset_configuration() {
                 cp $path/config/dhcpcd-eth0.conf /etc/dhcpcd.conf
                 uci set network.wan.wan_multi='1'
                 uci commit network
-		if [[ $model == "EG410" ]]; then
-			cp /var/www/html/config/raspap-br0-member-eth0.network /etc/systemd/network/
-		fi
+                if [[ $model == "EG410" ]]; then
+                        cp /var/www/html/config/raspap-br0-member-eth0.network /etc/systemd/network/
+                fi
         fi
 
-        ssid="$target"_"$sub_mac"
+        ssid=$([[ "$target" == *"&OEM"* ]] && echo "OEM_$sub_mac" || echo "${target}_$sub_mac")
         sed -i "s/ssid.*/ssid=$ssid/" /etc/hostapd/hostapd.conf
         /etc/raspap/lighttpd/configport.sh 80 '' /etc/lighttpd/lighttpd.conf
         sync
@@ -368,9 +368,10 @@ if [[ $bit == "64" || $model == "EG324" || $model == "EG324L" || $model == "EC21
         /etc/init.d/hostapd stop
         cp -r $path/Elastel/$model/usr/* /usr/
         #Turn off automatic updates
-        if [[ $model = "EG324" ]]; then
-                systemctl stop unattended-upgrades.service
-                systemctl disable unattended-upgrades.service
+        if [[ $model = "EG324" || $bit == "64" ]]; then
+                sudo systemctl disable --now apt-daily.service apt-daily.timer
+                sudo systemctl disable --now apt-daily-upgrade.service apt-daily-upgrade.timer
+                sudo systemctl disable --now unattended-upgrades.service
         fi
         cp $path/Elastel/$model/sbin/* /sbin/
 elif [ $bit = "32" ]; then

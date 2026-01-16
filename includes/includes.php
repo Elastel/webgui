@@ -68,6 +68,7 @@ require_once 'includes/mbus_client.php';
 require_once 'includes/snmp_client.php';
 require_once 'includes/iec1107.php';
 require_once 'includes/scheduled.php';
+require_once 'includes/dlms.php';
 
 $model = getModel();
 $target = getTarget();

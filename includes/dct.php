@@ -12,6 +12,7 @@ abstract class ComProtoEnum {
   const COM_PROTO_MODBUS_ASCII = 8;
   const COM_PROTO_MBUS = 9;
   const COM_PROTO_IEC1107 = 10;
+  const COM_PROTO_DLMS = 11;
 };
 
 abstract class TcpProtoEnum {
@@ -27,6 +28,7 @@ abstract class TcpProtoEnum {
   const TCP_PROTO_BACNET = 9;
   const TCP_PROTO_EIP = 10;
   const TCP_PROTO_SNMP = 11;
+  const TCP_PROTO_DLMS = 12;
 };
 
 function get_io_maps()
@@ -185,7 +187,7 @@ function page_interface_com($num)
   RadioControlCustom(_('Enabled'), 'com_enabled', 'com', 'enableCom', $num);
   echo '<div id="page_com'.$num.'" name="page_com'.$num.'">';
 
-  $baudrate_list = array('1200'=>'1200', '2400'=>'2400', '4800'=>'4800', '9600'=>'9600', '19200'=>'19200', '38400'=>'38400',
+  $baudrate_list = array('300'=>'300', '600'=>'600', '1200'=>'1200', '2400'=>'2400', '4800'=>'4800', '9600'=>'9600', '19200'=>'19200', '38400'=>'38400',
                    '57600'=>'57600', '115200'=>'115200', '230400'=>'230400');
   SelectControlCustom(_('Baudrate'), 'baudrate'.$num, $baudrate_list, $baudrate_list['9600'], 'baudrate'.$num);
 
@@ -202,7 +204,8 @@ function page_interface_com($num)
 
   $com_proto = array('Modbus RTU', 'Transparent', 'FX', 'MC', 
                   'ASCII', 'DNP3', 'BACnet/MSTP', 'Modbus2io', 
-                  'Modbus ASCII', 'Mbus', 'IEC62056-21');
+                  'Modbus ASCII', 'Mbus', 'IEC62056-21',
+                  'DLMS');
   SelectControlCustom(_('Protocol'), 'com_proto'.$num, $com_proto, $com_proto[0], 'com_proto'.$num, null, "comProtocolChange($num)");
 
   echo '<div id="com_page_protocol_modbus'.$num.'" name="com_page_protocol_modbus'.$num.'">';
@@ -233,6 +236,28 @@ function page_interface_com($num)
   LabelControlCustom(_("Channel Map"), 'channel_map'.$num, 'channel_map'.$num, $channel_map[$num] != null ? $channel_map[$num] : '-');
   echo '</div>';
 
+  echo '<div id="com_page_protocol_dlms'.$num.'" name="com_page_protocol_dlms'.$num.'">';
+    InputControlCustom(_('client Address'), 'com_dlms_client_address'.$num, 'com_dlms_client_address'.$num, "1~255");
+    InputControlCustom(_('server Address'), 'com_dlms_server_address'.$num, 'com_dlms_server_address'.$num, "1~255");
+    $auth_list = [_('None'), 'Low', 'High', 'HighMd5', 'HighSha1', 'HighGmac', 'HighSha256'];
+    SelectControlCustom(_('Authentication'), 'com_dlms_auth'.$num, $auth_list, $auth_list[0], 'com_dlms_auth'.$num, null, "dlmsAuthChangeCom($num)");
+    echo '<div id="com_page_dlms_password'.$num.'" name="com_page_dlms_password'.$num.'">';
+      InputControlCustom(_('Password'), 'com_dlms_password'.$num, 'com_dlms_password'.$num);
+    echo '</div>';
+    echo '<div id="com_page_security_dlms'.$num.'" name="com_page_security_dlms'.$num.'">';
+      $security_level = [_('None'), 'Authentication', 'Encryption', 'AuthenticationEncryption'];
+      SelectControlCustom(_('Security Level'), 'com_dlms_security_level'.$num, $security_level, $security_level[0], 'com_dlms_security_level'.$num, null, "dlmsSecurityChangeCom($num)");
+      echo '<div id="com_page_authentication_dlms'.$num.'" name="com_page_authentication_dlms'.$num.'">';
+        InputControlCustom(_('Authentication Key'), 'com_dlms_authentication_key'.$num, 'com_dlms_authentication_key'.$num);
+      echo '</div>';
+      echo '<div id="com_page_encrypted_dlms'.$num.'" name="com_page_encrypted_dlms'.$num.'">';
+        InputControlCustom(_('Block Cipher Key'), 'com_dlms_cipher_Key'.$num, 'com_dlms_cipher_Key'.$num);
+      echo '</div>';
+      InputControlCustom(_('Client System Title'), 'com_dlms_client_title'.$num, 'com_dlms_client_title'.$num);
+      InputControlCustom(_('Invocation counter'), 'com_dlms_invocation_counter'.$num, 'com_dlms_invocation_counter'.$num, "eg: 0.0.43.1.0.255");
+    echo '</div>';
+  echo '</div>';
+
 echo '</div><!-- /.page_com -->
     </div><!-- /.row -->
     </div><!-- /.tab-pane | basic tab -->';
@@ -256,7 +281,10 @@ function page_interface_tcp($num)
 
   InputControlCustom(_("Frame Interval"), 'tcp_frame_interval'.$num, 'tcp_frame_interval'.$num, _('ms'), 200);
 
-  $tcp_proto = array('Modbus TCP', 'Transparent', 'S7', 'FX', 'MC', 'ASCII', 'IEC104', 'OPCUA', 'DNP3', 'BACnet/IP', 'Ethernet/IP', 'SNMP');
+  $tcp_proto = array('Modbus TCP', 'Transparent', 'S7', 'FX', 
+                      'MC', 'ASCII', 'IEC104', 'OPCUA', 'DNP3', 
+                      'BACnet/IP', 'Ethernet/IP', 'SNMP',
+                      'DLMS');
   SelectControlCustom(_('Protocol'), 'tcp_proto'.$num, $tcp_proto, $tcp_proto[0], 'tcp_proto'.$num, null, "tcpProtocolChange($num)");
 
   echo '<div id="tcp_page_protocol_modbus'.$num.'" name="tcp_page_protocol_modbus'.$num.'">';
@@ -339,6 +367,28 @@ function page_interface_tcp($num)
   InputControlCustom(_('Priv Key'), 'priv_key'.$num, 'priv_key'.$num);
   echo '</div>';
   echo '</div>';
+  echo '</div>';
+
+  echo '<div id="tcp_page_protocol_dlms'.$num.'" name="tcp_page_protocol_dlms'.$num.'">';
+    InputControlCustom(_('client Address'), 'tcp_dlms_client_address'.$num, 'tcp_dlms_client_address'.$num, "1~255");
+    InputControlCustom(_('server Address'), 'tcp_dlms_server_address'.$num, 'tcp_dlms_server_address'.$num, "1~255");
+    $auth_list = [_('None'), 'Low', 'High', 'HighMd5', 'HighSha1', 'HighGmac', 'HighSha256'];
+    SelectControlCustom(_('Authentication'), 'tcp_dlms_auth'.$num, $auth_list, $auth_list[0], 'tcp_dlms_auth'.$num, null, "dlmsAuthChangeTcp($num)");
+    echo '<div id="tcp_page_dlms_password'.$num.'" name="tcp_page_dlms_password'.$num.'">';
+      InputControlCustom(_('Password'), 'tcp_dlms_password'.$num, 'tcp_dlms_password'.$num);
+    echo '</div>';
+    echo '<div id="tcp_page_security_dlms'.$num.'" name="tcp_page_security_dlms'.$num.'">';
+      $security_level = [_('None'), 'Authentication', 'Encryption', 'AuthenticationEncryption'];
+      SelectControlCustom(_('Security Level'), 'tcp_dlms_security_level'.$num, $security_level, $security_level[0], 'tcp_dlms_security_level'.$num, null, "dlmsSecurityChangeTcp($num)");
+      echo '<div id="tcp_page_authentication_dlms'.$num.'" name="tcp_page_authentication_dlms'.$num.'">';
+        InputControlCustom(_('Authentication Key'), 'tcp_dlms_authentication_key'.$num, 'tcp_dlms_authentication_key'.$num);
+      echo '</div>';
+      echo '<div id="tcp_page_encrypted_dlms'.$num.'" name="tcp_page_encrypted_dlms'.$num.'">';
+        InputControlCustom(_('Block Cipher Key'), 'tcp_dlms_cipher_Key'.$num, 'tcp_dlms_cipher_Key'.$num);
+      echo '</div>';
+      InputControlCustom(_('Client System Title'), 'tcp_dlms_client_title'.$num, 'tcp_dlms_client_title'.$num);
+      InputControlCustom(_('Invocation counter'), 'tcp_dlms_invocation_counter'.$num, 'tcp_dlms_invocation_counter'.$num, "eg: 0.0.43.1.0.255");
+    echo '</div>';
   echo '</div>';
 
   $count = $num - 1;
@@ -825,9 +875,9 @@ function dct_rules_common($table_name) {
 
   InputControlCustom(_('Email'), $table_name.'.email', $table_name.'.email', _('Multiple emails Are Separated By Comma'));
 
-  InputControlCustom(_('Event Reporting Center'), $table_name.'.event_server_center', $table_name.'.event_server_center', _('Multiple Servers Are Separated By Minus'));
-  
   InputControlCustom(_('Contents'), $table_name.'.contents', $table_name.'.contents');
+
+  InputControlCustom(_('Event Reporting Center'), $table_name.'.event_server_center', $table_name.'.event_server_center', _('Multiple Servers Are Separated By Minus'));
 
   InputControlCustom(_('Retry Interval'), $table_name.'.retry_interval', $table_name.'.retry_interval', _('Minutes, it must be a multiple of collect period'));
 

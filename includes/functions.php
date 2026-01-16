@@ -769,9 +769,11 @@ function getFavicon($target, $hostname)
 {
     $name='';
     if ($target != null && file_exists('/var/www/html/app/icons/'.$hostname.'_favicon.png')) {
-        $name = $hostname . "_favicon.png";
+        $name = "app/icons/" . $hostname . "_favicon.png";
+    } else if (strpos($target, "&OEM") !== false) {
+        return;
     } else {
-        $name = "favicon.png";
+        $name = "app/icons/favicon.png";
     }
 
     return $name;
@@ -786,6 +788,8 @@ function setLoginLogo($target, $hostname)
     } else if ($target != null && file_exists('/var/www/html/app/img/'.$hostname.'.php')) {
         $name = $hostname . ".png";
         echo '<img src="app/img/'.$name.'" class="navbar-logo" alt="logo" class="img-fluid" style="width: 20rem;">';
+    } else if (strpos($target, "&OEM") !== false) {
+        return;
     } else {
         $name = "elastel.png";
         echo '<img src="app/img/'.$name.'" class="navbar-logo" class="img-fluid" style="max-width: 100px;">';
@@ -798,6 +802,8 @@ function setLoginGuide($target, $hostname)
     $url='';
     if ($target != null && (strpos($target, "IQEG") !== false || strpos($target, "IQEC") !== false)) {
         $url = "https://docs.iqflow.io/";
+    } else if (strpos($target, "&OEM") !== false) {
+        return;
     } else {
         $url = "https://docs.elastel.com/";
     }
@@ -816,6 +822,8 @@ function setSidbarLogo($target, $hostname)
         return;
     } else if ($target != null && file_exists('/var/www/html/app/img/'.$hostname.'.php')) {
         $name = $hostname . ".php";
+    } else if (strpos($target, "&OEM") !== false) {
+        return;
     } else {
         $name = "elastel.php";
     }
@@ -1213,6 +1221,9 @@ function handlePageActions($extraFooterScripts, $page)
             break;
         case "/iec1107_conf":
             DisplayIec1107();
+            break;
+        case "/dlms_conf":
+            DisplayDlms();
             break;
         case "/nodered":
             DisplayNodered();
