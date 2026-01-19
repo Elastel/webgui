@@ -63,9 +63,12 @@
                 <div class="cbi-section cbi-tblsection" id="page_dnp3" name="page_dnp3">
                   <?php
                   $arr= array(
-                    array("name"=>"Source Object",          "style"=>"", "descr"=>"", "ctl"=>"select"),
+                    array("name"=>"Source Object",        "style"=>"", "descr"=>"", "ctl"=>"select"),
                     array("name"=>"Group ID",             "style"=>"", "descr"=>"", "ctl"=>"select"),
-                    array("name"=>"Number of Points",     "style"=>"", "descr"=>"0~100", "ctl"=>"input"),
+                    array("name"=>"Index Number",         "style"=>"", "descr"=>"0~100", "ctl"=>"input"),
+                    array("name"=>"Ivent Class",          "style"=>"", "descr"=>"", "ctl"=>"select"),
+                    array("name"=>"Event Variation",      "style"=>"", "descr"=>"", "ctl"=>"select"),
+                    array("name"=>"Static Variation",     "style"=>"", "descr"=>"", "ctl"=>"select"),
                     array("name"=>"Enable",               "style"=>"", "descr"=>"", "ctl"=>"check"),
                   );
                   page_table_title('dnp3', $arr);
@@ -95,13 +98,22 @@
       
       SelectControlCustom(_('Source Object'), $table_name.'.source_object', NULL, NULL, $table_name.'.source_object');
 
-      $group_id_list = ['BINARR_INPUT' => 'BINARR_INPUT', 'DOUBLE_INPUT' => 'DOUBLE_INPUT', 
+      $group_id_list = ['BINARY_INPUT' => 'BINARY_INPUT', 'DOUBLE_INPUT' => 'DOUBLE_INPUT', 
                       'BINARY_OUTPUT' => 'BINARY_OUTPUT', 'COUNTER_INPUT' => 'COUNTER_INPUT', 
                       'ANALOG_INPUT' => 'ANALOG_INPUT', 'ANALOG_OUTPUTS' => 'ANALOG_OUTPUTS', 
                       /*'OCTECT_STRING' => 'OCTECT_STRING'*/];
       SelectControlCustom(_('Group ID'), $table_name.'.group_id', $group_id_list, $group_id_list['ANALOG_INPUT'], $table_name.'.group_id');
     
-      InputControlCustom(_('Number of Points'), $table_name.'.point_number', $table_name.'.point_number');
+      InputControlCustom(_('Index Number'), $table_name.'.point_number', $table_name.'.point_number');
+
+      $event_class = ['none' => 'none', 'class1' => 'class1', 'class2' => 'class2', 'class3' => 'class3'];
+      SelectControlCustom(_('Event Class'), $table_name.'.event_class', $event_class, $event_class['none'], $table_name.'.event_class');
+      
+      $event_var = ['var1' => 'var1', 'var2' => 'var2', 'var3' => 'var3', 'var4' => 'var4', 'var5' => 'var5', 'var6' => 'var6', 'var7' => 'var7', 'var8' => 'var8'];
+      SelectControlCustom(_('Event Variation'), $table_name.'.event_var', $event_var, $event_var['var1'], $table_name.'.event_var');
+
+      $static_var = ['var1' => 'var1', 'var2' => 'var2', 'var3' => 'var3', 'var4' => 'var4', 'var5' => 'var5', 'var6' => 'var6', 'var7' => 'var7', 'var8' => 'var8'];
+      SelectControlCustom(_('Static Variation'), $table_name.'.static_var', $static_var, $static_var['var1'], $table_name.'.static_var');
 
       CheckboxControlCustom(_('Enable'), $table_name.'.enabled', $table_name.'.enabled', 'checked');
     ?>

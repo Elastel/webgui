@@ -298,6 +298,7 @@ if [[ $model != "EG324L" && $model != "EC212" ]]; then
         chown -c root:www-data /etc/raspap/hostapd/*.sh
         chown -R www-data:www-data /var/www/html
 else
+        chown -R root:root /var/www/html
         result=$(ls /etc/ssl/certs/ | wc -l)
         if [[ $result == "0" ]]; then
                 tar xzvf $path/config/certs.tar.gz -C /etc/ssl/

@@ -68,7 +68,7 @@
 
       InputControlCustom(_('Tag Name'), $table_name.'.factor_name', $table_name.'.factor_name');
 
-      $group_id_list = ['BINARR_INPUT' => 'BINARR_INPUT', 'DOUBLE_INPUT' => 'DOUBLE_INPUT', 
+      $group_id_list = ['BINARY_INPUT' => 'BINARY_INPUT', 'DOUBLE_INPUT' => 'DOUBLE_INPUT', 
                       'BINARY_OUTPUT' => 'BINARY_OUTPUT', 'COUNTER_INPUT' => 'COUNTER_INPUT', 
                       'ANALOG_INPUT' => 'ANALOG_INPUT', 'ANALOG_OUTPUTS' => 'ANALOG_OUTPUTS'];
       SelectControlCustom(_('Group ID'), $table_name.'.group_id', $group_id_list, $group_id_list['ANALOG_INPUT'], $table_name.'.group_id');
