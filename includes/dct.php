@@ -780,11 +780,18 @@ function page_table_title($section, $option_list) {
   $descr_buf = '';
   
   for ($i = 0; $i < count($option_list); $i++) {
-    $name = _($option_list[$i]['name']);
-    $descr = _($option_list[$i]['descr']);
     $style = strlen($option_list[$i]['style']) > 0 ? "style=\"". $option_list[$i]['style'] ."\"" : '';
-    $name_buf .= "<th class=\"th cbi-section-table-cell\" $style>$name</th>";
-    $descr_buf .= "<th class=\"th cbi-section-table-cell\" $style>$descr</th>";
+
+    if ($option_list[$i]['name'] !== '') {
+      $name = _($option_list[$i]['name']);
+      $name_buf .= "<th class=\"th cbi-section-table-cell\" $style>$name</th>";
+    }
+    
+    if ($option_list[$i]['descr'] !== '') {
+      $descr = _($option_list[$i]['descr']);
+      $descr_buf .= "<th class=\"th cbi-section-table-cell\" $style>$descr</th>";
+    }
+    
     unset($name);
     unset($style);
     unset($descr);

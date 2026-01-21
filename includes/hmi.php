@@ -110,7 +110,7 @@ function replaceLogo($status, $file)
         $file_path = $results['full_path'];
         $new_file_path = "/mnt/mmc/logo.bmp";
 
-        if ($target == "EH607") {
+        if (strpos($target, 'EH607') !== false) {
             system("sudo mount /dev/mmcblk0p1 /mnt/mmc");
             system("sudo mv $file_path $new_file_path");
         } else {
@@ -124,7 +124,7 @@ function replaceLogo($status, $file)
             $status->addMessage('fail to replace logo', 'danger');
         }
 
-        if ($target == "EH607") {
+        if (strpos($target, 'EH607') !== false) {
             system("sudo umount /mnt/mmc");
         }
 

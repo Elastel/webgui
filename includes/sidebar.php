@@ -203,7 +203,7 @@
                 <?php if(isBinExists("ttyd") || file_exists("/usr/local/bin/ttyd")) : ?>
                 <li class="nav-item" name="terminal" id="system_terminal"> <a class="nav-link" href="terminal"><?php echo _("Terminal"); ?></a></li>
                 <?php endif; ?>
-                <?php if(isBinExists("chromium-browser") && $target == 'EH607') : ?>
+                <?php if(isBinExists("chromium-browser") && strpos($target, 'EH607') !== false) : ?>
                 <li class="nav-item" name="hmi" id="system_hmi"> <a class="nav-link" href="hmi"><?php echo _("HMI"); ?></a></li>
                 <?php endif; ?>
                 <?php if(isBinExists("scheduled")) : ?>

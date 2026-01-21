@@ -45,7 +45,7 @@ function DisplayNetworkingConfig($type)
                             exec('sudo systemctl restart systemd-networkd.service');
                         } else {
                             exec('sudo systemctl restart systemd-networkd.service');
-                            exec('sudo /usr/sbin/brctl delif br0 eth0');
+                            exec('sudo brctl delif br0 eth0');
                             exec('sudo systemctl stop dhcpcd.service');
                             sleep(1);
                             exec('sudo systemctl start dhcpcd.service');
