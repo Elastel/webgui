@@ -394,7 +394,7 @@ echo -e "Complete to update, it will reboot system."
 echo $(date +%F%n%T) >/etc/fw_date
 echo $(date +%F%n%T):success >/etc/update_status
 
-if [[ $model == "EG324" && $target != "EH607" ]]; then
+if [[ $model == "EG324" && $target == "EG324" ]]; then
         if [ ! -f /etc/kernel_update ]; then
                 git clone --depth 1 https://github.com/Elastel/EG324_kernel.git /tmp/EG324_kernel
                 if [ $? -eq 0 ]; then
