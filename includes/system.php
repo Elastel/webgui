@@ -102,6 +102,8 @@ function DisplaySystem()
     if (isset($_POST['SaveLanguage'])) {
         if (isset($_POST['locale'])) {
             $_SESSION['locale'] = $_POST['locale'];
+            exec("sudo uci set system.system.locale=$_POST[locale]");
+            exec("sudo uci commit system");
             $status->addMessage('Language setting saved', 'success');
         }
     }

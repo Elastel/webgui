@@ -81,11 +81,17 @@ if (empty($_SESSION['locale']) && strlen($_SERVER['HTTP_ACCEPT_LANGUAGE']) >= 2)
     }
 
     $_SESSION['locale'] = $locale;
+} else {
+    exec("uci get system.system.locale", $tmp);
+    if (!empty($tmp[0])) {
+        $_SESSION['locale'] = $tmp[0];
+    } else {
+        $_SESSION['locale'] = "en_GB.UTF-8";
+    }
 }
 
 // Note: the associated locale must be installed on the RPi
 // Use: 'sudo raspi-configure' and select 'Localisation Options'
-
 // activate the locale setting
 putenv("LANG=" . $_SESSION['locale']);
 setlocale(LC_ALL, $_SESSION['locale']);

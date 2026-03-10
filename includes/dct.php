@@ -237,8 +237,8 @@ function page_interface_com($num)
   echo '</div>';
 
   echo '<div id="com_page_protocol_dlms'.$num.'" name="com_page_protocol_dlms'.$num.'">';
-    InputControlCustom(_('client Address'), 'com_dlms_client_address'.$num, 'com_dlms_client_address'.$num, "1~255");
-    InputControlCustom(_('server Address'), 'com_dlms_server_address'.$num, 'com_dlms_server_address'.$num, "1~255");
+    InputControlCustom(_('Client Address'), 'com_dlms_client_address'.$num, 'com_dlms_client_address'.$num, "1~255");
+    InputControlCustom(_('Server Address'), 'com_dlms_server_address'.$num, 'com_dlms_server_address'.$num, "1~255");
     $auth_list = [_('None'), 'Low', 'High', 'HighMd5', 'HighSha1', 'HighGmac', 'HighSha256'];
     SelectControlCustom(_('Authentication'), 'com_dlms_auth'.$num, $auth_list, $auth_list[0], 'com_dlms_auth'.$num, null, "dlmsAuthChangeCom($num)");
     echo '<div id="com_page_dlms_password'.$num.'" name="com_page_dlms_password'.$num.'">';
@@ -370,8 +370,8 @@ function page_interface_tcp($num)
   echo '</div>';
 
   echo '<div id="tcp_page_protocol_dlms'.$num.'" name="tcp_page_protocol_dlms'.$num.'">';
-    InputControlCustom(_('client Address'), 'tcp_dlms_client_address'.$num, 'tcp_dlms_client_address'.$num, "1~255");
-    InputControlCustom(_('server Address'), 'tcp_dlms_server_address'.$num, 'tcp_dlms_server_address'.$num, "1~255");
+    InputControlCustom(_('Client Address'), 'tcp_dlms_client_address'.$num, 'tcp_dlms_client_address'.$num, "1~255");
+    InputControlCustom(_('Server Address'), 'tcp_dlms_server_address'.$num, 'tcp_dlms_server_address'.$num, "1~255");
     $auth_list = [_('None'), 'Low', 'High', 'HighMd5', 'HighSha1', 'HighGmac', 'HighSha256'];
     SelectControlCustom(_('Authentication'), 'tcp_dlms_auth'.$num, $auth_list, $auth_list[0], 'tcp_dlms_auth'.$num, null, "dlmsAuthChangeTcp($num)");
     echo '<div id="tcp_page_dlms_password'.$num.'" name="tcp_page_dlms_password'.$num.'">';
