@@ -5,7 +5,7 @@ if [ $1 == "0" ]; then
     if [[ $model == "EG510" ]]; then
         while true ;do
             gpioset gpiochip0 5=1
-            sleep 0.01
+            sleep 0.02
             gpioset gpiochip0 5=0
             sleep 1
         done
