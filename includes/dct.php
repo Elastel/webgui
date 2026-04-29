@@ -819,10 +819,6 @@ function page_table_title($section, $option_list) {
   echo $descr_buf;
   echo "<th class=\"th cbi-section-table-cell cbi-section-actions\"></th>
         <th class=\"th cbi-section-table-cell cbi-section-actions\"></th>
-        <th class=\"th cbi-section-table-cell cbi-section-actions\"></th>
-        <th class=\"th cbi-section-table-cell cbi-section-actions\"></th>
-        <th class=\"th cbi-section-table-cell cbi-section-actions\"></th>
-        <th class=\"th cbi-section-table-cell cbi-section-actions\"></th>
       </tr>
     </table>";
 }
